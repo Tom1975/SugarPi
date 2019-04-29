@@ -1,0 +1,3 @@
+AARCH = 64
+PREFIX64 = aarch64-elf-
+STDLIB_SUPPORT = 1
