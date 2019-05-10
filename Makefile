@@ -20,15 +20,17 @@ OBJS	= main.o kernel.o \
 		CPCCore/CPCCoreEmu/PlayCity.o \
 		CPCCore/CPCCoreEmu/PSG.o \
 		CPCCore/CPCCoreEmu/Sig.o \
-		CPCCore/CPCCoreEmu/simple_string.o \
+		CPCCore/CPCCoreEmu/simple_math.o \
+		CPCCore/CPCCoreEmu/simple_regex.o \
 		CPCCore/CPCCoreEmu/simple_stdio.o \
+		CPCCore/CPCCoreEmu/simple_string.o \
 		CPCCore/CPCCoreEmu/Tape.o\
 		CPCCore/CPCCoreEmu/VGA.o \
 		CPCCore/CPCCoreEmu/Z80_Full.o
 
 EXTRACLEAN = $(OBJS)
 		
-CFLAGS = -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER
+CFLAGS = -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB
 LIBS	= $(CIRCLEHOME)/lib/libcircle.a $(CIRCLEHOME)/lib/fs/fat/libfatfs.a $(CIRCLEHOME)/lib/fs/libfs.a
 
 
