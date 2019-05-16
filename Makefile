@@ -4,7 +4,9 @@
 
 CIRCLEHOME = ../circle-master
 
-OBJS	= main.o kernel.o \
+OBJS	= main.o\
+      kernel.o \
+      DisplayPi.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
       CPCCore/CPCCoreEmu/CAPSFile.o\

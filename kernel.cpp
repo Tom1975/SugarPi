@@ -19,12 +19,14 @@
 //
 #include "kernel.h"
 
-CKernel::CKernel (void)
+CKernel::CKernel (void) 
 :
 #if AARCH != 64			// non-MMU mode currently does not work with AArch64
 	m_Memory (FALSE),	// set this to TRUE to enable MMU and to boost performance
 #endif
-	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ())
+	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
+   sound_mixer_(),
+   motherboard_emulation_ (&sound_mixer_)
 {
 }
 
@@ -59,6 +61,13 @@ TShutdownMode CKernel::Run (void)
 		m_Screen.SetPixel (nPosX, nPosY, NORMAL_COLOR);
 		m_Screen.SetPixel (m_Screen.GetWidth ()-nPosX-1, nPosY, NORMAL_COLOR);
 	}
+
+   // Init motherboard
+   motherboard_emulation_.InitMotherbard( nullptr, nullptr, &display_, nullptr, nullptr, nullptr);
+
+   // Set configuration
+
+   motherboard_emulation_.OnOff();
 
 	// check the blink frequency without and with MMU (see option in constructor above)
 	while (1)

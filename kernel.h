@@ -27,6 +27,12 @@
 #include <circle/screen.h>
 #include <circle/types.h>
 
+#include "CPCCore/CPCCoreEmu/Motherboard.h"
+#include "CPCCore/CPCCoreEmu/SoundMixer.h"
+
+#include "DisplayPi.h"
+
+
 enum TShutdownMode
 {
 	ShutdownNone,
@@ -51,7 +57,10 @@ private:
 	CKernelOptions		m_Options;
 	CDeviceNameService	m_DeviceNameService;
 	CScreenDevice		m_Screen;
-	
+
+   SoundMixer        sound_mixer_;
+   Motherboard       motherboard_emulation_;
+   DisplayPi         display_;
 };
 
 #endif
