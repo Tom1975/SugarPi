@@ -7,6 +7,7 @@ CIRCLEHOME = ../circle-master
 OBJS	= main.o kernel.o \
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
+      CPCCore/CPCCoreEmu/CAPSFile.o\
 		CPCCore/CPCCoreEmu/ClockLine.o\
 		CPCCore/CPCCoreEmu/CRC.o\
 		CPCCore/CPCCoreEmu/CRTC.o \
@@ -20,12 +21,12 @@ OBJS	= main.o kernel.o \
 		CPCCore/CPCCoreEmu/DMA.o\
 		CPCCore/CPCCoreEmu/DskTypeManager.o\
 		CPCCore/CPCCoreEmu/FDC.o\
+      CPCCore/CPCCoreEmu/FileAccess.o\
 		CPCCore/CPCCoreEmu/FormatTypeCTRAW.o\
 		CPCCore/CPCCoreEmu/FormatTypeDSK.o\
 		CPCCore/CPCCoreEmu/FormatTypeEDSK.o\
 		CPCCore/CPCCoreEmu/FormatTypeHFE.o\
 		CPCCore/CPCCoreEmu/FormatTypeIPF.o\
-		CPCCore/CPCCoreEmu/FormatTypeSCP.o\
 		CPCCore/CPCCoreEmu/IDisk.o\
 		CPCCore/CPCCoreEmu/KeyboardHandler.o\
 		CPCCore/CPCCoreEmu/MediaManager.o\
