@@ -25,7 +25,11 @@
 #include <circle/koptions.h>
 #include <circle/devicenameservice.h>
 #include <circle/screen.h>
+#include <circle/serial.h>
 #include <circle/types.h>
+#include <circle/interrupt.h>
+#include <circle/timer.h>
+#include <circle/logger.h>
 
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
@@ -56,11 +60,15 @@ private:
 	CActLED				m_ActLED;
 	CKernelOptions		m_Options;
 	CDeviceNameService	m_DeviceNameService;
+   CSerialDevice		m_Serial;
 	CScreenDevice		m_Screen;
+   CTimer			   m_Timer;
+   CLogger			   m_Logger;
+   CInterruptSystem  m_Interrupt;
 
-   SoundMixer        sound_mixer_;
-   Motherboard       motherboard_emulation_;
-   DisplayPi         display_;
+	SoundMixer        sound_mixer_;
+	Motherboard       motherboard_emulation_;
+	DisplayPi         display_;
 };
 
 #endif

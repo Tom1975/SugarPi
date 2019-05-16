@@ -25,7 +25,9 @@ CKernel::CKernel (void)
 	m_Memory (FALSE),	// set this to TRUE to enable MMU and to boost performance
 #endif
 	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
+   m_Timer(&m_Interrupt),
    sound_mixer_(),
+   m_Logger(m_Options.GetLogLevel(), &m_Timer),
    motherboard_emulation_ (&sound_mixer_)
 {
 }
@@ -36,11 +38,44 @@ CKernel::~CKernel (void)
 
 boolean CKernel::Initialize (void)
 {
-	return m_Screen.Initialize ();
+   boolean bOK = TRUE;
+
+   if (bOK)
+   {
+      bOK = m_Screen.Initialize();
+   }
+   if (bOK)
+   {
+      bOK = m_Serial.Initialize(115200);
+   }
+
+   if (bOK)
+   {
+      CDevice* pTarget = m_DeviceNameService.GetDevice(m_Options.GetLogDevice(), FALSE);
+      if (pTarget == 0)
+      {
+         pTarget = &m_Screen;
+      }
+      bOK = m_Logger.Initialize(pTarget);
+   }
+   
+   if (bOK)
+   {
+      bOK = m_Interrupt.Initialize();
+   }
+
+   if (bOK)
+   {
+      bOK = m_Timer.Initialize();
+   }
+
+   m_Logger.Write("Kernel", LogNotice, "Initialisation done.");
+   return bOK;
 }
 
 TShutdownMode CKernel::Run (void)
 {
+   m_Logger.Write("Kernel", LogNotice, "Entering running mode...");
 	// draw rectangle on screen
 	for (unsigned nPosX = 0; nPosX < m_Screen.GetWidth (); nPosX++)
 	{
@@ -63,11 +98,13 @@ TShutdownMode CKernel::Run (void)
 	}
 
    // Init motherboard
+   m_Logger.Write("Kernel", LogNotice, "Init motherboard...");
    motherboard_emulation_.InitMotherbard( nullptr, nullptr, &display_, nullptr, nullptr, nullptr);
-
+   m_Logger.Write("Kernel", LogNotice, "Done !");
    // Set configuration
-
+   m_Logger.Write("Kernel", LogNotice, "On/Off...");
    motherboard_emulation_.OnOff();
+   m_Logger.Write("Kernel", LogNotice, "Done !");
 
 	// check the blink frequency without and with MMU (see option in constructor above)
 	while (1)
