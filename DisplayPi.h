@@ -1,14 +1,21 @@
 #pragma once
 
 //
+#include <circle/screen.h>
+#include <circle/logger.h>
+#include <circle/bcmframebuffer.h>
+
 #include "CPCCore/CPCCoreEmu/Screen.h"
 
 
 class DisplayPi : public IDisplay
 {
 public:
-   DisplayPi();
+   DisplayPi(CLogger* logger);
    virtual ~DisplayPi();
+
+   bool Initialization();
+   CScreenDevice* GetScreenDevice() { return screen_; }
 
    virtual void SetScanlines(int scan);
    virtual bool AFrameIsReady();
@@ -58,4 +65,8 @@ public:
    virtual void Activate(bool on) {};
 
 protected:
+   CScreenDevice*		screen_;
+   CLogger*          logger_;
+
+   CBcmFrameBuffer   frame_buffer_;
 };

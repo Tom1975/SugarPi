@@ -30,11 +30,14 @@
 #include <circle/interrupt.h>
 #include <circle/timer.h>
 #include <circle/logger.h>
+#include <circle/cputhrottle.h>
+
 
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
 
 #include "DisplayPi.h"
+#include "KeyboardPi.h"
 
 
 enum TShutdownMode
@@ -51,6 +54,7 @@ public:
 	~CKernel (void);
 
 	boolean Initialize (void);
+   int LoadCprFromBuffer(unsigned char* buffer, int size);
 
 	TShutdownMode Run (void);
 
@@ -61,14 +65,15 @@ private:
 	CKernelOptions		m_Options;
 	CDeviceNameService	m_DeviceNameService;
    CSerialDevice		m_Serial;
-	CScreenDevice		m_Screen;
    CTimer			   m_Timer;
    CLogger			   m_Logger;
    CInterruptSystem  m_Interrupt;
+   CCPUThrottle      cpu_throttle_;
 
 	SoundMixer        sound_mixer_;
-	Motherboard       motherboard_emulation_;
+	Motherboard       *motherboard_emulation_;
 	DisplayPi         display_;
+   KeyboardPi        keyboard_;
 };
 
 #endif

@@ -7,6 +7,7 @@ CIRCLEHOME = ../circle-master
 OBJS	= main.o\
       kernel.o \
       DisplayPi.o\
+      KeyboardPi.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
       CPCCore/CPCCoreEmu/CAPSFile.o\
@@ -57,7 +58,8 @@ OBJS	= main.o\
 
 EXTRACLEAN = $(OBJS)
 		
-CFLAGS = -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT
+OPTIMIZE = -O3
+CFLAGS = -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT 
 LIBS	= $(CIRCLEHOME)/lib/libcircle.a $(CIRCLEHOME)/lib/fs/fat/libfatfs.a $(CIRCLEHOME)/lib/fs/libfs.a
 
 
