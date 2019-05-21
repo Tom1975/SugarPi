@@ -1,0 +1,72 @@
+In file included from CPCCore/CPCCoreEmu/DiskContainer.cpp:3:0:
+CPCCore/CPCCoreEmu/DiskContainer.h:223:4: error: 'NodeFS' does not name a type
+    NodeFS zip_file_;
+    ^~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp: In member function 'void DataContainer::BuildFileList()':
+CPCCore/CPCCoreEmu/DiskContainer.cpp:538:16: error: aggregate 'DataContainer::BuildFileList()::stat s' has incomplete type and cannot be defined
+    struct stat s;
+                ^
+CPCCore/CPCCoreEmu/DiskContainer.cpp:540:38: error: invalid use of incomplete type 'struct DataContainer::BuildFileList()::stat'
+    if (stat(current_path_.c_str(), &s) == 0)
+                                      ^
+CPCCore/CPCCoreEmu/DiskContainer.cpp:538:11: note: forward declaration of 'struct DataContainer::BuildFileList()::stat'
+    struct stat s;
+           ^~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:543:23: error: 'S_IFDIR' was not declared in this scope
+       if (s.st_mode & S_IFDIR)
+                       ^~~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp: In member function 'virtual int DataContainer::GetType(ITypeManager*)':
+CPCCore/CPCCoreEmu/DiskContainer.cpp:626:16: error: aggregate 'DataContainer::GetType(ITypeManager*)::stat s' has incomplete type and cannot be defined
+    struct stat s;
+                ^
+CPCCore/CPCCoreEmu/DiskContainer.cpp:628:38: error: invalid use of incomplete type 'struct DataContainer::GetType(ITypeManager*)::stat'
+    if (stat(current_path_.c_str(), &s) == 0)
+                                      ^
+CPCCore/CPCCoreEmu/DiskContainer.cpp:626:11: note: forward declaration of 'struct DataContainer::GetType(ITypeManager*)::stat'
+    struct stat s;
+           ^~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:631:23: error: 'S_IFDIR' was not declared in this scope
+       if (s.st_mode & S_IFDIR)
+                       ^~~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp: In member function 'int DataContainer::InitUnzip(ITypeManager*, unsigned char*, int)':
+CPCCore/CPCCoreEmu/DiskContainer.cpp:688:13: error: 'NodeFS' was not declared in this scope
+             NodeFS* added_element;
+             ^~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:688:21: error: 'added_element' was not declared in this scope
+             NodeFS* added_element;
+                     ^~~~~~~~~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:689:33: error: 'FILE_ATTRIBUTE_DIRECTORY' was not declared in this scope
+             if (efile_attrib == FILE_ATTRIBUTE_DIRECTORY)
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:689:33: note: suggested alternative: 'FAT_DIR_ATTR_DIRECTORY'
+             if (efile_attrib == FILE_ATTRIBUTE_DIRECTORY)
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~
+                                 FAT_DIR_ATTR_DIRECTORY
+CPCCore/CPCCoreEmu/DiskContainer.cpp:692:32: error: 'zip_file_' was not declared in this scope
+                added_element = zip_file_.InsertDir(filename);
+                                ^~~~~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:697:32: error: 'zip_file_' was not declared in this scope
+                added_element = zip_file_.InsertFile(filename, zipped_buffer);
+                                ^~~~~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:701:20: warning: unused variable 'file_type' [-Wunused-variable]
+                int file_type = manager->GetTypeFromFile(added_element->name_.c_str());
+                    ^~~~~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:708:22: warning: unused variable 'min_version' [-Wunused-variable]
+                short min_version = *(short*)&(local_header[4]);
+                      ^~~~~~~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:709:22: warning: unused variable 'flags' [-Wunused-variable]
+                short flags = *(short*)&(local_header[6]);
+                      ^~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:710:22: warning: unused variable 'comp_method' [-Wunused-variable]
+                short comp_method = *(short*)&(local_header[8]);
+                      ^~~~~~~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:672:19: warning: unused variable 'min_version' [-Wunused-variable]
+             short min_version = *(short*)&(zipped_buffer[offset_dir + 6]);
+                   ^~~~~~~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:673:19: warning: unused variable 'comp_method' [-Wunused-variable]
+             short comp_method = *(short*)&(zipped_buffer[offset_dir + 10]);
+                   ^~~~~~~~~~~
+CPCCore/CPCCoreEmu/DiskContainer.cpp:674:19: warning: unused variable 'ifile_attrib' [-Wunused-variable]
+             short ifile_attrib = *(short*)&(zipped_buffer[offset_dir + 36]);
+                   ^~~~~~~~~~~~
+make: *** [CPCCore/CPCCoreEmu/DiskContainer.o] Error 1

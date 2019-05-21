@@ -32,6 +32,8 @@
 #include <circle/logger.h>
 #include <circle/cputhrottle.h>
 
+#include <SDCard/emmc.h>
+#include <fatfs/ff.h>
 
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
@@ -58,6 +60,9 @@ public:
 
 	TShutdownMode Run (void);
 
+protected:
+   //void GetFolderCart();
+
 private:
 	// do not change this order
 	CMemorySystem		m_Memory;
@@ -69,8 +74,10 @@ private:
    CLogger			   m_Logger;
    CInterruptSystem  m_Interrupt;
    CCPUThrottle      cpu_throttle_;
+   CEMMCDevice		   m_EMMC;
+   FATFS			      m_FileSystem;
 
-	SoundMixer        sound_mixer_;
+	SoundMixer        *sound_mixer_;
 	Motherboard       *motherboard_emulation_;
 	DisplayPi         display_;
    KeyboardPi        keyboard_;

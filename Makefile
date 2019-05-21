@@ -8,6 +8,11 @@ OBJS	= main.o\
       kernel.o \
       DisplayPi.o\
       KeyboardPi.o\
+		$(CIRCLEHOME)/addon/SDCard/emmc.o\
+      $(CIRCLEHOME)/addon/fatfs/diskio.o\
+      $(CIRCLEHOME)/addon/fatfs/ff.o\
+      $(CIRCLEHOME)/addon/fatfs/ffunicode.o\
+      $(CIRCLEHOME)/addon/fatfs/syscall.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
       CPCCore/CPCCoreEmu/CAPSFile.o\
@@ -59,7 +64,7 @@ OBJS	= main.o\
 EXTRACLEAN = $(OBJS)
 		
 OPTIMIZE = -O3
-CFLAGS = -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT 
+CFLAGS = -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT  -I$(CIRCLEHOME)/addon 
 LIBS	= $(CIRCLEHOME)/lib/libcircle.a $(CIRCLEHOME)/lib/fs/fat/libfatfs.a $(CIRCLEHOME)/lib/fs/libfs.a
 
 

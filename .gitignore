@@ -2,3 +2,8 @@
 *.elf
 *.img
 /main.o
+**.o
+/.vs/ProjectSettings.json
+/.vs/**
+/kernel8.lst
+/kernel8.map

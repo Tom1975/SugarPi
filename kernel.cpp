@@ -20,24 +20,29 @@
 #include "kernel.h"
 #include "Cartridge.h"
 
+#define DRIVE		"SD:"
+//#define DRIVE		"USB:"
+
 CKernel::CKernel(void)
    :
 #if AARCH != 64			// non-MMU mode currently does not work with AArch64
    m_Memory(TRUE),	// set this to TRUE to enable MMU and to boost performance
 #endif
-   //m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
    m_Timer(&m_Interrupt),
-   sound_mixer_(),
    m_Logger(m_Options.GetLogLevel(), &m_Timer),
+   m_EMMC(&m_Interrupt, &m_Timer, &m_ActLED),
+   sound_mixer_(nullptr),
    display_(&m_Logger),
    motherboard_emulation_ (nullptr)
 {
-   motherboard_emulation_ = new Motherboard(&sound_mixer_, &keyboard_);
+   sound_mixer_ = new SoundMixer;
+   motherboard_emulation_ = new Motherboard(sound_mixer_, &keyboard_);
 }
 
 CKernel::~CKernel (void)
 {
-   delete motherboard_emulation_;
+   delete motherboard_emulation_; 
+   delete sound_mixer_;
 }
 
 boolean CKernel::Initialize (void)
@@ -73,6 +78,10 @@ boolean CKernel::Initialize (void)
    if (bOK)
    {
       bOK = m_Timer.Initialize();
+   }
+   if (bOK)
+   {
+      bOK = m_EMMC.Initialize();
    }
 
    CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
@@ -159,11 +168,31 @@ int CKernel::LoadCprFromBuffer(unsigned char* buffer, int size)
 
    return 0;
 }
+/*
+void CKernel::GetFolderCart()
+{
+   // Show contents of root directory
+   DIR Directory;
+   FILINFO FileInfo;
+   FRESULT Result = f_findfirst(&Directory, &FileInfo, DRIVE "/CART", "*");
+   for (unsigned i = 0; Result == FR_OK && FileInfo.fname[0]; i++)
+   {
+      if (!(FileInfo.fattrib & (AM_HID | AM_SYS)))
+      {
+         CString FileName;
+         FileName.Format("%-19s", FileInfo.fname);
+      }
+
+      Result = f_findnext(&Directory, &FileInfo);
+   }
+}*/
 
 TShutdownMode CKernel::Run (void)
 {
    m_Logger.Write("Kernel", LogNotice, "Entering running mode...");
 
+   // Get proper file to load
+   
 
    // Init motherboard
    m_Logger.Write("Kernel", LogNotice, "Init motherboard...");
@@ -174,7 +203,32 @@ TShutdownMode CKernel::Run (void)
    motherboard_emulation_->GetMem()->SetRam(1);
    motherboard_emulation_->GetCRTC()->DefinirTypeCRTC(CRTC::AMS40226);
    motherboard_emulation_->GetVGA()->SetPAL(true);
-   LoadCprFromBuffer(AmstradPLUS_FR, sizeof(AmstradPLUS_FR));
+
+   // Load a cartridge
+   if (f_mount(&m_FileSystem, DRIVE, 1) != FR_OK)
+   {
+      m_Logger.Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
+   }
+   
+   FIL File;
+   FRESULT Result = f_open(&File, DRIVE "crtc3_projo.cpr", FA_READ | FA_OPEN_EXISTING);
+   if (Result != FR_OK)
+   {
+      m_Logger.Write("Kernel", LogPanic, "Cannot open file: %s", DRIVE "crtc3_projo.cpr");
+   }
+   FILINFO file_info;
+   f_stat(DRIVE "crtc3_projo", &file_info);
+   unsigned char* buff = new unsigned char (file_info.fsize);
+   unsigned nBytesRead;
+   f_read(&File, buff, file_info.fsize, &nBytesRead);
+   if (file_info.fsize != nBytesRead)
+   {
+      m_Logger.Write("Kernel", LogPanic, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
+   }
+   LoadCprFromBuffer(buff, file_info.fsize);
+   
+   //LoadCprFromBuffer(AmstradPLUS_FR, sizeof(AmstradPLUS_FR));
+
    motherboard_emulation_->GetPSG()->Reset();
    motherboard_emulation_->GetSig()->Reset();
    motherboard_emulation_->InitStartOptimizedPlus();
