@@ -39,8 +39,8 @@ bool DisplayPi::Initialization()
       screen_->SetPixel(screen_->GetWidth() - nPosX - 1, nPosY, NORMAL_COLOR);
    }
    */
-   frame_buffer_.SetVirtualOffset( 286, 94);
    frame_buffer_.Initialize();
+   frame_buffer_.SetVirtualOffset(143, 40);
 
    return true;
 }
@@ -109,6 +109,7 @@ void DisplayPi::StartSync()
 // Wait VBL
 void DisplayPi::WaitVbl()
 {
+   frame_buffer_.WaitForVerticalSync();
    logger_->Write("Display", LogNotice, "WaitVbl - NOT IMPLEMENTED ");
 }
 
