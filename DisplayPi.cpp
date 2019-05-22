@@ -4,9 +4,9 @@
 
 DisplayPi::DisplayPi(CLogger* logger) : 
    logger_(logger),
-   frame_buffer_(1024, 768, 32, 640, 480)
+   frame_buffer_(640, 480, 32, 640, 480)
 {
-   screen_ = new CScreenDevice(1024, 768);
+   //screen_ = new CScreenDevice(1024, 768);
 }
 
 DisplayPi::~DisplayPi()
@@ -16,8 +16,8 @@ DisplayPi::~DisplayPi()
 
 bool DisplayPi::Initialization()
 {
-   bool ret = screen_->Initialize();
-
+   //bool ret = screen_->Initialize();
+   /*
    // draw rectangle on screen
    for (unsigned nPosX = 0; nPosX < screen_->GetWidth(); nPosX++)
    {
@@ -38,9 +38,11 @@ bool DisplayPi::Initialization()
       screen_->SetPixel(nPosX, nPosY, NORMAL_COLOR);
       screen_->SetPixel(screen_->GetWidth() - nPosX - 1, nPosY, NORMAL_COLOR);
    }
-
+   */
+   frame_buffer_.SetVirtualOffset( 286, 94);
    frame_buffer_.Initialize();
-   return ret;
+
+   return true;
 }
 
 void DisplayPi::SetScanlines(int scan)

@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "kernel.h"
-#include "Cartridge.h"
+//#include "Cartridge.h"
 
 #define DRIVE		"SD:"
 //#define DRIVE		"USB:"
@@ -63,10 +63,10 @@ boolean CKernel::Initialize (void)
    {
       CDevice* pTarget = &m_Serial; 
       //CDevice* pTarget = m_DeviceNameService.GetDevice(m_Options.GetLogDevice(), FALSE);
-      if (pTarget == 0)
+      /*if (pTarget == 0)
       {
          pTarget = display_.GetScreenDevice();
-      }
+      }*/
       bOK = m_Logger.Initialize(pTarget);
    }
    
@@ -211,22 +211,35 @@ TShutdownMode CKernel::Run (void)
    }
    
    FIL File;
-   FRESULT Result = f_open(&File, DRIVE "crtc3_projo.cpr", FA_READ | FA_OPEN_EXISTING);
+   FRESULT Result = f_open(&File, DRIVE "/CART/crtc3_projo.cpr", FA_READ | FA_OPEN_EXISTING);
    if (Result != FR_OK)
    {
-      m_Logger.Write("Kernel", LogPanic, "Cannot open file: %s", DRIVE "crtc3_projo.cpr");
+      m_Logger.Write("Kernel", LogPanic, "Cannot open file: %s", DRIVE "/CART/crtc3_projo.cpr");
    }
+   else
+   {
+      m_Logger.Write("Kernel", LogNotice, "File opened correctly");
+   }
+
    FILINFO file_info;
-   f_stat(DRIVE "crtc3_projo", &file_info);
-   unsigned char* buff = new unsigned char (file_info.fsize);
+   f_stat(DRIVE "/CART/crtc3_projo.cpr", &file_info);
+   m_Logger.Write("Kernel", LogNotice, "File size : %i", file_info.fsize);
+   unsigned char* buff = new unsigned char [file_info.fsize];
    unsigned nBytesRead;
+
+   m_Logger.Write("Kernel", LogNotice, "buffer allocated");
    f_read(&File, buff, file_info.fsize, &nBytesRead);
    if (file_info.fsize != nBytesRead)
    {
       m_Logger.Write("Kernel", LogPanic, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
    }
+   else
+   {
+      m_Logger.Write("Kernel", LogNotice, "file read");
+   }
    LoadCprFromBuffer(buff, file_info.fsize);
-   
+   m_Logger.Write("Kernel", LogNotice, "CPR read correctly");
+
    //LoadCprFromBuffer(AmstradPLUS_FR, sizeof(AmstradPLUS_FR));
 
    motherboard_emulation_->GetPSG()->Reset();
@@ -244,7 +257,7 @@ TShutdownMode CKernel::Run (void)
       motherboard_emulation_->StartOptimizedPlus(4000*10000);
       unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
       m_Logger.Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
-
+     
 	}
 
 	return ShutdownHalt;

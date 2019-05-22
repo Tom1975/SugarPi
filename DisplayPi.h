@@ -15,7 +15,7 @@ public:
    virtual ~DisplayPi();
 
    bool Initialization();
-   CScreenDevice* GetScreenDevice() { return screen_; }
+   //CScreenDevice* GetScreenDevice() { return screen_; }
 
    virtual void SetScanlines(int scan);
    virtual bool AFrameIsReady();
@@ -65,7 +65,7 @@ public:
    virtual void Activate(bool on) {};
 
 protected:
-   CScreenDevice*		screen_;
+   //CScreenDevice*		screen_;
    CLogger*          logger_;
 
    CBcmFrameBuffer   frame_buffer_;
