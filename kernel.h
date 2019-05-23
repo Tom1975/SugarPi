@@ -40,6 +40,7 @@
 
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
+#include "SoundPi.h"
 
 
 enum TShutdownMode
@@ -81,6 +82,7 @@ private:
 	Motherboard       *motherboard_emulation_;
 	DisplayPi         display_;
    KeyboardPi        keyboard_;
+   SoundPi           sound_;
 };
 
 #endif

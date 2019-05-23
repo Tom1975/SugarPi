@@ -8,6 +8,7 @@ OBJS	= main.o\
       kernel.o \
       DisplayPi.o\
       KeyboardPi.o\
+      SoundPi.o\
 		$(CIRCLEHOME)/addon/SDCard/emmc.o\
       $(CIRCLEHOME)/addon/fatfs/diskio.o\
       $(CIRCLEHOME)/addon/fatfs/ff.o\

@@ -33,7 +33,8 @@ CKernel::CKernel(void)
    m_EMMC(&m_Interrupt, &m_Timer, &m_ActLED),
    sound_mixer_(nullptr),
    display_(&m_Logger),
-   motherboard_emulation_ (nullptr)
+   motherboard_emulation_ (nullptr),
+   sound_(&m_Logger, &m_Interrupt)
 {
    sound_mixer_ = new SoundMixer;
    motherboard_emulation_ = new Motherboard(sound_mixer_, &keyboard_);
