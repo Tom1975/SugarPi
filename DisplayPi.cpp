@@ -4,7 +4,7 @@
 
 DisplayPi::DisplayPi(CLogger* logger) : 
    logger_(logger),
-   frame_buffer_(640, 480, 32, 640, 480)
+   frame_buffer_(768, 277, 32, 1024, 1024)
 {
    //screen_ = new CScreenDevice(1024, 768);
 }
@@ -16,31 +16,9 @@ DisplayPi::~DisplayPi()
 
 bool DisplayPi::Initialization()
 {
-   //bool ret = screen_->Initialize();
-   /*
-   // draw rectangle on screen
-   for (unsigned nPosX = 0; nPosX < screen_->GetWidth(); nPosX++)
-   {
-      screen_->SetPixel(nPosX, 0, NORMAL_COLOR);
-      screen_->SetPixel(nPosX, screen_->GetHeight() - 1, NORMAL_COLOR);
-   }
-   for (unsigned nPosY = 0; nPosY < screen_->GetHeight(); nPosY++)
-   {
-      screen_->SetPixel(0, nPosY, NORMAL_COLOR);
-      screen_->SetPixel(screen_->GetWidth() - 1, nPosY, NORMAL_COLOR);
-   }
 
-   // draw cross on screen
-   for (unsigned nPosX = 0; nPosX < screen_->GetWidth(); nPosX++)
-   {
-      unsigned nPosY = nPosX * screen_->GetHeight() / screen_->GetWidth();
-
-      screen_->SetPixel(nPosX, nPosY, NORMAL_COLOR);
-      screen_->SetPixel(screen_->GetWidth() - nPosX - 1, nPosY, NORMAL_COLOR);
-   }
-   */
    frame_buffer_.Initialize();
-   frame_buffer_.SetVirtualOffset(143, 40);
+   frame_buffer_.SetVirtualOffset(143, 47);
 
    return true;
 }
