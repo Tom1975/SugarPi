@@ -1,34 +1,79 @@
 //
+
+#include <memory.h>
+#include <circle/util.h>
 #include "SoundPi.h"
 
 #define SOUND_CHANNELS		2
 #define SOUND_BITS		   16
 #define SOUND_RATE         44100
 
+#define QUEUE_SIZE_MSECS 100
+#define SAMPLE_RATE		44100
+#define CHUNK_SIZE		4000
+#define WRITE_CHANNELS	2
+
 SoundPi::SoundPi(CLogger* logger, CInterruptSystem	*interrupt):
-   logger_(logger)
+   logger_(logger),
+//   CSoundBaseDevice (SoundFormatSigned16, 0, 44100),
+   index_write_(0),
+   index_output_(0),
+   started_(false)
 {
-   m_PWMSoundDevice = new CPWMSoundDevice(interrupt);
+   sound_device_ = new CPWMSoundBaseDevice(interrupt, 44100, CHUNK_SIZE);
    // 1/100e second buffer
-   buffer_ = new char[SOUND_BITS/8 * SOUND_CHANNELS * SOUND_RATE / 100];
+   for (int i = 0; i < QUEUE_SIZE; i++)
+   {
+      data_[i].buffer_length_ = SOUND_BITS / 8 * SOUND_CHANNELS * SOUND_RATE / 100;
+      data_[i].data_ = new char[SOUND_BITS / 8 * SOUND_CHANNELS * SOUND_RATE / 100];
+      data_[i].status_ = IWaveHDR::UNUSED;
+   }
+   chunk_buffer = new unsigned char[SOUND_BITS / 8 * SOUND_CHANNELS * SOUND_RATE / 10];
 }
 
 SoundPi::~SoundPi()
 {
-   delete m_PWMSoundDevice;
+   for (int i = 0; i < QUEUE_SIZE; i++)
+   {
+      delete []data_[i].data_ ;
+   }
+   //delete m_PWMSoundDevice;
+   delete chunk_buffer;
 }
+
+void SoundPi::Initialize()
+{
+   sound_device_->AllocateQueue(QUEUE_SIZE_MSECS);
+   sound_device_->SetWriteFormat(SoundFormatSigned16, WRITE_CHANNELS);
+   queue_size_frames_ = sound_device_->GetQueueSizeFrames();
+
+   logger_->Write("Sound", LogNotice, "GetRangeMin : %i", sound_device_->GetRangeMin());
+   logger_->Write("Sound", LogNotice, "GetRangeMax : %i", sound_device_->GetRangeMax());
+   
+
+   logger_->Write("Sound", LogNotice, "Init done");
+}
+
+unsigned int SoundPi::GetMaxValue()
+{
+   return sound_device_->GetRangeMax();
+}
+
+unsigned int SoundPi::GetMinValue()
+{
+   return sound_device_->GetRangeMin();
+}
+
 
 bool SoundPi::Init(int sample_rate, int sample_bits, int nb_channels)
 {
-   data_.buffer_length_ = 441;
-   data_.data_ = buffer_;
-   data_.status_ = IWaveHDR::UNUSED;
+   logger_->Write("Sound", LogNotice, "Init");
    return true;
 }
 
 void SoundPi::Reinit()
 {
-
+   logger_->Write("Sound", LogNotice, "Reinit");
 }
 unsigned int SoundPi::GetSampleRate()
 {
@@ -47,18 +92,71 @@ unsigned int SoundPi::GetNbChannels()
 
 void SoundPi::CheckBuffersStatus()
 {
-
 }
 
 IWaveHDR* SoundPi::GetFreeBuffer()
 {
-   return &data_;
+   for (int i = 0; i < QUEUE_SIZE; i++)
+   {
+      if (data_[i].status_ == IWaveHDR::UNUSED)
+      {
+         data_[i].status_ = IWaveHDR::USED;
+         return &data_[i];
+      }
+   }
+   return nullptr;
 }
 
 void SoundPi::AddBufferToPlay(IWaveHDR* wav)
 {
    // wait for sample to finish
-   while (!m_PWMSoundDevice->PlaybackActive());
+   //while (m_PWMSoundDevice->PlaybackActive());
+   //m_PWMSoundDevice->Playback(buffer_, 441, 2, 16);
+   /*
+   unsigned int cp = (SOUND_BITS / 8 * SOUND_CHANNELS * SOUND_RATE / 10) - index_write_;
+   if (cp > wav->buffer_length_)
+   {
+      memcpy(&chunk_buffer[index_write_], wav->data_, wav->buffer_length_);
+      index_write_ += wav->buffer_length_;
+   }
+   else
+   {
+      memcpy(&chunk_buffer[index_write_], wav->data_, cp);
+      memcpy(chunk_buffer, &wav->data_[cp], wav->buffer_length_ -cp);
+      index_write_ = wav->buffer_length_ - cp;
+   }
+   */
+   unsigned frame_available = sound_device_->GetQueueFramesAvail();
+   short* buffer_short = (short*)(wav->data_);
 
-   m_PWMSoundDevice->Playback(buffer_, 441, 2, 16);
+   int nResult = sound_device_->Write(wav->data_, wav->buffer_length_);
+   if (nResult != wav->buffer_length_
+      && frame_available != nResult)
+      logger_->Write("Sound", LogNotice, "AddBufferToPlay : Available : %i, size %i, written : %i", frame_available, wav->buffer_length_, nResult);
+   else
+
+   if (!started_)
+   {
+      started_ = true;
+      logger_->Write("Sound", LogNotice, "Start");
+      if (!sound_device_->Start())
+      {
+         logger_->Write("Sound", LogPanic, "Cannot start sound device");
+      }
+   }
+   if (sound_device_->IsActive() == false)
+   {
+      logger_->Write("Sound", LogNotice, "AddBufferToPlay : Available : %i, size %i, written : %i", frame_available, wav->buffer_length_, nResult);
+      logger_->Write("Sound", LogPanic, "Sound no longer active ?!");;
+   }
+      
+   wav->status_ = IWaveHDR::UNUSED;
+
 }
+
+unsigned SoundPi::GetChunk(s16 *pBuffer, unsigned nChunkSize)
+{
+   memcpy(pBuffer, &chunk_buffer[index_output_], nChunkSize);
+   index_output_ += nChunkSize;
+}
+

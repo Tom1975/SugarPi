@@ -38,6 +38,7 @@ CKernel::CKernel(void)
 {
    sound_mixer_ = new SoundMixer;
    motherboard_emulation_ = new Motherboard(sound_mixer_, &keyboard_);
+   sound_mixer_->Init(&sound_, nullptr);
 }
 
 CKernel::~CKernel (void)
@@ -69,6 +70,13 @@ boolean CKernel::Initialize (void)
          pTarget = display_.GetScreenDevice();
       }*/
       bOK = m_Logger.Initialize(pTarget);
+
+      m_Logger.Write("LOG", LogNotice, "Set logger.");
+      log_.SetLogger(&m_Logger);
+      m_Logger.Write("sound_mixer_", LogNotice, "SetLog.");
+      sound_mixer_->SetLog(&log_);
+      motherboard_emulation_->SetLog(&log_);
+
    }
    
    if (bOK)
@@ -85,6 +93,7 @@ boolean CKernel::Initialize (void)
       bOK = m_EMMC.Initialize();
    }
 
+   sound_.Initialize();
    CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
 
 
@@ -199,6 +208,9 @@ TShutdownMode CKernel::Run (void)
    m_Logger.Write("Kernel", LogNotice, "Init motherboard...");
    motherboard_emulation_->SetPlus(true);
    motherboard_emulation_->InitMotherbard(nullptr, nullptr, &display_, nullptr, nullptr, nullptr);
+   motherboard_emulation_->GetPSG()->SetLog(&log_);
+   motherboard_emulation_->GetPSG()->InitSound(&sound_);
+
    motherboard_emulation_->OnOff();
    motherboard_emulation_->GetMem()->InitMemory();
    motherboard_emulation_->GetMem()->SetRam(1);
@@ -262,4 +274,39 @@ TShutdownMode CKernel::Run (void)
 	}
 
 	return ShutdownHalt;
+}
+
+
+Log::Log():logger_(nullptr)
+{
+   
+}
+Log::~Log()
+{
+   
+}
+void Log::SetLogger(CLogger* logger)
+{
+   logger_ = logger;
+}
+
+void Log::WriteLog(const char* log)
+{
+   logger_->Write("LOG", LogNotice, log);
+}
+void Log::WriteLogByte(unsigned char number)
+{
+   logger_->Write("LOG", LogNotice, "%2.2X", number);
+}
+void Log::WriteLogShort(unsigned short number)
+{
+   logger_->Write("LOG", LogNotice, "%4.4X", number);
+}
+void Log::WriteLog(unsigned int number)
+{
+   logger_->Write("LOG", LogNotice, "%i", number);
+}
+void Log::EndOfLine()
+{
+   logger_->Write("LOG", LogNotice, "\n");
 }

@@ -35,6 +35,7 @@ OBJS	= main.o\
 		CPCCore/CPCCoreEmu/FormatTypeDSK.o\
 		CPCCore/CPCCoreEmu/FormatTypeEDSK.o\
 		CPCCore/CPCCoreEmu/FormatTypeHFE.o\
+      CPCCore/CPCCoreEmu/FormatTypeHFEv3.o\
 		CPCCore/CPCCoreEmu/FormatTypeIPF.o\
 		CPCCore/CPCCoreEmu/IDisk.o\
 		CPCCore/CPCCoreEmu/KeyboardHandler.o\
@@ -59,13 +60,14 @@ OBJS	= main.o\
 		CPCCore/CPCCoreEmu/VGA.o \
 		CPCCore/CPCCoreEmu/YMZ294.o\
 		CPCCore/CPCCoreEmu/Z80_Full.o\
+      CPCCore/CPCCoreEmu/Z80_Opcodes_fetch.o\
 		CPCCore/CPCCoreEmu/Z84C30.o\
 		
 
 EXTRACLEAN = $(OBJS)
 		
 OPTIMIZE = -O3
-CFLAGS = -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT  -I$(CIRCLEHOME)/addon 
+CFLAGS = -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC
 LIBS	= $(CIRCLEHOME)/lib/libcircle.a $(CIRCLEHOME)/lib/fs/fat/libfatfs.a $(CIRCLEHOME)/lib/fs/libfs.a
 
 

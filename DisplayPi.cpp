@@ -87,8 +87,7 @@ void DisplayPi::StartSync()
 // Wait VBL
 void DisplayPi::WaitVbl()
 {
-   frame_buffer_.WaitForVerticalSync();
-   logger_->Write("Display", LogNotice, "WaitVbl - NOT IMPLEMENTED ");
+   //frame_buffer_.WaitForVerticalSync();
 }
 
 int* DisplayPi::GetVideoBuffer(int y)
