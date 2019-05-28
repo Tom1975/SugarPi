@@ -31,6 +31,7 @@
 #include <circle/timer.h>
 #include <circle/logger.h>
 #include <circle/cputhrottle.h>
+#include <circle/usb/dwhcidevice.h>
 
 #include <SDCard/emmc.h>
 #include <fatfs/ff.h>
@@ -91,14 +92,15 @@ private:
    CTimer			   m_Timer;
    CLogger			   m_Logger;
    CInterruptSystem  m_Interrupt;
-   CCPUThrottle      cpu_throttle_;
+   CCPUThrottle      *cpu_throttle_;
    CEMMCDevice		   m_EMMC;
    FATFS			      m_FileSystem;
+   CDWHCIDevice      dwhci_device_;
 
 	SoundMixer        *sound_mixer_;
 	Motherboard       *motherboard_emulation_;
-	DisplayPi         display_;
-   KeyboardPi        keyboard_;
+	DisplayPi         *display_;
+   KeyboardPi        *keyboard_;
    SoundPi           sound_;
    Log               log_;
 };

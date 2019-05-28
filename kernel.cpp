@@ -31,20 +31,29 @@ CKernel::CKernel(void)
    m_Timer(&m_Interrupt),
    m_Logger(m_Options.GetLogLevel(), &m_Timer),
    m_EMMC(&m_Interrupt, &m_Timer, &m_ActLED),
+   dwhci_device_(&m_Interrupt, &m_Timer),
    sound_mixer_(nullptr),
-   display_(&m_Logger),
+   display_(nullptr),
    motherboard_emulation_ (nullptr),
-   sound_(&m_Logger, &m_Interrupt)
+   keyboard_(nullptr),
+   sound_(&m_Logger, &m_Interrupt),
+   cpu_throttle_(nullptr)
 {
+   display_ = new DisplayPi(&m_Logger);
+   keyboard_ = new KeyboardPi(&m_Logger, &dwhci_device_, &m_DeviceNameService);
    sound_mixer_ = new SoundMixer;
-   motherboard_emulation_ = new Motherboard(sound_mixer_, &keyboard_);
    sound_mixer_->Init(&sound_, nullptr);
+   motherboard_emulation_ = new Motherboard(sound_mixer_, keyboard_);
+   cpu_throttle_ = new CCPUThrottle();
 }
 
 CKernel::~CKernel (void)
 {
+   delete cpu_throttle_;
    delete motherboard_emulation_; 
+   delete keyboard_;
    delete sound_mixer_;
+   delete display_;
 }
 
 boolean CKernel::Initialize (void)
@@ -54,7 +63,7 @@ boolean CKernel::Initialize (void)
 
    if (bOK)
    {
-      bOK = display_.Initialization();
+      bOK = display_->Initialization();
    }
    if (bOK)
    {
@@ -67,7 +76,7 @@ boolean CKernel::Initialize (void)
       //CDevice* pTarget = m_DeviceNameService.GetDevice(m_Options.GetLogDevice(), FALSE);
       /*if (pTarget == 0)
       {
-         pTarget = display_.GetScreenDevice();
+         pTarget = display_->GetScreenDevice();
       }*/
       bOK = m_Logger.Initialize(pTarget);
 
@@ -93,11 +102,20 @@ boolean CKernel::Initialize (void)
       bOK = m_EMMC.Initialize();
    }
 
+
    sound_.Initialize();
+
+   if (bOK)
+   {
+      bOK = keyboard_->Initialize();
+   }
+
+   m_Logger.Write("Kernel", LogNotice, "Initialisation done. Waiting for CPUThrottle %i", bOK ? 1 : 0);
+
    CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
 
 
-   m_Logger.Write("Kernel", LogNotice, "Initialisation done.");
+   m_Logger.Write("Kernel", LogNotice, "Initialisation done. Result = %i", bOK?1:0);
    return bOK;
 }
 
@@ -207,7 +225,7 @@ TShutdownMode CKernel::Run (void)
    // Init motherboard
    m_Logger.Write("Kernel", LogNotice, "Init motherboard...");
    motherboard_emulation_->SetPlus(true);
-   motherboard_emulation_->InitMotherbard(nullptr, nullptr, &display_, nullptr, nullptr, nullptr);
+   motherboard_emulation_->InitMotherbard(nullptr, nullptr, display_, nullptr, nullptr, nullptr);
    motherboard_emulation_->GetPSG()->SetLog(&log_);
    motherboard_emulation_->GetPSG()->InitSound(&sound_);
 
@@ -223,11 +241,15 @@ TShutdownMode CKernel::Run (void)
       m_Logger.Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
    }
    
+#define CARTOUCHE_BASE "/CART/gnggxfinalalpha.cpr"
+
    FIL File;
-   FRESULT Result = f_open(&File, DRIVE "/CART/crtc3_projo.cpr", FA_READ | FA_OPEN_EXISTING);
+   //FRESULT Result = f_open(&File, DRIVE "/CART/crtc3_projo.cpr", FA_READ | FA_OPEN_EXISTING);
+   FRESULT Result = f_open(&File, DRIVE CARTOUCHE_BASE, FA_READ | FA_OPEN_EXISTING);
+   
    if (Result != FR_OK)
    {
-      m_Logger.Write("Kernel", LogPanic, "Cannot open file: %s", DRIVE "/CART/crtc3_projo.cpr");
+      m_Logger.Write("Kernel", LogPanic, "Cannot open file: %s", DRIVE CARTOUCHE_BASE);
    }
    else
    {
@@ -235,7 +257,7 @@ TShutdownMode CKernel::Run (void)
    }
 
    FILINFO file_info;
-   f_stat(DRIVE "/CART/crtc3_projo.cpr", &file_info);
+   f_stat(DRIVE CARTOUCHE_BASE, &file_info);
    m_Logger.Write("Kernel", LogNotice, "File size : %i", file_info.fsize);
    unsigned char* buff = new unsigned char [file_info.fsize];
    unsigned nBytesRead;

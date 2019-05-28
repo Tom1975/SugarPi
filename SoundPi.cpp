@@ -109,23 +109,7 @@ IWaveHDR* SoundPi::GetFreeBuffer()
 
 void SoundPi::AddBufferToPlay(IWaveHDR* wav)
 {
-   // wait for sample to finish
-   //while (m_PWMSoundDevice->PlaybackActive());
-   //m_PWMSoundDevice->Playback(buffer_, 441, 2, 16);
-   /*
-   unsigned int cp = (SOUND_BITS / 8 * SOUND_CHANNELS * SOUND_RATE / 10) - index_write_;
-   if (cp > wav->buffer_length_)
-   {
-      memcpy(&chunk_buffer[index_write_], wav->data_, wav->buffer_length_);
-      index_write_ += wav->buffer_length_;
-   }
-   else
-   {
-      memcpy(&chunk_buffer[index_write_], wav->data_, cp);
-      memcpy(chunk_buffer, &wav->data_[cp], wav->buffer_length_ -cp);
-      index_write_ = wav->buffer_length_ - cp;
-   }
-   */
+
    unsigned frame_available = sound_device_->GetQueueFramesAvail();
    short* buffer_short = (short*)(wav->data_);
 
