@@ -12,7 +12,8 @@ KeyboardPi* KeyboardPi::this_ptr_ = 0;
 KeyboardPi::KeyboardPi(CLogger* logger, CDWHCIDevice* dwhci_device, CDeviceNameService* device_name_service) :
    logger_(logger),
    dwhci_device_(dwhci_device),
-   device_name_service_(device_name_service)
+   device_name_service_(device_name_service),
+   select_(false)
 {
    this_ptr_ = this;
 }
@@ -93,6 +94,15 @@ void KeyboardPi::Init(bool* register_replaced)
 
 }
 
+bool KeyboardPi::IsSelect()
+{
+   return select_;
+}
+void KeyboardPi::ReinitSelect()
+{
+   select_ = false;
+}
+
 void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState)
 {
    //this_ptr_->logger_->Write("Keyboard", LogNotice, "GamePadStatus handler : %i; button state : %i", nDeviceIndex, pState->buttons);
@@ -107,9 +117,10 @@ void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState
    memcpy(&this_ptr_->gamepad_state_, pState, sizeof * pState);
 
    // Select : Open menu
-   if (gamepad_state_.buttons & GamePadButtonSelect) result &= ~0x40;
+   if (pState->buttons & GamePadButtonSelect)
    {
       // Do something 
+      this_ptr_->select_ = true;
       this_ptr_->logger_->Write("Keyboard", LogNotice, "SELECT : Open menu");
    }
 }

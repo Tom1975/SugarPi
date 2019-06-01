@@ -17,7 +17,8 @@ public:
    virtual bool Initialize();
    virtual unsigned char GetKeyboardMap(int index);
    virtual void Init(bool* register_replaced);
-
+   virtual bool IsSelect();
+   virtual void ReinitSelect();
    static void GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState);
 
 protected:
@@ -28,4 +29,6 @@ protected:
    TGamePadState	    gamepad_state_;
 
    static KeyboardPi* this_ptr_;
+
+   bool              select_;
 };

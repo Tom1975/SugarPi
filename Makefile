@@ -5,10 +5,11 @@
 CIRCLEHOME = ../circle-master
 
 OBJS	= main.o\
-      kernel.o \
+      kernel.o\
       DisplayPi.o\
       KeyboardPi.o\
       SoundPi.o\
+      ScreenMenu.o\
 		$(CIRCLEHOME)/addon/SDCard/emmc.o\
       $(CIRCLEHOME)/addon/fatfs/diskio.o\
       $(CIRCLEHOME)/addon/fatfs/ff.o\

@@ -18,10 +18,48 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "kernel.h"
+#include "ScreenMenu.h"
 //#include "Cartridge.h"
 
 #define DRIVE		"SD:"
 //#define DRIVE		"USB:"
+
+
+
+Log::Log() :logger_(nullptr)
+{
+
+}
+Log::~Log()
+{
+
+}
+void Log::SetLogger(CLogger* logger)
+{
+   logger_ = logger;
+}
+
+void Log::WriteLog(const char* log)
+{
+   logger_->Write("LOG", LogNotice, log);
+}
+void Log::WriteLogByte(unsigned char number)
+{
+   logger_->Write("LOG", LogNotice, "%2.2X", number);
+}
+void Log::WriteLogShort(unsigned short number)
+{
+   logger_->Write("LOG", LogNotice, "%4.4X", number);
+}
+void Log::WriteLog(unsigned int number)
+{
+   logger_->Write("LOG", LogNotice, "%i", number);
+}
+void Log::EndOfLine()
+{
+   logger_->Write("LOG", LogNotice, "\n");
+}
+
 
 CKernel::CKernel(void)
    :
@@ -286,49 +324,33 @@ TShutdownMode CKernel::Run (void)
 
    
    // check the blink frequency without and with MMU (see option in constructor above)
+   unsigned nCelsiusOldTmp = 0;
 	while (1)
 	{
+      
+      // 20ms 
+      motherboard_emulation_->StartOptimizedPlus(4000*5);
 
-      motherboard_emulation_->StartOptimizedPlus(4000*10000);
+      // Temperature
       unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
-      m_Logger.Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
+      if (nCelsiusOldTmp != nCelsius)
+      {
+         m_Logger.Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
+         nCelsiusOldTmp = nCelsius;
+      }
      
-	}
+      // Menu launched ?
+      if (keyboard_->IsSelect())
+      {
+         // do it !
+         ScreenMenu menu(&m_Logger);
+         menu.Handle();
+      }
+      else
+      {
+         // Timing computation 
+      }
+   }
 
 	return ShutdownHalt;
-}
-
-
-Log::Log():logger_(nullptr)
-{
-   
-}
-Log::~Log()
-{
-   
-}
-void Log::SetLogger(CLogger* logger)
-{
-   logger_ = logger;
-}
-
-void Log::WriteLog(const char* log)
-{
-   logger_->Write("LOG", LogNotice, log);
-}
-void Log::WriteLogByte(unsigned char number)
-{
-   logger_->Write("LOG", LogNotice, "%2.2X", number);
-}
-void Log::WriteLogShort(unsigned short number)
-{
-   logger_->Write("LOG", LogNotice, "%4.4X", number);
-}
-void Log::WriteLog(unsigned int number)
-{
-   logger_->Write("LOG", LogNotice, "%i", number);
-}
-void Log::EndOfLine()
-{
-   logger_->Write("LOG", LogNotice, "\n");
 }
