@@ -332,19 +332,28 @@ TShutdownMode CKernel::Run (void)
       motherboard_emulation_->StartOptimizedPlus(4000*5);
 
       // Temperature
-      unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
+      /*unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
       if (nCelsiusOldTmp != nCelsius)
       {
          m_Logger.Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
          nCelsiusOldTmp = nCelsius;
-      }
+      }*/
      
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
+         m_Logger.Write("Kernel", LogNotice, "SELECT !");
          // do it !
-         ScreenMenu menu(&m_Logger);
+         CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
+         m_Logger.Write("Kernel", LogNotice, "Slow CPU selected");
+         ScreenMenu menu(&m_Logger, display_);
+         m_Logger.Write("Kernel", LogNotice, "Menu created");
          menu.Handle();
+         m_Logger.Write("Kernel", LogNotice, "Menu Handled");
+         keyboard_->ReinitSelect();
+
+         CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
+         m_Logger.Write("Kernel", LogNotice, "FAST CPU selected");
       }
       else
       {

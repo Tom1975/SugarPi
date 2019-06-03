@@ -52,14 +52,12 @@ const char* DisplayPi::GetInformations()
 
 int DisplayPi::GetWidth()
 {
-   logger_->Write("Display", LogNotice, "GetWidth - NOT IMPLEMENTED ");
    return 1024;
 }
 
 int DisplayPi::GetHeight()
 {
-   logger_->Write("Display", LogNotice, "GetHeight - NOT IMPLEMENTED ");
-   return 768;
+   return 1024;
 }
 
 void DisplayPi::SetSize(IDisplay::SizeEnum size)

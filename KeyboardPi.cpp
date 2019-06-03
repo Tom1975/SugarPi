@@ -121,6 +121,5 @@ void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState
    {
       // Do something 
       this_ptr_->select_ = true;
-      this_ptr_->logger_->Write("Keyboard", LogNotice, "SELECT : Open menu");
    }
 }
