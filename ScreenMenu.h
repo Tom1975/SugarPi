@@ -8,6 +8,8 @@
 
 #define MAX_LANGUAGE 1
 
+#pragma pack(push, 1)
+
 class ScreenMenu 
 {
 
@@ -57,3 +59,5 @@ protected:
    Menu* current_menu_;
 
 };
+
+#pragma pack(pop)
