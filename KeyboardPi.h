@@ -18,6 +18,9 @@ public:
    virtual unsigned char GetKeyboardMap(int index);
    virtual void Init(bool* register_replaced);
    virtual bool IsSelect();
+   virtual bool IsDown();
+   virtual bool IsUp();
+   virtual bool IsAction();
    virtual void ReinitSelect();
    static void GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState);
 

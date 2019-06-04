@@ -342,18 +342,14 @@ TShutdownMode CKernel::Run (void)
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
-         m_Logger.Write("Kernel", LogNotice, "SELECT !");
          // do it !
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
-         m_Logger.Write("Kernel", LogNotice, "Slow CPU selected");
-         ScreenMenu menu(&m_Logger, display_);
-         m_Logger.Write("Kernel", LogNotice, "Menu created");
-         menu.Handle();
-         m_Logger.Write("Kernel", LogNotice, "Menu Handled");
-         keyboard_->ReinitSelect();
 
+         ScreenMenu menu(&m_Logger, display_, keyboard_);
+         menu.Handle();
+
+         keyboard_->ReinitSelect();
          CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
-         m_Logger.Write("Kernel", LogNotice, "FAST CPU selected");
       }
       else
       {

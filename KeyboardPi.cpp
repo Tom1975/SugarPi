@@ -98,6 +98,24 @@ bool KeyboardPi::IsSelect()
 {
    return select_;
 }
+
+bool KeyboardPi::IsDown()
+{
+   return (gamepad_state_.buttons & GamePadButtonDown);
+}
+
+bool KeyboardPi::IsUp()
+{
+   return (gamepad_state_.buttons & GamePadButtonUp);
+}
+
+bool KeyboardPi::IsAction()
+{
+   return ((gamepad_state_.buttons & GamePadButtonA)
+      || (gamepad_state_.buttons & GamePadButtonX));
+}
+
+
 void KeyboardPi::ReinitSelect()
 {
    select_ = false;

@@ -2,18 +2,16 @@
 #include <memory.h>
 #include "ScreenMenu.h"
 
-ScreenMenu::ScreenMenu(CLogger* logger, DisplayPi* display) :
+ScreenMenu::ScreenMenu(CLogger* logger, DisplayPi* display, KeyboardPi* keyboard) :
    logger_(logger),
    display_(display),
+   keyboard_(keyboard),
    BaseMenu(logger),
    current_menu_(&BaseMenu)
 {
-   logger_->Write("Menu", LogNotice, "MENU creation... ");
    BaseMenu.InitMenu(  new MenuItem ("Resume", &ScreenMenu::Resume),
                        new MenuItem ("Shut down", &ScreenMenu::ShutDown),
                        nullptr );
-
-   logger_->Write("Menu", LogNotice, "MENU creation done.");
 }
 
 ScreenMenu::~ScreenMenu()
@@ -24,11 +22,7 @@ void ScreenMenu::Menu::InitMenu(MenuItem* item, ...)
 {
    if (item != nullptr)
    {
-      logger_->Write("Menu", LogNotice, "MENU added : %s", item->label_);
       items.push_back(item);
-      logger_->Write("Menu", LogNotice, "MENU added : %s", items[0]->label_);
-      logger_->Write("Menu", LogNotice, "MENU added items[i] : %p", items[0]);
-      logger_->Write("Menu", LogNotice, "MENU added items[i]->label_: %p", items[0]->label_);
    }
    va_list args;
    va_start(args, item);
@@ -38,24 +32,33 @@ void ScreenMenu::Menu::InitMenu(MenuItem* item, ...)
    while (next_item != nullptr)
    {
       items.push_back(next_item);
-      logger_->Write("Menu", LogNotice, "MENU added : %s", next_item->label_);
-      logger_->Write("Menu", LogNotice, "MENU added : %s", items[i]->label_);
-      logger_->Write("Menu", LogNotice, "MENU added items[i] : %p", items[i]);
-      logger_->Write("Menu", LogNotice, "MENU added items[i]->label_: %p", items[i]->label_);
       i++;
       next_item = va_arg(args, MenuItem*);
    }
 
-   logger_->Write("Menu", LogNotice, "END MENU added : size = %i", items.size());
-   for (int i = 1; i >= 0; i--)
-   {
-      logger_->Write("Menu", LogNotice, "END MENU added items[i] : %p", items[i]);
-      logger_->Write("Menu", LogNotice, "END MENU added : %s", items[i]->label_);
-      logger_->Write("Menu", LogNotice, "END MENU added items[i]->label_: %p", items[i]->label_);
-
-   }
    va_end(args);
 }
+
+void ScreenMenu::Menu::Down()
+{
+   if (selected_ + 1 < items.size())
+   {
+      selected_--;
+   }
+}
+void ScreenMenu::Menu::Up()
+{
+   if (selected_ + 1 < items.size())
+   {
+      selected_--;
+   }
+}
+void ScreenMenu::Menu::Select()
+{
+   // Launch function
+   //*(items[selected_]->function_)();
+}
+
 
 void ScreenMenu::ShutDown()
 {
@@ -71,16 +74,11 @@ void ScreenMenu::DisplayMenu(Menu* menu)
 {
    logger_->Write("Menu", LogNotice, "DisplayMenu");
 
-   logger_->Write("Menu", LogNotice, "DisplayMenu : Size = %i", menu->items.size());
    for (unsigned int i = 0; i < menu->items.size(); i++)
    {
-      logger_->Write("Menu", LogNotice, "DisplayMenu : %i", i);
-      logger_->Write("Menu", LogNotice, "menu->items[i] : %p", menu->items[i]);
-      logger_->Write("Menu", LogNotice, "menu->items[i]->label_ : %p", menu->items[i]->label_);
-      logger_->Write("Menu", LogNotice, "MENU : %s", menu->items.at(i)->label_);
+      logger_->Write("Menu", LogNotice, "%s %s", menu->selected_==i?"*":" ", menu->items.at(i)->label_);
    }
 }
-
 
 void ScreenMenu::Handle()
 {
@@ -90,5 +88,35 @@ void ScreenMenu::Handle()
    DisplayMenu(current_menu_);
 
    // Handle it
+   while (true)
+   {
+      // Any key pressed ?
+      if (keyboard_->IsDown())
+      {
+         Down();
+      }
+      if (keyboard_->IsUp())
+      {
+         Up();
+      }
+      if (keyboard_->IsAction())
+      {
+         Select();
+      }
 
+   }
+}
+void ScreenMenu::Down()
+{
+   current_menu_->Down();
+}
+
+void ScreenMenu::Up()
+{
+   current_menu_->Up();
+}
+
+void ScreenMenu::Select()
+{
+   current_menu_->Select();
 }
