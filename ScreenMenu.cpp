@@ -109,14 +109,17 @@ void ScreenMenu::Handle()
 void ScreenMenu::Down()
 {
    current_menu_->Down();
+   DisplayMenu(current_menu_);
 }
 
 void ScreenMenu::Up()
 {
    current_menu_->Up();
+   DisplayMenu(current_menu_);
 }
 
 void ScreenMenu::Select()
 {
    current_menu_->Select();
+   DisplayMenu(current_menu_);
 }
