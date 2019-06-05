@@ -16,6 +16,9 @@ KeyboardPi::KeyboardPi(CLogger* logger, CDWHCIDevice* dwhci_device, CDeviceNameS
    select_(false)
 {
    this_ptr_ = this;
+
+   memset(&gamepad_state_buffered_, 0, sizeof(gamepad_state_buffered_));
+   memset(&gamepad_state_, 0, sizeof(gamepad_state_));
 }
 
 KeyboardPi::~KeyboardPi()
@@ -101,18 +104,42 @@ bool KeyboardPi::IsSelect()
 
 bool KeyboardPi::IsDown()
 {
-   return (gamepad_state_.buttons & GamePadButtonDown);
+   if (action_buttons_ & (GamePadButtonDown))
+   {
+      action_buttons_ &= ~(GamePadButtonDown);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+
 }
 
 bool KeyboardPi::IsUp()
 {
-   return (gamepad_state_.buttons & GamePadButtonUp);
+   if (action_buttons_ & (GamePadButtonUp))
+   {
+      action_buttons_ &= ~(GamePadButtonUp);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 bool KeyboardPi::IsAction()
 {
-   return ((gamepad_state_.buttons & GamePadButtonA)
-      || (gamepad_state_.buttons & GamePadButtonX));
+   if (action_buttons_ & (GamePadButtonA|GamePadButtonX))
+   {
+      action_buttons_ &= ~(GamePadButtonA | GamePadButtonX);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 
@@ -123,8 +150,6 @@ void KeyboardPi::ReinitSelect()
 
 void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState)
 {
-   //this_ptr_->logger_->Write("Keyboard", LogNotice, "GamePadStatus handler : %i; button state : %i", nDeviceIndex, pState->buttons);
-
    if (nDeviceIndex != DEVICE_INDEX - 1)
    {
       return;
@@ -133,6 +158,11 @@ void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState
    assert(this_ptr_ != 0);
    assert(pState != 0);
    memcpy(&this_ptr_->gamepad_state_, pState, sizeof * pState);
+
+   // Compare with historic state
+   // Set the new pushed buttons
+   this_ptr_->action_buttons_ |= ((this_ptr_->gamepad_state_buffered_.buttons & this_ptr_->gamepad_state_.buttons) ^ this_ptr_->gamepad_state_.buttons);
+   this_ptr_->gamepad_state_buffered_.buttons = this_ptr_->gamepad_state_.buttons;
 
    // Select : Open menu
    if (pState->buttons & GamePadButtonSelect)

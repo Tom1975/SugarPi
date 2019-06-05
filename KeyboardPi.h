@@ -29,7 +29,10 @@ protected:
    CDeviceNameService* device_name_service_;
    CDWHCIDevice		*dwhci_device_;
    CUSBGamePadDevice* gamepad_;
+
    TGamePadState	    gamepad_state_;
+   TGamePadState	    gamepad_state_buffered_;
+   unsigned           action_buttons_;
 
    static KeyboardPi* this_ptr_;
 

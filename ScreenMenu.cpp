@@ -43,14 +43,16 @@ void ScreenMenu::Menu::Down()
 {
    if (selected_ + 1 < items.size())
    {
-      selected_--;
+      selected_++;
+      logger_->Write("Menu", LogNotice, "Up : %i", selected_);
    }
 }
 void ScreenMenu::Menu::Up()
 {
-   if (selected_ + 1 < items.size())
+   if (selected_ > 0)
    {
       selected_--;
+      logger_->Write("Menu", LogNotice, "Down : %i", selected_);
    }
 }
 void ScreenMenu::Menu::Select()
