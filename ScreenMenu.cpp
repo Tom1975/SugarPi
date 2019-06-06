@@ -2,22 +2,27 @@
 #include <memory.h>
 #include "ScreenMenu.h"
 
+ScreenMenu::MenuItem base_menu[] =
+{
+   { "Resume",    &ScreenMenu::Resume},
+   { "Shut down", &ScreenMenu::ShutDown},
+   { nullptr, nullptr}
+};
+
 ScreenMenu::ScreenMenu(CLogger* logger, DisplayPi* display, KeyboardPi* keyboard) :
    logger_(logger),
    display_(display),
    keyboard_(keyboard),
-   BaseMenu(logger),
-   current_menu_(&BaseMenu)
+   //BaseMenu(logger),
+   current_menu_(base_menu),
+   selected_(0)
 {
-   BaseMenu.InitMenu(  new MenuItem ("Resume", &ScreenMenu::Resume),
-                       new MenuItem ("Shut down", &ScreenMenu::ShutDown),
-                       nullptr );
 }
 
 ScreenMenu::~ScreenMenu()
 {
 }
-
+/*
 void ScreenMenu::Menu::InitMenu(MenuItem* item, ...)
 {
    if (item != nullptr)
@@ -58,27 +63,33 @@ void ScreenMenu::Menu::Up()
 void ScreenMenu::Menu::Select()
 {
    // Launch function
-   //*(items[selected_]->function_)();
+  //int ret = (*(items[selected_]->function_))();
 }
+*/
 
-
-void ScreenMenu::ShutDown()
+int ScreenMenu::ShutDown()
 {
-
+   logger_->Write("Menu", LogNotice, "ACTION : SHUTDOWN");
+   return 0;
 }
 
-void ScreenMenu::Resume()
+int ScreenMenu::Resume()
 {
-
+   logger_->Write("Menu", LogNotice, "ACTION : RESUME");
+   return 0;
 }
 
-void ScreenMenu::DisplayMenu(Menu* menu)
+void ScreenMenu::DisplayMenu(MenuItem* menu)
 {
    logger_->Write("Menu", LogNotice, "DisplayMenu");
 
-   for (unsigned int i = 0; i < menu->items.size(); i++)
+   unsigned int i = 0;
+
+   //for (unsigned int i = 0; i < menu->items.size(); i++)
+   while (menu[i].function != nullptr)
    {
-      logger_->Write("Menu", LogNotice, "%s %s", menu->selected_==i?"*":" ", menu->items.at(i)->label_);
+      logger_->Write("Menu", LogNotice, "%s %s", selected_==i?"*":" ", menu[i].label_);
+      i++;
    }
 }
 
@@ -108,20 +119,29 @@ void ScreenMenu::Handle()
 
    }
 }
+
 void ScreenMenu::Down()
 {
-   current_menu_->Down();
+   if (current_menu_[selected_ + 1].function != nullptr)
+   {
+      selected_++;
+      logger_->Write("Menu", LogNotice, "Up : %i", selected_);
+   }
    DisplayMenu(current_menu_);
 }
 
 void ScreenMenu::Up()
 {
-   current_menu_->Up();
+   if (selected_ > 0)
+   {
+      selected_--;
+      logger_->Write("Menu", LogNotice, "Down : %i", selected_);
+   }
    DisplayMenu(current_menu_);
 }
 
 void ScreenMenu::Select()
 {
-   current_menu_->Select();
+   (this->*(current_menu_[selected_].function))();
    DisplayMenu(current_menu_);
 }

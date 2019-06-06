@@ -20,26 +20,27 @@ public:
 
    void Handle();
 
-   void Resume();
-   void ShutDown();
+   int Resume();
+   int ShutDown();
 
    void Down();
    void Up();
    void Select();
 
-   typedef void (ScreenMenu::* Func)();
+   //typedef int (ScreenMenu::* Func)();
    class MenuItem
    {
    public:
-      MenuItem(const char* label, Func function): function_(function)
+      /*MenuItem(const char* label, Func function): function_(function)
       {
          label_ = new char[strlen(label)+1];
          strcpy(label_, label);
-      }
-      char* label_;
-      Func function_;
+      }*/
+      const char* label_;
+      //Func function_;
+      int (ScreenMenu::* function)();
    };
-
+   /*
    class Menu
    {
    public:
@@ -59,19 +60,19 @@ public:
       CLogger* logger_;
       unsigned int selected_;
    };
-
+   */
    
 
 protected:
-   void DisplayMenu(Menu* menu);
+   void DisplayMenu(MenuItem* menu);
 
    CLogger*    logger_;
    DisplayPi* display_;
    KeyboardPi* keyboard_;
 
    // Menus 
-   Menu BaseMenu;
-   Menu* current_menu_;
+   MenuItem* current_menu_;
+   unsigned int selected_;
 
 };
 
