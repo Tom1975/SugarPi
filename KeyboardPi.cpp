@@ -97,6 +97,12 @@ void KeyboardPi::Init(bool* register_replaced)
 
 }
 
+void KeyboardPi::ClearBuffer()
+{
+   action_buttons_ = 0;
+   select_ = false;
+}
+
 bool KeyboardPi::IsSelect()
 {
    return select_;

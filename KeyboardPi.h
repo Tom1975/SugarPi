@@ -17,6 +17,8 @@ public:
    virtual bool Initialize();
    virtual unsigned char GetKeyboardMap(int index);
    virtual void Init(bool* register_replaced);
+
+   virtual void ClearBuffer();
    virtual bool IsSelect();
    virtual bool IsDown();
    virtual bool IsUp();

@@ -2,7 +2,7 @@
 // kernel.cpp
 //
 // Circle - A C++ bare metal environment for Raspberry Pi
-// Copyright (C) 2014-2018  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2014-2018  R. Stange <rsta2@o2online.de> 
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -279,10 +279,10 @@ TShutdownMode CKernel::Run (void)
       m_Logger.Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
    }
    
+//#define CARTOUCHE_BASE "/CART/crtc3_projo.cpr"
 #define CARTOUCHE_BASE "/CART/gnggxfinalalpha.cpr"
 
    FIL File;
-   //FRESULT Result = f_open(&File, DRIVE "/CART/crtc3_projo.cpr", FA_READ | FA_OPEN_EXISTING);
    FRESULT Result = f_open(&File, DRIVE CARTOUCHE_BASE, FA_READ | FA_OPEN_EXISTING);
    
    if (Result != FR_OK)
