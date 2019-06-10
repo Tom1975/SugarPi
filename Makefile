@@ -10,6 +10,7 @@ OBJS	= main.o\
       KeyboardPi.o\
       SoundPi.o\
       ScreenMenu.o\
+      res/coolspot.o\
 		$(CIRCLEHOME)/addon/SDCard/emmc.o\
       $(CIRCLEHOME)/addon/fatfs/diskio.o\
       $(CIRCLEHOME)/addon/fatfs/ff.o\

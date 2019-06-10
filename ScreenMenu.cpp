@@ -3,13 +3,15 @@
 #include "ScreenMenu.h"
 
 #include "res\button_1.h"
-#include "res\PressStart2P.c"
+#include "res\coolspot.h"
 
+
+static CoolspotFont font;
 
 ScreenMenu::MenuItem base_menu[] =
 {
-   { "Resume",    &ScreenMenu::Resume},
-   { "Shutdown", &ScreenMenu::ShutDown},
+   { "RESUME",    &ScreenMenu::Resume},
+   { "SHUTDOWN", &ScreenMenu::ShutDown},
    { nullptr, nullptr}
 };
 
@@ -45,46 +47,28 @@ void ScreenMenu::DisplayText(const char* txt, int x, int y, bool selected)
    // Display text
    int i = 0;
 
-   logger_->Write("Menu", LogNotice, "Display Text");
-
    char buff[16];
    memset(buff, 0, sizeof buff);
    strncpy(buff, txt, 15);
    logger_->Write("Menu", LogNotice, "Display : %s", buff);
    
+   unsigned int x_offset_output = 0;
 
    while (txt[i] != '\0' )
    {
       // Display character
       unsigned char c = buff[i];
 
-      // x / y of this char
-      unsigned int y_c = (c - font_1.first_ascii) / font_1.char_per_line;
-      unsigned int x_c = (c - font_1.first_ascii) - (y_c* font_1.char_per_line);
-
-      logger_->Write("Menu", LogNotice, "Display : %c, x=%i, y=%i; display : x=%i, y=%i", (char)c, x_c, y_c, x + i * (font_1.char_width + 1), y);
-
-      // Blit it 
-      for (int display_y = 0; display_y <= font_1.char_height; display_y++)
+      // Look for proper bitmap position (on first line only)
+      for (int display_y = 0; display_y < font.GetLetterHeight(c); display_y++)
       {
-         int* line = display_->GetVideoBuffer(display_y+y);
-         unsigned int offset = (y_c * font_1.width * font_1.char_height + display_y * font_1.width + x_c * font_1.char_width) * font_1.bytes_per_pixel;
-
-         for (int display_x = 0; display_x <= font_1.char_width; display_x++)
-         {
-            unsigned char* col_buffer = (unsigned char*)&line[x + display_x + i* (font_1.char_width +1)];
-            for (int col = 0; col < font_1.bytes_per_pixel; col++)
-            {
-               col_buffer[col] = font_1.pixel_data[offset++];
-            }
-/*            line[display_x+x] = font_1.pixel_data[offset] << 8
-               | font_1.pixel_data[offset + 1]
-               | font_1.pixel_data[offset + 2] << 16
-               | font_1.pixel_data[offset + 3] << 24;
-            offset += 4;*/
-         }
+         int* line = display_->GetVideoBuffer(display_y + y);
+         font.CopyLetter(c, display_y, &line[x + x_offset_output], logger_);
       }
+      x_offset_output += font.GetLetterLength(c);
+
       i++;
+      
    }
 }
 
@@ -129,7 +113,7 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
       }
    }
 
-   DisplayText("SugarPi", 450, 47, false);
+   DisplayText("SUGARPI", 450, 47, false);
 
    unsigned int i = 0;
    //for (unsigned int i = 0; i < menu->items.size(); i++)
@@ -201,3 +185,4 @@ void ScreenMenu::Select()
    (this->*(current_menu_[selected_].function))();
    DisplayMenu(current_menu_);
 }
+
