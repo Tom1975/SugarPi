@@ -21,7 +21,11 @@ public:
    void Handle();
 
    int Resume();
+   int InsertCartridge();
+   int HardwareSetup();
+   int Reset();
    int ShutDown();
+
 
    void Down();
    void Up();

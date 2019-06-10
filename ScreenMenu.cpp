@@ -10,8 +10,11 @@ static CoolspotFont font;
 
 ScreenMenu::MenuItem base_menu[] =
 {
-   { "RESUME",    &ScreenMenu::Resume},
-   { "SHUTDOWN", &ScreenMenu::ShutDown},
+   { "Resume",             &ScreenMenu::Resume},
+   { "Insert Cartridge",   &ScreenMenu::InsertCartridge},
+   { "Hardware Setup",     &ScreenMenu::HardwareSetup},
+   { "Reset",              &ScreenMenu::Reset},
+   { "Shutdown",           &ScreenMenu::ShutDown},
    { nullptr, nullptr}
 };
 
@@ -29,16 +32,37 @@ ScreenMenu::~ScreenMenu()
 {
 }
 
-int ScreenMenu::ShutDown()
-{
-   logger_->Write("Menu", LogNotice, "ACTION : SHUTDOWN");
-   return 0;
-}
+
+
 
 int ScreenMenu::Resume()
 {
    resume_ = true;
    logger_->Write("Menu", LogNotice, "ACTION : RESUME");
+   return 0;
+}
+
+int ScreenMenu::InsertCartridge()
+{
+   logger_->Write("Menu", LogNotice, "ACTION : InsertCartridge");
+   return 0;
+}
+
+int ScreenMenu::HardwareSetup()
+{
+   logger_->Write("Menu", LogNotice, "ACTION : InsertCartridge");
+   return 0;
+}
+
+int ScreenMenu::Reset()
+{
+   logger_->Write("Menu", LogNotice, "ACTION : Reset");
+   return 0;
+}
+
+int ScreenMenu::ShutDown()
+{
+   logger_->Write("Menu", LogNotice, "ACTION : SHUTDOWN");
    return 0;
 }
 
@@ -50,7 +74,6 @@ void ScreenMenu::DisplayText(const char* txt, int x, int y, bool selected)
    char buff[16];
    memset(buff, 0, sizeof buff);
    strncpy(buff, txt, 15);
-   logger_->Write("Menu", LogNotice, "Display : %s", buff);
    
    unsigned int x_offset_output = 0;
 
@@ -96,13 +119,16 @@ void ScreenMenu::DisplayButton(MenuItem* menu, int x, int y, bool selected)
       }
    }*/
    // Display text
-   DisplayText(menu->label_, x + 2, y + 25, selected);
+   if (selected)
+   {
+      DisplayText("*", x + 2, y , selected);
+   }
+
+   DisplayText(menu->label_, x + 20, y , selected);
 }
 
 void ScreenMenu::DisplayMenu(MenuItem* menu)
 {
-   logger_->Write("Menu", LogNotice, "DisplayMenu");
-
    // Background
    for (int i = 0; i < display_->GetHeight(); i++)
    {
@@ -113,26 +139,22 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
       }
    }
 
-   DisplayText("SUGARPI", 450, 47, false);
+   DisplayText("SugarPi", 450, 47, false);
 
    unsigned int i = 0;
    //for (unsigned int i = 0; i < menu->items.size(); i++)
    while (menu[i].function != nullptr)
    {
       // Display menu bitmap
-      DisplayButton(&menu[i], 250, i * 40 + 70, selected_ == i);
+      DisplayButton(&menu[i], 250, i * 20 + 70, selected_ == i);
     
       // log
-      logger_->Write("Menu", LogNotice, "%s %s", selected_==i?"*":" ", menu[i].label_);
       i++;
    }
 }
 
 void ScreenMenu::Handle()
 {
-
-   logger_->Write("Menu", LogNotice, "Opening menu");
-
    // Display menu
    DisplayMenu(current_menu_);
 
@@ -165,7 +187,6 @@ void ScreenMenu::Down()
    if (current_menu_[selected_ + 1].function != nullptr)
    {
       selected_++;
-      logger_->Write("Menu", LogNotice, "Up : %i", selected_);
    }
    DisplayMenu(current_menu_);
 }
@@ -175,7 +196,6 @@ void ScreenMenu::Up()
    if (selected_ > 0)
    {
       selected_--;
-      logger_->Write("Menu", LogNotice, "Down : %i", selected_);
    }
    DisplayMenu(current_menu_);
 }
