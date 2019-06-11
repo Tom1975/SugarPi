@@ -345,7 +345,7 @@ TShutdownMode CKernel::Run (void)
          // do it !
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
 
-         ScreenMenu menu(&m_Logger, display_, keyboard_);
+         ScreenMenu menu(&m_Logger, display_, keyboard_, motherboard_emulation_);
          menu.Handle();
 
          keyboard_->ReinitSelect();

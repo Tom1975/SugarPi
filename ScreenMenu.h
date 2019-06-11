@@ -6,6 +6,7 @@
 #include "CPCCore/CPCCoreEmu/simple_vector.hpp"
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
+#include "CPCCore/CPCCoreEmu/Motherboard.h"
 
 #define MAX_LANGUAGE 1
 
@@ -15,7 +16,7 @@ class ScreenMenu
 {
 
 public:
-   ScreenMenu(CLogger* logger, DisplayPi* display, KeyboardPi* keyboard);
+   ScreenMenu(CLogger* logger, DisplayPi* display, KeyboardPi* keyboard, Motherboard* motherboard);
    virtual ~ScreenMenu();
 
    void Handle();
@@ -52,8 +53,12 @@ protected:
    MenuItem* current_menu_;
    unsigned int selected_;
 
+   Motherboard* motherboard_;
+
    // Pending actions
    bool resume_;
+
+
 };
 
 #pragma pack(pop)

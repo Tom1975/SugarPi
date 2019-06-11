@@ -1,10 +1,17 @@
 //
-#include <memory.h>
 #include "ScreenMenu.h"
+
+
+#include <memory.h>
+
+#include <SDCard/emmc.h>
+#include <fatfs/ff.h>
 
 #include "res\button_1.h"
 #include "res\coolspot.h"
 
+
+#define DRIVE		"SD:"
 
 static CoolspotFont font;
 
@@ -18,13 +25,14 @@ ScreenMenu::MenuItem base_menu[] =
    { nullptr, nullptr}
 };
 
-ScreenMenu::ScreenMenu(CLogger* logger, DisplayPi* display, KeyboardPi* keyboard) :
+ScreenMenu::ScreenMenu(CLogger* logger, DisplayPi* display, KeyboardPi* keyboard, Motherboard* motherboard) :
    logger_(logger),
    display_(display),
    keyboard_(keyboard),
    //BaseMenu(logger),
    current_menu_(base_menu),
-   selected_(0)
+   selected_(0),
+   motherboard_(motherboard)
 {
 }
 
@@ -32,19 +40,55 @@ ScreenMenu::~ScreenMenu()
 {
 }
 
-
-
-
 int ScreenMenu::Resume()
 {
    resume_ = true;
-   logger_->Write("Menu", LogNotice, "ACTION : RESUME");
    return 0;
 }
 
 int ScreenMenu::InsertCartridge()
 {
    logger_->Write("Menu", LogNotice, "ACTION : InsertCartridge");
+
+   // List cartridge available
+   // Show contents of root directory
+   DIR Directory;
+   FILINFO FileInfo;
+   FRESULT Result = f_findfirst(&Directory, &FileInfo, DRIVE "/CART", "*");
+   std::vector<FILINFO> cartridge_list;
+
+   int limit = 0;
+   for (unsigned i = 0; Result == FR_OK && FileInfo.fname[0] && limit<10; i++)
+   {
+      limit++;
+      if (!(FileInfo.fattrib & (AM_HID | AM_SYS)))
+      {
+         cartridge_list.push_back(FileInfo);
+         logger_->Write("Menu", LogNotice, "%s", FileInfo.fname);
+      }
+
+      Result = f_findnext(&Directory, &FileInfo);
+   }
+
+   // Create menu
+   ScreenMenu::MenuItem* submenu = new ScreenMenu::MenuItem[cartridge_list.size() + 1];
+   int i = 0;
+   for (auto& it : cartridge_list)
+   {
+      submenu[i].function= nullptr;
+      submenu[i++].label_ = it.fname;
+   }
+   submenu[i].label_ = nullptr;
+   submenu[i].function = nullptr;
+
+   // Display menu !
+   DisplayMenu(submenu);
+
+   // wait for command
+   while (!keyboard_->IsAction());
+
+   delete []submenu;
+
    return 0;
 }
 
@@ -56,7 +100,8 @@ int ScreenMenu::HardwareSetup()
 
 int ScreenMenu::Reset()
 {
-   logger_->Write("Menu", LogNotice, "ACTION : Reset");
+   motherboard_->OnOff();
+   resume_ = true;
    return 0;
 }
 
