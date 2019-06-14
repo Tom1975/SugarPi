@@ -35,7 +35,7 @@ public:
    class MenuItem
    {
    public:
-      const char* label_;
+      char* label_;
       //Func function_;
       int (ScreenMenu::* function)();
    };

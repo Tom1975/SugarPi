@@ -58,28 +58,36 @@ int ScreenMenu::InsertCartridge()
    std::vector<FILINFO> cartridge_list;
 
    int limit = 0;
-   for (unsigned i = 0; Result == FR_OK && FileInfo.fname[0] && limit<10; i++)
+   // Create menu
+   ScreenMenu::MenuItem* submenu = new ScreenMenu::MenuItem[11];
+   unsigned int i = 0;
+   for (i = 0; Result == FR_OK && FileInfo.fname[0] && limit<10; i++)
    {
       limit++;
       if (!(FileInfo.fattrib & (AM_HID | AM_SYS)))
       {
-         cartridge_list.push_back(FileInfo);
+         //cartridge_list.push_back(FileInfo);
+         submenu[i].function = nullptr;
+         submenu[i].label_ = new char[strlen(FileInfo.fname)+1];
+         strcpy(submenu[i].label_, FileInfo.fname);
+
          logger_->Write("Menu", LogNotice, "%s", FileInfo.fname);
       }
 
       Result = f_findnext(&Directory, &FileInfo);
    }
-
-   // Create menu
-   ScreenMenu::MenuItem* submenu = new ScreenMenu::MenuItem[cartridge_list.size() + 1];
-   int i = 0;
-   for (auto& it : cartridge_list)
-   {
-      submenu[i].function= nullptr;
-      submenu[i++].label_ = it.fname;
-   }
+   logger_->Write("Menu", LogNotice, "Loop ended : %i - FIRST menu : %s - Last : %s ", i, submenu[0].label_, submenu[i-1].label_);
    submenu[i].label_ = nullptr;
    submenu[i].function = nullptr;
+
+   //for (auto& it : cartridge_list)
+   /*for (int i = 0; i < cartridge_list.size(); i++)
+   {
+      logger_->Write("Menu", LogNotice, "Added next ");
+      submenu[i].function= nullptr;
+      submenu[i].label_ = cartridge_list[i].fname;
+      logger_->Write("Menu", LogNotice, "Added %s", cartridge_list[i].fname);
+   }*/
 
    // Display menu !
    DisplayMenu(submenu);
@@ -87,6 +95,12 @@ int ScreenMenu::InsertCartridge()
    // wait for command
    while (!keyboard_->IsAction());
 
+   i = 0;
+   while (submenu[i].label_ != nullptr)
+   {
+      delete[]submenu[i].label_;
+      i++;
+   }
    delete []submenu;
 
    return 0;
@@ -187,9 +201,12 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
    DisplayText("SugarPi", 450, 47, false);
 
    unsigned int i = 0;
+
    //for (unsigned int i = 0; i < menu->items.size(); i++)
-   while (menu[i].function != nullptr)
+   while (menu[i].label_ != nullptr)
    {
+      logger_->Write("Menu", LogNotice, "Insert : %s", menu[i].label_);
+
       // Display menu bitmap
       DisplayButton(&menu[i], 250, i * 20 + 70, selected_ == i);
     
