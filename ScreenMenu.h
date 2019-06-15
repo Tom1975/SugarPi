@@ -45,6 +45,8 @@ protected:
    void DisplayButton(MenuItem* menu, int x, int y, bool selected);
    void DisplayText(const char* txt, int x, int y, bool selected);
 
+   int LoadCprFromBuffer(const char* filepath);
+
    CLogger*    logger_;
    DisplayPi* display_;
    KeyboardPi* keyboard_;

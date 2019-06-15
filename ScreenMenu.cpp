@@ -13,6 +13,7 @@
 
 #define DRIVE		"SD:"
 
+#define PATH_CARTIRDGE "SD:/CART"
 static CoolspotFont font;
 
 ScreenMenu::MenuItem base_menu[] =
@@ -48,61 +49,104 @@ int ScreenMenu::Resume()
 
 int ScreenMenu::InsertCartridge()
 {
-   logger_->Write("Menu", LogNotice, "ACTION : InsertCartridge");
+   logger_->Write("Menu", LogNotice, "ACTION : InsertCartridge. Sizeof FILINFO : %i", sizeof(FILINFO));
 
    // List cartridge available
    // Show contents of root directory
    DIR Directory;
-   FILINFO FileInfo;
-   FRESULT Result = f_findfirst(&Directory, &FileInfo, DRIVE "/CART", "*");
-   std::vector<FILINFO> cartridge_list;
+   FILINFO *FileInfo = new FILINFO;
+   FRESULT Result = f_findfirst(&Directory, FileInfo, PATH_CARTIRDGE, "*");
+   std::vector<FILINFO*> cartridge_list(20);
 
    int limit = 0;
    // Create menu
-   ScreenMenu::MenuItem* submenu = new ScreenMenu::MenuItem[11];
    unsigned int i = 0;
-   for (i = 0; Result == FR_OK && FileInfo.fname[0] && limit<10; i++)
+   for (i = 0; Result == FR_OK && FileInfo->fname[0] ; i++)
    {
       limit++;
-      if (!(FileInfo.fattrib & (AM_HID | AM_SYS)))
+      if (!(FileInfo->fattrib & (AM_HID | AM_SYS)))
       {
-         //cartridge_list.push_back(FileInfo);
-         submenu[i].function = nullptr;
-         submenu[i].label_ = new char[strlen(FileInfo.fname)+1];
-         strcpy(submenu[i].label_, FileInfo.fname);
-
-         logger_->Write("Menu", LogNotice, "%s", FileInfo.fname);
+         logger_->Write("Menu", LogNotice, "Added next %s", FileInfo->fname);
+         cartridge_list.push_back(FileInfo);
       }
-
-      Result = f_findnext(&Directory, &FileInfo);
+      FileInfo = new FILINFO;
+      Result = f_findnext(&Directory, FileInfo);
    }
-   logger_->Write("Menu", LogNotice, "Loop ended : %i - FIRST menu : %s - Last : %s ", i, submenu[0].label_, submenu[i-1].label_);
-   submenu[i].label_ = nullptr;
-   submenu[i].function = nullptr;
 
-   //for (auto& it : cartridge_list)
-   /*for (int i = 0; i < cartridge_list.size(); i++)
+   ScreenMenu::MenuItem* submenu = new ScreenMenu::MenuItem[cartridge_list.size()+1];
+   for (int i = 0; i < cartridge_list.size(); i++)
    {
       logger_->Write("Menu", LogNotice, "Added next ");
       submenu[i].function= nullptr;
-      submenu[i].label_ = cartridge_list[i].fname;
-      logger_->Write("Menu", LogNotice, "Added %s", cartridge_list[i].fname);
-   }*/
+      submenu[i].label_ = cartridge_list[i]->fname;
+      logger_->Write("Menu", LogNotice, "Added %s", cartridge_list[i]->fname);
+   }
+   submenu[cartridge_list.size()].function = nullptr;
+   submenu[cartridge_list.size()].label_= nullptr;
 
    // Display menu !
-   DisplayMenu(submenu);
+   MenuItem* old_menu = current_menu_;
+   selected_ = 0;
+
+   current_menu_ = submenu;
+   DisplayMenu(current_menu_);
 
    // wait for command
-   while (!keyboard_->IsAction());
-
-   i = 0;
-   while (submenu[i].label_ != nullptr)
+//   while (!keyboard_->IsAction());
+   keyboard_->ReinitSelect();
+   bool end_menu = false;
+   while (end_menu == false)
    {
-      delete[]submenu[i].label_;
-      i++;
+      // Any key pressed ?
+      if (keyboard_->IsDown())
+      {
+         Down();
+         logger_->Write("Menu", LogNotice, "Selection down %i", selected_);
+      }
+      if (keyboard_->IsUp())
+      {
+         Up();
+         logger_->Write("Menu", LogNotice, "Selection up %i", selected_);
+      }
+      if (keyboard_->IsAction())
+      {
+         logger_->Write("Menu", LogNotice, "Selection  : %i ", selected_);
+         // If 0 : end; otherwise, load menu
+         if (selected_ == 0)
+         {
+            end_menu = true;
+         }
+         else
+         {
+
+            CString fullpath = PATH_CARTIRDGE;
+            fullpath.Append( "/" );
+            fullpath.Append( cartridge_list[selected_]->fname);
+            logger_->Write("Menu", LogNotice, "Load cartridge fullpath : %s", (const char*)fullpath);
+            LoadCprFromBuffer(fullpath);
+            logger_->Write("Cartridge", LogNotice, "file loaded.Exiting menu");
+
+            end_menu = true;
+            motherboard_->OnOff();
+            resume_ = true;
+         }
+      }
+
    }
+   logger_->Write("Cartridge", LogNotice, "Exiting loop...");
    delete []submenu;
 
+   logger_->Write("Cartridge", LogNotice, "deleting cartridge_list...");
+
+   for (int i = 0; i < cartridge_list.size(); i++)
+   {
+      delete cartridge_list[i];
+   }
+   logger_->Write("Cartridge", LogNotice, "deleting cartridge_list done !");
+      
+
+   current_menu_ = old_menu;
+   selected_ = 0;
    return 0;
 }
 
@@ -242,11 +286,12 @@ void ScreenMenu::Handle()
       }
 
    }
+   logger_->Write("Menu", LogNotice, "MENU EXITING !");
 }
 
 void ScreenMenu::Down()
 {
-   if (current_menu_[selected_ + 1].function != nullptr)
+   if (current_menu_[selected_ + 1].label_ != nullptr)
    {
       selected_++;
    }
@@ -265,6 +310,115 @@ void ScreenMenu::Up()
 void ScreenMenu::Select()
 {
    (this->*(current_menu_[selected_].function))();
-   DisplayMenu(current_menu_);
+   if (!resume_)
+      DisplayMenu(current_menu_);
 }
 
+
+
+int ScreenMenu::LoadCprFromBuffer(const char* filepath)
+{
+   FIL File;
+   FRESULT Result = f_open(&File, filepath, FA_READ | FA_OPEN_EXISTING);
+   if (Result != FR_OK)
+   {
+      logger_->Write("Cartridge", LogPanic, "Cannot open file: %s", filepath);
+   }
+   else
+   {
+      logger_->Write("Cartridge", LogNotice, "File opened correctly");
+   }
+
+   FILINFO file_info;
+   f_stat(filepath, &file_info);
+   logger_->Write("Cartridge", LogNotice, "File size : %i", file_info.fsize);
+   unsigned char* buffer = new unsigned char[file_info.fsize];
+   unsigned nBytesRead;
+
+   logger_->Write("Cartridge", LogNotice, "buffer allocated");
+   f_read(&File, buffer, file_info.fsize, &nBytesRead);
+   if (file_info.fsize != nBytesRead)
+   {
+      logger_->Write("Cartridge", LogPanic, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
+   }
+   else
+   {
+      logger_->Write("Cartridge", LogNotice, "file read");
+   }
+
+   // Check RIFF chunk
+   int index = 0;
+   if (file_info.fsize >= 12
+      && (memcmp(&buffer[0], "RIFF", 4) == 0)
+      && (memcmp(&buffer[8], "AMS!", 4) == 0)
+      )
+   {
+      // Reinit Cartridge
+      motherboard_->EjectCartridge();
+
+      // Ok, it's correct.
+      index += 4;
+      // Check the whole size
+
+      int chunk_size = buffer[index]
+         + (buffer[index + 1] << 8)
+         + (buffer[index + 2] << 16)
+         + (buffer[index + 3] << 24);
+
+      index += 8;
+
+      // 'fmt ' chunk ? skip it
+      if (index + 8 < file_info.fsize && (memcmp(&buffer[index], "fmt ", 4) == 0))
+      {
+         index += 8;
+      }
+
+      // Good.
+      // Now we are at the first cbxx
+      while (index + 8 < file_info.fsize)
+      {
+         if (buffer[index] == 'c' && buffer[index + 1] == 'b')
+         {
+            index += 2;
+            char buffer_block_number[3] = { 0 };
+            memcpy(buffer_block_number, &buffer[index], 2);
+            int block_number = (buffer_block_number[0] - '0') * 10 + (buffer_block_number[1] - '0');
+            index += 2;
+
+            // Read size
+            int block_size = buffer[index]
+               + (buffer[index + 1] << 8)
+               + (buffer[index + 2] << 16)
+               + (buffer[index + 3] << 24);
+            index += 4;
+
+            if (block_size <= file_info.fsize && block_number < 256)
+            {
+               // Copy datas to proper ROM
+               unsigned char* rom = motherboard_->GetCartridge(block_number);
+               memset(rom, 0, 0x1000);
+               memcpy(rom, &buffer[index], block_size);
+               index += block_size;
+            }
+            else
+            {
+               delete[]buffer;
+               return -1;
+            }
+         }
+         else
+         {
+            delete[]buffer;
+            return -1;
+         }
+      }
+   }
+   else
+   {
+      // Incorrect headers
+      delete[]buffer;
+      return -1;
+   }
+   delete[]buffer;
+   return 0;
+}

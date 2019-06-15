@@ -152,8 +152,8 @@ boolean CKernel::Initialize (void)
 
    CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
 
-
-   m_Logger.Write("Kernel", LogNotice, "Initialisation done. Result = %i", bOK?1:0);
+   
+   m_Logger.Write("Kernel", LogNotice, "Initialisation done. Result = %i - CPU Speed max value : %i", bOK?1:0, CCPUThrottle::Get()->GetMaxClockRate());
    return bOK;
 }
 
@@ -234,24 +234,6 @@ int CKernel::LoadCprFromBuffer(unsigned char* buffer, int size)
 
    return 0;
 }
-/*
-void CKernel::GetFolderCart()
-{
-   // Show contents of root directory
-   DIR Directory;
-   FILINFO FileInfo;
-   FRESULT Result = f_findfirst(&Directory, &FileInfo, DRIVE "/CART", "*");
-   for (unsigned i = 0; Result == FR_OK && FileInfo.fname[0]; i++)
-   {
-      if (!(FileInfo.fattrib & (AM_HID | AM_SYS)))
-      {
-         CString FileName;
-         FileName.Format("%-19s", FileInfo.fname);
-      }
-
-      Result = f_findnext(&Directory, &FileInfo);
-   }
-}*/
 
 TShutdownMode CKernel::Run (void)
 {
@@ -266,6 +248,7 @@ TShutdownMode CKernel::Run (void)
    motherboard_emulation_->InitMotherbard(nullptr, nullptr, display_, nullptr, nullptr, nullptr);
    motherboard_emulation_->GetPSG()->SetLog(&log_);
    motherboard_emulation_->GetPSG()->InitSound(&sound_);
+   //motherboard_emulation_->GetPSG()->InitSound(nullptr);
 
    motherboard_emulation_->OnOff();
    motherboard_emulation_->GetMem()->InitMemory();
@@ -328,8 +311,8 @@ TShutdownMode CKernel::Run (void)
 	while (1)
 	{
       
-      // 20ms 
-      motherboard_emulation_->StartOptimizedPlus(4000*5);
+      // 200ms 
+      motherboard_emulation_->StartOptimizedPlus(4000*50*20);
 
       // Temperature
       /*unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
@@ -354,6 +337,12 @@ TShutdownMode CKernel::Run (void)
       else
       {
          // Timing computation 
+         static unsigned old = 0;
+         unsigned elapsed = m_Timer.GetTicks();
+
+         m_Logger.Write("Kernel", LogNotice, "Time for 1s emulation : %i ticks -> %i ms", elapsed - old, (elapsed - old));
+         old = elapsed;
+
       }
    }
 
