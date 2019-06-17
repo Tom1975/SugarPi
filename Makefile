@@ -7,7 +7,9 @@ CIRCLEHOME = ../circle-master
 OBJS	= main.o\
       kernel.o\
       DisplayPi.o\
+      emulation.o\
       KeyboardPi.o\
+      log.o\
       SoundPi.o\
       ScreenMenu.o\
       res/coolspot.o\
@@ -69,7 +71,7 @@ OBJS	= main.o\
 EXTRACLEAN = $(OBJS)
 		
 OPTIMIZE = -O3
-CFLAGS = -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC
+CFLAGS = -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE
 LIBS	= $(CIRCLEHOME)/lib/libcircle.a $(CIRCLEHOME)/lib/fs/fat/libfatfs.a $(CIRCLEHOME)/lib/fs/libfs.a $(CIRCLEHOME)/lib/usb/libusb.a $(CIRCLEHOME)/lib/input/libinput.a 
 
 

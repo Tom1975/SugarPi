@@ -73,23 +73,32 @@ int ScreenMenu::InsertCartridge()
       Result = f_findnext(&Directory, FileInfo);
    }
 
-   ScreenMenu::MenuItem* submenu = new ScreenMenu::MenuItem[cartridge_list.size()+1];
-   for (int i = 0; i < cartridge_list.size(); i++)
+   ScreenMenu::MenuItem* submenu = new ScreenMenu::MenuItem[cartridge_list.size()+2];
+   submenu[i].function = nullptr;
+   submenu[i].label_ = "...Back";
+
+   for (int i = 1; i < cartridge_list.size(); i++)
    {
       logger_->Write("Menu", LogNotice, "Added next ");
       submenu[i].function= nullptr;
       submenu[i].label_ = cartridge_list[i]->fname;
       logger_->Write("Menu", LogNotice, "Added %s", cartridge_list[i]->fname);
    }
+   logger_->Write("Menu", LogNotice, "Loop ended");
    submenu[cartridge_list.size()].function = nullptr;
    submenu[cartridge_list.size()].label_= nullptr;
+
+   logger_->Write("Menu", LogNotice, "nullptr added");
 
    // Display menu !
    MenuItem* old_menu = current_menu_;
    selected_ = 0;
 
    current_menu_ = submenu;
+
+   logger_->Write("Menu", LogNotice, "Will now display submenu");
    DisplayMenu(current_menu_);
+   logger_->Write("Menu", LogNotice, "Will submenu displayed");
 
    // wait for command
 //   while (!keyboard_->IsAction());
@@ -152,7 +161,7 @@ int ScreenMenu::InsertCartridge()
 
 int ScreenMenu::HardwareSetup()
 {
-   logger_->Write("Menu", LogNotice, "ACTION : InsertCartridge");
+   logger_->Write("Menu", LogNotice, "ACTION : Select setup");
    return 0;
 }
 
@@ -243,6 +252,7 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
    }
 
    DisplayText("SugarPi", 450, 47, false);
+   logger_->Write("Menu", LogNotice, "Insert : SugarPi displayed");
 
    unsigned int i = 0;
 
@@ -252,7 +262,7 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
       logger_->Write("Menu", LogNotice, "Insert : %s", menu[i].label_);
 
       // Display menu bitmap
-      DisplayButton(&menu[i], 250, i * 20 + 70, selected_ == i);
+      //DisplayButton(&menu[i], 250, i * 20 + 70, selected_ == i);
     
       // log
       i++;

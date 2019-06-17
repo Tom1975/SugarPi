@@ -38,11 +38,11 @@
 
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
-#include "CPCCore/CPCCoreEmu/ILog.h"
 
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
 #include "SoundPi.h"
+#include "emulation.h"
 
 
 enum TShutdownMode
@@ -52,21 +52,6 @@ enum TShutdownMode
 	ShutdownReboot
 };
 
-class Log : public ILog
-{
-public:
-   Log();
-   virtual ~Log();
-   void SetLogger(CLogger* logger);
-   virtual void WriteLog(const char* log);
-   virtual void WriteLogByte(unsigned char number);
-   virtual void WriteLogShort(unsigned short number);
-   virtual void WriteLog(unsigned int number);
-   virtual void EndOfLine();
-
-protected:
-   CLogger* logger_;
-};
 
 class CKernel
 {
@@ -94,15 +79,16 @@ private:
    CInterruptSystem  m_Interrupt;
    CCPUThrottle      *cpu_throttle_;
    CEMMCDevice		   m_EMMC;
-   FATFS			      m_FileSystem;
    CDWHCIDevice      dwhci_device_;
 
-	SoundMixer        *sound_mixer_;
-	Motherboard       *motherboard_emulation_;
+   //SoundMixer        *sound_mixer_;
+	//Motherboard       *motherboard_emulation_;
 	DisplayPi         *display_;
    KeyboardPi        *keyboard_;
    SoundPi           sound_;
-   Log               log_;
+
+   Emulation         emulation_;
+
 };
 
 #endif
