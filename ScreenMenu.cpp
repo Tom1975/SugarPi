@@ -262,7 +262,7 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
       logger_->Write("Menu", LogNotice, "Insert : %s", menu[i].label_);
 
       // Display menu bitmap
-      //DisplayButton(&menu[i], 250, i * 20 + 70, selected_ == i);
+      DisplayButton(&menu[i], 250, i * 20 + 70, selected_ == i);
     
       // log
       i++;

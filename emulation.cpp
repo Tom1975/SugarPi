@@ -110,9 +110,12 @@ void Emulation::Run(unsigned nCore)
    switch (nCore)
    {
    case 0:
-      RunMainLoop();
+      // Run sound loop 
+      logger_->Write("CORE", LogNotice, "Sound loop");
       break;
    case 1:
+      RunMainLoop();
+      break;
    default:
       break;
    }
