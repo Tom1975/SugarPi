@@ -31,10 +31,10 @@ public:
 
    boolean Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keyboard);
    void Run(unsigned nCore);
+   void RunMainLoop();
 
 
 protected:
-   void RunMainLoop();
    int LoadCprFromBuffer(unsigned char* buffer, int size);
 
    CLogger* logger_;

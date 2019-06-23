@@ -32,6 +32,7 @@
 #include <circle/logger.h>
 #include <circle/cputhrottle.h>
 #include <circle/usb/dwhcidevice.h>
+#include <circle/exceptionhandler.h>
 
 #include <SDCard/emmc.h>
 #include <fatfs/ff.h>
@@ -80,12 +81,13 @@ private:
    CCPUThrottle      *cpu_throttle_;
    CEMMCDevice		   m_EMMC;
    CDWHCIDevice      dwhci_device_;
+   CExceptionHandler * exception_handler_;
 
    //SoundMixer        *sound_mixer_;
 	//Motherboard       *motherboard_emulation_;
 	DisplayPi         *display_;
    KeyboardPi        *keyboard_;
-   SoundPi           sound_;
+   SoundPi*          sound_;
 
    Emulation         emulation_;
 

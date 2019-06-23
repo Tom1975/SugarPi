@@ -37,20 +37,23 @@ CKernel::CKernel(void)
    display_(nullptr),
    keyboard_(nullptr),
    cpu_throttle_(nullptr),
-   sound_(&m_Logger, &m_Interrupt),
+   sound_(nullptr),
    emulation_(&m_Memory, &m_Logger, &m_Timer)
 {
-
+   sound_ = new SoundPi(&m_Logger, &m_Interrupt);
    display_ = new DisplayPi(&m_Logger);
    keyboard_ = new KeyboardPi(&m_Logger, &dwhci_device_, &m_DeviceNameService);
    cpu_throttle_ = new CCPUThrottle();
+   exception_handler_ = new CExceptionHandler;
 }
 
 CKernel::~CKernel (void)
 {
+   delete exception_handler_;
    delete cpu_throttle_;
    delete keyboard_;
    delete display_;
+   delete sound_;
 }
 
 boolean CKernel::Initialize (void)
@@ -95,7 +98,7 @@ boolean CKernel::Initialize (void)
    }
 
 
-   sound_.Initialize();
+   sound_->Initialize();
 
    if (bOK)
    {
@@ -105,7 +108,7 @@ boolean CKernel::Initialize (void)
    if (bOK)
    {
       m_Logger.Write("Kernel", LogNotice, "Initialisationfoe emulation.....");
-      bOK = emulation_.Initialize(display_, &sound_, keyboard_);	// must be initialized at last
+      bOK = emulation_.Initialize(display_, sound_, keyboard_);	// must be initialized at last
       m_Logger.Write("Kernel", LogNotice, "Initialisationfoe done !");
    }
 

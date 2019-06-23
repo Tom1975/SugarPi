@@ -256,7 +256,6 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
 
    unsigned int i = 0;
 
-   //for (unsigned int i = 0; i < menu->items.size(); i++)
    while (menu[i].label_ != nullptr)
    {
       logger_->Write("Menu", LogNotice, "Insert : %s", menu[i].label_);

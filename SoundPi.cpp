@@ -82,11 +82,13 @@ unsigned int SoundPi::GetSampleRate()
 
 unsigned int SoundPi::GetBitDepth()
 {
+   logger_->Write("Sound", LogNotice, "GetBitDepth");
    return SOUND_BITS;
 }
 
 unsigned int SoundPi::GetNbChannels()
 {
+   logger_->Write("Sound", LogNotice, "GetNbChannels");
    return SOUND_CHANNELS;
 }
 
@@ -109,7 +111,6 @@ IWaveHDR* SoundPi::GetFreeBuffer()
 
 void SoundPi::AddBufferToPlay(IWaveHDR* wav)
 {
-
    unsigned frame_available = sound_device_->GetQueueFramesAvail();
    short* buffer_short = (short*)(wav->data_);
 
@@ -118,7 +119,6 @@ void SoundPi::AddBufferToPlay(IWaveHDR* wav)
       && frame_available != nResult)
       logger_->Write("Sound", LogNotice, "AddBufferToPlay : Available : %i, size %i, written : %i", frame_available, wav->buffer_length_, nResult);
    else
-
    if (!started_)
    {
       started_ = true;
@@ -140,6 +140,7 @@ void SoundPi::AddBufferToPlay(IWaveHDR* wav)
 
 unsigned SoundPi::GetChunk(s16 *pBuffer, unsigned nChunkSize)
 {
+   logger_->Write("Sound", LogNotice, "GetChunk");
    memcpy(pBuffer, &chunk_buffer[index_output_], nChunkSize);
    index_output_ += nChunkSize;
 }

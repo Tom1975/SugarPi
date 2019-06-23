@@ -32,6 +32,7 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    display_ = display;
    keyboard_ = keyboard;
 
+   sound_mixer_->Init(sound_, nullptr);
    motherboard_ = new Motherboard(sound_mixer_, keyboard_);
 
    sound_mixer_->SetLog(&log_);
@@ -106,15 +107,17 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
 
 void Emulation::Run(unsigned nCore)
 {
-   logger_->Write("CORE", LogNotice, "Core running : %i", nCore);
+   logger_->Write("CORE", LogNotice, "Core running : %i - CPU Speed max value : %i", nCore, CCPUThrottle::Get()->GetMaxClockRate());
    switch (nCore)
    {
    case 0:
       // Run sound loop 
-      logger_->Write("CORE", LogNotice, "Sound loop");
+      logger_->Write("CORE", LogNotice, "Main loop");
+      RunMainLoop();
+      logger_->Write("CORE", LogNotice, "Exiting...");
       break;
    case 1:
-      RunMainLoop();
+      
       break;
    default:
       break;
