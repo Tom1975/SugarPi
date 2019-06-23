@@ -74,8 +74,8 @@ int ScreenMenu::InsertCartridge()
    }
 
    ScreenMenu::MenuItem* submenu = new ScreenMenu::MenuItem[cartridge_list.size()+2];
-   submenu[i].function = nullptr;
-   submenu[i].label_ = "...Back";
+   submenu[0].function = nullptr;
+   submenu[0].label_ = "...Back";
 
    for (int i = 1; i < cartridge_list.size(); i++)
    {
