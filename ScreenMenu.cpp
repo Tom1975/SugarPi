@@ -79,7 +79,6 @@ int ScreenMenu::InsertCartridge()
 
    for (int i = 1; i < cartridge_list.size(); i++)
    {
-      logger_->Write("Menu", LogNotice, "Added next ");
       submenu[i].function= nullptr;
       submenu[i].label_ = cartridge_list[i]->fname;
       logger_->Write("Menu", LogNotice, "Added %s", cartridge_list[i]->fname);
@@ -87,8 +86,6 @@ int ScreenMenu::InsertCartridge()
    logger_->Write("Menu", LogNotice, "Loop ended");
    submenu[cartridge_list.size()].function = nullptr;
    submenu[cartridge_list.size()].label_= nullptr;
-
-   logger_->Write("Menu", LogNotice, "nullptr added");
 
    // Display menu !
    MenuItem* old_menu = current_menu_;
@@ -191,8 +188,9 @@ void ScreenMenu::DisplayText(const char* txt, int x, int y, bool selected)
 
    while (txt[i] != '\0' )
    {
+
       // Display character
-      unsigned char c = buff[i];
+      unsigned char c = txt[i];
 
       // Look for proper bitmap position (on first line only)
       for (int display_y = 0; display_y < font.GetLetterHeight(c); display_y++)
@@ -258,6 +256,7 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
 
    while (menu[i].label_ != nullptr)
    {
+      logger_->Write("Menu", LogNotice, "%i", i);
       logger_->Write("Menu", LogNotice, "Insert : %s", menu[i].label_);
 
       // Display menu bitmap

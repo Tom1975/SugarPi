@@ -56,8 +56,8 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
       logger_->Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
    }
 
-   //#define CARTOUCHE_BASE "/CART/crtc3_projo.cpr"
-#define CARTOUCHE_BASE "/CART/gnggxfinalalpha.cpr"
+   #define CARTOUCHE_BASE "/CART/crtc3_projo.cpr"
+//#define CARTOUCHE_BASE "/CART/gnggxfinalalpha.cpr"
 
    FIL File;
    FRESULT Result = f_open(&File, DRIVE CARTOUCHE_BASE, FA_READ | FA_OPEN_EXISTING);

@@ -3582,13 +3582,15 @@ CoolspotFont::~CoolspotFont()
 
 void CoolspotFont::CopyLetter(char c, int line, int* buffer, CLogger* logger)
 {
-   int display_x = 0;
-   int offset = char_position_[c] + (coolspot_font.bytes_per_pixel * line * coolspot_font.width) + coolspot_font.bytes_per_pixel;
-   int endoffset = char_position_[c+1] + (coolspot_font.bytes_per_pixel * line * coolspot_font.width);
+   unsigned int char_offset = (unsigned char)c;
+   if (char_offset >= 0xFF) char_offset = 0xFE;
+
+   int offset = char_position_[char_offset] + (coolspot_font.bytes_per_pixel * line * coolspot_font.width) + coolspot_font.bytes_per_pixel;
+   int endoffset = char_position_[char_offset +1] + (coolspot_font.bytes_per_pixel * line * coolspot_font.width);
 
    unsigned char* col_buffer = (unsigned char*)buffer;
 
-   while (offset < endoffset)
+   while (offset + 3 < endoffset && offset + 3 < sizeof(coolspot_font.pixel_data))
    {
       if (coolspot_font.pixel_data[offset + 3] != 0)
       {
@@ -3599,7 +3601,6 @@ void CoolspotFont::CopyLetter(char c, int line, int* buffer, CLogger* logger)
       }
       col_buffer += sizeof(int);
       offset += coolspot_font.bytes_per_pixel;
-      display_x++;
    }
 }
 

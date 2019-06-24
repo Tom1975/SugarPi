@@ -115,17 +115,20 @@ void SoundPi::AddBufferToPlay(IWaveHDR* wav)
    short* buffer_short = (short*)(wav->data_);
 
    int nResult = sound_device_->Write(wav->data_, wav->buffer_length_);
-   if (nResult != wav->buffer_length_
-      && frame_available != nResult)
-      logger_->Write("Sound", LogNotice, "AddBufferToPlay : Available : %i, size %i, written : %i", frame_available, wav->buffer_length_, nResult);
-   else
-   if (!started_)
+   if (nResult != wav->buffer_length_ && frame_available != nResult)
    {
-      started_ = true;
-      logger_->Write("Sound", LogNotice, "Start");
-      if (!sound_device_->Start())
+      //logger_->Write("Sound", LogNotice, "AddBufferToPlay : Available : %i, size %i, written : %i", frame_available, wav->buffer_length_, nResult);
+   }
+   else
+   {
+      if (!started_)
       {
-         logger_->Write("Sound", LogPanic, "Cannot start sound device");
+         started_ = true;
+         logger_->Write("Sound", LogNotice, "Start");
+         if (!sound_device_->Start())
+         {
+            logger_->Write("Sound", LogPanic, "Cannot start sound device");
+         }
       }
    }
    if (sound_device_->IsActive() == false)
