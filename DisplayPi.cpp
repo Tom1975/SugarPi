@@ -4,7 +4,8 @@
 
 DisplayPi::DisplayPi(CLogger* logger) : 
    logger_(logger),
-   frame_buffer_(768, 277, 32, 1024, 1024)
+   frame_buffer_(768, 277*2, 32, 1024, 1024),
+   added_line_(1)
 {
    //screen_ = new CScreenDevice(1024, 768);
 }
@@ -18,7 +19,7 @@ bool DisplayPi::Initialization()
 {
 
    frame_buffer_.Initialize();
-   frame_buffer_.SetVirtualOffset(143, 47);
+   frame_buffer_.SetVirtualOffset(143, 47/2);
 
    return true;
 }
@@ -73,7 +74,8 @@ IDisplay::SizeEnum  DisplayPi::GetSize()
 
 void DisplayPi::VSync(bool dbg )
 {
-   
+   added_line_ ^= 1;
+   //logger_->Write("Display", LogNotice, "Vsync : added_line_=%i", added_line_);
 }
 
 // Start of sync
@@ -90,7 +92,13 @@ void DisplayPi::WaitVbl()
 
 int* DisplayPi::GetVideoBuffer(int y)
 {
-   return (int*)(frame_buffer_.GetBuffer() + y* frame_buffer_.GetPitch());
+   y = y * 2 + added_line_;
+   y &= 0x3FF;
+   return (int*)(frame_buffer_.GetBuffer() + y * frame_buffer_.GetPitch());
+
+//   return (int*)(frame_buffer_.GetBuffer() + (y * 2 /*+ added_line_*/)* frame_buffer_.GetPitch() );
+   
+      
 }
 
 void DisplayPi::Reset()

@@ -69,4 +69,6 @@ protected:
    CLogger*          logger_;
 
    CBcmFrameBuffer   frame_buffer_;
+
+   unsigned int added_line_;
 };
