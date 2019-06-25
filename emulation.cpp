@@ -56,8 +56,8 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
       logger_->Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
    }
 
-   #define CARTOUCHE_BASE "/CART/crtc3_projo.cpr"
-//#define CARTOUCHE_BASE "/CART/gnggxfinalalpha.cpr"
+//   #define CARTOUCHE_BASE "/CART/crtc3_projo.cpr"
+#define CARTOUCHE_BASE "/CART/gnggxfinalalpha.cpr"
 
    FIL File;
    FRESULT Result = f_open(&File, DRIVE CARTOUCHE_BASE, FA_READ | FA_OPEN_EXISTING);
@@ -240,7 +240,7 @@ void Emulation::RunMainLoop()
          static unsigned old = 0;
          unsigned elapsed = timer_->GetTicks();
 
-         logger_->Write("Kernel", LogNotice, "Time for 1s emulation : %i ticks -> %i ms", elapsed - old, (elapsed - old));
+         logger_->Write("Kernel", LogNotice, "Time for 1s emulation : %i ticks -> Clock rate : %i ms - %i", elapsed - old, (elapsed - old), CCPUThrottle::Get()->GetMaxClockRate());
          old = elapsed;
 
       }

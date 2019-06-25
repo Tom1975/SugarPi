@@ -1,4 +1,9 @@
 //
+#include <memory.h>
+
+#include <circle/types.h>
+
+
 #include "DisplayPi.h"
 
 
@@ -72,9 +77,32 @@ IDisplay::SizeEnum  DisplayPi::GetSize()
    return IDisplay::S_STANDARD;
 }
 
+struct TBlankScreen
+{
+   TPropertyTag	Tag;
+   u32            blank;
+
+}
+PACKED;
 void DisplayPi::VSync(bool dbg )
 {
    added_line_ ^= 1;
+
+   //frame_buffer_.WaitForVerticalSync();
+
+#define PROPTAG_BLANK_SCREEN	0x00040002
+   /*CBcmPropertyTags Tags;
+   TBlankScreen blankScreen;
+   blankScreen.blank = 0;
+   if (Tags.GetTag(PROPTAG_BLANK_SCREEN, &blankScreen, sizeof blankScreen, 4))
+   {
+   }
+   else
+   {
+      logger_->Write("Display", LogNotice, "PROPTAG_BLANK_SCREEN - KO...");
+   }
+   
+   */
    //logger_->Write("Display", LogNotice, "Vsync : added_line_=%i", added_line_);
 }
 
@@ -87,13 +115,17 @@ void DisplayPi::StartSync()
 // Wait VBL
 void DisplayPi::WaitVbl()
 {
-   //frame_buffer_.WaitForVerticalSync();
+   frame_buffer_.WaitForVerticalSync();
 }
+
+
 
 int* DisplayPi::GetVideoBuffer(int y)
 {
    y = y * 2 + added_line_;
+
    y &= 0x3FF;
+
    return (int*)(frame_buffer_.GetBuffer() + y * frame_buffer_.GetPitch());
 
 //   return (int*)(frame_buffer_.GetBuffer() + (y * 2 /*+ added_line_*/)* frame_buffer_.GetPitch() );
