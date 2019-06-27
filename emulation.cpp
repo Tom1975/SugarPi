@@ -15,7 +15,8 @@ Emulation::Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer)
    motherboard_(nullptr),
    display_(nullptr),
    sound_mixer_(nullptr),
-   sound_(nullptr)
+   sound_(nullptr),
+   sound_is_ready(false)
 {
    sound_mixer_ = new SoundMixer();
 }
@@ -111,13 +112,18 @@ void Emulation::Run(unsigned nCore)
    switch (nCore)
    {
    case 0:
+      // Run sound loop
+      sound_is_ready = true;
+      logger_->Write("CORE", LogNotice, "sound_is_ready ");
+      sound_mixer_->PrepareBufferThread();
+      break;
+   case 1:
       // Run sound loop 
+      while (!sound_is_ready);
+
       logger_->Write("CORE", LogNotice, "Main loop");
       RunMainLoop();
       logger_->Write("CORE", LogNotice, "Exiting...");
-      break;
-   case 1:
-      
       break;
    default:
       break;

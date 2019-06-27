@@ -49,4 +49,5 @@ protected:
    SoundMixer*       sound_mixer_;
    Log               log_;
 
+   bool sound_is_ready;
 };

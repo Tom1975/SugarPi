@@ -115,7 +115,7 @@ void DisplayPi::StartSync()
 // Wait VBL
 void DisplayPi::WaitVbl()
 {
-   frame_buffer_.WaitForVerticalSync();
+   //frame_buffer_.WaitForVerticalSync();
 }
 
 
