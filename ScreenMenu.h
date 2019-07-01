@@ -54,6 +54,7 @@ protected:
    // Menus 
    MenuItem* current_menu_;
    unsigned int selected_;
+   unsigned int index_base_;
 
    Motherboard* motherboard_;
 

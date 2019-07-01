@@ -119,7 +119,12 @@ void Emulation::Run(unsigned nCore)
       break;
    case 1:
       // Run sound loop 
-      while (!sound_is_ready);
+      while (!sound_is_ready)
+      {
+         // Checkin for sound is ready
+         CTimer::Get ()->MsDelay (50);
+         logger_->Write("CORE", LogNotice, "Waiting to start....");
+      }
 
       logger_->Write("CORE", LogNotice, "Main loop");
       RunMainLoop();

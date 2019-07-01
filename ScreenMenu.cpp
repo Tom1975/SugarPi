@@ -10,6 +10,8 @@
 #include "res\button_1.h"
 #include "res\coolspot.h"
 
+#define MAX_ITEM_PER_PAGE 10
+#define MOVE_BASE 7
 
 #define DRIVE		"SD:"
 
@@ -33,6 +35,7 @@ ScreenMenu::ScreenMenu(CLogger* logger, DisplayPi* display, KeyboardPi* keyboard
    //BaseMenu(logger),
    current_menu_(base_menu),
    selected_(0),
+   index_base_(0),
    motherboard_(motherboard)
 {
 }
@@ -90,6 +93,8 @@ int ScreenMenu::InsertCartridge()
    // Display menu !
    MenuItem* old_menu = current_menu_;
    selected_ = 0;
+   unsigned int old_index = index_base_;
+   index_base_ = 0;
 
    current_menu_ = submenu;
 
@@ -150,7 +155,7 @@ int ScreenMenu::InsertCartridge()
    }
    logger_->Write("Cartridge", LogNotice, "deleting cartridge_list done !");
       
-
+   index_base_ = old_index;
    current_menu_ = old_menu;
    selected_ = 0;
    return 0;
@@ -250,17 +255,13 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
    }
 
    DisplayText("SugarPi", 450, 47, false);
-   logger_->Write("Menu", LogNotice, "Insert : SugarPi displayed");
 
    unsigned int i = 0;
 
-   while (menu[i].label_ != nullptr)
+   while (menu[i + index_base_].label_ != nullptr && i < MAX_ITEM_PER_PAGE)
    {
-      logger_->Write("Menu", LogNotice, "%i", i);
-      logger_->Write("Menu", LogNotice, "Insert : %s", menu[i].label_);
-
       // Display menu bitmap
-      DisplayButton(&menu[i], 250, i * 20 + 70, selected_ == i);
+      DisplayButton(&menu[i + index_base_], 250, i * 20 + 70, selected_ == i+ index_base_);
     
       // log
       i++;
@@ -302,6 +303,8 @@ void ScreenMenu::Down()
    if (current_menu_[selected_ + 1].label_ != nullptr)
    {
       selected_++;
+      if (selected_ > MOVE_BASE)
+         index_base_++;
    }
    DisplayMenu(current_menu_);
 }
@@ -311,6 +314,9 @@ void ScreenMenu::Up()
    if (selected_ > 0)
    {
       selected_--;
+      if (selected_ >= MOVE_BASE && index_base_ > 0)
+         index_base_--;
+
    }
    DisplayMenu(current_menu_);
 }
