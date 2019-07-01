@@ -250,7 +250,7 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
       int* line = display_->GetVideoBuffer(i);
       for (int x = 0; x < display_->GetWidth(); x++)
       {
-         line[x] = ((i << 6)&0xFF00) | ((x << 14)&0xFF0000);
+         line[x] = 0; // ((i << 6) & 0xFF00) | ((x << 14) & 0xFF0000);
       }
    }
 
