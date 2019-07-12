@@ -24,6 +24,8 @@ ScreenMenu::MenuItem base_menu[] =
    { "Insert Cartridge",   &ScreenMenu::InsertCartridge},
    { "Hardware Setup",     &ScreenMenu::HardwareSetup},
    { "Reset",              &ScreenMenu::Reset},
+   { "Quick Save",         &ScreenMenu::Save},
+   { "Quick Load",         &ScreenMenu::Load},
    { "Shutdown",           &ScreenMenu::ShutDown},
    { nullptr, nullptr}
 };
@@ -36,12 +38,16 @@ ScreenMenu::ScreenMenu(CLogger* logger, DisplayPi* display, KeyboardPi* keyboard
    current_menu_(base_menu),
    selected_(0),
    index_base_(0),
-   motherboard_(motherboard)
+   motherboard_(motherboard),
+   snapshot_(nullptr)
 {
+   snapshot_ = new CSnapshot();
+   snapshot_->SetMachine(motherboard_);
 }
 
 ScreenMenu::~ScreenMenu()
 {
+   delete snapshot_;
 }
 
 int ScreenMenu::Resume()
@@ -164,6 +170,20 @@ int ScreenMenu::InsertCartridge()
 int ScreenMenu::HardwareSetup()
 {
    logger_->Write("Menu", LogNotice, "ACTION : Select setup");
+   return 0;
+}
+
+int ScreenMenu::Save()
+{
+   snapshot_->SaveSnapshot("quick.sna");
+   resume_ = true;
+   return 0;
+}
+
+int ScreenMenu::Load()
+{
+   snapshot_->LoadSnapshot("quick.sna");
+   resume_ = true;
    return 0;
 }
 

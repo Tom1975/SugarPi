@@ -5,22 +5,22 @@
 CIRCLEHOME = ../circle-master
 
 OBJS	= main.o\
-      kernel.o\
-      DisplayPi.o\
-      emulation.o\
-      KeyboardPi.o\
-      log.o\
-      SoundPi.o\
-      ScreenMenu.o\
-      res/coolspot.o\
+		kernel.o\
+		DisplayPi.o\
+		emulation.o\
+		KeyboardPi.o\
+		log.o\
+		SoundPi.o\
+		ScreenMenu.o\
+		res/coolspot.o\
 		$(CIRCLEHOME)/addon/SDCard/emmc.o\
-      $(CIRCLEHOME)/addon/fatfs/diskio.o\
-      $(CIRCLEHOME)/addon/fatfs/ff.o\
-      $(CIRCLEHOME)/addon/fatfs/ffunicode.o\
-      $(CIRCLEHOME)/addon/fatfs/syscall.o\
+		$(CIRCLEHOME)/addon/fatfs/diskio.o\
+		$(CIRCLEHOME)/addon/fatfs/ff.o\
+		$(CIRCLEHOME)/addon/fatfs/ffunicode.o\
+		$(CIRCLEHOME)/addon/fatfs/syscall.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
-      CPCCore/CPCCoreEmu/CAPSFile.o\
+		CPCCore/CPCCoreEmu/CAPSFile.o\
 		CPCCore/CPCCoreEmu/ClockLine.o\
 		CPCCore/CPCCoreEmu/CRC.o\
 		CPCCore/CPCCoreEmu/CRTC.o \
@@ -34,12 +34,12 @@ OBJS	= main.o\
 		CPCCore/CPCCoreEmu/DMA.o\
 		CPCCore/CPCCoreEmu/DskTypeManager.o\
 		CPCCore/CPCCoreEmu/FDC.o\
-      CPCCore/CPCCoreEmu/FileAccess.o\
+		CPCCore/CPCCoreEmu/FileAccess.o\
 		CPCCore/CPCCoreEmu/FormatTypeCTRAW.o\
 		CPCCore/CPCCoreEmu/FormatTypeDSK.o\
 		CPCCore/CPCCoreEmu/FormatTypeEDSK.o\
 		CPCCore/CPCCoreEmu/FormatTypeHFE.o\
-      CPCCore/CPCCoreEmu/FormatTypeHFEv3.o\
+		CPCCore/CPCCoreEmu/FormatTypeHFEv3.o\
 		CPCCore/CPCCoreEmu/FormatTypeIPF.o\
 		CPCCore/CPCCoreEmu/IDisk.o\
 		CPCCore/CPCCoreEmu/KeyboardHandler.o\
@@ -59,21 +59,24 @@ OBJS	= main.o\
 		CPCCore/CPCCoreEmu/simple_regex.o \
 		CPCCore/CPCCoreEmu/simple_stdio.o \
 		CPCCore/CPCCoreEmu/simple_string.o \
+		CPCCore/CPCCoreEmu/Snapshot.o \
 		CPCCore/CPCCoreEmu/SoundMixer.o\
 		CPCCore/CPCCoreEmu/Tape.o\
 		CPCCore/CPCCoreEmu/VGA.o \
 		CPCCore/CPCCoreEmu/YMZ294.o\
 		CPCCore/CPCCoreEmu/Z80_Full.o\
-      CPCCore/CPCCoreEmu/Z80_Opcodes_fetch.o\
+		CPCCore/CPCCoreEmu/Z80_Opcodes_fetch.o\
 		CPCCore/CPCCoreEmu/Z84C30.o\
 		
 
 EXTRACLEAN = $(OBJS)
 		
 OPTIMIZE = -O3
-CFLAGS = -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC
+
 LIBS	= $(CIRCLEHOME)/lib/libcircle.a $(CIRCLEHOME)/lib/fs/fat/libfatfs.a $(CIRCLEHOME)/lib/fs/libfs.a $(CIRCLEHOME)/lib/usb/libusb.a $(CIRCLEHOME)/lib/input/libinput.a 
 
 
 include Rules.mk
+
+CFLAGS	+= -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC
 

@@ -4,9 +4,10 @@
 #include <circle/string.h>
 
 #include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include "CPCCore/CPCCoreEmu/Motherboard.h"
+#include "CPCCore/CPCCoreEmu/Snapshot.h"
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
-#include "CPCCore/CPCCoreEmu/Motherboard.h"
 
 #define MAX_LANGUAGE 1
 
@@ -26,6 +27,8 @@ public:
    int HardwareSetup();
    int Reset();
    int ShutDown();
+   int Load();
+   int Save();
 
 
    void Down();
@@ -60,7 +63,7 @@ protected:
 
    // Pending actions
    bool resume_;
-
+   CSnapshot* snapshot_;
 
 };
 
