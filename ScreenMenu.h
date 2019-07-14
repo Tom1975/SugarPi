@@ -17,7 +17,7 @@ class ScreenMenu
 {
 
 public:
-   ScreenMenu(CLogger* logger, DisplayPi* display, KeyboardPi* keyboard, Motherboard* motherboard);
+   ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, KeyboardPi* keyboard, Motherboard* motherboard);
    virtual ~ScreenMenu();
 
    void Handle();

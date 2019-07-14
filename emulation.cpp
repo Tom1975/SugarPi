@@ -239,7 +239,7 @@ void Emulation::RunMainLoop()
          // do it !
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
 
-         ScreenMenu menu(logger_, display_, keyboard_, motherboard_);
+         ScreenMenu menu(&log_ ,logger_, display_, keyboard_, motherboard_);
          menu.Handle();
 
          keyboard_->ReinitSelect();

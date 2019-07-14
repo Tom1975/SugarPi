@@ -16,6 +16,7 @@
 #define DRIVE		"SD:"
 
 #define PATH_CARTIRDGE "SD:/CART"
+#define PATH_QUICK_SNA "SD:/quick.sna"
 static CoolspotFont font;
 
 ScreenMenu::MenuItem base_menu[] =
@@ -30,7 +31,7 @@ ScreenMenu::MenuItem base_menu[] =
    { nullptr, nullptr}
 };
 
-ScreenMenu::ScreenMenu(CLogger* logger, DisplayPi* display, KeyboardPi* keyboard, Motherboard* motherboard) :
+ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, KeyboardPi* keyboard, Motherboard* motherboard) :
    logger_(logger),
    display_(display),
    keyboard_(keyboard),
@@ -41,7 +42,7 @@ ScreenMenu::ScreenMenu(CLogger* logger, DisplayPi* display, KeyboardPi* keyboard
    motherboard_(motherboard),
    snapshot_(nullptr)
 {
-   snapshot_ = new CSnapshot();
+   snapshot_ = new CSnapshot(log);
    snapshot_->SetMachine(motherboard_);
 }
 
@@ -175,14 +176,14 @@ int ScreenMenu::HardwareSetup()
 
 int ScreenMenu::Save()
 {
-   snapshot_->SaveSnapshot("quick.sna");
+   snapshot_->SaveSnapshot(PATH_QUICK_SNA);
    resume_ = true;
    return 0;
 }
 
 int ScreenMenu::Load()
 {
-   snapshot_->LoadSnapshot("quick.sna");
+   snapshot_->LoadSnapshot(PATH_QUICK_SNA);
    resume_ = true;
    return 0;
 }
