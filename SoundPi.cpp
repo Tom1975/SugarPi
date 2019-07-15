@@ -2,6 +2,8 @@
 
 #include <memory.h>
 #include <circle/util.h>
+#include <vc4/sound/vchiqsounddevice.h>
+#include <vc4/sound/vchiqsoundbasedevice.h>
 #include "SoundPi.h"
 
 #define SOUND_CHANNELS		2
@@ -13,14 +15,20 @@
 #define CHUNK_SIZE		4000
 #define WRITE_CHANNELS	2
 
-SoundPi::SoundPi(CLogger* logger, CInterruptSystem	*interrupt):
+SoundPi::SoundPi(CLogger* logger, CVCHIQDevice* vchiq_device):
    logger_(logger),
-//   CSoundBaseDevice (SoundFormatSigned16, 0, 44100),
+   vchiq_device_(vchiq_device),
+   sound_device_(nullptr),
+   queue_size_frames_(0),
+   started_(false),
+   buffer_(nullptr),
+   chunk_buffer(nullptr),
    index_write_(0),
-   index_output_(0),
-   started_(false)
+   index_output_(0)
 {
-   sound_device_ = new CPWMSoundBaseDevice(interrupt, 44100, CHUNK_SIZE);
+   logger_->Write("Sound", LogNotice, "Sound Init");
+   logger_->Write("Sound", LogNotice, "CVCHIQSoundBaseDevice created");
+
    // 1/100e second buffer
    for (int i = 0; i < QUEUE_SIZE; i++)
    {
@@ -37,12 +45,15 @@ SoundPi::~SoundPi()
    {
       delete []data_[i].data_ ;
    }
-   //delete m_PWMSoundDevice;
+   delete sound_device_;
    delete chunk_buffer;
 }
 
 void SoundPi::Initialize()
 {
+
+   sound_device_ = new CVCHIQSoundBaseDevice(vchiq_device_, 44100, CHUNK_SIZE, VCHIQSoundDestinationHeadphones);
+
    sound_device_->AllocateQueue(QUEUE_SIZE_MSECS);
    sound_device_->SetWriteFormat(SoundFormatSigned16, WRITE_CHANNELS);
    queue_size_frames_ = sound_device_->GetQueueSizeFrames();
@@ -111,8 +122,7 @@ IWaveHDR* SoundPi::GetFreeBuffer()
 
 void SoundPi::AddBufferToPlay(IWaveHDR* wav)
 {
-   unsigned frame_available = sound_device_->GetQueueFramesAvail();
-   short* buffer_short = (short*)(wav->data_);
+   int frame_available = sound_device_->GetQueueFramesAvail();
 
    int nResult = sound_device_->Write(wav->data_, wav->buffer_length_);
    if (nResult != wav->buffer_length_ && frame_available != nResult)
@@ -146,5 +156,6 @@ unsigned SoundPi::GetChunk(s16 *pBuffer, unsigned nChunkSize)
    logger_->Write("Sound", LogNotice, "GetChunk");
    memcpy(pBuffer, &chunk_buffer[index_output_], nChunkSize);
    index_output_ += nChunkSize;
+   return 0;
 }
 

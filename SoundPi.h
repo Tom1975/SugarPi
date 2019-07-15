@@ -4,6 +4,8 @@
 #include <circle/logger.h>
 #include <circle/pwmsounddevice.h>
 #include <circle/soundbasedevice.h>
+#include <vc4/vchiq/vchiqdevice.h>
+#include <vc4/sound/vchiqsoundbasedevice.h>
 
 #include "CPCCore/CPCCoreEmu/ISound.h"
 
@@ -13,7 +15,7 @@
 class SoundPi : public ISound
 {
 public:
-   SoundPi(CLogger* logger, CInterruptSystem	*interrupt);
+   SoundPi(CLogger* logger, CVCHIQDevice* vchiq_device);
    virtual ~SoundPi();
 
    virtual void SetDefaultConfiguration() {}
@@ -40,7 +42,8 @@ public:
 
 protected:
    CLogger*          logger_;
-   CSoundBaseDevice* sound_device_;
+   CVCHIQDevice*     vchiq_device_;
+   CVCHIQSoundBaseDevice*sound_device_;
 
    unsigned          queue_size_frames_;
    bool              started_;

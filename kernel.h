@@ -33,8 +33,11 @@
 #include <circle/cputhrottle.h>
 #include <circle/usb/dwhcidevice.h>
 #include <circle/exceptionhandler.h>
+#include <circle/sched/scheduler.h>
 
 #include <SDCard/emmc.h>
+#include <vc4/vchiq/vchiqdevice.h>
+#include <vc4/sound/vchiqsounddevice.h>
 #include <fatfs/ff.h>
 
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
@@ -83,6 +86,8 @@ private:
    CDWHCIDevice      dwhci_device_;
    CExceptionHandler * exception_handler_;
 
+   CScheduler		   scheduler_;
+   CVCHIQDevice		vchiq_;
    //SoundMixer        *sound_mixer_;
 	//Motherboard       *motherboard_emulation_;
 	DisplayPi         *display_;

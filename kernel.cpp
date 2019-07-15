@@ -38,9 +38,9 @@ CKernel::CKernel(void)
    keyboard_(nullptr),
    cpu_throttle_(nullptr),
    sound_(nullptr),
-   emulation_(&m_Memory, &m_Logger, &m_Timer)
+   emulation_(&m_Memory, &m_Logger, &m_Timer),
+   vchiq_(&m_Memory, &m_Interrupt)
 {
-   sound_ = new SoundPi(&m_Logger, &m_Interrupt);
    display_ = new DisplayPi(&m_Logger);
    keyboard_ = new KeyboardPi(&m_Logger, &dwhci_device_, &m_DeviceNameService);
    cpu_throttle_ = new CCPUThrottle();
@@ -97,8 +97,17 @@ boolean CKernel::Initialize (void)
       bOK = m_EMMC.Initialize();
    }
 
+   m_Logger.Write("Kernel", LogNotice, "Initialisation of VCHIQ.....");
+   if (bOK)
+   {
+      bOK = vchiq_.Initialize();
+   }
+   m_Logger.Write("Kernel", LogNotice, "Initialisationfoe Done : %i", bOK);
 
+   sound_ = new SoundPi(&m_Logger, &vchiq_);
+   m_Logger.Write("Kernel", LogNotice, "Creating SoundPI");
    sound_->Initialize();
+   m_Logger.Write("Kernel", LogNotice, "SoundPI Initialized !");
 
    if (bOK)
    {
@@ -107,9 +116,9 @@ boolean CKernel::Initialize (void)
 
    if (bOK)
    {
-      m_Logger.Write("Kernel", LogNotice, "Initialisationfoe emulation.....");
+      m_Logger.Write("Kernel", LogNotice, "Initialisation emulation.....");
       bOK = emulation_.Initialize(display_, sound_, keyboard_);	// must be initialized at last
-      m_Logger.Write("Kernel", LogNotice, "Initialisationfoe done !");
+      m_Logger.Write("Kernel", LogNotice, "Initialisation done done !");
    }
 
 
@@ -127,7 +136,12 @@ TShutdownMode CKernel::Run (void)
 
    m_Logger.Write("Kernel", LogNotice, "Entering running mode...");
 
-   emulation_.Run(0);
+   while (1)
+   {
+      emulation_.Run(0);
+      scheduler_.Yield();
+   }
+
 
 
    /*unsigned nCelsiusOldTmp = 0;

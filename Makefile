@@ -73,7 +73,15 @@ EXTRACLEAN = $(OBJS)
 		
 OPTIMIZE = -O3
 
-LIBS	= $(CIRCLEHOME)/lib/libcircle.a $(CIRCLEHOME)/lib/fs/fat/libfatfs.a $(CIRCLEHOME)/lib/fs/libfs.a $(CIRCLEHOME)/lib/usb/libusb.a $(CIRCLEHOME)/lib/input/libinput.a 
+LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
+         $(CIRCLEHOME)/lib/fs/fat/libfatfs.a \
+         $(CIRCLEHOME)/lib/fs/libfs.a \
+         $(CIRCLEHOME)/lib/usb/libusb.a \
+         $(CIRCLEHOME)/lib/input/libinput.a \
+         $(CIRCLEHOME)/lib/sched/libsched.a \
+         $(CIRCLEHOME)/addon/linux/liblinuxemu.a \
+         $(CIRCLEHOME)/addon/vc4/sound/libvchiqsound.a \
+         $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a
 
 
 include Rules.mk
