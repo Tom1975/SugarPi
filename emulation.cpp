@@ -108,13 +108,11 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
 
 void Emulation::Run(unsigned nCore)
 {
-   logger_->Write("CORE", LogNotice, "Core running : %i - CPU Speed max value : %i", nCore, CCPUThrottle::Get()->GetMaxClockRate());
    switch (nCore)
    {
    case 0:
       // Run sound loop
       sound_is_ready = true;
-      logger_->Write("CORE", LogNotice, "sound_is_ready ");
       sound_mixer_->PrepareBufferThread();
       break;
    case 1:

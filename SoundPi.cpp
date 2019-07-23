@@ -84,7 +84,6 @@ bool SoundPi::Init(int sample_rate, int sample_bits, int nb_channels)
 
 void SoundPi::Reinit()
 {
-   logger_->Write("Sound", LogNotice, "Reinit");
 }
 unsigned int SoundPi::GetSampleRate()
 {
