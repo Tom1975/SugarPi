@@ -215,22 +215,28 @@ void Emulation::RunMainLoop()
 {
 
    unsigned nCelsiusOldTmp = 0;
-
+   int count = 0;
+   unsigned lasttick = timer_->GetClockTicks();
    while (1)
    {
 
-      // 200ms 
-      motherboard_->StartOptimizedPlus(4000 * 50 * 20);
+      // run for 1/10th of second ( 5 frame) in 10 sequences of 1/100th second (10 ms)
+      // us
+#define TIME_SLOT  10000
+      unsigned new_tick;
+      for (unsigned int i = 0; i < 10; i++)
+      {
+         motherboard_->StartOptimizedPlus<true, false, false>(4 * TIME_SLOT);
+
+         new_tick = timer_->GetClockTicks();
+         if (new_tick - lasttick < i * TIME_SLOT)
+         {
+            timer_->SimpleusDelay(i*TIME_SLOT - (new_tick - lasttick)-1);
+         }
+      }
+      lasttick = new_tick;
 
       
-      // Temperature
-      unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
-      if (nCelsiusOldTmp != nCelsius)
-      {
-         logger_->Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
-         nCelsiusOldTmp = nCelsius;
-      }
-
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
@@ -245,12 +251,30 @@ void Emulation::RunMainLoop()
       }
       else
       {
-         // Timing computation 
-         static unsigned old = 0;
-         unsigned elapsed = timer_->GetTicks();
+         if (count == 10)
+         {
+            // Temperature
+            unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
+            if (nCelsiusOldTmp != nCelsius)
+            {
+               logger_->Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
+               nCelsiusOldTmp = nCelsius;
+            }
 
-         logger_->Write("Kernel", LogNotice, "Time for 1s emulation : %i ticks -> Clock rate : %i ms - %i", elapsed - old, (elapsed - old), CCPUThrottle::Get()->GetMaxClockRate());
-         old = elapsed;
+
+            count = 0;
+
+            // Timing computation 
+            static unsigned old = 0;
+            unsigned elapsed = timer_->GetTicks();
+
+            logger_->Write("Kernel", LogNotice, "Time for 1s emulation : %i ticks -> Clock rate : %i", elapsed - old, CCPUThrottle::Get()->GetMaxClockRate());
+            old = elapsed;
+         }
+         else
+         {
+            count++;
+         }
 
       }
    }

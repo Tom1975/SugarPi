@@ -52,7 +52,7 @@ SoundPi::~SoundPi()
 void SoundPi::Initialize()
 {
 
-   sound_device_ = new CVCHIQSoundBaseDevice(vchiq_device_, 44100, CHUNK_SIZE, VCHIQSoundDestinationHeadphones);
+   sound_device_ = new CVCHIQSoundBaseDevice(vchiq_device_, 44100, CHUNK_SIZE, VCHIQSoundDestinationAuto);
 
    sound_device_->AllocateQueue(QUEUE_SIZE_MSECS);
    sound_device_->SetWriteFormat(SoundFormatSigned16, WRITE_CHANNELS);
