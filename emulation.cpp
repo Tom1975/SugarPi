@@ -224,18 +224,18 @@ void Emulation::RunMainLoop()
       // us
 #define TIME_SLOT  10000
       unsigned new_tick;
-      for (unsigned int i = 0; i < 10; i++)
+      //for (unsigned int i = 0; i < 10; i++)
       {
-         motherboard_->StartOptimizedPlus<true, false, false>(4 * TIME_SLOT);
+         motherboard_->StartOptimizedPlus<Motherboard::HW_PLUS>(4 * TIME_SLOT*10);
 
          new_tick = timer_->GetClockTicks();
-         if (new_tick - lasttick < i * TIME_SLOT)
+         //if (new_tick - lasttick < i * TIME_SLOT)
          {
-            timer_->SimpleusDelay(i*TIME_SLOT - (new_tick - lasttick)-1);
+            //timer_->SimpleusDelay(i*TIME_SLOT - (new_tick - lasttick)-1);
          }
       }
       lasttick = new_tick;
-
+      
       
       // Menu launched ?
       if (keyboard_->IsSelect())
