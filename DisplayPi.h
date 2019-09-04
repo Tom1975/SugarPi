@@ -11,7 +11,7 @@
 class DisplayPi : public IDisplay
 {
 public:
-   DisplayPi(CLogger* logger);
+   DisplayPi(CLogger* logger, CTimer* timer);
    virtual ~DisplayPi();
 
    bool Initialization();
@@ -67,8 +67,9 @@ public:
 protected:
    //CScreenDevice*		screen_;
    CLogger*          logger_;
-
+   CTimer*           timer_;
    CBcmFrameBuffer   frame_buffer_;
 
    unsigned int added_line_;
+   unsigned int last_tick_frame_;
 };

@@ -226,7 +226,7 @@ void Emulation::RunMainLoop()
       unsigned new_tick;
       //for (unsigned int i = 0; i < 10; i++)
       {
-         motherboard_->StartOptimizedPlus<Motherboard::HW_PLUS>(4 * TIME_SLOT*10);
+         motherboard_->StartOptimizedPlus<true, false, false>(4 * TIME_SLOT*100);
 
          new_tick = timer_->GetClockTicks();
          //if (new_tick - lasttick < i * TIME_SLOT)
@@ -251,13 +251,13 @@ void Emulation::RunMainLoop()
       }
       else
       {
-         if (count == 10)
+         if (count == 0)
          {
             // Temperature
             unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
             if (nCelsiusOldTmp != nCelsius)
             {
-               logger_->Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
+               //logger_->Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
                nCelsiusOldTmp = nCelsius;
             }
 
@@ -268,7 +268,7 @@ void Emulation::RunMainLoop()
             static unsigned old = 0;
             unsigned elapsed = timer_->GetTicks();
 
-            logger_->Write("Kernel", LogNotice, "Time for 1s emulation : %i ticks -> Clock rate : %i", elapsed - old, CCPUThrottle::Get()->GetMaxClockRate());
+            //logger_->Write("Kernel", LogNotice, "1s => %i ticks", elapsed - old);
             old = elapsed;
          }
          else

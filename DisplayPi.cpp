@@ -7,8 +7,9 @@
 #include "DisplayPi.h"
 
 
-DisplayPi::DisplayPi(CLogger* logger) : 
+DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
    logger_(logger),
+   timer_(timer),
    frame_buffer_(768, 277*2, 32, 1024, 1024),
    added_line_(1)
 {
@@ -86,9 +87,33 @@ struct TBlankScreen
 PACKED;
 void DisplayPi::VSync(bool dbg )
 {
-   added_line_ ^= 1;
+   //added_line_ ^= 1;
+   added_line_ = 1;
 
-   //frame_buffer_.WaitForVerticalSync();
+   static unsigned int count = 0;
+   static unsigned int max_tick = 0;
+   static unsigned int nb_long_frame = 0;
+   // If last frame is more than 20ms, just don't do it
+   
+   frame_buffer_.WaitForVerticalSync();
+   unsigned int new_tick = timer_->GetClockTicks();
+
+   if (new_tick - last_tick_frame_ > max_tick)
+      max_tick = new_tick - last_tick_frame_;
+
+   if (new_tick - last_tick_frame_ > 20500)
+   {
+      nb_long_frame++;
+   }
+   if (++count == 500)
+   {
+      logger_->Write("DIS", LogNotice, "500frame : max_frame : %i; Nb frames > 20ms : %i", max_tick, nb_long_frame);
+      max_tick = 0;
+      count = 0;
+      nb_long_frame = 0;
+   }
+   last_tick_frame_ = new_tick;
+   
 
 #define PROPTAG_BLANK_SCREEN	0x00040002
    /*CBcmPropertyTags Tags;

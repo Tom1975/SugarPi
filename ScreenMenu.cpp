@@ -269,7 +269,7 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
    for (int i = 0; i < display_->GetHeight(); i++)
    {
       int* line = display_->GetVideoBuffer(i);
-      memset(line, 0, sizeof(int) * display_->GetWidth());
+      memset(line, 0x0, sizeof(int) * display_->GetWidth());
       /*for (int x = 0; x < display_->GetWidth(); x++)
       {
          line[x] = 0; // ((i << 6) & 0xFF00) | ((x << 14) & 0xFF0000);
