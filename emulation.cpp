@@ -128,6 +128,12 @@ void Emulation::Run(unsigned nCore)
       RunMainLoop();
       logger_->Write("CORE", LogNotice, "Exiting...");
       break;
+   case 2:
+      // Display loop
+      logger_->Write("CORE", LogNotice, "Display Loop started");
+      display_->Loop();
+      logger_->Write("CORE", LogNotice, "Display Loop Ended");
+
    default:
       break;
    }
@@ -243,9 +249,13 @@ void Emulation::RunMainLoop()
          // do it !
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
 
+         display_->Lock();
+         //display_->GetFrameBuffer()->SetVirtualOffset(143, 47 / 2 );
+
          ScreenMenu menu(&log_ ,logger_, display_, keyboard_, motherboard_);
          menu.Handle();
 
+         display_->Unlock();
          keyboard_->ReinitSelect();
          CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
       }

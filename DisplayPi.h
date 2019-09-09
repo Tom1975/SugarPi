@@ -7,6 +7,7 @@
 
 #include "CPCCore/CPCCoreEmu/Screen.h"
 
+#define FRAME_BUFFER_SIZE 2
 
 class DisplayPi : public IDisplay
 {
@@ -64,12 +65,37 @@ public:
    virtual bool CanInsertBlackFrame() { return false; }
    virtual void Activate(bool on) {};
 
+   CBcmFrameBuffer* GetFrameBuffer() {
+      return &frame_buffer_;   }
+
+   void Lock() { mutex_.Acquire(); }
+   void Unlock() { mutex_.Release(); }
+
+   void Loop();
+
 protected:
    //CScreenDevice*		screen_;
-   CLogger*          logger_;
-   CTimer*           timer_;
+   CLogger* logger_;
+   CTimer* timer_;
    CBcmFrameBuffer   frame_buffer_;
+
+   CSpinLock   mutex_;
+
 
    unsigned int added_line_;
    unsigned int last_tick_frame_;
+
+   // Frame buffer availability
+   typedef enum
+   {
+      FR_FREE,
+      FR_USED,
+      FR_READY
+   } FrameState;
+   FrameState frame_used_[FRAME_BUFFER_SIZE];
+
+   unsigned int buffer_used_;
+   unsigned int frame_queue_[FRAME_BUFFER_SIZE];
+
+
 };

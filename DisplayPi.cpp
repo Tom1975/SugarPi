@@ -10,10 +10,16 @@
 DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
    logger_(logger),
    timer_(timer),
-   frame_buffer_(768, 277*2, 32, 1024, 1024),
-   added_line_(1)
+   frame_buffer_(768, 277*2, 32, 1024, 1024* FRAME_BUFFER_SIZE),
+   mutex_(IRQ_LEVEL),
+   added_line_(1),
+   buffer_used_(0)
 {
-   //screen_ = new CScreenDevice(1024, 768);
+   for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
+   {
+      frame_used_[i] = FR_FREE;
+   }
+   frame_used_[buffer_used_] = FR_USED;
 }
 
 DisplayPi::~DisplayPi()
@@ -85,17 +91,94 @@ struct TBlankScreen
 
 }
 PACKED;
+
+void DisplayPi::Loop()
+{
+   logger_->Write("DIS", LogNotice, "Starting loop");
+   // Waiting for a new frame to display
+   while (1)
+   {
+      // Display available frame
+      int frame_index = -1;
+      mutex_.Acquire();
+      for (int i = 0; i < FRAME_BUFFER_SIZE && frame_index==-1; i++)
+      {
+         if (frame_used_[i] == FR_READY)
+         {
+            // display it !
+            frame_index = i;
+            break;
+         }
+      }
+      mutex_.Release();
+      if (frame_index != -1)
+      {
+         frame_buffer_.SetVirtualOffset(143, 47 / 2 + frame_index * 1024);
+         frame_buffer_.WaitForVerticalSync();
+
+         // Set it as available
+         mutex_.Acquire();
+         frame_used_[frame_index] = FR_FREE;
+         mutex_.Release();
+      }
+      else
+      {
+         CTimer::Get()->MsDelay(1);
+      }
+
+      // sleep ?
+      
+   }
+}
+
 void DisplayPi::VSync(bool dbg )
 {
+   // Set current frame as ready
+   //logger_->Write("DIS", LogNotice, "VSync : Frame ready is %i", buffer_used_);
+
+   frame_used_[buffer_used_] = FR_READY;
+
+   // get a new one (or wait for one to be free)
+   bool found = false;
+   while (!found)
+   {
+      mutex_.Acquire();
+      for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
+      {
+         if (frame_used_[i] == FR_FREE)
+         {
+            frame_used_[i] = FR_USED;
+            buffer_used_ = i;
+            //logger_->Write("DIS", LogNotice, "VSync : Frame used  is %i", buffer_used_);
+            found = true;
+            break;
+         }
+      }
+      mutex_.Release();
+
+      if( !found)
+         CTimer::Get()->MsDelay(1);
+   }
+
+
    //added_line_ ^= 1;
+   //buffer_num_ ^= 1;
    added_line_ = 1;
 
-   static unsigned int count = 0;
-   static unsigned int max_tick = 0;
-   static unsigned int nb_long_frame = 0;
+//   static unsigned int count = 0;
+//   static unsigned int max_tick = 0;
+//   static unsigned int nb_long_frame = 0;
+
+   // Frame is ready
+
+   // wait for a new frame to be available
+
+
+
+
    // If last frame is more than 20ms, just don't do it
    
-   frame_buffer_.WaitForVerticalSync();
+   /*frame_buffer_.WaitForVerticalSync();
    unsigned int new_tick = timer_->GetClockTicks();
 
    if (new_tick - last_tick_frame_ > max_tick)
@@ -105,6 +188,7 @@ void DisplayPi::VSync(bool dbg )
    {
       nb_long_frame++;
    }
+  
    if (++count == 500)
    {
       logger_->Write("DIS", LogNotice, "500frame : max_frame : %i; Nb frames > 20ms : %i", max_tick, nb_long_frame);
@@ -113,7 +197,7 @@ void DisplayPi::VSync(bool dbg )
       nb_long_frame = 0;
    }
    last_tick_frame_ = new_tick;
-   
+   */
 
 #define PROPTAG_BLANK_SCREEN	0x00040002
    /*CBcmPropertyTags Tags;
@@ -150,6 +234,8 @@ int* DisplayPi::GetVideoBuffer(int y)
    y = y * 2 + added_line_;
 
    y &= 0x3FF;
+
+   y += buffer_used_ * 1024;
 
    return (int*)(frame_buffer_.GetBuffer() + y * frame_buffer_.GetPitch());
 

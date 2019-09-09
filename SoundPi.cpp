@@ -124,11 +124,11 @@ void SoundPi::AddBufferToPlay(IWaveHDR* wav)
    int frame_available = sound_device_->GetQueueFramesAvail();
 
    int nResult = sound_device_->Write(wav->data_, wav->buffer_length_);
-   if (nResult != wav->buffer_length_ && frame_available != nResult)
+   if (nResult != wav->buffer_length_ || frame_available == 0)
    {
-      //logger_->Write("Sound", LogNotice, "AddBufferToPlay : Available : %i, size %i, written : %i", frame_available, wav->buffer_length_, nResult);
+      logger_->Write("Sound", LogNotice, "Empty !");
    }
-   else
+   //else
    {
       if (!started_)
       {
