@@ -2,7 +2,7 @@
 # Makefile
 #
 
-CIRCLEHOME = ../circle-master
+CIRCLEHOME = ./circle
 
 OBJS	= main.o\
 		kernel.o\
@@ -17,7 +17,7 @@ OBJS	= main.o\
 		$(CIRCLEHOME)/addon/fatfs/diskio.o\
 		$(CIRCLEHOME)/addon/fatfs/ff.o\
 		$(CIRCLEHOME)/addon/fatfs/ffunicode.o\
-		$(CIRCLEHOME)/addon/fatfs/syscall.o\
+		$(CIRCLEHOME)/addon/fatfs/ffsystem.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
 		CPCCore/CPCCoreEmu/CAPSFile.o\
