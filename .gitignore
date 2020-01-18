@@ -7,3 +7,5 @@
 /.vs/**
 /kernel8.lst
 /kernel8.map
+/kernel7**
+pi2**
