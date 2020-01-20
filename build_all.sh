@@ -1,6 +1,7 @@
 ./build_pi1.sh
 ./build_pi2.sh
 ./build_pi3.sh
+./build_pi4.sh
 
 echo "*** copy boot to sdcard ***"
 cd circle/boot

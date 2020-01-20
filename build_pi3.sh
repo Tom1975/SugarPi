@@ -6,7 +6,6 @@ echo RASPPI = 3							>> Config.mk
 echo PREFIX64 = aarch64-elf-			>> Config.mk
 echo STDLIB_SUPPORT = 1					>> Config.mk
 echo DEFINE = -DARM_ALLOW_MULTI_CORE	>> Config.mk
-echo POSTFIX = ".exe" 					>> Config.mk
 
 cp Config.mk circle/.
 ./build_circle.sh

@@ -6,7 +6,6 @@ echo "*** Build Circle++ for Raspberry Pi 2 ***"
 echo RASPPI = 2 			 	> Config.mk
 echo PREFIX = arm-none-eabi- 	>> Config.mk
 echo STDLIB_SUPPORT = 1			>> Config.mk
-echo POSTFIX = ".exe" 			>> Config.mk
 
 cp Config.mk circle/.
 ./build_circle.sh
