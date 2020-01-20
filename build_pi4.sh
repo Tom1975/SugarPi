@@ -20,6 +20,6 @@ make
 if [ ! -d "sdcard" ]; then
   mkdir sdcard
 fi
-cp kernel7l.img sdcard/.
+cp kernel8-rpi4.img sdcard/.
 
 echo "*** End ***"
