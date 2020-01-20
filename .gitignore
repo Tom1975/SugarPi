@@ -9,3 +9,6 @@
 /kernel8.map
 /kernel7**
 pi2**
+/Config.mk
+/pi/**
+/sdcard/**

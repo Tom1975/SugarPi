@@ -92,6 +92,7 @@ boolean CKernel::Initialize (void)
    {
       bOK = m_Timer.Initialize();
    }
+
    if (bOK)
    {
       bOK = m_EMMC.Initialize();

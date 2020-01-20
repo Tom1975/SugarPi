@@ -31,7 +31,7 @@
 #include <circle/timer.h>
 #include <circle/logger.h>
 #include <circle/cputhrottle.h>
-#include <circle/usb/dwhcidevice.h>
+#include <circle/usb/usbhcidevice.h>
 #include <circle/exceptionhandler.h>
 #include <circle/sched/scheduler.h>
 
@@ -83,7 +83,7 @@ private:
    CInterruptSystem  m_Interrupt;
    CCPUThrottle      *cpu_throttle_;
    CEMMCDevice		   m_EMMC;
-   CDWHCIDevice      dwhci_device_;
+   CUSBHCIDevice		      dwhci_device_;
    CExceptionHandler * exception_handler_;
 
    CScheduler		   scheduler_;

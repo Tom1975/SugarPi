@@ -1,7 +1,7 @@
 #pragma once
 
 //
-#include <circle/usb/dwhcidevice.h>
+#include <circle/usb/usbhcidevice.h>
 #include <circle/usb/usbgamepad.h>
 #include <circle/devicenameservice.h>
 
@@ -11,7 +11,7 @@
 class KeyboardPi : public IKeyboardHandler
 {
 public:
-   KeyboardPi(CLogger* logger, CDWHCIDevice* dwhci_device, CDeviceNameService* device_name_service);
+   KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service);
    virtual ~KeyboardPi();
 
    virtual bool Initialize();
@@ -30,7 +30,7 @@ public:
 protected:
    CLogger*          logger_;
    CDeviceNameService* device_name_service_;
-   CDWHCIDevice		*dwhci_device_;
+   CUSBHCIDevice		*dwhci_device_;
    CUSBGamePadDevice* gamepad_;
 
    TGamePadState	    gamepad_state_;

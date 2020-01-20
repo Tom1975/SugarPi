@@ -1,12 +1,12 @@
-echo "*** Build target for Raspberry Pi 2 ***"
+echo "*** Build target for Raspberry Pi ***"
 
 # Build Circle++
-echo "*** Build Circle++ for Raspberry Pi 2 ***"
+echo "*** Build Circle++ for Raspberry Pi ***"
 
-echo RASPPI = 2 			 	> Config.mk
+echo RASPPI = 1 			 	> Config.mk
 echo PREFIX = arm-none-eabi- 	>> Config.mk
 echo STDLIB_SUPPORT = 1			>> Config.mk
-echo POSTFIX = ".exe" 			>> Config.mk
+echo POSTFIX = ".exe"			>> Config.mk
 
 cp Config.mk circle/.
 ./build_circle.sh
@@ -19,6 +19,6 @@ make
 if [ ! -d "sdcard" ]; then
   mkdir sdcard
 fi
-cp kernel7.img sdcard/.
+cp kernel.img sdcard/.
 
 echo "*** End ***"
