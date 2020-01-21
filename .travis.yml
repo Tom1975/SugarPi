@@ -7,8 +7,16 @@ git:
 before_install:
 #g++ 8
 - echo 'Installing ARM toolchain'
-- sudo apt install gcc-arm-none-eabi
-
+#- sudo apt install gcc-arm-none-eabi
+- wget https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi.tar.xz?revision=64186c5d-b471-4c97-a8f5-b1b300d6594a&la=en&hash=5E9204DA5AF0B055B5B0F50C53E185FAA10FF625
+- wget https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz?revision=ea238776-c7c7-43be-ba0d-40d7f594af1f&la=en&hash=2937ED76D3E6B85BA511BCBD46AE121DBA5268F3
+- tar xvzf gcc-arm-9.2-2019.12-x86_64-arm-none-eabi.tar.xz
+- tar xvzf gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
+- export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin:$PATH
+- export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH
+- echo $PATH
+- arm-none-eabi-gcc
+- arm-none-elf-gcc
 
 script:
 - ./build_all.sh
