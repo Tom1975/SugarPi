@@ -16,8 +16,6 @@ before_install:
 - export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin:$PATH
 - export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH
 - echo $PATH
-- arm-none-eabi-gcc
-- arm-none-elf-gcc
 
 script:
 - ./build_all.sh
