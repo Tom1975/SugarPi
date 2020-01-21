@@ -2,7 +2,7 @@
 # Makefile
 #
 
-CIRCLEHOME = ../circle-master
+CIRCLEHOME = ./circle
 
 OBJS	= main.o\
 		kernel.o\
@@ -17,7 +17,7 @@ OBJS	= main.o\
 		$(CIRCLEHOME)/addon/fatfs/diskio.o\
 		$(CIRCLEHOME)/addon/fatfs/ff.o\
 		$(CIRCLEHOME)/addon/fatfs/ffunicode.o\
-		$(CIRCLEHOME)/addon/fatfs/syscall.o\
+		$(CIRCLEHOME)/addon/fatfs/ffsystem.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
 		CPCCore/CPCCoreEmu/CAPSFile.o\
@@ -89,7 +89,7 @@ LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
          $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a
 
 
-include Rules.mk
+include circle/Rules.mk
 
 CFLAGS	+= -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC 
 CPPFLAGS += -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -std=c++1z

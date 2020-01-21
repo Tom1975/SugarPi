@@ -126,7 +126,7 @@ void SoundPi::AddBufferToPlay(IWaveHDR* wav)
    int nResult = sound_device_->Write(wav->data_, wav->buffer_length_);
    if (nResult != wav->buffer_length_ || frame_available == 0)
    {
-      logger_->Write("Sound", LogNotice, "Empty !");
+      //logger_->Write("Sound", LogNotice, "Empty !");
    }
    //else
    {
