@@ -1,0 +1,22 @@
+language: cpp
+dist: xenial
+language: cpp
+
+git:
+  depth: 1
+before_install:
+#g++ 8
+- echo 'Installing ARM toolchain'
+- sudo apt install gcc-arm-none-eabi
+
+
+script:
+- ./build_all.sh
+- ls sd_card -l
+
+deploy:
+  provider: releases
+  api_key: "$GITHUB_OAUTH_TOKEN"
+  file: Sugarbox
+  skip_cleanup: true
+  draft: true
