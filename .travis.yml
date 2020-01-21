@@ -26,7 +26,7 @@ before_install:
   
 script:
 - ./build_all.sh
-- ls sd_card -l
+- ls sdcard -l
 
 deploy:
   provider: releases
