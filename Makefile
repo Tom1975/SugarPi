@@ -13,11 +13,6 @@ OBJS	= main.o\
 		SoundPi.o\
 		ScreenMenu.o\
 		res/coolspot.o\
-		$(CIRCLEHOME)/addon/SDCard/emmc.o\
-		$(CIRCLEHOME)/addon/fatfs/diskio.o\
-		$(CIRCLEHOME)/addon/fatfs/ff.o\
-		$(CIRCLEHOME)/addon/fatfs/ffunicode.o\
-		$(CIRCLEHOME)/addon/fatfs/ffsystem.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
 		CPCCore/CPCCoreEmu/CAPSFile.o\
@@ -86,7 +81,9 @@ LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
          $(CIRCLEHOME)/lib/sched/libsched.a \
          $(CIRCLEHOME)/addon/linux/liblinuxemu.a \
          $(CIRCLEHOME)/addon/vc4/sound/libvchiqsound.a \
-         $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a
+         $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a\
+			$(CIRCLEHOME)/addon/SDCard/libsdcard.a\
+			$(CIRCLEHOME)/addon/fatfs/libfatfs.a
 
 
 include circle/Rules.mk
