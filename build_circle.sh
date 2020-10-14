@@ -1,5 +1,6 @@
 echo "*** Build Circle ***"
 
+cp Rules.mk circle
 cd circle
 
 ./makeall clean
@@ -20,6 +21,7 @@ make
 cd ../vc4/sound
 make clean
 make
+
 cd ../vchiq
 make clean
 make
