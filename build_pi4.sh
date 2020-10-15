@@ -1,4 +1,4 @@
-echo "*** Build target for Raspberry Pi 3 ***"
+echo "*** Build target for Raspberry Pi 4 ***"
 
 # Set arch
 echo AARCH = 64							> Config.mk

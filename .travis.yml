@@ -26,11 +26,12 @@ before_install:
   
 script:
 - ./build_all.sh
-- ls sdcard -l
+# zip the result in a single archive
+- tar -czvf sugarpi.gz $(pwd)/sdcard
 
 deploy:
   provider: releases
   api_key: "$GITHUB_OAUTH_TOKEN"
-  file: Sugarbox
+  file: sugarpi.gz
   skip_cleanup: true
   draft: true
