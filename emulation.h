@@ -37,10 +37,10 @@ public:
 protected:
    int LoadCprFromBuffer(unsigned char* buffer, int size);
 
-   CLogger* logger_;
-   CTimer*  timer_;
+   CLogger*          logger_;
+   CTimer*           timer_;
    FATFS			      m_FileSystem;
-
+   CSpinLock         sound_mutex_;
 
    Motherboard*      motherboard_;
    DisplayPi*        display_;

@@ -93,9 +93,9 @@ protected:
       FR_READY
    } FrameState;
    FrameState frame_used_[FRAME_BUFFER_SIZE];
-
    unsigned int buffer_used_;
-   unsigned int frame_queue_[FRAME_BUFFER_SIZE];
 
+   unsigned int frame_queue_[FRAME_BUFFER_SIZE];
+   unsigned int nb_frame_in_queue_;
 
 };

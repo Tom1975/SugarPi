@@ -16,7 +16,8 @@ Emulation::Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer)
    display_(nullptr),
    sound_mixer_(nullptr),
    sound_(nullptr),
-   sound_is_ready(false)
+   sound_is_ready(false),
+   sound_mutex_(IRQ_LEVEL),
 {
    sound_mixer_ = new SoundMixer();
 }
@@ -112,22 +113,31 @@ void Emulation::Run(unsigned nCore)
    {
    case 0:
       // Run sound loop
+      sound_mutex_.Acquire();
       sound_is_ready = true;
+      sound_mutex_.Release();
       sound_mixer_->PrepareBufferThread();
       break;
    case 1:
-      // Run sound loop 
-      while (!sound_is_ready)
+      // Run Main loop
       {
-         // Checkin for sound is ready
-         CTimer::Get ()->MsDelay (50);
-         logger_->Write("CORE", LogNotice, "Waiting to start....");
-      }
+         bool exit_loop = false;
+         while (!exit_loop )
+         {
+            sound_mutex_.Acquire();
+            exit_loop = sound_is_ready;
+            sound_mutex_.Release();
 
-      logger_->Write("CORE", LogNotice, "Main loop");
-      RunMainLoop();
-      logger_->Write("CORE", LogNotice, "Exiting...");
-      break;
+            // Checkin for sound is ready
+            CTimer::Get ()->MsDelay (50);
+            logger_->Write("CORE", LogNotice, "Waiting to start....");
+         }
+
+         logger_->Write("CORE", LogNotice, "Main loop");
+         RunMainLoop();
+         logger_->Write("CORE", LogNotice, "Exiting...");
+         break;
+      }
    case 2:
       // Display loop
       logger_->Write("CORE", LogNotice, "Display Loop started");

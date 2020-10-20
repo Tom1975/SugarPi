@@ -13,7 +13,8 @@ DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
    frame_buffer_(768, 277*2, 32, 1024, 1024* FRAME_BUFFER_SIZE),
    mutex_(IRQ_LEVEL),
    added_line_(1),
-   buffer_used_(0)
+   buffer_used_(0),
+   nb_frame_in_queue_(0)
 {
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
@@ -60,7 +61,7 @@ void DisplayPi::Config()
 const char* DisplayPi::GetInformations()
 {
    logger_->Write("Display", LogNotice, "Get Information ");
-   return "Display for Raspberry PI3 - Bare metal";
+   return "Display for Raspberry PI - Bare metal";
 }
 
 int DisplayPi::GetWidth()
@@ -101,7 +102,13 @@ void DisplayPi::Loop()
       // Display available frame
       int frame_index = -1;
       mutex_.Acquire();
-      for (int i = 0; i < FRAME_BUFFER_SIZE && frame_index==-1; i++)
+      if (nb_frame_in_queue_ > 0)
+      {
+         frame_index = frame_queue_[0];
+         nb_frame_in_queue_--;
+         memmove (frame_queue_, &frame_queue_[1], nb_frame_in_queue_*sizeof(unsigned int));
+      }
+      /*for (int i = 0; i < FRAME_BUFFER_SIZE && frame_index==-1; i++)
       {
          if (frame_used_[i] == FR_READY)
          {
@@ -109,7 +116,7 @@ void DisplayPi::Loop()
             frame_index = i;
             break;
          }
-      }
+      }*/
       mutex_.Release();
       if (frame_index != -1)
       {
@@ -136,29 +143,30 @@ void DisplayPi::VSync(bool dbg )
    // Set current frame as ready
    //logger_->Write("DIS", LogNotice, "VSync : Frame ready is %i", buffer_used_);
 
-   frame_used_[buffer_used_] = FR_READY;
+   mutex_.Acquire();
+
 
    // get a new one (or wait for one to be free)
    bool found = false;
-   while (!found)
-   {
-      mutex_.Acquire();
-      for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
-      {
-         if (frame_used_[i] == FR_FREE)
-         {
-            frame_used_[i] = FR_USED;
-            buffer_used_ = i;
-            //logger_->Write("DIS", LogNotice, "VSync : Frame used  is %i", buffer_used_);
-            found = true;
-            break;
-         }
-      }
-      mutex_.Release();
 
-      if( !found)
-         CTimer::Get()->MsDelay(1);
+   for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
+   {
+      if (frame_used_[i] == FR_FREE)
+      {
+         frame_queue_[nb_frame_in_queue_++] = buffer_used_;
+         frame_used_[buffer_used_] = FR_READY;
+
+         frame_used_[i] = FR_USED;
+         buffer_used_ = i;
+         //logger_->Write("DIS", LogNotice, "VSync : Frame used  is %i", buffer_used_);
+         found = true;
+         break;
+      }
    }
+
+   mutex_.Release();
+
+
 
 
    //added_line_ ^= 1;
