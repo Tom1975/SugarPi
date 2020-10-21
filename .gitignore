@@ -12,3 +12,6 @@ pi2**
 /Config.mk
 /pi/**
 /sdcard/**
+
+/.vscode/settings.json
+/.vscode/**
