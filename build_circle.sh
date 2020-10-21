@@ -26,5 +26,8 @@ cd ../vchiq
 make clean
 make
 
+cd ../../boot
+make clean
+make
 
 echo "*** End of Circle build ***"

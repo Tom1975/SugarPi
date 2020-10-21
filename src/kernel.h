@@ -40,8 +40,8 @@
 #include <vc4/sound/vchiqsounddevice.h>
 #include <fatfs/ff.h>
 
-#include "CPCCore/CPCCoreEmu/Motherboard.h"
-#include "CPCCore/CPCCoreEmu/SoundMixer.h"
+#include <CPCCore/CPCCoreEmu/Motherboard.h>
+#include <CPCCore/CPCCoreEmu/SoundMixer.h>
 
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
