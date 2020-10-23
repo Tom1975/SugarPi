@@ -109,6 +109,7 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
 
 void Emulation::Run(unsigned nCore)
 {
+#ifdef ARM_ALLOW_MULTI_CORE
    switch (nCore)
    {
    case 0:
@@ -132,10 +133,11 @@ void Emulation::Run(unsigned nCore)
             CTimer::Get ()->MsDelay (50);
             logger_->Write("CORE", LogNotice, "Waiting to start....");
          }
-
+#endif
          logger_->Write("CORE", LogNotice, "Main loop");
          RunMainLoop();
          logger_->Write("CORE", LogNotice, "Exiting...");
+#ifdef ARM_ALLOW_MULTI_CORE
          break;
       }
    case 2:
@@ -147,7 +149,7 @@ void Emulation::Run(unsigned nCore)
    default:
       break;
    }
-
+#endif
 }
 
 

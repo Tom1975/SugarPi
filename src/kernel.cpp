@@ -64,10 +64,12 @@ boolean CKernel::Initialize (void)
    if (bOK)
    {
       bOK = display_->Initialization();
+     
    }
    if (bOK)
    {
       bOK = m_Serial.Initialize(115200);
+      
    }
 
    if (bOK)
@@ -86,16 +88,19 @@ boolean CKernel::Initialize (void)
    if (bOK)
    {
       bOK = m_Interrupt.Initialize();
+      m_Logger.Write("Kernel", LogNotice, "Interrupt initialization done : %i", bOK);
    }
 
    if (bOK)
    {
       bOK = m_Timer.Initialize();
+      m_Logger.Write("Kernel", LogNotice, "Timer initialization done : %i", bOK);
    }
 
    if (bOK)
    {
       bOK = m_EMMC.Initialize();
+      m_Logger.Write("Kernel", LogNotice, "EMMC initialization done : %i", bOK);
    }
 
    m_Logger.Write("Kernel", LogNotice, "Initialisation of VCHIQ.....");
