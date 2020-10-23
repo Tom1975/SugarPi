@@ -101,12 +101,9 @@ void DisplayPi::Loop()
    {
       // Display available frame
       int frame_index = -1;
-      //mutex_.Acquire();
+      mutex_.Acquire();
       if (nb_frame_in_queue_ > 0)
-      //while (nb_frame_in_queue_ == 0)
       {
-      /*   CTimer::Get()->MsDelay(1);
-      }*/
          frame_index = frame_queue_[0];
          nb_frame_in_queue_--;
          memmove (frame_queue_, &frame_queue_[1], nb_frame_in_queue_*sizeof(unsigned int));
@@ -120,7 +117,7 @@ void DisplayPi::Loop()
             break;
          }
       }*/
-      //mutex_.Release();
+      mutex_.Release();
       if (frame_index != -1)
       {
          frame_buffer_.SetVirtualOffset(143, 47 / 2 + frame_index * 1024);
@@ -146,6 +143,7 @@ void DisplayPi::VSync(bool dbg )
    // Set current frame as ready
    //logger_->Write("DIS", LogNotice, "VSync : Frame ready is %i", buffer_used_);
 
+#ifndef USE_QEMU_SUGARPI
    mutex_.Acquire();
 
 
@@ -168,7 +166,11 @@ void DisplayPi::VSync(bool dbg )
    }
 
    mutex_.Release();
+#else
+   frame_buffer_.SetVirtualOffset(143, 47 / 2  * 1024);
+   frame_buffer_.WaitForVerticalSync();
 
+#endif
 
 
 

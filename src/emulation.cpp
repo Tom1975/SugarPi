@@ -261,13 +261,13 @@ void Emulation::RunMainLoop()
          // do it !
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
 
-         display_->Lock();
+         //display_->Lock();
          //display_->GetFrameBuffer()->SetVirtualOffset(143, 47 / 2 );
 
          ScreenMenu menu(&log_ ,logger_, display_, keyboard_, motherboard_);
          menu.Handle();
 
-         display_->Unlock();
+         //display_->Unlock();
          keyboard_->ReinitSelect();
          CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
       }

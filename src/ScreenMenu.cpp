@@ -277,7 +277,6 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
    }
 
    DisplayText("SugarPi", 450, 47, false);
-
    unsigned int i = 0;
 
    while (menu[i + index_base_].label_ != nullptr && i < MAX_ITEM_PER_PAGE)
@@ -288,12 +287,14 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
       // log
       i++;
    }
+   display_->VSync();
 }
 
 void ScreenMenu::Handle()
 {
    // Display menu
    DisplayMenu(current_menu_);
+
 
    // Reinit actions
    resume_ = false;
@@ -305,14 +306,17 @@ void ScreenMenu::Handle()
       // Any key pressed ?
       if (keyboard_->IsDown())
       {
+         logger_->Write("Menu", LogNotice, "Down");
          Down();
       }
       if (keyboard_->IsUp())
       {
+         logger_->Write("Menu", LogNotice, "Up");
          Up();
       }
       if (keyboard_->IsAction())
       {
+         logger_->Write("Menu", LogNotice, "Select");
          Select();
       }
 
