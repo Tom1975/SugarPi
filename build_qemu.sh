@@ -7,7 +7,7 @@ echo PREFIX64 = aarch64-elf-   	>> Config.mk
 echo STDLIB_SUPPORT = 1					      >> Config.mk
 echo POSTFIX = .exe 					        >> Config.mk
 echo CHECK_DEPS = 0                   >> Config.mk
-echo DEFINE = -DUSE_QEMU_SUGARPI -DARM_ALLOW_MULTI_CORE -DNO_SDHOST -DUSE_QEMU_USB_FIX >> Config.mk
+echo DEFINE = -DUSE_QEMU_SUGARPI -DNO_SDHOST -DUSE_QEMU_USB_FIX >> Config.mk
 
 cp Config.mk circle/.
 ./build_circle.sh

@@ -103,6 +103,7 @@ boolean CKernel::Initialize (void)
       m_Logger.Write("Kernel", LogNotice, "EMMC initialization done : %i", bOK);
    }
 
+#ifndef USE_QEMU_SUGARPI
    m_Logger.Write("Kernel", LogNotice, "Initialisation of VCHIQ.....");
    if (bOK)
    {
@@ -119,7 +120,7 @@ boolean CKernel::Initialize (void)
    {
       bOK = keyboard_->Initialize();
    }
-
+#endif
    if (bOK)
    {
       m_Logger.Write("Kernel", LogNotice, "Initialisation emulation.....");
