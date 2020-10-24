@@ -16,6 +16,7 @@ public:
    virtual ~DisplayPi();
 
    bool Initialization();
+   void SyncWithFrame (bool set){sync_on_frame_ = set;}
    //CScreenDevice* GetScreenDevice() { return screen_; }
 
    virtual void SetScanlines(int scan);
@@ -81,7 +82,6 @@ protected:
 
    CSpinLock   mutex_;
 
-
    unsigned int added_line_;
    unsigned int last_tick_frame_;
 
@@ -98,4 +98,5 @@ protected:
    unsigned int frame_queue_[FRAME_BUFFER_SIZE];
    unsigned int nb_frame_in_queue_;
 
+   bool sync_on_frame_;
 };

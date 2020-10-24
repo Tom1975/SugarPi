@@ -24,6 +24,7 @@ public:
 
    int Resume();
    int InsertCartridge();
+   int SugarPiSetup();
    int HardwareSetup();
    int Reset();
    int ShutDown();

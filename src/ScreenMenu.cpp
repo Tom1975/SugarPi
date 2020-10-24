@@ -23,10 +23,11 @@ ScreenMenu::MenuItem base_menu[] =
 {
    { "Resume",             &ScreenMenu::Resume},
    { "Insert Cartridge",   &ScreenMenu::InsertCartridge},
+   { "SugarPi Setup",      &ScreenMenu::SugarPiSetup},
    { "Hardware Setup",     &ScreenMenu::HardwareSetup},
-   { "Reset",              &ScreenMenu::Reset},
    { "Quick Save",         &ScreenMenu::Save},
    { "Quick Load",         &ScreenMenu::Load},
+   { "Reset",              &ScreenMenu::Reset},
    { "Shutdown",           &ScreenMenu::ShutDown},
    { nullptr, nullptr}
 };
@@ -168,6 +169,13 @@ int ScreenMenu::InsertCartridge()
    return 0;
 }
 
+int ScreenMenu::SugarPiSetup()
+{
+   logger_->Write("Menu", LogNotice, "ACTION : Select Sugarpi setup");
+   return 0;
+}
+
+
 int ScreenMenu::HardwareSetup()
 {
    logger_->Write("Menu", LogNotice, "ACTION : Select setup");
@@ -218,14 +226,20 @@ void ScreenMenu::DisplayText(const char* txt, int x, int y, bool selected)
       // Display character
       unsigned char c = txt[i];
 
-      // Look for proper bitmap position (on first line only)
-      for (int display_y = 0; display_y < font.GetLetterHeight(c); display_y++)
+      if ( c == ' ')
       {
-         int* line = display_->GetVideoBuffer(display_y + y);
-         font.CopyLetter(c, display_y, &line[x + x_offset_output], logger_);
+         x_offset_output += 10;
       }
-      x_offset_output += font.GetLetterLength(c);
-
+      else
+      {
+         // Look for proper bitmap position (on first line only)
+         for (int display_y = 0; display_y < font.GetLetterHeight(c); display_y++)
+         {
+            int* line = display_->GetVideoBuffer(display_y + y);
+            font.CopyLetter(c, display_y, &line[x + x_offset_output], logger_);
+         }
+         x_offset_output += font.GetLetterLength(c);
+      }
       i++;
       
    }
