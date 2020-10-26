@@ -15,9 +15,18 @@
 #define CHUNK_SIZE		4000
 #define WRITE_CHANNELS	2
 
-SoundPi::SoundPi(CLogger* logger, CVCHIQDevice* vchiq_device):
+#ifdef USE_VCHIQ_SOUND
+SoundPi::SoundPi(CLogger* logger, CVCHIQDevice* vchiq_device, CScheduler* scheduler):
+#else
+SoundPi::SoundPi(CLogger* logger, CInterruptSystem* interrupt, CScheduler* scheduler):
+#endif
    logger_(logger),
+   scheduler_(scheduler),
+#ifdef USE_VCHIQ_SOUND   
    vchiq_device_(vchiq_device),
+ #else
+   interrupt_(interrupt),
+ #endif
    sound_device_(nullptr),
    queue_size_frames_(0),
    started_(false),
@@ -51,13 +60,19 @@ SoundPi::~SoundPi()
 
 void SoundPi::Initialize()
 {
+#ifdef USE_VCHIQ_SOUND
+   sound_device_ = new CVCHIQSoundBaseDevice(vchiq_device_, SOUND_RATE, CHUNK_SIZE, VCHIQSoundDestinationAuto);
+#else
+   sound_device_ = new CPWMSoundBaseDevice (interrupt_, SOUND_RATE, CHUNK_SIZE);
+ #endif
 
-   sound_device_ = new CVCHIQSoundBaseDevice(vchiq_device_, 44100, CHUNK_SIZE, VCHIQSoundDestinationAuto);
-
-   sound_device_->AllocateQueue(QUEUE_SIZE_MSECS);
+   if (!sound_device_->AllocateQueue(QUEUE_SIZE_MSECS))
+   {
+      logger_->Write ("Sound", LogPanic, "Cannot allocate sound queue");
+   }
    sound_device_->SetWriteFormat(SoundFormatSigned16, WRITE_CHANNELS);
    queue_size_frames_ = sound_device_->GetQueueSizeFrames();
-
+   logger_->Write("Sound", LogNotice, "queue_size_frames_ : %i", queue_size_frames_);
    logger_->Write("Sound", LogNotice, "GetRangeMin : %i", sound_device_->GetRangeMin());
    logger_->Write("Sound", LogNotice, "GetRangeMax : %i", sound_device_->GetRangeMax());
    
@@ -112,6 +127,7 @@ IWaveHDR* SoundPi::GetFreeBuffer()
    {
       if (data_[i].status_ == IWaveHDR::UNUSED)
       {
+         //logger_->Write("Sound", LogNotice, "Free buffer found : %i", i);
          data_[i].status_ = IWaveHDR::USED;
          return &data_[i];
       }
@@ -121,12 +137,20 @@ IWaveHDR* SoundPi::GetFreeBuffer()
 
 void SoundPi::AddBufferToPlay(IWaveHDR* wav)
 {
-   int frame_available = sound_device_->GetQueueFramesAvail();
 
-   int nResult = sound_device_->Write(wav->data_, wav->buffer_length_);
-   if (nResult != wav->buffer_length_ || frame_available == 0)
+   int frame_available = sound_device_->GetQueueFramesAvail();
+   int lenght_written = 0;
+   while ( lenght_written != wav->buffer_length_)
    {
-      //logger_->Write("Sound", LogNotice, "Empty !");
+       lenght_written += sound_device_->Write(&wav->data_[ lenght_written], wav->buffer_length_- lenght_written);   
+       //logger_->Write("Sound", LogNotice, "Write :  %i / %i", lenght_written, wav->buffer_length_);
+       scheduler_->Yield();
+   }
+   //logger_->Write("Sound", LogNotice, "Frame written !");
+   //int nResult = sound_device_->Write(wav->data_, wav->buffer_length_);
+   if (lenght_written != wav->buffer_length_ /*|| frame_available == 0*/)
+   {
+      logger_->Write("Sound", LogNotice, "frame_available = %i ; nResult = %i, buffer_length = %i", frame_available, lenght_written, wav->buffer_length_);
    }
    //else
    {
@@ -142,7 +166,7 @@ void SoundPi::AddBufferToPlay(IWaveHDR* wav)
    }
    if (sound_device_->IsActive() == false)
    {
-      logger_->Write("Sound", LogNotice, "AddBufferToPlay : Available : %i, size %i, written : %i", frame_available, wav->buffer_length_, nResult);
+      logger_->Write("Sound", LogNotice, "AddBufferToPlay : Available : %i, size %i, written : %i", frame_available, wav->buffer_length_, lenght_written);
       logger_->Write("Sound", LogPanic, "Sound no longer active ?!");;
    }
       

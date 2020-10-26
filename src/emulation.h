@@ -7,6 +7,7 @@
 #include <circle/timer.h>
 #include <circle/logger.h>
 #include <circle/cputhrottle.h>
+#include <circle/sched/scheduler.h>
 
 #include <SDCard/emmc.h>
 #include <fatfs/ff.h>
@@ -29,7 +30,7 @@ public:
    Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer);
    ~Emulation(void);
 
-   boolean Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keyboard);
+   boolean Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keyboard,CScheduler	*scheduler);
    void Run(unsigned nCore);
    void RunMainLoop();
 
@@ -41,6 +42,7 @@ protected:
    CTimer*           timer_;
    FATFS			      m_FileSystem;
    CSpinLock         sound_mutex_;
+   CScheduler*       scheduler_;
 
    Motherboard*      motherboard_;
    DisplayPi*        display_;

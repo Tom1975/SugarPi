@@ -27,12 +27,13 @@ Emulation::~Emulation(void)
    delete motherboard_;
 }
 
-boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keyboard)
+boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keyboard, CScheduler	*scheduler)
 {
    log_.SetLogger(logger_);
    sound_ = sound;
    display_ = display;
    keyboard_ = keyboard;
+   scheduler_ = scheduler;
 
    sound_mixer_->Init(sound_, nullptr);
    motherboard_ = new Motherboard(sound_mixer_, keyboard_);
@@ -114,10 +115,17 @@ void Emulation::Run(unsigned nCore)
    {
    case 0:
       // Run sound loop
-      sound_mutex_.Acquire();
+      //sound_mutex_.Acquire();
       sound_is_ready = true;
-      sound_mutex_.Release();
-      sound_mixer_->PrepareBufferThread();
+      //sound_mutex_.Release();
+      logger_->Write("Sound", LogNotice, "SoundMixer Started");
+      while(1)
+      {
+         sound_mixer_->PrepareBufferThread();
+         scheduler_->Yield();
+      }
+      
+      logger_->Write("Sound", LogNotice, "SoundMixer Ended");
       break;
    case 1:
       // Run Main loop

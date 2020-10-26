@@ -111,7 +111,12 @@ boolean CKernel::Initialize (void)
    }
    m_Logger.Write("Kernel", LogNotice, "Initialisationfoe Done : %i", bOK);
 
-   sound_ = new SoundPi(&m_Logger, &vchiq_);
+#ifdef USE_VCHIQ_SOUND   
+   sound_ = new SoundPi(&m_Logger, &vchiq_, &scheduler_);
+#else
+   sound_ = new SoundPi(&m_Logger, &m_Interrupt, &scheduler_);
+#endif
+
    m_Logger.Write("Kernel", LogNotice, "Creating SoundPI");
    sound_->Initialize();
    m_Logger.Write("Kernel", LogNotice, "SoundPI Initialized !");
@@ -124,7 +129,7 @@ boolean CKernel::Initialize (void)
    if (bOK)
    {
       m_Logger.Write("Kernel", LogNotice, "Initialisation emulation.....");
-      bOK = emulation_.Initialize(display_, sound_, keyboard_);	// must be initialized at last
+      bOK = emulation_.Initialize(display_, sound_, keyboard_, &scheduler_);	// must be initialized at last
       m_Logger.Write("Kernel", LogNotice, "Initialisation done done !");
    }
 
@@ -143,10 +148,10 @@ TShutdownMode CKernel::Run (void)
 
    m_Logger.Write("Kernel", LogNotice, "Entering running mode...");
 
-   while (1)
+   //while (1)
    {
       emulation_.Run(0);
-      scheduler_.Yield();
+      //scheduler_.Yield();
    }
 
 
