@@ -172,6 +172,7 @@ int ScreenMenu::InsertCartridge()
 int ScreenMenu::SugarPiSetup()
 {
    logger_->Write("Menu", LogNotice, "ACTION : Select Sugarpi setup");
+   
    return 0;
 }
 

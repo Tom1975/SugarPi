@@ -98,6 +98,7 @@ void DisplayPi::Loop()
 {
    logger_->Write("DIS", LogNotice, "Starting loop");
    // Waiting for a new frame to display
+   int old_frame_index = -1;
    while (1)
    {
       // Display available frame
@@ -105,25 +106,36 @@ void DisplayPi::Loop()
       mutex_.Acquire();
       if (nb_frame_in_queue_ > 0)
       {
+         /*if ( old_frame_index != -1)
+         {
+            frame_used_[old_frame_index] = FR_FREE;
+         }*/
          frame_index = frame_queue_[0];
          nb_frame_in_queue_--;
          memmove (frame_queue_, &frame_queue_[1], nb_frame_in_queue_*sizeof(unsigned int));
-      }
-      mutex_.Release();
-      if (frame_index != -1)
-      {
-         frame_buffer_.SetVirtualOffset(143, 47 / 2 + frame_index * 1024);
-         frame_buffer_.WaitForVerticalSync();
-         // Set it as available
-         mutex_.Acquire();
-         frame_used_[frame_index] = FR_FREE;
-         mutex_.Release();
+         
+         //if (frame_index != -1)
+         {
+            //logger_->Write("DIS", LogNotice, "Loop : display %i - nb_frame_in_queue_ : %i", frame_index, nb_frame_in_queue_);
+            mutex_.Release();
+            frame_buffer_.SetVirtualOffset(143, 47 / 2 + frame_index * 1024);
+            frame_buffer_.WaitForVerticalSync();
+            // Set it as available
+            frame_used_[frame_index] = FR_FREE;
+            //old_frame_index = frame_index;
+         }
+         /*else
+         {
+            mutex_.Release();
+            logger_->Write("DIS", LogNotice, "No buffer to display");
+            CTimer::Get()->MsDelay(1);
+         }*/
       }
       else
       {
+         mutex_.Release();
          CTimer::Get()->MsDelay(1);
       }
-
       // sleep ?
       
    }
@@ -136,17 +148,14 @@ void DisplayPi::VSync(bool dbg )
 
 #ifndef USE_QEMU_SUGARPI
 
-   if (sync_on_frame_)
+   if (true /*sync_on_frame_*/)
    {
       frame_buffer_.SetVirtualOffset(143, 47 / 2 + buffer_used_ * 1024);
-      frame_buffer_.WaitForVerticalSync();
+      if (sync_on_frame_)frame_buffer_.WaitForVerticalSync();
    }
    else
    {
-
       mutex_.Acquire();
-
-
       // get a new one (or wait for one to be free)
       bool found = false;
 
@@ -156,14 +165,16 @@ void DisplayPi::VSync(bool dbg )
          {
             frame_queue_[nb_frame_in_queue_++] = buffer_used_;
             frame_used_[buffer_used_] = FR_READY;
+            //logger_->Write("DIS", LogNotice, "VSync : Add %i - nb_frame_in_queue_ : %i", buffer_used_, nb_frame_in_queue_);
 
             frame_used_[i] = FR_USED;
             buffer_used_ = i;
-            //logger_->Write("DIS", LogNotice, "VSync : Frame used  is %i", buffer_used_);
             found = true;
             break;
          }
       }
+      if (!found)
+         logger_->Write("DIS", LogNotice, "All buffers are used");
       mutex_.Release();
    }
 #else
