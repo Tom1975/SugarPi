@@ -21,7 +21,6 @@ if [ ! -d "sdcard" ]; then
   mkdir sdcard
 fi
 
-cp circle/boot/* sdcard/pi3
 cp kernel8.img sdcard/pi3
 
 

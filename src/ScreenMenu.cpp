@@ -31,9 +31,10 @@ ScreenMenu::MenuItem base_menu[] =
    { nullptr, nullptr}
 };
 
-ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, KeyboardPi* keyboard, Motherboard* motherboard) :
+ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard) :
    logger_(logger),
    display_(display),
+   sound_mixer_(sound_mixer),
    keyboard_(keyboard),
    //BaseMenu(logger),
    current_menu_(base_menu),
@@ -45,11 +46,29 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, KeyboardP
    font_ = new CoolspotFont(logger_);
    snapshot_ = new CSnapshot(log);
    snapshot_->SetMachine(motherboard_);
+   sugarpi_setup_menu_ = new MenuItem[3];
+   sugarpi_setup_menu_[0] =  { "...Back",             &ScreenMenu::Resume};
+   sugarpi_setup_menu_[2] = {nullptr, nullptr};
 }
 
 ScreenMenu::~ScreenMenu()
 {
    delete snapshot_;
+   delete []sugarpi_setup_menu_;
+}
+
+int ScreenMenu::SetSyncVbl()
+{
+   display_->SyncWithFrame(true);
+   sound_mixer_->SyncOnSound(false);   
+   BuildMenuSync (&sugarpi_setup_menu_[1]);
+}
+
+int ScreenMenu::SetSyncSound()
+{
+   display_->SyncWithFrame(false);
+   sound_mixer_->SyncOnSound(true);
+   BuildMenuSync (&sugarpi_setup_menu_[1]);
 }
 
 int ScreenMenu::Resume()
@@ -169,10 +188,74 @@ int ScreenMenu::InsertCartridge()
    return 0;
 }
 
+void ScreenMenu::BuildMenuSync(MenuItem * sync_menu)
+{
+   
+   if (display_-> IsSyncOnFrame())
+   {
+      *sync_menu =  { "Set synchro on Frame [X]",   &ScreenMenu::SetSyncSound};
+   }
+   else
+   {
+      *sync_menu =  { "Set synchro on Frame [ ]",   &ScreenMenu::SetSyncVbl};
+      
+   }
+}
+
 int ScreenMenu::SugarPiSetup()
 {
+   BuildMenuSync (&sugarpi_setup_menu_[1]);
+ 
+ 
+   HandleMenu (sugarpi_setup_menu_);
+}
+
+int ScreenMenu::HandleMenu( MenuItem* menu)
+{
    logger_->Write("Menu", LogNotice, "ACTION : Select Sugarpi setup");
-   
+
+   // Display menu !
+   MenuItem* old_menu = current_menu_;
+   selected_ = 0;
+   unsigned int old_index = index_base_;
+   index_base_ = 0;
+
+   current_menu_ = menu;
+
+   logger_->Write("Menu", LogNotice, "Will now display submenu");
+   DisplayMenu(current_menu_);
+   logger_->Write("Menu", LogNotice, "Will submenu displayed");
+
+   // wait for command
+   keyboard_->ReinitSelect();
+   bool end_menu = false;
+   while (end_menu == false)
+   {
+      // Any key pressed ?
+      if (keyboard_->IsDown())
+      {
+         Down();
+         logger_->Write("Menu", LogNotice, "Selection down %i", selected_);
+      }
+      if (keyboard_->IsUp())
+      {
+         Up();
+         logger_->Write("Menu", LogNotice, "Selection up %i", selected_);
+      }
+      if (keyboard_->IsAction())
+      {
+         Select();
+         logger_->Write("Menu", LogNotice, "Selection  : %i ", selected_);
+         if (selected_ == 0)
+         {
+            end_menu = true;
+         }         
+      }
+   }
+
+   index_base_ = old_index;
+   current_menu_ = old_menu;
+   selected_ = 0;
    return 0;
 }
 
@@ -249,26 +332,7 @@ void ScreenMenu::DisplayText(const char* txt, int x, int y, bool selected)
 void ScreenMenu::DisplayButton(MenuItem* menu, int x, int y, bool selected)
 {
    int index_bmp = 0;
-   /*for (int j = y; j < y + Button_1_h; j++)
-   {
-      int* line = display_->GetVideoBuffer(j);
-      for (int i = x; i < x + Button_1_w; i++)
-      {
-         if (selected)
-         {
-            line[i] = Button_1[index_bmp] << 8
-               | Button_1[index_bmp + 1] << 16
-               | Button_1[index_bmp + 2] ;
-         }
-         else
-         {
-            line[i] = Button_1[index_bmp] << 8
-               | Button_1[index_bmp + 1]
-               | Button_1[index_bmp + 2] << 16;
-         }
-         index_bmp += 3;
-      }
-   }*/
+
    // Display text
    if (selected)
    {
@@ -285,10 +349,6 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
    {
       int* line = display_->GetVideoBuffer(i);
       memset(line, 0x0, sizeof(int) * display_->GetWidth());
-      /*for (int x = 0; x < display_->GetWidth(); x++)
-      {
-         line[x] = 0; // ((i << 6) & 0xFF00) | ((x << 14) & 0xFF0000);
-      }*/
    }
 
    DisplayText("SugarPi", 450, 47, false);

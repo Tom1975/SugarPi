@@ -6,6 +6,8 @@
 #include "CPCCore/CPCCoreEmu/simple_vector.hpp"
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/Snapshot.h"
+#include "CPCCore/CPCCoreEmu/SoundMixer.h"
+
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
 
@@ -13,14 +15,13 @@
 
 #pragma pack(push, 1)
 
-// convertion by http://javl.github.io/image2cpp/
 class CoolspotFont;
 
 class ScreenMenu 
 {
 
 public:
-   ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, KeyboardPi* keyboard, Motherboard* motherboard);
+   ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard);
    virtual ~ScreenMenu();
 
    void Handle();
@@ -33,6 +34,9 @@ public:
    int ShutDown();
    int Load();
    int Save();
+   int SetSyncVbl();
+   int SetSyncSound();
+
 
 
    void Down();
@@ -48,19 +52,23 @@ public:
    };
 
 protected:
+   int HandleMenu( MenuItem* menu);
    void DisplayMenu(MenuItem* menu);
    void DisplayButton(MenuItem* menu, int x, int y, bool selected);
    void DisplayText(const char* txt, int x, int y, bool selected);
+   void BuildMenuSync(MenuItem * sync_menu);
 
    int LoadCprFromBuffer(const char* filepath);
 
    CLogger*    logger_;
    DisplayPi* display_;
+   SoundMixer* sound_mixer_;
    KeyboardPi* keyboard_;
 
    // Menus 
    CoolspotFont *font_;
    MenuItem* current_menu_;
+   MenuItem *sugarpi_setup_menu_ ;
    unsigned int selected_;
    unsigned int index_base_;
 

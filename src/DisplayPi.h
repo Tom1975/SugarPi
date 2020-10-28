@@ -17,6 +17,7 @@ public:
 
    bool Initialization();
    void SyncWithFrame (bool set){sync_on_frame_ = set;}
+   bool IsSyncOnFrame(){return sync_on_frame_;}
    //CScreenDevice* GetScreenDevice() { return screen_; }
 
    virtual void SetScanlines(int scan);

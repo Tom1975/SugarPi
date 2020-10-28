@@ -239,7 +239,7 @@ int Emulation::LoadCprFromBuffer(unsigned char* buffer, int size)
 
 void Emulation::RunMainLoop()
 {
-   ScreenMenu menu(&log_ ,logger_, display_, keyboard_, motherboard_);
+   ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_);
    unsigned nCelsiusOldTmp = 0;
    int count = 0;
    unsigned lasttick = timer_->GetClockTicks();
@@ -252,7 +252,7 @@ void Emulation::RunMainLoop()
       unsigned new_tick;
       //for (unsigned int i = 0; i < 10; i++)
       {
-         motherboard_->StartOptimizedPlus<true, false, false>(4 * TIME_SLOT*100);
+         motherboard_->StartOptimizedPlus<true, false, false>(4 * TIME_SLOT*10);
 
          new_tick = timer_->GetClockTicks();
          //if (new_tick - lasttick < i * TIME_SLOT)
@@ -266,26 +266,20 @@ void Emulation::RunMainLoop()
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
-         // do it !
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
-
-         //display_->Lock();
-         //display_->GetFrameBuffer()->SetVirtualOffset(143, 47 / 2 );
          menu.Handle();
-
-         //display_->Unlock();
          keyboard_->ReinitSelect();
          CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
       }
       else
       {
-         if (count == 0)
+         if (count == 10)
          {
             // Temperature
             unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
             if (nCelsiusOldTmp != nCelsius)
             {
-               //logger_->Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
+               logger_->Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
                nCelsiusOldTmp = nCelsius;
             }
 
@@ -296,7 +290,7 @@ void Emulation::RunMainLoop()
             static unsigned old = 0;
             unsigned elapsed = timer_->GetTicks();
 
-            //logger_->Write("Kernel", LogNotice, "1s => %i ticks", elapsed - old);
+            logger_->Write("Kernel", LogNotice, "1s => %i ticks", (elapsed - old));
             old = elapsed;
          }
          else
