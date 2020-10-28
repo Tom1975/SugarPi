@@ -4,14 +4,14 @@
 
 CIRCLEHOME = ./circle
 
-OBJS	= main.o\
-		kernel.o\
-		DisplayPi.o\
-		emulation.o\
-		KeyboardPi.o\
-		log.o\
-		SoundPi.o\
-		ScreenMenu.o\
+OBJS	= src/main.o\
+		src/kernel.o\
+		src/DisplayPi.o\
+		src/emulation.o\
+		src/KeyboardPi.o\
+		src/log.o\
+		src/SoundPi.o\
+		src/ScreenMenu.o\
 		res/coolspot.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
@@ -80,14 +80,14 @@ LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
          $(CIRCLEHOME)/lib/input/libinput.a \
          $(CIRCLEHOME)/lib/sched/libsched.a \
          $(CIRCLEHOME)/addon/linux/liblinuxemu.a \
-         $(CIRCLEHOME)/addon/vc4/sound/libvchiqsound.a \
-         $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a\
 			$(CIRCLEHOME)/addon/SDCard/libsdcard.a\
-			$(CIRCLEHOME)/addon/fatfs/libfatfs.a
+			$(CIRCLEHOME)/addon/fatfs/libfatfs.a\
+         $(CIRCLEHOME)/addon/vc4/sound/libvchiqsound.a\
+         $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a
 
 
 include circle/Rules.mk
 
-CFLAGS	+= -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC 
-CPPFLAGS += -DMINIMUM_DEPENDENCIES -DNO_MULTITHREAD -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -std=c++1z
+CFLAGS	+= -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC 
+CPPFLAGS += -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -std=c++1z
 

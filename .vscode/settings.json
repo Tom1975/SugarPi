@@ -1,8 +1,0 @@
-{
-   "files.associations": {
-      "deque": "cpp",
-      "vector": "cpp",
-      "functional": "cpp"
-   },
-   "C_Cpp.dimInactiveRegions": false
-}

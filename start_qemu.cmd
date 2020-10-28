@@ -1,0 +1,1 @@
+"C:\Program Files\qemu\qemu-system-aarch64.exe" -M raspi3 -kernel kernel8.img -serial stdio -drive file=sd.img,if=sd,format=raw

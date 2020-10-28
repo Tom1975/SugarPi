@@ -1,12 +1,12 @@
 echo "*** Build target for Raspberry Pi 3 ***"
 
 # Set arch
-echo AARCH = 64							> Config.mk
-echo RASPPI = 3							>> Config.mk
-echo PREFIX64 = aarch64-none-elf-   	>> Config.mk
-echo STDLIB_SUPPORT = 1					>> Config.mk
-echo POSTFIX = .exe 					>> Config.mk
-
+echo AARCH = 64							          > Config.mk
+echo RASPPI = 3							          >> Config.mk
+echo PREFIX64 = aarch64-elf-   	      >> Config.mk
+echo STDLIB_SUPPORT = 1					      >> Config.mk
+echo POSTFIX = .exe 					        >> Config.mk
+echo CHECK_DEPS = 0                   >> Config.mk
 echo DEFINE = -DARM_ALLOW_MULTI_CORE	>> Config.mk
 
 cp Config.mk circle/.
