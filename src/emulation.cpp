@@ -239,7 +239,7 @@ int Emulation::LoadCprFromBuffer(unsigned char* buffer, int size)
 
 void Emulation::RunMainLoop()
 {
-
+   ScreenMenu menu(&log_ ,logger_, display_, keyboard_, motherboard_);
    unsigned nCelsiusOldTmp = 0;
    int count = 0;
    unsigned lasttick = timer_->GetClockTicks();
@@ -271,8 +271,6 @@ void Emulation::RunMainLoop()
 
          //display_->Lock();
          //display_->GetFrameBuffer()->SetVirtualOffset(143, 47 / 2 );
-
-         ScreenMenu menu(&log_ ,logger_, display_, keyboard_, motherboard_);
          menu.Handle();
 
          //display_->Unlock();

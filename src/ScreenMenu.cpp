@@ -17,7 +17,6 @@
 
 #define PATH_CARTIRDGE "SD:/CART"
 #define PATH_QUICK_SNA "SD:/quick.sna"
-static CoolspotFont font;
 
 ScreenMenu::MenuItem base_menu[] =
 {
@@ -43,6 +42,7 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, KeyboardP
    motherboard_(motherboard),
    snapshot_(nullptr)
 {
+   font_ = new CoolspotFont(logger_);
    snapshot_ = new CSnapshot(log);
    snapshot_->SetMachine(motherboard_);
 }
@@ -234,12 +234,12 @@ void ScreenMenu::DisplayText(const char* txt, int x, int y, bool selected)
       else
       {
          // Look for proper bitmap position (on first line only)
-         for (int display_y = 0; display_y < font.GetLetterHeight(c); display_y++)
+         for (int display_y = 0; display_y < font_->GetLetterHeight(c); display_y++)
          {
             int* line = display_->GetVideoBuffer(display_y + y);
-            font.CopyLetter(c, display_y, &line[x + x_offset_output], logger_);
+            font_->CopyLetter(c, display_y, &line[x + x_offset_output]);
          }
-         x_offset_output += font.GetLetterLength(c);
+         x_offset_output += font_->GetLetterLength(c);
       }
       i++;
       

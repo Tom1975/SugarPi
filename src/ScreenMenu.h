@@ -13,6 +13,9 @@
 
 #pragma pack(push, 1)
 
+// convertion by http://javl.github.io/image2cpp/
+class CoolspotFont;
+
 class ScreenMenu 
 {
 
@@ -39,7 +42,7 @@ public:
    class MenuItem
    {
    public:
-      char* label_;
+      const char* label_;
       //Func function_;
       int (ScreenMenu::* function)();
    };
@@ -56,6 +59,7 @@ protected:
    KeyboardPi* keyboard_;
 
    // Menus 
+   CoolspotFont *font_;
    MenuItem* current_menu_;
    unsigned int selected_;
    unsigned int index_base_;

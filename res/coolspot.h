@@ -5,14 +5,14 @@
 class CoolspotFont
 {
 public:
-   CoolspotFont();
+   CoolspotFont(CLogger* logger);
    virtual ~CoolspotFont();
 
-   void CopyLetter(char c, int line, int* buffer , CLogger* logger);
+   void CopyLetter(char c, int line, int* buffer);
    int GetLetterLength(char c);
    int GetLetterHeight(char c);
 
 //protected:
    int char_position_[256];
-
+   CLogger*    logger_;
 };
