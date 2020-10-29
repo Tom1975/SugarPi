@@ -42,6 +42,9 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    motherboard_->SetLog(&log_);
 
    // Create 
+   setup_.Init(display, sound);
+   setup_.Load();
+
    motherboard_->SetPlus(true);
    motherboard_->InitMotherbard(nullptr, nullptr, display_, nullptr, nullptr, nullptr);
    motherboard_->GetPSG()->SetLog(&log_);
@@ -102,8 +105,10 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
 
    
 #ifdef ARM_ALLOW_MULTI_CORE
+   logger_->Write("Kernel", LogNotice, "CMultiCoreSupport is going to initialize");
    return CMultiCoreSupport::Initialize();
 #else
+   logger_->Write("Kernel", LogNotice, "End of Emulation init.");
    return TRUE;
 #endif
 }
