@@ -1,8 +1,11 @@
 #include "ConfigurationManager.h"
 
+#include <SDCard/emmc.h>
+#include <fatfs/ff.h>
+
 /////////////////////////////////////////////////////////////
 /// Helper functions
-ConfigurationManager::ConfigurationManager()
+ConfigurationManager::ConfigurationManager(CLogger* log) : logger_(log)
 {
 }
 
@@ -26,6 +29,12 @@ void ConfigurationManager::Clear()
    config_file_.clear();
 }
 
+const char* ConfigurationManager::getline ( const char*, std::string& out)
+{
+
+   return nullptr;
+}
+
 void ConfigurationManager::OpenFile(const char* config_file)
 {
    if (current_config_file_ == config_file)
@@ -35,33 +44,53 @@ void ConfigurationManager::OpenFile(const char* config_file)
    }
    Clear();
    std::string s, key, value;
-   /*
-   std::ifstream f(config_file);
    std::string current_section = "";
 
-   current_config_file_ = config_file;
+   FIL File;
+   FRESULT Result = f_open(&File, config_file, FA_READ | FA_OPEN_EXISTING);   
+   if (Result != FR_OK)
+   {
+      logger_->Write("Kernel", LogPanic, "Cannot open file: %s", config_file);
+      return;
+   }
 
-   while (std::getline(f, s))
+   FILINFO file_info;
+   f_stat(config_file, &file_info);
+   unsigned char* buff = new unsigned char[file_info.fsize];
+   unsigned nBytesRead;
+
+   f_read(&File, buff, file_info.fsize, &nBytesRead);
+   if (file_info.fsize != nBytesRead)
+   {
+      // ERROR
+      logger_->Write("Kernel", LogPanic, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
+      return;
+   }
+
+   current_config_file_ = config_file;
+   const char* ptr_buffer = (char*)buff;
+
+   while ((ptr_buffer = getline(ptr_buffer, s)) != nullptr)
    {
       std::string::size_type begin = s.find_first_not_of(" \f\t\v");
 
       // Skip blank lines
       if (begin == std::string::npos) continue;
       // Skip commentary
-      if (std::string("#;").find(s[begin]) != std::string::npos) continue;
+      if (  s[begin] == '#' 
+         || s[begin] == ';' )
+         continue;
 
-      // Search sections
-      //std::string::size_type begin_section = s.find_first_of("[");
-      //if (begin_section != std::string::npos)
+      
       if (s[0] == '[')
       {
-         std::string::size_type end_section = s.find_first_of("]");
+         std::string::size_type end_section = s.find(']');
          if (end_section != std::string::npos)
          {
             current_section = s.substr(1, end_section - 1);
          }
       }
-
+      /*
       // Search key (if a section is already defined)
       if (current_section.size() > 0)
       {
@@ -104,8 +133,8 @@ void ConfigurationManager::OpenFile(const char* config_file)
             config_file_[current_section] = d;
          }
          (*d)[key] = value;
-      }
-   }*/
+      }*/
+   }
 }
 
 void ConfigurationManager::CloseFile()

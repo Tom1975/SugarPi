@@ -7,6 +7,7 @@ CIRCLEHOME = ./circle
 OBJS	= src/main.o\
 		src/kernel.o\
 		src/SugarPiSetup.o\
+		src/ConfigurationManager.o\
 		src/DisplayPi.o\
 		src/emulation.o\
 		src/KeyboardPi.o\

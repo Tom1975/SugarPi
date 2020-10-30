@@ -1,5 +1,7 @@
 #pragma once
 
+#include <circle/logger.h>
+
 #include "CPCCore/CPCCoreEmu/simple_string.h"
 #include "CPCCore/CPCCoreEmu/IConfiguration.h"
 #include "CPCCore/CPCCoreEmu/simple_vector.hpp"
@@ -8,7 +10,7 @@ class ConfigurationManager : public IConfiguration
 {
 public:
 
-   ConfigurationManager();
+   ConfigurationManager(CLogger* log);
    virtual ~ConfigurationManager();
 
    virtual void OpenFile(const char* config_file);
@@ -60,4 +62,7 @@ protected:
    std::vector <Association<Section>>::iterator it_section_;
    std::vector <Association<std::string>>::iterator it_key_;
    Section* current_key_section_it_;
+
+   const char* getline ( const char*, std::string& out);
+   CLogger* logger_;
 };
