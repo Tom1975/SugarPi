@@ -162,7 +162,9 @@ int ScreenMenu::InsertCartridge()
             fullpath.Append( "/" );
             fullpath.Append( cartridge_list[selected_]->fname);
             logger_->Write("Menu", LogNotice, "Load cartridge fullpath : %s", (const char*)fullpath);
-            LoadCprFromBuffer(fullpath);
+            setup_->LoadCartridge (fullpath);
+            setup_->Save();
+            //LoadCprFromBuffer(fullpath);
             logger_->Write("Cartridge", LogNotice, "file loaded.Exiting menu");
 
             end_menu = true;
@@ -430,7 +432,7 @@ void ScreenMenu::Select()
 }
 
 
-
+/*
 int ScreenMenu::LoadCprFromBuffer(const char* filepath)
 {
    FIL File;
@@ -536,4 +538,4 @@ int ScreenMenu::LoadCprFromBuffer(const char* filepath)
    }
    delete[]buffer;
    return 0;
-}
+}*/

@@ -59,7 +59,7 @@ protected:
    void DisplayText(const char* txt, int x, int y, bool selected);
    void BuildMenuSync(MenuItem * sync_menu);
 
-   int LoadCprFromBuffer(const char* filepath);
+   //int LoadCprFromBuffer(const char* filepath);
 
    CLogger*    logger_;
    DisplayPi* display_;

@@ -3,6 +3,7 @@
 #include <circle/logger.h>
 
 #include "DisplayPi.h"
+#include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
 #include "ConfigurationManager.h"
 
@@ -12,7 +13,7 @@ public :
    SugarPiSetup ( CLogger* log);
    virtual ~SugarPiSetup();
 
-   void Init(DisplayPi* display, SoundMixer* sound);
+   void Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard);
 
    void Load();
    void Save();
@@ -25,12 +26,20 @@ public :
    void SetSync (SYNC_TYPE sync);
    SYNC_TYPE GetSync ();
 
+   void LoadCartridge (const char* path);
+
 protected:
   
+   int LoadCprFromBuffer(unsigned char* buffer, int size);
+
+
    CLogger* log_;
    DisplayPi* display_;
    SoundMixer* sound_;
+   Motherboard* motherboard_;
+
+   ConfigurationManager config_;
 
    SYNC_TYPE sync_;
-   ConfigurationManager config_;
+   std::string cart_path_;
 };

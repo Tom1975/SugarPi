@@ -37,8 +37,7 @@ public:
 
 
 protected:
-   int LoadCprFromBuffer(unsigned char* buffer, int size);
-
+   
    CLogger*          logger_;
    CTimer*           timer_;
    FATFS			      m_FileSystem;

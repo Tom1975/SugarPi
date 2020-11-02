@@ -1,9 +1,10 @@
 //
 #include "SugarPiSetup.h"
+#include <fatfs/ff.h>
 
 #define DRIVE		"SD:"
 
-SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), config_(log)
+SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr), config_(log)
 {
 
 }
@@ -13,10 +14,11 @@ SugarPiSetup::~SugarPiSetup()
    
 }
 
-void  SugarPiSetup::Init(DisplayPi* display, SoundMixer* sound)
+void  SugarPiSetup::Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard)
 {
    display_ = display;
    sound_ = sound;
+   motherboard_ = motherboard;
 }
 
 void SugarPiSetup::Load()
@@ -24,23 +26,27 @@ void SugarPiSetup::Load()
    config_.OpenFile(DRIVE "/Config/config");
 
    // Syncronisation
-   #define SIZE_OF_BUFFER 32
-   char sync_buffer[SIZE_OF_BUFFER];
-   if (config_.GetConfiguration ("SETUP", "sync", "sound", sync_buffer, SIZE_OF_BUFFER ))
+   #define SIZE_OF_BUFFER 256
+   char buffer[SIZE_OF_BUFFER];
+   if (config_.GetConfiguration ("SETUP", "sync", "sound", buffer, SIZE_OF_BUFFER ))
    {
-      if (strcmp ( sync_buffer, "sound") == 0)
+      if (strcmp ( buffer, "sound") == 0)
       {
          SetSync(SYNC_SOUND);
       }
-      else if (strcmp ( sync_buffer, "frame") == 0)
+      else if (strcmp ( buffer, "frame") == 0)
       {
          SetSync(SYNC_FRAME);
       }
    }
 
    // Hardware configuration
+
    // Current cartridge
-   
+   if (config_.GetConfiguration ("SETUP", "cart", "SD:/CART/AmstradPlus.f4.cpr", buffer, SIZE_OF_BUFFER ))
+   {
+      LoadCartridge(buffer);
+   }   
 }
 
 void SugarPiSetup::Save()
@@ -67,8 +73,110 @@ void  SugarPiSetup::SetSync (SYNC_TYPE sync)
    }
 }
 
- SugarPiSetup::SYNC_TYPE  SugarPiSetup::GetSync ()
+SugarPiSetup::SYNC_TYPE  SugarPiSetup::GetSync ()
 {
    return sync_;
 }
 
+void SugarPiSetup::LoadCartridge (const char* path)
+{
+   FIL File;
+   FRESULT Result = f_open(&File, path, FA_READ | FA_OPEN_EXISTING);
+
+   if (Result != FR_OK)
+   {
+      log_->Write("Kernel", LogPanic, "Cannot open file: %s", path);
+   }
+
+   FILINFO file_info;
+   f_stat(path, &file_info);
+   unsigned char* buff = new unsigned char[file_info.fsize];
+   unsigned nBytesRead;
+
+   f_read(&File, buff, file_info.fsize, &nBytesRead);
+   if (file_info.fsize != nBytesRead)
+   {
+      log_->Write("Kernel", LogPanic, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
+   }
+   
+   cart_path_ = path;
+   LoadCprFromBuffer(buff, nBytesRead);
+
+   delete [] buff;
+}
+
+int SugarPiSetup::LoadCprFromBuffer(unsigned char* buffer, int size)
+{
+   // Check RIFF chunk
+   int index = 0;
+   if (size >= 12
+      && (memcmp(&buffer[0], "RIFF", 4) == 0)
+      && (memcmp(&buffer[8], "AMS!", 4) == 0)
+      )
+   {
+      // Reinit Cartridge
+      motherboard_->EjectCartridge();
+
+      // Ok, it's correct.
+      index += 4;
+      // Check the whole size
+
+      int chunk_size = buffer[index]
+         + (buffer[index + 1] << 8)
+         + (buffer[index + 2] << 16)
+         + (buffer[index + 3] << 24);
+
+      index += 8;
+
+      // 'fmt ' chunk ? skip it
+      if (index + 8 < size && (memcmp(&buffer[index], "fmt ", 4) == 0))
+      {
+         index += 8;
+      }
+
+      // Good.
+      // Now we are at the first cbxx
+      while (index + 8 < size)
+      {
+         if (buffer[index] == 'c' && buffer[index + 1] == 'b')
+         {
+            index += 2;
+            char buffer_block_number[3] = { 0 };
+            memcpy(buffer_block_number, &buffer[index], 2);
+            int block_number = (buffer_block_number[0] - '0') * 10 + (buffer_block_number[1] - '0');
+            index += 2;
+
+            // Read size
+            int block_size = buffer[index]
+               + (buffer[index + 1] << 8)
+               + (buffer[index + 2] << 16)
+               + (buffer[index + 3] << 24);
+            index += 4;
+
+            if (block_size <= size && block_number < 256)
+            {
+               // Copy datas to proper ROM
+               unsigned char* rom = motherboard_->GetCartridge(block_number);
+               memset(rom, 0, 0x1000);
+               memcpy(rom, &buffer[index], block_size);
+               index += block_size;
+            }
+            else
+            {
+               return -1;
+            }
+         }
+         else
+         {
+            return -1;
+         }
+      }
+   }
+   else
+   {
+      // Incorrect headers
+      return -1;
+   }
+
+   return 0;
+}

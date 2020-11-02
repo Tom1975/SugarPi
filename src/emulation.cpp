@@ -52,7 +52,7 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    }
 
    // Create 
-   setup_.Init(display, sound_mixer_);
+   setup_.Init(display, sound_mixer_, motherboard_);
    setup_.Load();
    
 
@@ -67,6 +67,7 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    motherboard_->GetCRTC()->DefinirTypeCRTC(CRTC::AMS40226);
    motherboard_->GetVGA()->SetPAL(true);
 
+/*
    #define CARTOUCHE_BASE "/CART/crtc3_projo.cpr"
 //#define CARTOUCHE_BASE "/CART/gnggxfinalalpha.cpr"
 
@@ -100,7 +101,7 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    }
    LoadCprFromBuffer(buff, file_info.fsize);
    logger_->Write("Kernel", LogNotice, "CPR read correctly");
-
+*/
    //LoadCprFromBuffer(AmstradPLUS_FR, sizeof(AmstradPLUS_FR));
 
    motherboard_->GetPSG()->Reset();
@@ -171,81 +172,6 @@ void Emulation::Run(unsigned nCore)
 }
 
 
-int Emulation::LoadCprFromBuffer(unsigned char* buffer, int size)
-{
-   // Check RIFF chunk
-   int index = 0;
-   if (size >= 12
-      && (memcmp(&buffer[0], "RIFF", 4) == 0)
-      && (memcmp(&buffer[8], "AMS!", 4) == 0)
-      )
-   {
-      // Reinit Cartridge
-      motherboard_->EjectCartridge();
-
-      // Ok, it's correct.
-      index += 4;
-      // Check the whole size
-
-      int chunk_size = buffer[index]
-         + (buffer[index + 1] << 8)
-         + (buffer[index + 2] << 16)
-         + (buffer[index + 3] << 24);
-
-      index += 8;
-
-      // 'fmt ' chunk ? skip it
-      if (index + 8 < size && (memcmp(&buffer[index], "fmt ", 4) == 0))
-      {
-         index += 8;
-      }
-
-      // Good.
-      // Now we are at the first cbxx
-      while (index + 8 < size)
-      {
-         if (buffer[index] == 'c' && buffer[index + 1] == 'b')
-         {
-            index += 2;
-            char buffer_block_number[3] = { 0 };
-            memcpy(buffer_block_number, &buffer[index], 2);
-            int block_number = (buffer_block_number[0] - '0') * 10 + (buffer_block_number[1] - '0');
-            index += 2;
-
-            // Read size
-            int block_size = buffer[index]
-               + (buffer[index + 1] << 8)
-               + (buffer[index + 2] << 16)
-               + (buffer[index + 3] << 24);
-            index += 4;
-
-            if (block_size <= size && block_number < 256)
-            {
-               // Copy datas to proper ROM
-               unsigned char* rom = motherboard_->GetCartridge(block_number);
-               memset(rom, 0, 0x1000);
-               memcpy(rom, &buffer[index], block_size);
-               index += block_size;
-            }
-            else
-            {
-               return -1;
-            }
-         }
-         else
-         {
-            return -1;
-         }
-      }
-   }
-   else
-   {
-      // Incorrect headers
-      return -1;
-   }
-
-   return 0;
-}
 
 void Emulation::RunMainLoop()
 {
