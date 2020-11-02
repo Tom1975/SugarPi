@@ -17,7 +17,8 @@ Emulation::Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer)
    sound_mixer_(nullptr),
    sound_(nullptr),
    sound_is_ready(false),
-   sound_mutex_(IRQ_LEVEL)
+   sound_mutex_(IRQ_LEVEL),
+   setup_(log)
 {
    sound_mixer_ = new SoundMixer();
 }
@@ -30,20 +31,30 @@ Emulation::~Emulation(void)
 boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keyboard, CScheduler	*scheduler)
 {
    log_.SetLogger(logger_);
+   logger_->Write("Kernel", LogNotice, "Emulation::Initialize");
+
    sound_ = sound;
    display_ = display;
    keyboard_ = keyboard;
    scheduler_ = scheduler;
 
    sound_mixer_->Init(sound_, nullptr);
+
+   logger_->Write("Kernel", LogNotice, "Creating Motherboard");
    motherboard_ = new Motherboard(sound_mixer_, keyboard_);
 
    sound_mixer_->SetLog(&log_);
    motherboard_->SetLog(&log_);
 
+   if (f_mount(&m_FileSystem, DRIVE, 1) != FR_OK)
+   {
+      logger_->Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
+   }
+
    // Create 
-   setup_.Init(display, sound);
+   setup_.Init(display, sound_mixer_);
    setup_.Load();
+   
 
    motherboard_->SetPlus(true);
    motherboard_->InitMotherbard(nullptr, nullptr, display_, nullptr, nullptr, nullptr);
@@ -55,12 +66,6 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    motherboard_->GetMem()->SetRam(1);
    motherboard_->GetCRTC()->DefinirTypeCRTC(CRTC::AMS40226);
    motherboard_->GetVGA()->SetPAL(true);
-
-   // Load a cartridge
-   if (f_mount(&m_FileSystem, DRIVE, 1) != FR_OK)
-   {
-      logger_->Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
-   }
 
    #define CARTOUCHE_BASE "/CART/crtc3_projo.cpr"
 //#define CARTOUCHE_BASE "/CART/gnggxfinalalpha.cpr"
@@ -244,7 +249,7 @@ int Emulation::LoadCprFromBuffer(unsigned char* buffer, int size)
 
 void Emulation::RunMainLoop()
 {
-   ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_);
+   ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, &setup_);
    unsigned nCelsiusOldTmp = 0;
    int count = 0;
    unsigned lasttick = timer_->GetClockTicks();

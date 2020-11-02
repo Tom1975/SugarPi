@@ -22,7 +22,7 @@ ScreenMenu::MenuItem base_menu[] =
 {
    { "Resume",             &ScreenMenu::Resume},
    { "Insert Cartridge",   &ScreenMenu::InsertCartridge},
-   { "SugarPi Setup",      &ScreenMenu::SugarPiSetup},
+   { "SugarPi Setup",      &ScreenMenu::SugarSetup},
    { "Hardware Setup",     &ScreenMenu::HardwareSetup},
    { "Quick Save",         &ScreenMenu::Save},
    { "Quick Load",         &ScreenMenu::Load},
@@ -31,7 +31,7 @@ ScreenMenu::MenuItem base_menu[] =
    { nullptr, nullptr}
 };
 
-ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard) :
+ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup) :
    logger_(logger),
    display_(display),
    sound_mixer_(sound_mixer),
@@ -41,7 +41,8 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixe
    selected_(0),
    index_base_(0),
    motherboard_(motherboard),
-   snapshot_(nullptr)
+   snapshot_(nullptr),
+   setup_(setup)
 {
    font_ = new CoolspotFont(logger_);
    snapshot_ = new CSnapshot(log);
@@ -59,15 +60,15 @@ ScreenMenu::~ScreenMenu()
 
 int ScreenMenu::SetSyncVbl()
 {
-   display_->SyncWithFrame(true);
-   sound_mixer_->SyncOnSound(false);   
+   setup_->SetSync (SugarPiSetup::SYNC_FRAME);
+   setup_->Save();
    BuildMenuSync (&sugarpi_setup_menu_[1]);
 }
 
 int ScreenMenu::SetSyncSound()
 {
-   display_->SyncWithFrame(false);
-   sound_mixer_->SyncOnSound(true);
+   setup_->SetSync (SugarPiSetup::SYNC_SOUND);
+   setup_->Save();
    BuildMenuSync (&sugarpi_setup_menu_[1]);
 }
 
@@ -202,11 +203,10 @@ void ScreenMenu::BuildMenuSync(MenuItem * sync_menu)
    }
 }
 
-int ScreenMenu::SugarPiSetup()
+int ScreenMenu::SugarSetup()
 {
    BuildMenuSync (&sugarpi_setup_menu_[1]);
- 
- 
+  
    HandleMenu (sugarpi_setup_menu_);
 }
 

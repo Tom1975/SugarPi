@@ -10,6 +10,7 @@
 
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
+#include "SugarPiSetup.h"
 
 #define MAX_LANGUAGE 1
 
@@ -21,14 +22,14 @@ class ScreenMenu
 {
 
 public:
-   ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard);
+   ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup);
    virtual ~ScreenMenu();
 
    void Handle();
 
    int Resume();
    int InsertCartridge();
-   int SugarPiSetup();
+   int SugarSetup();
    int HardwareSetup();
    int Reset();
    int ShutDown();
@@ -64,6 +65,7 @@ protected:
    DisplayPi* display_;
    SoundMixer* sound_mixer_;
    KeyboardPi* keyboard_;
+   SugarPiSetup* setup_;
 
    // Menus 
    CoolspotFont *font_;

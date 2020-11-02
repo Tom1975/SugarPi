@@ -1,21 +1,36 @@
 #pragma once
 
-#include "DisplayPi.h"
-#include "SoundPi.h"
+#include <circle/logger.h>
 
+#include "DisplayPi.h"
+#include "CPCCore/CPCCoreEmu/SoundMixer.h"
+#include "ConfigurationManager.h"
 
 class SugarPiSetup
 {
 public :
-   SugarPiSetup ();
+   SugarPiSetup ( CLogger* log);
    virtual ~SugarPiSetup();
 
-   void Init(DisplayPi* display, SoundPi* sound);
+   void Init(DisplayPi* display, SoundMixer* sound);
 
    void Load();
    void Save();
 
+   // Access each values
+   enum SYNC_TYPE{
+      SYNC_FRAME,
+      SYNC_SOUND
+   } ;
+   void SetSync (SYNC_TYPE sync);
+   SYNC_TYPE GetSync ();
+
 protected:
+  
+   CLogger* log_;
    DisplayPi* display_;
-   SoundPi* sound_;
+   SoundMixer* sound_;
+
+   SYNC_TYPE sync_;
+   ConfigurationManager config_;
 };

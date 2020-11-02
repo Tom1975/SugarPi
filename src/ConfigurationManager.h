@@ -6,6 +6,8 @@
 #include "CPCCore/CPCCoreEmu/IConfiguration.h"
 #include "CPCCore/CPCCoreEmu/simple_vector.hpp"
 
+extern CLogger* log_s;
+
 class ConfigurationManager : public IConfiguration
 {
 public:
@@ -40,17 +42,39 @@ protected:
    class Association
    {
       public:
+         Association() : key(), value(){
+            log_s->Write("Association", LogNotice, "default creator");
+         }
+         Association(Association& assoc)
+         {
+            log_s->Write("Association", LogNotice, "assoc creator");
+            key = assoc.key;
+            value = assoc.value;
+         }
+         Association& operator=(const Association& _Right)
+         {
+            log_s->Write("Association", LogNotice, "operator=");
+            key = _Right.key;
+            log_s->Write("Association", LogNotice, "operator= 1");
+            value = _Right.value;
+            log_s->Write("Association", LogNotice, "operator done");
+            return *this;
+         }
+
          std::string key;
          T value;
    };
 
    class Section : public std::vector <Association<std::string>>
    {
+   public:
+      bool GetKey (const char* , std::string*&);
    };
 
-   class ConfigFile : public std::vector <Association<Section>>
+   class ConfigFile : public std::vector <Association<Section*>>
    {
-
+   public:
+      bool GetSection (const char* section, Section*&);
    };
 
    //typedef std::map <std::string, data* > ConfigFile;
@@ -59,10 +83,10 @@ protected:
    std::string current_config_file_;
 
    // Internal Iterator
-   std::vector <Association<Section>>::iterator it_section_;
+   std::vector <Association<Section*>>::iterator it_section_;
    std::vector <Association<std::string>>::iterator it_key_;
    Section* current_key_section_it_;
 
-   const char* getline ( const char*, std::string& out);
+   unsigned int getline ( const char*, int size, std::string& out);
    CLogger* logger_;
 };
