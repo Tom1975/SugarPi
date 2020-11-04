@@ -18,8 +18,10 @@ Emulation::Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer)
    sound_(nullptr),
    sound_is_ready(false),
    sound_mutex_(IRQ_LEVEL),
-   setup_(log)
+   setup_(nullptr)
+   
 {
+   setup_ = new SugarPiSetup(log);
    sound_mixer_ = new SoundMixer();
 }
 
@@ -52,9 +54,8 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    }
 
    // Create 
-   setup_.Init(display, sound_mixer_, motherboard_);
-   setup_.Load();
-   
+   setup_->Init(display, sound_mixer_, motherboard_);
+   setup_->Load();
 
    motherboard_->SetPlus(true);
    motherboard_->InitMotherbard(nullptr, nullptr, display_, nullptr, nullptr, nullptr);
@@ -175,7 +176,7 @@ void Emulation::Run(unsigned nCore)
 
 void Emulation::RunMainLoop()
 {
-   ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, &setup_);
+   ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
    unsigned nCelsiusOldTmp = 0;
    int count = 0;
    unsigned lasttick = timer_->GetClockTicks();

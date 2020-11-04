@@ -12,7 +12,6 @@ echo DEFINE = -DARM_ALLOW_MULTI_CORE	>> Config.mk
 cp Config.mk circle/.
 ./build_circle.sh
 
-
 # check output dir
 make clean
 make 

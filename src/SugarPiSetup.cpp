@@ -4,14 +4,23 @@
 
 #define DRIVE		"SD:"
 
-SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr), config_(log)
-{
+#define SECTION_SETUP      "SETUP"
+#define KEY_SYNC           "sync"
+#define KEY_CART           "cart"
 
+#define KEY_SYNC_SOUND     "sound"
+#define KEY_SYNC_FRAME     "frame"
+
+#define DEFAULT_CART "SD:/CART/crtc3_projo.cpr"
+
+SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr)
+{
+   config_ = new ConfigurationManager(log);
 }
 
 SugarPiSetup::~SugarPiSetup()
 {
-   
+   delete config_;  
 }
 
 void  SugarPiSetup::Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard)
@@ -23,18 +32,18 @@ void  SugarPiSetup::Init(DisplayPi* display, SoundMixer* sound, Motherboard *mot
 
 void SugarPiSetup::Load()
 {
-   config_.OpenFile(DRIVE "/Config/config");
+   config_->OpenFile(DRIVE "/Config/config");
 
    // Syncronisation
    #define SIZE_OF_BUFFER 256
    char buffer[SIZE_OF_BUFFER];
-   if (config_.GetConfiguration ("SETUP", "sync", "sound", buffer, SIZE_OF_BUFFER ))
+   if (config_->GetConfiguration (SECTION_SETUP, KEY_SYNC, KEY_SYNC_SOUND, buffer, SIZE_OF_BUFFER ))
    {
-      if (strcmp ( buffer, "sound") == 0)
+      if (strcmp ( buffer, KEY_SYNC_SOUND) == 0)
       {
          SetSync(SYNC_SOUND);
       }
-      else if (strcmp ( buffer, "frame") == 0)
+      else if (strcmp ( buffer, KEY_SYNC_FRAME) == 0)
       {
          SetSync(SYNC_FRAME);
       }
@@ -43,7 +52,7 @@ void SugarPiSetup::Load()
    // Hardware configuration
 
    // Current cartridge
-   if (config_.GetConfiguration ("SETUP", "cart", "SD:/CART/AmstradPlus.f4.cpr", buffer, SIZE_OF_BUFFER ))
+   if (config_->GetConfiguration (SECTION_SETUP, KEY_CART, DEFAULT_CART, buffer, SIZE_OF_BUFFER ))
    {
       LoadCartridge(buffer);
    }   
@@ -51,17 +60,22 @@ void SugarPiSetup::Load()
 
 void SugarPiSetup::Save()
 {
-   // Syncronisation
    // Hardware configuration
-   // Current cartridge
+   // to add
 
-   config_.CloseFile();
+   // Syncronisation
+   config_->SetConfiguration (SECTION_SETUP, KEY_SYNC, (sync_==SYNC_SOUND)?KEY_SYNC_SOUND:KEY_SYNC_FRAME);
+
+   // Current cartridge
+   config_->SetConfiguration (SECTION_SETUP, KEY_CART, cart_path_.c_str());
+
+   config_->CloseFile();
 }
 
 void  SugarPiSetup::SetSync (SYNC_TYPE sync)
 {
    sync_ = sync;
-   if (sync_==SYNC_SOUND)
+   if (sync==SYNC_SOUND)
    {
       display_->SyncWithFrame(false);
       sound_->SyncOnSound(true);      
@@ -85,7 +99,8 @@ void SugarPiSetup::LoadCartridge (const char* path)
 
    if (Result != FR_OK)
    {
-      log_->Write("Kernel", LogPanic, "Cannot open file: %s", path);
+      log_->Write("Kernel", LogNotice, "Cannot open file: %s", path);
+      return;
    }
 
    FILINFO file_info;
@@ -96,7 +111,9 @@ void SugarPiSetup::LoadCartridge (const char* path)
    f_read(&File, buff, file_info.fsize, &nBytesRead);
    if (file_info.fsize != nBytesRead)
    {
-      log_->Write("Kernel", LogPanic, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
+      log_->Write("Kernel", LogNotice, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
+      delete [] buff;
+      return;
    }
    
    cart_path_ = path;

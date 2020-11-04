@@ -22,4 +22,8 @@ if [ ! -d "sdcard/CART" ]; then
   mkdir sdcard/CART
 fi
  
+if [ ! -d "sdcard/Config" ]; then
+  mkdir sdcard/Config
+fi
+
 cp CART/* sdcard/CART

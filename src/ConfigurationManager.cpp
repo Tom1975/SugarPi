@@ -70,7 +70,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
    FRESULT Result = f_open(&File, config_file, FA_READ | FA_OPEN_EXISTING);   
    if (Result != FR_OK)
    {
-      logger_->Write("Kernel", LogPanic, "Cannot open file: %s", config_file);
+      logger_->Write("Kernel", LogNotice, "Cannot open file: %s", config_file);
       return;
    }
 
@@ -84,7 +84,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
    {
       // ERROR
       f_close(&File);
-      logger_->Write("Kernel", LogPanic, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
+      logger_->Write("Kernel", LogNotice, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
       return;
    }
 
@@ -154,6 +154,8 @@ void ConfigurationManager::OpenFile(const char* config_file)
                value = s.substr(begin, end);
             }
 
+            logger_->Write("Kernel", LogNotice, "key : %s = value: %s ", key.c_str(), value.c_str());
+
             // Add this key/value to current section
             Section* section;
             if (config_file_.GetSection (current_section.c_str(), section) == false)
@@ -176,7 +178,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
 void ConfigurationManager::CloseFile()
 {
    FIL File;
-   FRESULT Result = f_open(&File, current_config_file_.c_str(), FA_WRITE );   
+   FRESULT Result = f_open(&File, current_config_file_.c_str(), FA_WRITE | FA_CREATE_ALWAYS );   
    if (Result != FR_OK)
    {
       logger_->Write("Kernel", LogPanic, "Cannot open file: %s", current_config_file_.c_str());
@@ -189,14 +191,14 @@ void ConfigurationManager::CloseFile()
    {
       output_file.append("[");
       output_file.append(ent1.key);
-      output_file.append("]\0d");
+      output_file.append("]\r\n");
       for (auto const& ent2 : *ent1.value)
       {
          // ent2.first is the second key
          output_file.append (ent2.key);
          output_file.append ("=");
          output_file.append (ent2.value);
-         output_file.append ("\0d");
+         output_file.append ("\r\n");
       }
    }
    logger_->Write("Kernel", LogNotice, "Output file : ", output_file.c_str());

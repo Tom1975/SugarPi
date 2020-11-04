@@ -38,7 +38,7 @@ protected:
    SoundMixer* sound_;
    Motherboard* motherboard_;
 
-   ConfigurationManager config_;
+   ConfigurationManager* config_;
 
    SYNC_TYPE sync_;
    std::string cart_path_;
