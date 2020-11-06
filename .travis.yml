@@ -5,17 +5,12 @@ git:
 before_install:
 - echo 'Installing ARM toolchain'
 - ls
-- wget https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi.tar.xz
 - wget https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
-- tar -Jxvf  gcc-arm-9.2-2019.12-x86_64-arm-none-eabi.tar.xz
 - tar -Jxvf  gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
-- export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin:$PATH
 - export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH
 - echo $PATH
 - chmod +x build_all.sh
 - chmod +x build_circle.sh
-- chmod +x build_pi1.sh
-- chmod +x build_pi2.sh
 - chmod +x build_pi3.sh
 - chmod +x build_pi4.sh
 script:
