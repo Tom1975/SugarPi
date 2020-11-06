@@ -19,6 +19,7 @@
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
 #include "SoundPi.h"
+#include "SugarPiSetup.h"
 #include "log.h"
 
 class Emulation
@@ -36,14 +37,14 @@ public:
 
 
 protected:
-   int LoadCprFromBuffer(unsigned char* buffer, int size);
-
+   
    CLogger*          logger_;
    CTimer*           timer_;
    FATFS			      m_FileSystem;
    CSpinLock         sound_mutex_;
    CScheduler*       scheduler_;
 
+   SugarPiSetup*     setup_;
    Motherboard*      motherboard_;
    DisplayPi*        display_;
    KeyboardPi*       keyboard_;

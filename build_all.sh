@@ -1,5 +1,3 @@
-./build_pi1.sh
-./build_pi2.sh
 ./build_pi3.sh
 ./build_pi4.sh
 
@@ -24,4 +22,8 @@ if [ ! -d "sdcard/CART" ]; then
   mkdir sdcard/CART
 fi
  
+if [ ! -d "sdcard/Config" ]; then
+  mkdir sdcard/Config
+fi
+
 cp CART/* sdcard/CART

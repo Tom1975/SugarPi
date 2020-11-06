@@ -22,7 +22,7 @@ ScreenMenu::MenuItem base_menu[] =
 {
    { "Resume",             &ScreenMenu::Resume},
    { "Insert Cartridge",   &ScreenMenu::InsertCartridge},
-   { "SugarPi Setup",      &ScreenMenu::SugarPiSetup},
+   { "SugarPi Setup",      &ScreenMenu::SugarSetup},
    { "Hardware Setup",     &ScreenMenu::HardwareSetup},
    { "Quick Save",         &ScreenMenu::Save},
    { "Quick Load",         &ScreenMenu::Load},
@@ -31,25 +31,45 @@ ScreenMenu::MenuItem base_menu[] =
    { nullptr, nullptr}
 };
 
-ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, KeyboardPi* keyboard, Motherboard* motherboard) :
+ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup) :
    logger_(logger),
    display_(display),
+   sound_mixer_(sound_mixer),
    keyboard_(keyboard),
    //BaseMenu(logger),
    current_menu_(base_menu),
    selected_(0),
    index_base_(0),
    motherboard_(motherboard),
-   snapshot_(nullptr)
+   snapshot_(nullptr),
+   setup_(setup)
 {
    font_ = new CoolspotFont(logger_);
    snapshot_ = new CSnapshot(log);
    snapshot_->SetMachine(motherboard_);
+   sugarpi_setup_menu_ = new MenuItem[3];
+   sugarpi_setup_menu_[0] =  { "...Back",             &ScreenMenu::Resume};
+   sugarpi_setup_menu_[2] = {nullptr, nullptr};
 }
 
 ScreenMenu::~ScreenMenu()
 {
    delete snapshot_;
+   delete []sugarpi_setup_menu_;
+}
+
+int ScreenMenu::SetSyncVbl()
+{
+   setup_->SetSync (SugarPiSetup::SYNC_FRAME);
+   setup_->Save();
+   BuildMenuSync (&sugarpi_setup_menu_[1]);
+}
+
+int ScreenMenu::SetSyncSound()
+{
+   setup_->SetSync (SugarPiSetup::SYNC_SOUND);
+   setup_->Save();
+   BuildMenuSync (&sugarpi_setup_menu_[1]);
 }
 
 int ScreenMenu::Resume()
@@ -142,7 +162,8 @@ int ScreenMenu::InsertCartridge()
             fullpath.Append( "/" );
             fullpath.Append( cartridge_list[selected_]->fname);
             logger_->Write("Menu", LogNotice, "Load cartridge fullpath : %s", (const char*)fullpath);
-            LoadCprFromBuffer(fullpath);
+            setup_->LoadCartridge (fullpath);
+            setup_->Save();
             logger_->Write("Cartridge", LogNotice, "file loaded.Exiting menu");
 
             end_menu = true;
@@ -169,10 +190,73 @@ int ScreenMenu::InsertCartridge()
    return 0;
 }
 
-int ScreenMenu::SugarPiSetup()
+void ScreenMenu::BuildMenuSync(MenuItem * sync_menu)
+{
+   
+   if (display_-> IsSyncOnFrame())
+   {
+      *sync_menu =  { "Set synchro on Frame [X]",   &ScreenMenu::SetSyncSound};
+   }
+   else
+   {
+      *sync_menu =  { "Set synchro on Frame [ ]",   &ScreenMenu::SetSyncVbl};
+      
+   }
+}
+
+int ScreenMenu::SugarSetup()
+{
+   BuildMenuSync (&sugarpi_setup_menu_[1]);
+  
+   HandleMenu (sugarpi_setup_menu_);
+}
+
+int ScreenMenu::HandleMenu( MenuItem* menu)
 {
    logger_->Write("Menu", LogNotice, "ACTION : Select Sugarpi setup");
-   
+
+   // Display menu !
+   MenuItem* old_menu = current_menu_;
+   selected_ = 0;
+   unsigned int old_index = index_base_;
+   index_base_ = 0;
+
+   current_menu_ = menu;
+
+   logger_->Write("Menu", LogNotice, "Will now display submenu");
+   DisplayMenu(current_menu_);
+   logger_->Write("Menu", LogNotice, "Will submenu displayed");
+
+   // wait for command
+   keyboard_->ReinitSelect();
+   bool end_menu = false;
+   while (end_menu == false)
+   {
+      // Any key pressed ?
+      if (keyboard_->IsDown())
+      {
+         Down();
+         logger_->Write("Menu", LogNotice, "Selection down %i", selected_);
+      }
+      if (keyboard_->IsUp())
+      {
+         Up();
+         logger_->Write("Menu", LogNotice, "Selection up %i", selected_);
+      }
+      if (keyboard_->IsAction())
+      {
+         Select();
+         logger_->Write("Menu", LogNotice, "Selection  : %i ", selected_);
+         if (selected_ == 0)
+         {
+            end_menu = true;
+         }         
+      }
+   }
+
+   index_base_ = old_index;
+   current_menu_ = old_menu;
+   selected_ = 0;
    return 0;
 }
 
@@ -249,26 +333,7 @@ void ScreenMenu::DisplayText(const char* txt, int x, int y, bool selected)
 void ScreenMenu::DisplayButton(MenuItem* menu, int x, int y, bool selected)
 {
    int index_bmp = 0;
-   /*for (int j = y; j < y + Button_1_h; j++)
-   {
-      int* line = display_->GetVideoBuffer(j);
-      for (int i = x; i < x + Button_1_w; i++)
-      {
-         if (selected)
-         {
-            line[i] = Button_1[index_bmp] << 8
-               | Button_1[index_bmp + 1] << 16
-               | Button_1[index_bmp + 2] ;
-         }
-         else
-         {
-            line[i] = Button_1[index_bmp] << 8
-               | Button_1[index_bmp + 1]
-               | Button_1[index_bmp + 2] << 16;
-         }
-         index_bmp += 3;
-      }
-   }*/
+
    // Display text
    if (selected)
    {
@@ -285,10 +350,6 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
    {
       int* line = display_->GetVideoBuffer(i);
       memset(line, 0x0, sizeof(int) * display_->GetWidth());
-      /*for (int x = 0; x < display_->GetWidth(); x++)
-      {
-         line[x] = 0; // ((i << 6) & 0xFF00) | ((x << 14) & 0xFF0000);
-      }*/
    }
 
    DisplayText("SugarPi", 450, 47, false);
@@ -369,111 +430,3 @@ void ScreenMenu::Select()
       DisplayMenu(current_menu_);
 }
 
-
-
-int ScreenMenu::LoadCprFromBuffer(const char* filepath)
-{
-   FIL File;
-   FRESULT Result = f_open(&File, filepath, FA_READ | FA_OPEN_EXISTING);
-   if (Result != FR_OK)
-   {
-      logger_->Write("Cartridge", LogPanic, "Cannot open file: %s", filepath);
-   }
-   else
-   {
-      logger_->Write("Cartridge", LogNotice, "File opened correctly");
-   }
-
-   FILINFO file_info;
-   f_stat(filepath, &file_info);
-   logger_->Write("Cartridge", LogNotice, "File size : %i", file_info.fsize);
-   unsigned char* buffer = new unsigned char[file_info.fsize];
-   unsigned nBytesRead;
-
-   logger_->Write("Cartridge", LogNotice, "buffer allocated");
-   f_read(&File, buffer, file_info.fsize, &nBytesRead);
-   if (file_info.fsize != nBytesRead)
-   {
-      logger_->Write("Cartridge", LogPanic, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
-   }
-   else
-   {
-      logger_->Write("Cartridge", LogNotice, "file read");
-   }
-
-   // Check RIFF chunk
-   int index = 0;
-   if (file_info.fsize >= 12
-      && (memcmp(&buffer[0], "RIFF", 4) == 0)
-      && (memcmp(&buffer[8], "AMS!", 4) == 0)
-      )
-   {
-      // Reinit Cartridge
-      motherboard_->EjectCartridge();
-
-      // Ok, it's correct.
-      index += 4;
-      // Check the whole size
-
-      int chunk_size = buffer[index]
-         + (buffer[index + 1] << 8)
-         + (buffer[index + 2] << 16)
-         + (buffer[index + 3] << 24);
-
-      index += 8;
-
-      // 'fmt ' chunk ? skip it
-      if (index + 8 < file_info.fsize && (memcmp(&buffer[index], "fmt ", 4) == 0))
-      {
-         index += 8;
-      }
-
-      // Good.
-      // Now we are at the first cbxx
-      while (index + 8 < file_info.fsize)
-      {
-         if (buffer[index] == 'c' && buffer[index + 1] == 'b')
-         {
-            index += 2;
-            char buffer_block_number[3] = { 0 };
-            memcpy(buffer_block_number, &buffer[index], 2);
-            int block_number = (buffer_block_number[0] - '0') * 10 + (buffer_block_number[1] - '0');
-            index += 2;
-
-            // Read size
-            int block_size = buffer[index]
-               + (buffer[index + 1] << 8)
-               + (buffer[index + 2] << 16)
-               + (buffer[index + 3] << 24);
-            index += 4;
-
-            if (block_size <= file_info.fsize && block_number < 256)
-            {
-               // Copy datas to proper ROM
-               unsigned char* rom = motherboard_->GetCartridge(block_number);
-               memset(rom, 0, 0x1000);
-               memcpy(rom, &buffer[index], block_size);
-               index += block_size;
-            }
-            else
-            {
-               delete[]buffer;
-               return -1;
-            }
-         }
-         else
-         {
-            delete[]buffer;
-            return -1;
-         }
-      }
-   }
-   else
-   {
-      // Incorrect headers
-      delete[]buffer;
-      return -1;
-   }
-   delete[]buffer;
-   return 0;
-}

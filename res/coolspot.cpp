@@ -48,7 +48,6 @@ CoolspotFont::CoolspotFont(CLogger*logger) : logger_(logger)
    {
       if ((coolspot_font.pixel_data[pos] &0xFF) == 0xFF)
       {
-         logger_->Write("FONT", LogNotice, "Nouvelle lettre : %c, offset = %i", (char)char_index, pos);
          char_position_[char_index++] = pos+1;
       }
       pos++;

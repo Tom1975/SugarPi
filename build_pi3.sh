@@ -11,7 +11,6 @@ echo CHECK_DEPS = 0                   >> Config.mk
 cp Config.mk circle/.
 ./build_circle.sh
 
-
 # check output dir
 make clean
 make 
@@ -20,9 +19,6 @@ make
 if [ ! -d "sdcard" ]; then
   mkdir sdcard
 fi
-
-cp circle/boot/* sdcard/pi3
-cp kernel8.img sdcard/pi3
-
+cp kernel8.img sdcard/.
 
 echo "*** End ***"
