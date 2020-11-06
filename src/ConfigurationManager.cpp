@@ -62,6 +62,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
       // already openend
       return;
    }
+   current_config_file_ = config_file;
    Clear();
    std::string s, key, value;
    std::string current_section = "";
@@ -88,7 +89,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
       return;
    }
 
-   current_config_file_ = config_file;
+   
    const char* ptr_buffer = (char*)buff;
    unsigned int offset = 0;
    unsigned int end_line;
@@ -181,7 +182,7 @@ void ConfigurationManager::CloseFile()
    FRESULT Result = f_open(&File, current_config_file_.c_str(), FA_WRITE | FA_CREATE_ALWAYS );   
    if (Result != FR_OK)
    {
-      logger_->Write("Kernel", LogPanic, "Cannot open file: %s", current_config_file_.c_str());
+      logger_->Write("Kernel", LogNotice, "Cannot open file: %s", current_config_file_.c_str());
       return;
    }
 
@@ -201,7 +202,7 @@ void ConfigurationManager::CloseFile()
          output_file.append ("\r\n");
       }
    }
-   logger_->Write("Kernel", LogNotice, "Output file : ", output_file.c_str());
+   logger_->Write("Kernel", LogNotice, "Output file : %s", output_file.c_str());
    unsigned nBytesRead;
    f_write (&File, output_file.c_str(), output_file.size(), &nBytesRead);
    f_close(&File);
@@ -212,11 +213,15 @@ void ConfigurationManager::SetConfiguration(const char* section, const char* key
    OpenFile(file);
    SetConfiguration(section, key, value);
 }
+
 void ConfigurationManager::SetConfiguration(const char* section_key, const char* key, const char* value)
 {
+   logger_->Write("Kernel", LogNotice, "SetConfiguration : section=%s; key=%s; value=%s", section_key, key ,value);
+
    Section* section;
    if (config_file_.GetSection (section_key, section) == false)
    {
+      logger_->Write("Kernel", LogNotice, "Section not found");
       Association<Section*> new_section;
       new_section.key = section_key;
       section = new_section.value = new Section();
@@ -224,17 +229,47 @@ void ConfigurationManager::SetConfiguration(const char* section_key, const char*
    }
 
    std::string * value_str;
-   if ( section->GetKey(key, value_str) == false)
+   bool found = false;
+   for (auto it: *section)
    {
+      if (strcmp ( it.key.c_str(), key) == 0)
+      {
+         logger_->Write("Kernel", LogNotice, "Key found, value = %s", value);
+         it.value = value;
+         found = true;
+      }
+   }
+
+   //if ( section->GetKey(key, value_str) == false)
+   if (!found)
+   {
+      logger_->Write("Kernel", LogNotice, "Key not found");
       Association<std::string> new_assoc;
       new_assoc.key = key;
       new_assoc.value = value;
       section->push_back(new_assoc);
    }
-   else
+   /*else
    {
+      logger_->Write("Kernel", LogNotice, "Key found, value = %s", value);
       *value_str = value;
+      
+   }*/
+
+   char output_log_buffer[255];
+   GetConfiguration(section_key, key, "NOTHING", output_log_buffer, 255 );
+   logger_->Write("Kernel", LogNotice, "Written value = %s", output_log_buffer);
+
+   logger_->Write("Kernel", LogNotice, "Config contain :");
+   for (auto const& ent1 : config_file_)
+   {
+      logger_->Write("Kernel", LogNotice, "SECTION : %s", ent1.key.c_str());
+      for (auto const& ent2 : *ent1.value)
+      {
+         logger_->Write("Kernel", LogNotice, "KEYS: %s = VALUE : %s", ent2.key.c_str(), ent2.value.c_str());
+      }
    }
+   logger_->Write("Kernel", LogNotice, "EOF");
 }
 
 unsigned int ConfigurationManager::GetConfiguration(const char* section, const char* key, const char* default_value, char* out_buffer, unsigned int buffer_size, const char* file)

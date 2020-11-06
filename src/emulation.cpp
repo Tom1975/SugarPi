@@ -53,10 +53,6 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
       logger_->Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
    }
 
-   // Create 
-   setup_->Init(display, sound_mixer_, motherboard_);
-   setup_->Load();
-
    motherboard_->SetPlus(true);
    motherboard_->InitMotherbard(nullptr, nullptr, display_, nullptr, nullptr, nullptr);
    motherboard_->GetPSG()->SetLog(&log_);
@@ -67,6 +63,10 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    motherboard_->GetMem()->SetRam(1);
    motherboard_->GetCRTC()->DefinirTypeCRTC(CRTC::AMS40226);
    motherboard_->GetVGA()->SetPAL(true);
+
+   // Setup
+   setup_->Init(display, sound_mixer_, motherboard_);
+   setup_->Load();
 
 /*
    #define CARTOUCHE_BASE "/CART/crtc3_projo.cpr"
