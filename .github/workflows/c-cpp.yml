@@ -21,7 +21,10 @@ jobs:
           args: git submodule update --init --recursive        
           
       - name: Set circle as writable
-        run: sudo chown -R $USER:$USER $(pwd)
+        run: |
+          sudo chown -R $USER:$USER $(pwd)
+          ls circle
+          ls circle/boot
         shell: bash
         working-directory: .
         
