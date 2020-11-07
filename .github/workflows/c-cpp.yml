@@ -30,8 +30,10 @@ jobs:
       - name: Prepare SD Card
         run: |
           mkdir sdcard  
+        shell: bash
+        working-directory: .
         
-      - name: Build Raspberry Pi 3 
+      - name: Config Raspberry Pi 3 
         run: |
           echo AARCH = 64							          > Config.mk
           echo RASPPI = 3							          >> Config.mk
@@ -41,7 +43,12 @@ jobs:
           echo CHECK_DEPS = 0                   >> Config.mk
           cp Config.mk circle/.
           cp Rules.mk circle
-          cd circle
+        shell: bash
+        working-directory: .
+
+      - name: Build Circle for Raspberry pi 3
+        run: |
+          pushd circle
           ./makeall clean
           ./makeall --nosample
           cd addon/linux
@@ -62,6 +69,12 @@ jobs:
           cd ../../boot
           make clean
           make
+          popd
+        shell: bash
+        working-directory: .
+          
+      - name: Build Circle for Raspberry pi 3
+        run: |
           make clean
           make 
           cp kernel8.img sdcard/.
