@@ -52,6 +52,7 @@ jobs:
 
       - name: Build Circle for Raspberry pi 3
         run: |
+          export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH
           pushd circle
           ./makeall clean
           ./makeall --nosample
@@ -79,6 +80,7 @@ jobs:
           
       - name: Build Circle for Raspberry pi 3
         run: |
+          export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH
           make clean
           make 
           cp kernel8.img sdcard/.
