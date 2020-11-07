@@ -98,3 +98,8 @@ jobs:
           tar -czvf sugarpi.gz $(pwd)/sdcard
         shell: bash
         working-directory: .
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: SugarPi
+          path: sugarpi.gz
