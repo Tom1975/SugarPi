@@ -83,6 +83,15 @@ jobs:
           make clean
           make
           popd
+          cp circle/boot/bootcode.bin sdcard
+          cp circle/boot/start.elf sdcard
+          cp circle/boot/start4.elf sdcard
+          cp circle/boot/fixup.dat sdcard
+          cp circle/boot/fixup4.dat sdcard
+          cp circle/boot/bcm2711-rpi-4-b.dtb sdcard
+          cp circle/boot/LICENCE.broadcom	sdcard
+          cp circle/boot/COPYING.linux sdcard
+          cp circle/boot/config.txt sdcard          
         shell: bash
         working-directory: .
           
