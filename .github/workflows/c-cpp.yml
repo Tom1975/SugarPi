@@ -20,6 +20,11 @@ jobs:
         with:
           args: git submodule update --init --recursive        
           
+      - name: Set circle as writable
+        run: sudo chown -R $USER:$USER /home/github/actions-runner/_work/SugarPi
+        shell: bash
+        working-directory: .
+        
       - name: Install ARM toolchain
         run: |
           echo 'Installing ARM toolchain'
