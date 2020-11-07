@@ -37,6 +37,7 @@ jobs:
         
       - name: Config Raspberry Pi 3 
         run: |
+          export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH
           ls gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin
           echo $PATH
           echo AARCH = 64							          > Config.mk
