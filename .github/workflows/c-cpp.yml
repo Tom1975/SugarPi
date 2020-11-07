@@ -21,7 +21,7 @@ jobs:
           args: git submodule update --init --recursive        
           
       - name: Set circle as writable
-        run: sudo chown -R $USER:$USER /home/github/actions-runner/_work/SugarPi
+        run: sudo chown -R $USER:$USER $(pwd)
         shell: bash
         working-directory: .
         
