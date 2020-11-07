@@ -93,13 +93,13 @@ jobs:
         shell: bash
         working-directory: .
           
-      - name: Create archive 
-        run: |
-          tar -czvf sugarpi.gz $(pwd)/sdcard
-        shell: bash
-        working-directory: .
+#      - name: Create archive 
+#        run: |
+#          tar -czvf sugarpi.gz $(pwd)/sdcard
+#        shell: bash
+#        working-directory: .
 
       - uses: actions/upload-artifact@v2
         with:
           name: SugarPi
-          path: sugarpi.gz
+          path: sdcard/
