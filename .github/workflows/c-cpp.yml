@@ -79,7 +79,7 @@ jobs:
           cd ../vchiq
           make clean
           make
-          cd ../../boot
+          cd ../../../boot
           make clean
           make
           popd
