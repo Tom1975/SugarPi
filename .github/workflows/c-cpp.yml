@@ -42,7 +42,6 @@ jobs:
           echo DEFINE = -DARM_ALLOW_MULTI_CORE	>> Config.mk
           echo CHECK_DEPS = 0                   >> Config.mk
           cp Config.mk circle/.
-          cp Rules.mk circle
         shell: bash
         working-directory: .
 
