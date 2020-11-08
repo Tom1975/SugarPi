@@ -10,11 +10,13 @@ building SugarPi for Raspberry Pi."
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
 
+
 # Update Ubuntu Software repository
 RUN apt-get update && apt-get -qq install wget && apt-get -qq install tar && apt-get -qq install xz-utils && apt-get -qq install git && apt-get -qq install make
 RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
 RUN tar -Jxvf  gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
 RUN export PATH="$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin":$PATH
+ENV PATH "$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH"
 
 # Get git and submodules
 
