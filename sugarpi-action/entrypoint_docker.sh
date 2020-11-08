@@ -1,6 +1,7 @@
 #!/bin/sh -l
-echo "PATH : $(PATH)"
+echo "PATH : $PATH"
 echo "who-to-build value : $1"
+ls 
 
 chmod +x /build_all.sh
 chmod +x /build_circle.sh
