@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -28,71 +27,19 @@ jobs:
         shell: bash
         working-directory: .
         
-      - name: Install ARM toolchain
-        run: |
-          echo 'Installing ARM toolchain'
-          wget https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
-          tar -Jxvf  gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
-          export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH
-        shell: bash
-        working-directory: .
-                  
       - name: Prepare SD Card
         run: |
           mkdir sdcard  
         shell: bash
         working-directory: .
+      
+      - name: Build Pi3
+        uses: ./sugarpi-action
+        id:  buildpi3
+        with:
+          who-to-build: '3'
         
-      - name: Config Raspberry Pi 3 
-        run: |
-          export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH
-          ls gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin
-          echo $PATH
-          echo AARCH = 64							          > Config.mk
-          echo RASPPI = 3							          >> Config.mk
-          echo PREFIX64 = aarch64-none-elf-   	>> Config.mk
-          echo STDLIB_SUPPORT = 1					      >> Config.mk
-          echo DEFINE = -DARM_ALLOW_MULTI_CORE	>> Config.mk
-          echo CHECK_DEPS = 0                   >> Config.mk
-          cp Config.mk circle/.
-          export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH
-          pushd circle
-          ./makeall clean
-          ./makeall --nosample
-          cd addon/linux
-          make clean
-          make
-          cd ../SDCard
-          make clean
-          make
-          cd ../fatfs
-          make clean
-          make
-          cd ../vc4/sound
-          make clean
-          make
-          cd ../vchiq
-          make clean
-          make
-          cd ../../../boot
-          make clean
-          make
-          popd
-          cp circle/boot/bootcode.bin sdcard
-          cp circle/boot/start.elf sdcard
-          cp circle/boot/start4.elf sdcard
-          cp circle/boot/fixup.dat sdcard
-          cp circle/boot/fixup4.dat sdcard
-          cp circle/boot/bcm2711-rpi-4-b.dtb sdcard
-          cp circle/boot/LICENCE.broadcom	sdcard
-          cp circle/boot/COPYING.linux sdcard
-          cp circle/boot/config.txt sdcard          
-          make clean
-          make 
-          cp kernel8.img sdcard/.
-        shell: bash
-        working-directory: .
-          
+
 #      - name: Create archive 
 #        run: |
 #          tar -czvf sugarpi.gz $(pwd)/sdcard

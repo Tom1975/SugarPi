@@ -1,0 +1,14 @@
+# action.yml
+name: 'SugarPi Build'
+description: 'Build SugarPi for Rapsberry Pi'
+inputs:
+  who-to-build:  # id of input
+    description: 'Target to build'
+    required: true
+    default: '3'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.who-to-build }}
