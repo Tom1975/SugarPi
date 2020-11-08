@@ -1,4 +1,4 @@
-#Download base image ubuntu 20.04
+# Download base image ubuntu 20.04
 FROM ubuntu:20.04
 
 # LABEL about the custom image
@@ -16,12 +16,12 @@ RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/bin
 RUN	tar -Jxvf  gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
 RUN export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH
 
+# Get git and submodules
+
 COPY entrypoint_docker.sh /
 
 #ensure entrypoint is executable (force flags update, because file flags may change if a commit is made under Windows)
 RUN chmod +x /entrypoint_docker.sh
-RUN chmod +x /build_all.sh
-RUN chmod +x /build_circle.sh
-RUN chmod +x /build_pi3.sh
-RUN chmod +x /build_pi4.sh
+
+
 
