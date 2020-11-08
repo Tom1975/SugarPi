@@ -1,3 +1,5 @@
+#!/bin/sh -l
+
 ls -l
 
 echo "who-to-build value : $1"
