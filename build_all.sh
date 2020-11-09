@@ -22,8 +22,15 @@ if [ ! -d "sdcard/CART" ]; then
   mkdir sdcard/CART
 fi
  
+ echo "*** base config creation ***"
 if [ ! -d "sdcard/Config" ]; then
   mkdir sdcard/Config
 fi
+echo "[SETUP]" > config
+echo "sync=frame" >> config
+echo "cart=Burnin Rubber (UK) (1990) [Original] [CARTOUCHE].cpr" >> config
 
+
+
+cp config sdcard/Config
 cp CART/* sdcard/CART
