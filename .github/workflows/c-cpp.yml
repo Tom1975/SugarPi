@@ -33,11 +33,9 @@ jobs:
         shell: bash
         working-directory: .
       
-      - name: Build Pi3
+      - name: Build Pi
         uses: ./sugarpi-action
-        id:  buildpi3
-        with:
-          who-to-build: '3'
+        id:  buildpi
   
       - uses: actions/upload-artifact@v2
         with:
