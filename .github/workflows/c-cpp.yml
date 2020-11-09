@@ -8,21 +8,38 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install ARM toolchain
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Checkout submodules
+        uses: srt32/git-actions@v0.0.3
+        with:
+          args: git submodule update --init --recursive        
+          
+      - name: Set circle as writable
         run: |
-          echo 'Installing ARM toolchain'
-          wget https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
-          tar -Jxvf  gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
-          export PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin:$PATH
-          sudo chmod +x build_all.sh
-          sudo chmod +x build_circle.sh
-          sudo chmod +x build_pi3.sh
-          sudo chmod +x build_pi4.sh
-          "./build_all.sh"
-          tar -czvf sugarpi.gz $(pwd)/sdcard
+          sudo chown -R $USER:$USER $(pwd)
+          ls circle
+          ls circle/boot
         shell: bash
         working-directory: .
+        
+      - name: Prepare SD Card
+        run: |
+          mkdir sdcard  
+        shell: bash
+        working-directory: .
+      
+      - name: Build Pi3
+        uses: ./sugarpi-action
+        id:  buildpi3
+        with:
+          who-to-build: '3'
+  
+      - uses: actions/upload-artifact@v2
+        with:
+          name: SugarPi
+          path: sdcard/
