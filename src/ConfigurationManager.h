@@ -43,21 +43,21 @@ protected:
    {
       public:
          Association() : key(), value(){
-            log_s->Write("Association", LogNotice, "default creator");
+            //log_s->Write("Association", LogNotice, "default creator");
          }
          Association(Association& assoc)
          {
-            log_s->Write("Association", LogNotice, "assoc creator");
+            //log_s->Write("Association", LogNotice, "assoc creator");
             key = assoc.key;
             value = assoc.value;
          }
          Association& operator=(const Association& _Right)
          {
-            log_s->Write("Association", LogNotice, "operator=");
+            //log_s->Write("Association", LogNotice, "operator=");
             key = _Right.key;
-            log_s->Write("Association", LogNotice, "operator= 1");
+            //log_s->Write("Association", LogNotice, "operator= 1");
             value = _Right.value;
-            log_s->Write("Association", LogNotice, "operator done");
+            //log_s->Write("Association", LogNotice, "operator done");
             return *this;
          }
 

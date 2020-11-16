@@ -15,7 +15,9 @@ DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
    added_line_(1),
    buffer_used_(0),
    nb_frame_in_queue_(0),
-   sync_on_frame_(false)
+   sync_on_frame_(false),
+   full_resolution_cached_(false),
+   full_resolution_(false)
 {
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
@@ -148,7 +150,8 @@ void DisplayPi::VSync(bool dbg )
 
 #ifndef USE_QEMU_SUGARPI
 
-   if (true /*sync_on_frame_*/)
+   full_resolution_cached_ = full_resolution_;
+   if (true /*sync_on_frame_*/) // To turn on : Use the display core !
    {
       frame_buffer_.SetVirtualOffset(143, 47 / 2 + buffer_used_ * 1024);
       if (sync_on_frame_)frame_buffer_.WaitForVerticalSync();
@@ -252,12 +255,18 @@ void DisplayPi::WaitVbl()
 
 int* DisplayPi::GetVideoBuffer(int y)
 {
-   y = y * 2 + added_line_;
+   if (!full_resolution_cached_)
+   {
+      y = y * 2 + added_line_;
+   }
+   
 
    y &= 0x3FF;
 
    y += buffer_used_ * 1024;
 
+///// 
+   //logger_->Write("Display", LogNotice, "GetVideoBuffer : y = %i; buffer_used_ : %i, ==>%i", y, buffer_used_, frame_buffer_.GetBuffer() + y * frame_buffer_.GetPitch());
    return (int*)(frame_buffer_.GetBuffer() + y * frame_buffer_.GetPitch());
 
 //   return (int*)(frame_buffer_.GetBuffer() + (y * 2 /*+ added_line_*/)* frame_buffer_.GetPitch() );

@@ -257,6 +257,7 @@ int ScreenMenu::HandleMenu( MenuItem* menu)
    index_base_ = old_index;
    current_menu_ = old_menu;
    selected_ = 0;
+
    return 0;
 }
 
@@ -368,6 +369,8 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
 
 void ScreenMenu::Handle()
 {
+   display_->SetFullResolution(true);
+
    // Display menu
    DisplayMenu(current_menu_);
 
@@ -398,6 +401,7 @@ void ScreenMenu::Handle()
 
    }
    logger_->Write("Menu", LogNotice, "MENU EXITING !");
+   display_->SetFullResolution(false);
 }
 
 void ScreenMenu::Down()
