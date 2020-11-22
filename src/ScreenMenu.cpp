@@ -371,6 +371,9 @@ void ScreenMenu::Handle()
 {
    display_->SetFullResolution(true);
 
+   // Wait till next vsync
+   display_->VSync();
+   
    // Display menu
    DisplayMenu(current_menu_);
 
@@ -402,6 +405,7 @@ void ScreenMenu::Handle()
    }
    logger_->Write("Menu", LogNotice, "MENU EXITING !");
    display_->SetFullResolution(false);
+   display_->VSync();
 }
 
 void ScreenMenu::Down()

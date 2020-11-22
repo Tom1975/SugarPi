@@ -149,12 +149,32 @@ void DisplayPi::VSync(bool dbg )
    //logger_->Write("DIS", LogNotice, "VSync : Frame ready is %i", buffer_used_);
 
 #ifndef USE_QEMU_SUGARPI
-
-   full_resolution_cached_ = full_resolution_;
+   bool clear_framebuffer = false;
+   if (full_resolution_cached_ != full_resolution_)
+   {
+      clear_framebuffer = true;
+      full_resolution_cached_ = full_resolution_;
+      
+   }
+   
    if (true /*sync_on_frame_*/) // To turn on : Use the display core !
    {
       frame_buffer_.SetVirtualOffset(143, 47 / 2 + buffer_used_ * 1024);
-      if (sync_on_frame_)frame_buffer_.WaitForVerticalSync();
+      if (sync_on_frame_)
+      {
+         frame_buffer_.WaitForVerticalSync();
+         
+         if (clear_framebuffer)
+         {
+            unsigned char* line = (unsigned char*)(frame_buffer_.GetBuffer() + buffer_used_*1024*frame_buffer_.GetPitch());
+            for (unsigned int count = 0; count < 1024; count++)
+            {
+               memset(line, 0x0, 1024*4);
+               line += frame_buffer_.GetPitch();
+            }
+         }
+
+      }
    }
    else
    {
@@ -262,7 +282,6 @@ int* DisplayPi::GetVideoBuffer(int y)
    
 
    y &= 0x3FF;
-
    y += buffer_used_ * 1024;
 
 ///// 

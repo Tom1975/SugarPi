@@ -75,12 +75,12 @@ void SugarPiSetup::Save()
 void  SugarPiSetup::SetSync (SYNC_TYPE sync)
 {
    sync_ = sync;
-   if (sync==SYNC_SOUND)
+   /*if (sync==SYNC_SOUND)
    {
       display_->SyncWithFrame(false);
       sound_->SyncOnSound(true);      
    }
-   else
+   else*/
    {
       display_->SyncWithFrame(true);
       sound_->SyncOnSound(false);
