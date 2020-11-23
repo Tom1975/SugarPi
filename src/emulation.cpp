@@ -156,6 +156,8 @@ void Emulation::Run(unsigned nCore)
 #endif
          logger_->Write("CORE", LogNotice, "Main loop");
          RunMainLoop();
+         sound_mixer_->StopMixer();
+         CTimer::Get ()->MsDelay (4000);
          logger_->Write("CORE", LogNotice, "Exiting...");
 #ifdef ARM_ALLOW_MULTI_CORE
          break;
@@ -180,7 +182,8 @@ void Emulation::RunMainLoop()
    unsigned nCelsiusOldTmp = 0;
    int count = 0;
    unsigned lasttick = timer_->GetClockTicks();
-   while (1)
+   bool finished = false;
+   while (!finished )
    {
 
       // run for 1/10th of second ( 5 frame) in 10 sequences of 1/100th second (10 ms)
@@ -204,7 +207,7 @@ void Emulation::RunMainLoop()
       if (keyboard_->IsSelect())
       {
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
-         menu.Handle();
+         finished = (menu.Handle() == ScreenMenu::Action_Shutdown);
          keyboard_->ReinitSelect();
          CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
       }

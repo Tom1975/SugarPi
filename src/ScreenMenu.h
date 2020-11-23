@@ -22,34 +22,39 @@ class ScreenMenu
 {
 
 public:
+
+   typedef enum
+   {
+      Action_None,
+      Action_Shutdown
+   } Action;
+
    ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup);
    virtual ~ScreenMenu();
 
-   void Handle();
+   ScreenMenu::Action Handle();
 
-   int Resume();
-   int InsertCartridge();
-   int SugarSetup();
-   int HardwareSetup();
-   int Reset();
-   int ShutDown();
-   int Load();
-   int Save();
-   int SetSyncVbl();
-   int SetSyncSound();
-
-
+   ScreenMenu::Action Resume();
+   ScreenMenu::Action InsertCartridge();
+   ScreenMenu::Action SugarSetup();
+   ScreenMenu::Action HardwareSetup();
+   ScreenMenu::Action Reset();
+   ScreenMenu::Action ShutDown();
+   ScreenMenu::Action Load();
+   ScreenMenu::Action Save();
+   ScreenMenu::Action SetSyncVbl();
+   ScreenMenu::Action SetSyncSound();
 
    void Down();
    void Up();
-   void Select();
+   ScreenMenu::Action Select();
 
    class MenuItem
    {
    public:
       const char* label_;
       //Func function_;
-      int (ScreenMenu::* function)();
+      Action (ScreenMenu::* function)();
    };
 
 protected:

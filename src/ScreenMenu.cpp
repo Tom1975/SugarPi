@@ -23,9 +23,9 @@ ScreenMenu::MenuItem base_menu[] =
    { "Resume",             &ScreenMenu::Resume},
    { "Insert Cartridge",   &ScreenMenu::InsertCartridge},
    { "SugarPi Setup",      &ScreenMenu::SugarSetup},
-   { "Hardware Setup",     &ScreenMenu::HardwareSetup},
+/*   { "Hardware Setup",     &ScreenMenu::HardwareSetup},
    { "Quick Save",         &ScreenMenu::Save},
-   { "Quick Load",         &ScreenMenu::Load},
+   { "Quick Load",         &ScreenMenu::Load},*/
    { "Reset",              &ScreenMenu::Reset},
    { "Shutdown",           &ScreenMenu::ShutDown},
    { nullptr, nullptr}
@@ -58,27 +58,29 @@ ScreenMenu::~ScreenMenu()
    delete []sugarpi_setup_menu_;
 }
 
-int ScreenMenu::SetSyncVbl()
+ScreenMenu::Action ScreenMenu::SetSyncVbl()
 {
    setup_->SetSync (SugarPiSetup::SYNC_FRAME);
    setup_->Save();
    BuildMenuSync (&sugarpi_setup_menu_[1]);
+   return Action_None;
 }
 
-int ScreenMenu::SetSyncSound()
+ScreenMenu::Action ScreenMenu::SetSyncSound()
 {
    setup_->SetSync (SugarPiSetup::SYNC_SOUND);
    setup_->Save();
    BuildMenuSync (&sugarpi_setup_menu_[1]);
+   return Action_None;
 }
 
-int ScreenMenu::Resume()
+ScreenMenu::Action ScreenMenu::Resume()
 {
    resume_ = true;
-   return 0;
+   return Action_None;
 }
 
-int ScreenMenu::InsertCartridge()
+ScreenMenu::Action ScreenMenu::InsertCartridge()
 {
    logger_->Write("Menu", LogNotice, "ACTION : InsertCartridge. Sizeof FILINFO : %i", sizeof(FILINFO));
 
@@ -187,7 +189,7 @@ int ScreenMenu::InsertCartridge()
    index_base_ = old_index;
    current_menu_ = old_menu;
    selected_ = 0;
-   return 0;
+   return Action_None;
 }
 
 void ScreenMenu::BuildMenuSync(MenuItem * sync_menu)
@@ -204,11 +206,13 @@ void ScreenMenu::BuildMenuSync(MenuItem * sync_menu)
    }
 }
 
-int ScreenMenu::SugarSetup()
+ScreenMenu::Action ScreenMenu::SugarSetup()
 {
    BuildMenuSync (&sugarpi_setup_menu_[1]);
   
    HandleMenu (sugarpi_setup_menu_);
+   logger_->Write("Menu", LogNotice, "ScreenMenu::SugarSetup ended");
+   return Action_None;
 }
 
 int ScreenMenu::HandleMenu( MenuItem* menu)
@@ -222,10 +226,7 @@ int ScreenMenu::HandleMenu( MenuItem* menu)
    index_base_ = 0;
 
    current_menu_ = menu;
-
-   logger_->Write("Menu", LogNotice, "Will now display submenu");
    DisplayMenu(current_menu_);
-   logger_->Write("Menu", LogNotice, "Will submenu displayed");
 
    // wait for command
    keyboard_->ReinitSelect();
@@ -257,42 +258,44 @@ int ScreenMenu::HandleMenu( MenuItem* menu)
    index_base_ = old_index;
    current_menu_ = old_menu;
    selected_ = 0;
-
-   return 0;
+   
+   logger_->Write("Menu", LogNotice, "ScreenMenu::HandleMenu ended");
+   return Action_None;
 }
 
 
-int ScreenMenu::HardwareSetup()
+ScreenMenu::Action ScreenMenu::HardwareSetup()
 {
    logger_->Write("Menu", LogNotice, "ACTION : Select setup");
-   return 0;
+   return Action_None;
 }
 
-int ScreenMenu::Save()
+ScreenMenu::Action ScreenMenu::Save()
 {
    snapshot_->SaveSnapshot(PATH_QUICK_SNA);
    resume_ = true;
-   return 0;
+   return Action_None;
 }
 
-int ScreenMenu::Load()
+ScreenMenu::Action ScreenMenu::Load()
 {
    snapshot_->LoadSnapshot(PATH_QUICK_SNA);
    resume_ = true;
-   return 0;
+   return Action_None;
 }
 
-int ScreenMenu::Reset()
+ScreenMenu::Action ScreenMenu::Reset()
 {
    motherboard_->OnOff();
    resume_ = true;
-   return 0;
+   return Action_None;
 }
 
-int ScreenMenu::ShutDown()
+ScreenMenu::Action ScreenMenu::ShutDown()
 {
    logger_->Write("Menu", LogNotice, "ACTION : SHUTDOWN");
-   return 0;
+   resume_ = true;
+   return Action_Shutdown;
 }
 
 void ScreenMenu::DisplayText(const char* txt, int x, int y, bool selected)
@@ -367,8 +370,9 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
    display_->VSync();
 }
 
-void ScreenMenu::Handle()
+ScreenMenu::Action ScreenMenu::Handle()
 {
+   Action action = Action_None;
    display_->SetFullResolution(true);
 
    // Wait till next vsync
@@ -399,13 +403,16 @@ void ScreenMenu::Handle()
       if (keyboard_->IsAction())
       {
          logger_->Write("Menu", LogNotice, "Select");
-         Select();
+         action = Select();
+         logger_->Write("Menu", LogNotice, "Select ended");
       }
 
    }
    logger_->Write("Menu", LogNotice, "MENU EXITING !");
    display_->SetFullResolution(false);
    display_->VSync();
+
+   return action;
 }
 
 void ScreenMenu::Down()
@@ -431,10 +438,13 @@ void ScreenMenu::Up()
    DisplayMenu(current_menu_);
 }
 
-void ScreenMenu::Select()
+ScreenMenu::Action ScreenMenu::Select()
 {
-   (this->*(current_menu_[selected_].function))();
+   Action action = (this->*(current_menu_[selected_].function))();
+   logger_->Write("Menu", LogNotice, "function ended");
    if (!resume_)
       DisplayMenu(current_menu_);
+   logger_->Write("Menu", LogNotice, "ScreenMenu::Select ended");
+   return action;
 }
 

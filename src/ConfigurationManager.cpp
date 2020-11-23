@@ -168,13 +168,11 @@ void ConfigurationManager::OpenFile(const char* config_file)
                Association<Section*> new_section;
                new_section.key = current_section;
                section = new_section.value = new Section();
-               logger_->Write("ConfigurationManager", LogNotice, "PUSH section %s", current_section.c_str());
                config_file_.push_back(new_section);
             }
             Association<std::string> new_assoc;
             new_assoc.key = key;
             new_assoc.value = value;
-            logger_->Write("ConfigurationManager", LogNotice, "PUSH key %s, value %s", key.c_str(), value.c_str());
             section->push_back(new_assoc);
          }
       }
@@ -198,14 +196,9 @@ void ConfigurationManager::CloseFile()
    std::string output_file;
    for (auto const& ent1 : config_file_)
    {
-      logger_->Write("ConfigurationManager", LogNotice, "Loop#");
       output_file.append("[");
-      logger_->Write("ConfigurationManager", LogNotice, "[ added");
-      logger_->Write("ConfigurationManager", LogNotice, "section addr : %i ", ent1.key.c_str());
       output_file.append(ent1.key);
-      logger_->Write("ConfigurationManager", LogNotice, "section added ");
       output_file.append("]\r\n");
-      logger_->Write("ConfigurationManager", LogNotice, "[ added]");
       logger_->Write("ConfigurationManager", LogNotice, "section %s", ent1.key.c_str());
       for (auto const& ent2 : *ent1.value)
       {
@@ -226,14 +219,13 @@ void ConfigurationManager::CloseFile()
 
 void ConfigurationManager::SetConfiguration(const char* section, const char* key, const char* value, const char* file)
 {
-   logger_->Write("ConfigurationManager", LogNotice, "SetConfiguration - with file %s", file);
    OpenFile(file);
    SetConfiguration(section, key, value);
 }
 
 void ConfigurationManager::SetConfiguration(const char* section_key, const char* key, const char* value)
 {
-   logger_->Write("ConfigurationManager", LogNotice, "SetConfiguration : section=%s; key=%s; value=%s", section_key, key ,value);
+   logger_->Write("ConfigurationManager", LogNotice, "SetConfiguration : [%s] %s=%s", section_key, key ,value);
 
    Section* section;
    if (config_file_.GetSection (section_key, section) == false)
@@ -242,17 +234,15 @@ void ConfigurationManager::SetConfiguration(const char* section_key, const char*
       Association<Section*> new_section;
       new_section.key = section_key;
       section = new_section.value = new Section();
-      logger_->Write("ConfigurationManager", LogNotice, "PUSH section %s", section_key);
       config_file_.push_back(new_section);
    }
 
    std::string * value_str;
    bool found = false;
-   for (auto it: *section)
+   for (auto &it: *section)
    {
       if (strcmp ( it.key.c_str(), key) == 0)
       {
-         logger_->Write("ConfigurationManager", LogNotice, "Key found, value = %s", value);
          it.value = value;
          found = true;
       }
@@ -265,21 +255,12 @@ void ConfigurationManager::SetConfiguration(const char* section_key, const char*
       Association<std::string> new_assoc;
       new_assoc.key = key;
       new_assoc.value = value;
-      logger_->Write("ConfigurationManager", LogNotice, "PUSH key  %s", key);
       section->push_back(new_assoc);
    }
-   /*else
-   {
-      logger_->Write("ConfigurationManager", LogNotice, "Key found, value = %s", value);
-      *value_str = value;
-      
-   }*/
 
    char output_log_buffer[255];
    GetConfiguration(section_key, key, "NOTHING", output_log_buffer, 255 );
-   logger_->Write("ConfigurationManager", LogNotice, "Written value = %s", output_log_buffer);
 
-   logger_->Write("ConfigurationManager", LogNotice, "Config contain :");
    for (auto const& ent1 : config_file_)
    {
       logger_->Write("ConfigurationManager", LogNotice, "SECTION : %s", ent1.key.c_str());
@@ -377,7 +358,7 @@ const char* ConfigurationManager::GetNextKey()
 bool ConfigurationManager::ConfigFile::GetSection (const char* section_name, ConfigurationManager::Section*& section)
 {
    // Look at section
-   for (auto it:*this)
+   for (auto &it:*this)
    {
       if (strcmp ( it.key.c_str(), section_name) == 0)
       {

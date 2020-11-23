@@ -157,24 +157,23 @@ void DisplayPi::VSync(bool dbg )
       
    }
    
-   if (true /*sync_on_frame_*/) // To turn on : Use the display core !
+   if (true/*sync_on_frame_*/) // To turn on : Use the display core !
    {
       frame_buffer_.SetVirtualOffset(143, 47 / 2 + buffer_used_ * 1024);
       if (sync_on_frame_)
       {
          frame_buffer_.WaitForVerticalSync();
-         
-         if (clear_framebuffer)
-         {
-            unsigned char* line = (unsigned char*)(frame_buffer_.GetBuffer() + buffer_used_*1024*frame_buffer_.GetPitch());
-            for (unsigned int count = 0; count < 1024; count++)
-            {
-               memset(line, 0x0, 1024*4);
-               line += frame_buffer_.GetPitch();
-            }
-         }
-
       }
+      if (clear_framebuffer)
+      {
+         unsigned char* line = (unsigned char*)(frame_buffer_.GetBuffer() + buffer_used_*1024*frame_buffer_.GetPitch());
+         for (unsigned int count = 0; count < 1024; count++)
+         {
+            memset(line, 0x0, 1024*4);
+            line += frame_buffer_.GetPitch();
+         }
+      }
+
    }
    else
    {
