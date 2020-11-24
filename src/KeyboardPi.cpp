@@ -11,8 +11,10 @@ KeyboardPi* KeyboardPi::this_ptr_ = 0;
 
 KeyboardPi::KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service) :
    logger_(logger),
-   dwhci_device_(dwhci_device),
    device_name_service_(device_name_service),
+   dwhci_device_(dwhci_device),
+   gamepad_(nullptr),
+   action_buttons_(0),
    select_(false)
 {
    this_ptr_ = this;

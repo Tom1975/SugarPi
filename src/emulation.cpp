@@ -12,13 +12,14 @@ Emulation::Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer)
 #endif
    logger_(log),
    timer_(timer),
+   sound_mutex_(IRQ_LEVEL),
+   setup_(nullptr),
    motherboard_(nullptr),
    display_(nullptr),
-   sound_mixer_(nullptr),
+   keyboard_(nullptr),
    sound_(nullptr),
-   sound_is_ready(false),
-   sound_mutex_(IRQ_LEVEL),
-   setup_(nullptr)
+   sound_mixer_(nullptr),
+   sound_is_ready(false)
    
 {
    setup_ = new SugarPiSetup(log);
@@ -67,43 +68,6 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    // Setup
    setup_->Init(display, sound_mixer_, motherboard_);
    setup_->Load();
-
-/*
-   #define CARTOUCHE_BASE "/CART/crtc3_projo.cpr"
-//#define CARTOUCHE_BASE "/CART/gnggxfinalalpha.cpr"
-
-   FIL File;
-   FRESULT Result = f_open(&File, DRIVE CARTOUCHE_BASE, FA_READ | FA_OPEN_EXISTING);
-
-   if (Result != FR_OK)
-   {
-      logger_->Write("Kernel", LogPanic, "Cannot open file: %s", DRIVE CARTOUCHE_BASE);
-   }
-   else
-   {
-      logger_->Write("Kernel", LogNotice, "File opened correctly");
-   }
-
-   FILINFO file_info;
-   f_stat(DRIVE CARTOUCHE_BASE, &file_info);
-   logger_->Write("Kernel", LogNotice, "File size : %i", file_info.fsize);
-   unsigned char* buff = new unsigned char[file_info.fsize];
-   unsigned nBytesRead;
-
-   logger_->Write("Kernel", LogNotice, "buffer allocated");
-   f_read(&File, buff, file_info.fsize, &nBytesRead);
-   if (file_info.fsize != nBytesRead)
-   {
-      logger_->Write("Kernel", LogPanic, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
-   }
-   else
-   {
-      logger_->Write("Kernel", LogNotice, "file read");
-   }
-   LoadCprFromBuffer(buff, file_info.fsize);
-   logger_->Write("Kernel", LogNotice, "CPR read correctly");
-*/
-   //LoadCprFromBuffer(AmstradPLUS_FR, sizeof(AmstradPLUS_FR));
 
    motherboard_->GetPSG()->Reset();
    motherboard_->GetSig()->Reset();

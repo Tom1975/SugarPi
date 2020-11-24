@@ -14,7 +14,7 @@ It uses the great [Circle++ library](https://github.com/rsta2/circle) as a pseud
 - Power it : The Amstrad will be immediately displayed.
 
 ## Commands
-You should have an USB joypad plugger. I tested it with my XBox pad successfully.
+You should have an USB joypad plugged. I tested it with my XBox pad successfully.
 A and X button act as button 1 and 2 from the Amstrad pad.
 Directional pad is used for controler.
 Start is pause, and Select as a way to go into SugarPi settings.

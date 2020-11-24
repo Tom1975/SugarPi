@@ -11,13 +11,13 @@ DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
    logger_(logger),
    timer_(timer),
    frame_buffer_(768, 277*2, 32, 1024, 1024* FRAME_BUFFER_SIZE),
+   full_resolution_(false),
+   full_resolution_cached_(false),
    mutex_(TASK_LEVEL),
    added_line_(1),
    buffer_used_(0),
    nb_frame_in_queue_(0),
-   sync_on_frame_(false),
-   full_resolution_cached_(false),
-   full_resolution_(false)
+   sync_on_frame_(false)
 {
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
@@ -100,7 +100,7 @@ void DisplayPi::Loop()
 {
    logger_->Write("DIS", LogNotice, "Starting loop");
    // Waiting for a new frame to display
-   int old_frame_index = -1;
+   //int old_frame_index = -1;
    while (1)
    {
       // Display available frame
@@ -166,7 +166,8 @@ void DisplayPi::VSync(bool dbg )
       }
       if (clear_framebuffer)
       {
-         unsigned char* line = (unsigned char*)(frame_buffer_.GetBuffer() + buffer_used_*1024*frame_buffer_.GetPitch());
+         //unsigned char* line = (unsigned char*)(frame_buffer_.GetBuffer() + buffer_used_*1024*frame_buffer_.GetPitch());
+         unsigned char* line = reinterpret_cast<unsigned char*>(frame_buffer_.GetBuffer() + buffer_used_*1024*frame_buffer_.GetPitch());
          for (unsigned int count = 0; count < 1024; count++)
          {
             memset(line, 0x0, 1024*4);
@@ -285,7 +286,7 @@ int* DisplayPi::GetVideoBuffer(int y)
 
 ///// 
    //logger_->Write("Display", LogNotice, "GetVideoBuffer : y = %i; buffer_used_ : %i, ==>%i", y, buffer_used_, frame_buffer_.GetBuffer() + y * frame_buffer_.GetPitch());
-   return (int*)(frame_buffer_.GetBuffer() + y * frame_buffer_.GetPitch());
+   return reinterpret_cast<int*>(frame_buffer_.GetBuffer() + y * frame_buffer_.GetPitch());
 
 //   return (int*)(frame_buffer_.GetBuffer() + (y * 2 /*+ added_line_*/)* frame_buffer_.GetPitch() );
    

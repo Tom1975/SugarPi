@@ -237,7 +237,6 @@ void ConfigurationManager::SetConfiguration(const char* section_key, const char*
       config_file_.push_back(new_section);
    }
 
-   std::string * value_str;
    bool found = false;
    for (auto &it: *section)
    {
@@ -248,7 +247,6 @@ void ConfigurationManager::SetConfiguration(const char* section_key, const char*
       }
    }
 
-   //if ( section->GetKey(key, value_str) == false)
    if (!found)
    {
       logger_->Write("ConfigurationManager", LogNotice, "Key not found");

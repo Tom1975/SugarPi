@@ -32,14 +32,15 @@ CKernel::CKernel(void)
 #endif
    m_Timer(&m_Interrupt),
    m_Logger(m_Options.GetLogLevel(), &m_Timer),
+   cpu_throttle_(nullptr),
    m_EMMC(&m_Interrupt, &m_Timer, &m_ActLED),
    dwhci_device_(&m_Interrupt, &m_Timer),
+   vchiq_(&m_Memory, &m_Interrupt),
    display_(nullptr),
    keyboard_(nullptr),
-   cpu_throttle_(nullptr),
    sound_(nullptr),
-   emulation_(&m_Memory, &m_Logger, &m_Timer),
-   vchiq_(&m_Memory, &m_Interrupt)
+   emulation_(&m_Memory, &m_Logger, &m_Timer)
+   
 {
    display_ = new DisplayPi(&m_Logger, &m_Timer);
    keyboard_ = new KeyboardPi(&m_Logger, &dwhci_device_, &m_DeviceNameService);
