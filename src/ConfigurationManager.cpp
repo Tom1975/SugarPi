@@ -89,7 +89,8 @@ void ConfigurationManager::OpenFile(const char* config_file)
       return;
    }
 
-   
+   logger_->Write("ConfigurationManager", LogNotice, "Read Config : %s  ",buff);
+
    const char* ptr_buffer = (char*)buff;
    unsigned int offset = 0;
    unsigned int end_line;
@@ -109,9 +110,12 @@ void ConfigurationManager::OpenFile(const char* config_file)
       if (  s[begin] == '#' 
          || s[begin] == ';' ) continue;
 
+      
       std::string::size_type begin_section = s.find('[', begin);      
-      if (begin_section != std::string::npos)
+      //if (begin_section != std::string::npos)
+      if ( s[begin] == '[')
       {
+         begin_section = begin;
          std::string::size_type end_section = s.find(']');
          if (end_section != std::string::npos)
          {
@@ -130,6 +134,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
 
          if (end == std::string::npos) continue;
 
+         logger_->Write("ConfigurationManager", LogNotice, "READ key/value %s", s.c_str());
          key = s.substr(begin, end - begin);
          // (No leading or trailing whitespace allowed)
          size_t last_of_space = key.find_last_not_of(" \f\t\v") ;

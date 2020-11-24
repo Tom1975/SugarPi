@@ -19,7 +19,8 @@ Emulation::Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer)
    keyboard_(nullptr),
    sound_(nullptr),
    sound_mixer_(nullptr),
-   sound_is_ready(false)
+   sound_is_ready(false),
+   sound_run_(true)
    
 {
    setup_ = new SugarPiSetup(log);
@@ -95,7 +96,7 @@ void Emulation::Run(unsigned nCore)
       sound_is_ready = true;
       //sound_mutex_.Release();
       logger_->Write("Sound", LogNotice, "SoundMixer Started");
-      while(1)
+      while(sound_run_)
       {
          sound_mixer_->PrepareBufferThread();
          scheduler_->Yield();
@@ -120,8 +121,8 @@ void Emulation::Run(unsigned nCore)
 #endif
          logger_->Write("CORE", LogNotice, "Main loop");
          RunMainLoop();
-         sound_mixer_->StopMixer();
-         CTimer::Get ()->MsDelay (4000);
+         sound_run_ = false;
+         CTimer::Get ()->MsDelay (1000);
          logger_->Write("CORE", LogNotice, "Exiting...");
 #ifdef ARM_ALLOW_MULTI_CORE
          break;
@@ -145,28 +146,12 @@ void Emulation::RunMainLoop()
    ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
    unsigned nCelsiusOldTmp = 0;
    int count = 0;
-   unsigned lasttick = timer_->GetClockTicks();
    bool finished = false;
    while (!finished )
    {
-
-      // run for 1/10th of second ( 5 frame) in 10 sequences of 1/100th second (10 ms)
-      // us
 #define TIME_SLOT  10000
-      unsigned new_tick;
-      //for (unsigned int i = 0; i < 10; i++)
-      {
-         motherboard_->StartOptimizedPlus<true, false, false>(4 * TIME_SLOT*10);
-
-         new_tick = timer_->GetClockTicks();
-         //if (new_tick - lasttick < i * TIME_SLOT)
-         {
-            //timer_->SimpleusDelay(i*TIME_SLOT - (new_tick - lasttick)-1);
-         }
-      }
-      lasttick = new_tick;
-      
-      
+      motherboard_->StartOptimizedPlus<true, false, false>(4 * TIME_SLOT*10);
+            
       // Menu launched ?
       if (keyboard_->IsSelect())
       {

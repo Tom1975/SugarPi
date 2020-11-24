@@ -53,4 +53,5 @@ protected:
    Log               log_;
 
    bool sound_is_ready;
+   bool sound_run_;
 };

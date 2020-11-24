@@ -196,5 +196,7 @@ TShutdownMode CKernel::Run (void)
       }
    }
    */
+  CTimer::Get ()->MsDelay (2000);
+  m_Logger.Write("Kernel", LogNotice, "Exiting : Halt");
 	return ShutdownHalt;
 }

@@ -110,15 +110,15 @@ ScreenMenu::Action ScreenMenu::InsertCartridge()
    submenu[0].function = nullptr;
    submenu[0].label_ = "...Back";
 
-   for (int i = 1; i < cartridge_list.size(); i++)
+   for (int i = 0; i < cartridge_list.size(); i++)
    {
-      submenu[i].function= nullptr;
-      submenu[i].label_ = cartridge_list[i]->fname;
+      submenu[i+1].function= nullptr;
+      submenu[i+1].label_ = cartridge_list[i]->fname;
       logger_->Write("Menu", LogNotice, "Added %s", cartridge_list[i]->fname);
    }
    logger_->Write("Menu", LogNotice, "Loop ended");
-   submenu[cartridge_list.size()].function = nullptr;
-   submenu[cartridge_list.size()].label_= nullptr;
+   submenu[cartridge_list.size()+1].function = nullptr;
+   submenu[cartridge_list.size()+1].label_= nullptr;
 
    // Display menu !
    MenuItem* old_menu = current_menu_;
@@ -162,7 +162,7 @@ ScreenMenu::Action ScreenMenu::InsertCartridge()
 
             CString fullpath = PATH_CARTIRDGE;
             fullpath.Append( "/" );
-            fullpath.Append( cartridge_list[selected_]->fname);
+            fullpath.Append( cartridge_list[selected_-1]->fname);
             logger_->Write("Menu", LogNotice, "Load cartridge fullpath : %s", (const char*)fullpath);
             setup_->LoadCartridge (fullpath);
             setup_->Save();
