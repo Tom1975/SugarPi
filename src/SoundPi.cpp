@@ -137,51 +137,25 @@ IWaveHDR* SoundPi::GetFreeBuffer()
 
 void SoundPi::AddBufferToPlay(IWaveHDR* wav)
 {
-   //logger_->Write("Sound", LogNotice, "AddBufferToPlay - START");
-   int frame_available = sound_device_->GetQueueFramesAvail();
    int lenght_written = 0;
    while ( lenght_written != wav->buffer_length_)
    {
-       //logger_->Write("Sound", LogNotice, "AddBufferToPlay - Write");
        lenght_written += sound_device_->Write(&wav->data_[ lenght_written], wav->buffer_length_- lenght_written);   
-       ////logger_->Write("Sound", LogNotice, "Write :  %i / %i", lenght_written, wav->buffer_length_);
-
-       //logger_->Write("Sound", LogNotice, "AddBufferToPlay - Yield");
        scheduler_->Yield();
-       //logger_->Write("Sound", LogNotice, "AddBufferToPlay - Yield off");
    }
-   ////logger_->Write("Sound", LogNotice, "Frame written !");
-   //int nResult = sound_device_->Write(wav->data_, wav->buffer_length_);
-   if (lenght_written != wav->buffer_length_ /*|| frame_available == 0*/)
+   if (!started_)
    {
-      //logger_->Write("Sound", LogNotice, "frame_available = %i ; nResult = %i, buffer_length = %i", frame_available, lenght_written, wav->buffer_length_);
-   }
-   //else
-   {
-      if (!started_)
+      started_ = true;
+      if (!sound_device_->Start())
       {
-         started_ = true;
-         //logger_->Write("Sound", LogNotice, "Start");
-         if (!sound_device_->Start())
-         {
-            //logger_->Write("Sound", LogPanic, "Cannot start sound device");
-         }
+         logger_->Write("Sound", LogPanic, "Cannot start sound device");
       }
    }
-   if (sound_device_->IsActive() == false)
-   {
-      //logger_->Write("Sound", LogNotice, "AddBufferToPlay : Available : %i, size %i, written : %i", frame_available, wav->buffer_length_, lenght_written);
-      //logger_->Write("Sound", LogPanic, "Sound no longer active ?!");;
-   }
-      
    wav->status_ = IWaveHDR::UNUSED;
-
-   //logger_->Write("Sound", LogNotice, "AddBufferToPlay - END");
 }
 
 unsigned SoundPi::GetChunk(s16 *pBuffer, unsigned nChunkSize)
 {
-   //logger_->Write("Sound", LogNotice, "GetChunk");
    memcpy(pBuffer, &chunk_buffer[index_output_], nChunkSize);
    index_output_ += nChunkSize;
    return 0;

@@ -8,9 +8,9 @@ public:
    CoolspotFont(CLogger* logger);
    virtual ~CoolspotFont();
 
-   void CopyLetter(char c, int line, int* buffer);
-   int GetLetterLength(char c);
-   int GetLetterHeight(char c);
+   void CopyLetter(unsigned char c, int line, int* buffer);
+   int GetLetterLength(unsigned char c);
+   int GetLetterHeight(unsigned char c);
 
 //protected:
    int char_position_[256];

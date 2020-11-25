@@ -36,13 +36,14 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixe
    display_(display),
    sound_mixer_(sound_mixer),
    keyboard_(keyboard),
+   setup_(setup),
    //BaseMenu(logger),
    current_menu_(base_menu),
    selected_(0),
    index_base_(0),
    motherboard_(motherboard),
-   snapshot_(nullptr),
-   setup_(setup)
+   resume_(false), 
+   snapshot_(nullptr)
 {
    font_ = new CoolspotFont(logger_);
    snapshot_ = new CSnapshot(log);
@@ -54,8 +55,9 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixe
 
 ScreenMenu::~ScreenMenu()
 {
-   delete snapshot_;
    delete []sugarpi_setup_menu_;
+   delete snapshot_;
+   delete font_;
 }
 
 ScreenMenu::Action ScreenMenu::SetSyncVbl()
@@ -110,7 +112,7 @@ ScreenMenu::Action ScreenMenu::InsertCartridge()
    submenu[0].function = nullptr;
    submenu[0].label_ = "...Back";
 
-   for (int i = 0; i < cartridge_list.size(); i++)
+   for (size_t i = 0; i < cartridge_list.size(); i++)
    {
       submenu[i+1].function= nullptr;
       submenu[i+1].label_ = cartridge_list[i]->fname;
@@ -180,7 +182,7 @@ ScreenMenu::Action ScreenMenu::InsertCartridge()
 
    logger_->Write("Cartridge", LogNotice, "deleting cartridge_list...");
 
-   for (int i = 0; i < cartridge_list.size(); i++)
+   for (size_t i = 0; i < cartridge_list.size(); i++)
    {
       delete cartridge_list[i];
    }
@@ -336,8 +338,6 @@ void ScreenMenu::DisplayText(const char* txt, int x, int y, bool selected)
 
 void ScreenMenu::DisplayButton(MenuItem* menu, int x, int y, bool selected)
 {
-   int index_bmp = 0;
-
    // Display text
    if (selected)
    {
