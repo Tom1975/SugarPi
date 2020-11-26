@@ -176,11 +176,11 @@ void Emulation::RunMainLoop()
             count = 0;
 
             // Timing computation 
-            static unsigned old = 0;
-            unsigned elapsed = timer_->GetTicks();
+            //static unsigned old = 0;
+            /*unsigned elapsed = timer_->GetTicks();
 
             logger_->Write("Kernel", LogNotice, "1s => %i ticks", (elapsed - old));
-            old = elapsed;
+            old = elapsed;*/
          }
          else
          {

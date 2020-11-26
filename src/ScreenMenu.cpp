@@ -196,7 +196,6 @@ ScreenMenu::Action ScreenMenu::InsertCartridge()
 
 void ScreenMenu::BuildMenuSync(MenuItem * sync_menu)
 {
-   
    if (display_-> IsSyncOnFrame())
    {
       *sync_menu =  { "Set synchro on Frame [X]",   &ScreenMenu::SetSyncSound};
@@ -204,7 +203,6 @@ void ScreenMenu::BuildMenuSync(MenuItem * sync_menu)
    else
    {
       *sync_menu =  { "Set synchro on Frame [ ]",   &ScreenMenu::SetSyncVbl};
-      
    }
 }
 
@@ -214,6 +212,7 @@ ScreenMenu::Action ScreenMenu::SugarSetup()
   
    HandleMenu (sugarpi_setup_menu_);
    logger_->Write("Menu", LogNotice, "ScreenMenu::SugarSetup ended");
+   resume_ = false;
    return Action_None;
 }
 

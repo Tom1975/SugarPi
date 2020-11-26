@@ -156,15 +156,17 @@ void ConfigurationManager::OpenFile(const char* config_file)
             end = s.find_last_not_of(" \f\n\r\t\v");
             if ( end == std::string::npos)
             {
+               logger_->Write("ConfigurationManager", LogNotice, "end == std::string::npos");
                value = s.substr(begin);
             }
             else
             {
-               value = s.substr(begin, end);
+               logger_->Write("ConfigurationManager", LogNotice, "end != std::string::npos");
+               value = s.substr(begin, end-begin);
             }
 
             logger_->Write("ConfigurationManager", LogNotice, "READ key : %s", key.c_str());
-             logger_->Write("ConfigurationManager", LogNotice, "READ value: %s ", value.c_str());
+            logger_->Write("ConfigurationManager", LogNotice, "READ value: %s ", value.c_str());
 
             // Add this key/value to current section
             Section* section;
