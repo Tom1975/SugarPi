@@ -1,7 +1,10 @@
 # SugarPi
 
 SugarPi is an implementation of Sugarbox for bare-metal raspberry Pi.
-As a first version, it emulatse an Amstrad 6128+ without disk drive nor keyboard.
+By now, the emulator is working correctly on Raspberry Pi3(+), and more or less on Raspberry Pi4.
+I didn't have a chance to test on Pi2 or 400.
+
+As a first version, it emulatse an Amstrad 6128+ without disk drive nor keyboard (so , a kind of Gx4000 with 128 KB).
 
 It uses the great [Circle++ library](https://github.com/rsta2/circle) as a pseudo-os basis.
 
@@ -10,7 +13,7 @@ It uses the great [Circle++ library](https://github.com/rsta2/circle) as a pseud
 ## Start
 - Unzip the zip file to an empty SD card.
 - Fill the CART folder with you favorite CPR files
-- Insert the SD card in your Raspberry Pi3 or 4
+- Insert the SD card in your Raspberry Pi3
 - Power it : The Amstrad will be immediately displayed.
 
 ## Commands
