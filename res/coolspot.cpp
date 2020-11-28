@@ -40,7 +40,7 @@ CoolspotFont::CoolspotFont(CLogger*logger) : logger_(logger)
    // init position
    memset(char_position_, 0, sizeof char_position_);
 
-   int pos = 0;
+   unsigned int pos = 0;
    int char_index = coolspot_font.first_ascii;
    char_position_[char_index++] = pos++;
    
@@ -59,7 +59,7 @@ CoolspotFont::~CoolspotFont()
 
 }
 
-void CoolspotFont::CopyLetter(char c, int line, int* buffer)
+void CoolspotFont::CopyLetter(unsigned char c, int line, int* buffer)
 {
    unsigned int char_offset = (unsigned char)c;
    if (char_offset >= 0xFF) char_offset = 0xFE;
@@ -72,7 +72,7 @@ void CoolspotFont::CopyLetter(char c, int line, int* buffer)
    memcpy ( col_buffer, &coolspot_font.pixel_data[offset], (endoffset-offset)*4);
 }
 
-int CoolspotFont::GetLetterLength(char c)
+int CoolspotFont::GetLetterLength(unsigned char c)
 {
    if (c < 0xFF)
    {
@@ -85,7 +85,7 @@ int CoolspotFont::GetLetterLength(char c)
    
 }
 
-int CoolspotFont::GetLetterHeight(char c)
+int CoolspotFont::GetLetterHeight(unsigned char c)
 {
    return coolspot_font.height;
 }

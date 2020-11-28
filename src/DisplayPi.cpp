@@ -11,6 +11,8 @@ DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
    logger_(logger),
    timer_(timer),
    frame_buffer_(768, 277*2, 32, 1024, 1024* FRAME_BUFFER_SIZE),
+   full_resolution_(false),
+   full_resolution_cached_(false),
    mutex_(TASK_LEVEL),
    added_line_(1),
    buffer_used_(0),
@@ -98,7 +100,7 @@ void DisplayPi::Loop()
 {
    logger_->Write("DIS", LogNotice, "Starting loop");
    // Waiting for a new frame to display
-   int old_frame_index = -1;
+   //int old_frame_index = -1;
    while (1)
    {
       // Display available frame
@@ -147,11 +149,32 @@ void DisplayPi::VSync(bool dbg )
    //logger_->Write("DIS", LogNotice, "VSync : Frame ready is %i", buffer_used_);
 
 #ifndef USE_QEMU_SUGARPI
-
-   if (true /*sync_on_frame_*/)
+   bool clear_framebuffer = false;
+   if (full_resolution_cached_ != full_resolution_)
+   {
+      clear_framebuffer = true;
+      full_resolution_cached_ = full_resolution_;
+      
+   }
+   
+   if (true/*sync_on_frame_*/) // To turn on : Use the display core !
    {
       frame_buffer_.SetVirtualOffset(143, 47 / 2 + buffer_used_ * 1024);
-      if (sync_on_frame_)frame_buffer_.WaitForVerticalSync();
+      if (sync_on_frame_)
+      {
+         frame_buffer_.WaitForVerticalSync();
+      }
+      if (clear_framebuffer)
+      {
+         //unsigned char* line = (unsigned char*)(frame_buffer_.GetBuffer() + buffer_used_*1024*frame_buffer_.GetPitch());
+         unsigned char* line = reinterpret_cast<unsigned char*>(frame_buffer_.GetBuffer() + buffer_used_*1024*frame_buffer_.GetPitch());
+         for (unsigned int count = 0; count < 1024; count++)
+         {
+            memset(line, 0x0, 1024*4);
+            line += frame_buffer_.GetPitch();
+         }
+      }
+
    }
    else
    {
@@ -252,13 +275,18 @@ void DisplayPi::WaitVbl()
 
 int* DisplayPi::GetVideoBuffer(int y)
 {
-   y = y * 2 + added_line_;
+   if (!full_resolution_cached_)
+   {
+      y = y * 2 + added_line_;
+   }
+   
 
    y &= 0x3FF;
-
    y += buffer_used_ * 1024;
 
-   return (int*)(frame_buffer_.GetBuffer() + y * frame_buffer_.GetPitch());
+///// 
+   //logger_->Write("Display", LogNotice, "GetVideoBuffer : y = %i; buffer_used_ : %i, ==>%i", y, buffer_used_, frame_buffer_.GetBuffer() + y * frame_buffer_.GetPitch());
+   return reinterpret_cast<int*>(frame_buffer_.GetBuffer() + y * frame_buffer_.GetPitch());
 
 //   return (int*)(frame_buffer_.GetBuffer() + (y * 2 /*+ added_line_*/)* frame_buffer_.GetPitch() );
    

@@ -136,13 +136,7 @@ int SugarPiSetup::LoadCprFromBuffer(unsigned char* buffer, int size)
 
       // Ok, it's correct.
       index += 4;
-      // Check the whole size
-
-      int chunk_size = buffer[index]
-         + (buffer[index + 1] << 8)
-         + (buffer[index + 2] << 16)
-         + (buffer[index + 3] << 24);
-
+      // Check the whole size ?
       index += 8;
 
       // 'fmt ' chunk ? skip it

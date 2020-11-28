@@ -18,7 +18,8 @@ public:
    bool Initialization();
    void SyncWithFrame (bool set){sync_on_frame_ = set;}
    bool IsSyncOnFrame(){return sync_on_frame_;}
-   //CScreenDevice* GetScreenDevice() { return screen_; }
+   
+   void SetFullResolution (bool set){full_resolution_ = set;};
 
    virtual void SetScanlines(int scan);
    virtual bool AFrameIsReady();
@@ -80,6 +81,8 @@ protected:
    CLogger* logger_;
    CTimer* timer_;
    CBcmFrameBuffer   frame_buffer_;
+   bool full_resolution_;
+   bool full_resolution_cached_;
 
    CSpinLock   mutex_;
 

@@ -12,13 +12,15 @@ Emulation::Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer)
 #endif
    logger_(log),
    timer_(timer),
+   sound_mutex_(IRQ_LEVEL),
+   setup_(nullptr),
    motherboard_(nullptr),
    display_(nullptr),
-   sound_mixer_(nullptr),
+   keyboard_(nullptr),
    sound_(nullptr),
+   sound_mixer_(nullptr),
    sound_is_ready(false),
-   sound_mutex_(IRQ_LEVEL),
-   setup_(nullptr)
+   sound_run_(true)
    
 {
    setup_ = new SugarPiSetup(log);
@@ -68,43 +70,6 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    setup_->Init(display, sound_mixer_, motherboard_);
    setup_->Load();
 
-/*
-   #define CARTOUCHE_BASE "/CART/crtc3_projo.cpr"
-//#define CARTOUCHE_BASE "/CART/gnggxfinalalpha.cpr"
-
-   FIL File;
-   FRESULT Result = f_open(&File, DRIVE CARTOUCHE_BASE, FA_READ | FA_OPEN_EXISTING);
-
-   if (Result != FR_OK)
-   {
-      logger_->Write("Kernel", LogPanic, "Cannot open file: %s", DRIVE CARTOUCHE_BASE);
-   }
-   else
-   {
-      logger_->Write("Kernel", LogNotice, "File opened correctly");
-   }
-
-   FILINFO file_info;
-   f_stat(DRIVE CARTOUCHE_BASE, &file_info);
-   logger_->Write("Kernel", LogNotice, "File size : %i", file_info.fsize);
-   unsigned char* buff = new unsigned char[file_info.fsize];
-   unsigned nBytesRead;
-
-   logger_->Write("Kernel", LogNotice, "buffer allocated");
-   f_read(&File, buff, file_info.fsize, &nBytesRead);
-   if (file_info.fsize != nBytesRead)
-   {
-      logger_->Write("Kernel", LogPanic, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
-   }
-   else
-   {
-      logger_->Write("Kernel", LogNotice, "file read");
-   }
-   LoadCprFromBuffer(buff, file_info.fsize);
-   logger_->Write("Kernel", LogNotice, "CPR read correctly");
-*/
-   //LoadCprFromBuffer(AmstradPLUS_FR, sizeof(AmstradPLUS_FR));
-
    motherboard_->GetPSG()->Reset();
    motherboard_->GetSig()->Reset();
    motherboard_->InitStartOptimizedPlus();
@@ -131,7 +96,7 @@ void Emulation::Run(unsigned nCore)
       sound_is_ready = true;
       //sound_mutex_.Release();
       logger_->Write("Sound", LogNotice, "SoundMixer Started");
-      while(1)
+      while(sound_run_)
       {
          sound_mixer_->PrepareBufferThread();
          scheduler_->Yield();
@@ -156,6 +121,8 @@ void Emulation::Run(unsigned nCore)
 #endif
          logger_->Write("CORE", LogNotice, "Main loop");
          RunMainLoop();
+         sound_run_ = false;
+         CTimer::Get ()->MsDelay (1000);
          logger_->Write("CORE", LogNotice, "Exiting...");
 #ifdef ARM_ALLOW_MULTI_CORE
          break;
@@ -179,32 +146,17 @@ void Emulation::RunMainLoop()
    ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
    unsigned nCelsiusOldTmp = 0;
    int count = 0;
-   unsigned lasttick = timer_->GetClockTicks();
-   while (1)
+   bool finished = false;
+   while (!finished )
    {
-
-      // run for 1/10th of second ( 5 frame) in 10 sequences of 1/100th second (10 ms)
-      // us
 #define TIME_SLOT  10000
-      unsigned new_tick;
-      //for (unsigned int i = 0; i < 10; i++)
-      {
-         motherboard_->StartOptimizedPlus<true, false, false>(4 * TIME_SLOT*10);
-
-         new_tick = timer_->GetClockTicks();
-         //if (new_tick - lasttick < i * TIME_SLOT)
-         {
-            //timer_->SimpleusDelay(i*TIME_SLOT - (new_tick - lasttick)-1);
-         }
-      }
-      lasttick = new_tick;
-      
-      
+      motherboard_->StartOptimizedPlus<true, false, false>(4 * TIME_SLOT*10);
+            
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
-         menu.Handle();
+         finished = (menu.Handle() == ScreenMenu::Action_Shutdown);
          keyboard_->ReinitSelect();
          CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
       }
@@ -224,11 +176,11 @@ void Emulation::RunMainLoop()
             count = 0;
 
             // Timing computation 
-            static unsigned old = 0;
-            unsigned elapsed = timer_->GetTicks();
+            //static unsigned old = 0;
+            /*unsigned elapsed = timer_->GetTicks();
 
             logger_->Write("Kernel", LogNotice, "1s => %i ticks", (elapsed - old));
-            old = elapsed;
+            old = elapsed;*/
          }
          else
          {

@@ -28,7 +28,7 @@ if [ ! -d "sdcard/Config" ]; then
 fi
 echo "[SETUP]" > config
 echo "sync=frame" >> config
-echo "cart=Burnin Rubber (UK) (1990) [Original] [CARTOUCHE].cpr" >> config
+echo "cart=SD:/CART/crtc3_projo.cpr" >> config
 
 
 

@@ -56,7 +56,7 @@ unsigned int ConfigurationManager::getline ( const char* buffer, int size, std::
 
 void ConfigurationManager::OpenFile(const char* config_file)
 {
-   logger_->Write("Kernel", LogNotice, "OpenFile : %s", config_file);
+   logger_->Write("ConfigurationManager", LogNotice, "OpenFile : %s", config_file);
    if (current_config_file_.compare( config_file) == 0)
    {
       // already openend
@@ -71,7 +71,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
    FRESULT Result = f_open(&File, config_file, FA_READ | FA_OPEN_EXISTING);   
    if (Result != FR_OK)
    {
-      logger_->Write("Kernel", LogNotice, "Cannot open file: %s", config_file);
+      logger_->Write("ConfigurationManager", LogNotice, "Cannot open file: %s", config_file);
       return;
    }
 
@@ -85,11 +85,12 @@ void ConfigurationManager::OpenFile(const char* config_file)
    {
       // ERROR
       f_close(&File);
-      logger_->Write("Kernel", LogNotice, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
+      logger_->Write("ConfigurationManager", LogNotice, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
       return;
    }
 
-   
+   logger_->Write("ConfigurationManager", LogNotice, "Read Config : %s  ",buff);
+
    const char* ptr_buffer = (char*)buff;
    unsigned int offset = 0;
    unsigned int end_line;
@@ -109,14 +110,19 @@ void ConfigurationManager::OpenFile(const char* config_file)
       if (  s[begin] == '#' 
          || s[begin] == ';' ) continue;
 
+      
       std::string::size_type begin_section = s.find('[', begin);      
-      if (begin_section != std::string::npos)
+      //if (begin_section != std::string::npos)
+      if ( s[begin] == '[')
       {
+         begin_section = begin;
          std::string::size_type end_section = s.find(']');
          if (end_section != std::string::npos)
          {
             current_section = s.substr(begin_section+1, end_section - 1);
             s = s.substr(end_section+1);
+
+            logger_->Write("ConfigurationManager", LogNotice, "READ section %s", current_section.c_str());
          }
       }
 
@@ -128,6 +134,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
 
          if (end == std::string::npos) continue;
 
+         logger_->Write("ConfigurationManager", LogNotice, "READ key/value %s", s.c_str());
          key = s.substr(begin, end - begin);
          // (No leading or trailing whitespace allowed)
          size_t last_of_space = key.find_last_not_of(" \f\t\v") ;
@@ -145,17 +152,21 @@ void ConfigurationManager::OpenFile(const char* config_file)
          }
          else
          {
+            // Remove ending spaces
             end = s.find_last_not_of(" \f\n\r\t\v");
             if ( end == std::string::npos)
             {
+               logger_->Write("ConfigurationManager", LogNotice, "end == std::string::npos");
                value = s.substr(begin);
             }
             else
             {
-               value = s.substr(begin, end);
+               logger_->Write("ConfigurationManager", LogNotice, "end != std::string::npos");
+               value = s.substr(begin, end-begin);
             }
 
-            logger_->Write("Kernel", LogNotice, "key : %s = value: %s ", key.c_str(), value.c_str());
+            logger_->Write("ConfigurationManager", LogNotice, "READ key : %s", key.c_str());
+            logger_->Write("ConfigurationManager", LogNotice, "READ value: %s ", value.c_str());
 
             // Add this key/value to current section
             Section* section;
@@ -182,9 +193,11 @@ void ConfigurationManager::CloseFile()
    FRESULT Result = f_open(&File, current_config_file_.c_str(), FA_WRITE | FA_CREATE_ALWAYS );   
    if (Result != FR_OK)
    {
-      logger_->Write("Kernel", LogNotice, "Cannot open file: %s", current_config_file_.c_str());
+      logger_->Write("ConfigurationManager", LogNotice, "Cannot open file: %s", current_config_file_.c_str());
       return;
    }
+
+   logger_->Write("ConfigurationManager", LogNotice, "File open");
 
    // Write this file
    std::string output_file;
@@ -193,16 +206,19 @@ void ConfigurationManager::CloseFile()
       output_file.append("[");
       output_file.append(ent1.key);
       output_file.append("]\r\n");
+      logger_->Write("ConfigurationManager", LogNotice, "section %s", ent1.key.c_str());
       for (auto const& ent2 : *ent1.value)
       {
          // ent2.first is the second key
          output_file.append (ent2.key);
+         logger_->Write("ConfigurationManager", LogNotice, "key %s", ent2.key.c_str());
          output_file.append ("=");
          output_file.append (ent2.value);
+         logger_->Write("ConfigurationManager", LogNotice, "value %s", ent2.value.c_str());
          output_file.append ("\r\n");
       }
    }
-   logger_->Write("Kernel", LogNotice, "Output file : %s", output_file.c_str());
+   logger_->Write("ConfigurationManager", LogNotice, "Output file : %s", output_file.c_str());
    unsigned nBytesRead;
    f_write (&File, output_file.c_str(), output_file.size(), &nBytesRead);
    f_close(&File);
@@ -216,60 +232,49 @@ void ConfigurationManager::SetConfiguration(const char* section, const char* key
 
 void ConfigurationManager::SetConfiguration(const char* section_key, const char* key, const char* value)
 {
-   logger_->Write("Kernel", LogNotice, "SetConfiguration : section=%s; key=%s; value=%s", section_key, key ,value);
+   logger_->Write("ConfigurationManager", LogNotice, "SetConfiguration : [%s] %s=%s", section_key, key ,value);
 
    Section* section;
    if (config_file_.GetSection (section_key, section) == false)
    {
-      logger_->Write("Kernel", LogNotice, "Section not found");
+      logger_->Write("ConfigurationManager", LogNotice, "Section not found");
       Association<Section*> new_section;
       new_section.key = section_key;
       section = new_section.value = new Section();
       config_file_.push_back(new_section);
    }
 
-   std::string * value_str;
    bool found = false;
-   for (auto it: *section)
+   for (auto &it: *section)
    {
       if (strcmp ( it.key.c_str(), key) == 0)
       {
-         logger_->Write("Kernel", LogNotice, "Key found, value = %s", value);
          it.value = value;
          found = true;
       }
    }
 
-   //if ( section->GetKey(key, value_str) == false)
    if (!found)
    {
-      logger_->Write("Kernel", LogNotice, "Key not found");
+      logger_->Write("ConfigurationManager", LogNotice, "Key not found");
       Association<std::string> new_assoc;
       new_assoc.key = key;
       new_assoc.value = value;
       section->push_back(new_assoc);
    }
-   /*else
-   {
-      logger_->Write("Kernel", LogNotice, "Key found, value = %s", value);
-      *value_str = value;
-      
-   }*/
 
    char output_log_buffer[255];
    GetConfiguration(section_key, key, "NOTHING", output_log_buffer, 255 );
-   logger_->Write("Kernel", LogNotice, "Written value = %s", output_log_buffer);
 
-   logger_->Write("Kernel", LogNotice, "Config contain :");
    for (auto const& ent1 : config_file_)
    {
-      logger_->Write("Kernel", LogNotice, "SECTION : %s", ent1.key.c_str());
+      logger_->Write("ConfigurationManager", LogNotice, "SECTION : %s", ent1.key.c_str());
       for (auto const& ent2 : *ent1.value)
       {
-         logger_->Write("Kernel", LogNotice, "KEYS: %s = VALUE : %s", ent2.key.c_str(), ent2.value.c_str());
+         logger_->Write("ConfigurationManager", LogNotice, "KEYS: %s = VALUE : %s", ent2.key.c_str(), ent2.value.c_str());
       }
    }
-   logger_->Write("Kernel", LogNotice, "EOF");
+   logger_->Write("ConfigurationManager", LogNotice, "EOF");
 }
 
 unsigned int ConfigurationManager::GetConfiguration(const char* section, const char* key, const char* default_value, char* out_buffer, unsigned int buffer_size, const char* file)
@@ -358,7 +363,7 @@ const char* ConfigurationManager::GetNextKey()
 bool ConfigurationManager::ConfigFile::GetSection (const char* section_name, ConfigurationManager::Section*& section)
 {
    // Look at section
-   for (auto it:*this)
+   for (auto &it:*this)
    {
       if (strcmp ( it.key.c_str(), section_name) == 0)
       {
