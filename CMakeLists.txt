@@ -57,6 +57,26 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
+set(CMAKE_EXE_LINKER_FLAGS "--section-start=.init=0x80000")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Map kernel.map")
+
+
+set (CIRCLEHOME ${CMAKE_CURRENT_LIST_DIR}/circle)
+
+set (LIBS
+   	${CIRCLEHOME}/lib/libcircle.a 
+      ${CIRCLEHOME}/lib/fs/fat/libfatfs.a
+      ${CIRCLEHOME}/lib/fs/libfs.a
+      ${CIRCLEHOME}/lib/usb/libusb.a
+      ${CIRCLEHOME}/lib/input/libinput.a
+      ${CIRCLEHOME}/lib/sched/libsched.a
+      ${CIRCLEHOME}/addon/linux/liblinuxemu.a
+		${CIRCLEHOME}/addon/SDCard/libsdcard.a
+		${CIRCLEHOME}/addon/fatfs/libfatfs.a
+      ${CIRCLEHOME}/addon/vc4/sound/libvchiqsound.a
+      ${CIRCLEHOME}/addon/vc4/vchiq/libvchiq.a
+)
+
 #source files directory
 set(Source_Files
    "src/main.cpp"
@@ -128,8 +148,8 @@ set(Source_Files
 )
 
 set(ALL_FILES ${Source_Files})
-
-add_executable(SugarPi ${ALL_FILES})
+add_executable(SugarPi ${ALL_FILES} )
+target_link_libraries (SugarPi ${LIBS} )
 
 
 
