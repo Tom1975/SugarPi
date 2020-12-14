@@ -1,5 +1,5 @@
 #Project version minimum
-cmake_minimum_required(VERSION 3.14.3)
+cmake_minimum_required(VERSION 3.10.3)
 
 set(CMAKE_SYSTEM_NAME               Generic)
 set(CMAKE_SYSTEM_PROCESSOR          aarch64)
@@ -7,11 +7,18 @@ set(CMAKE_SYSTEM_PROCESSOR          aarch64)
 # Without that flag CMake is not able to pass test compilation check
 set(CMAKE_TRY_COMPILE_TARGET_TYPE   STATIC_LIBRARY)
 
-set(CMAKE_AR                        ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-ar${CMAKE_EXECUTABLE_SUFFIX})
-set(CMAKE_ASM_COMPILER              ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-gcc${CMAKE_EXECUTABLE_SUFFIX})
-set(CMAKE_C_COMPILER                ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-gcc${CMAKE_EXECUTABLE_SUFFIX})
-set(CMAKE_CXX_COMPILER              ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-g++${CMAKE_EXECUTABLE_SUFFIX})
-set(CMAKE_LINKER                    ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-ld${CMAKE_EXECUTABLE_SUFFIX})
+set (AARCH 64 CACHE INTERNAL "")
+set (RASPPI 4 CACHE INTERNAL "")
+set (PREFIX "arm-none-eabi-" CACHE INTERNAL "")
+set (PREFIX64 "aarch64-none-elf-" CACHE INTERNAL "")
+set (STDLIB_SUPPORT  1 CACHE INTERNAL "")
+
+
+set(CMAKE_AR                        ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-ar${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
+set(CMAKE_ASM_COMPILER              ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-gcc${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
+set(CMAKE_C_COMPILER                ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-gcc${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
+set(CMAKE_CXX_COMPILER              ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-g++${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
+set(CMAKE_LINKER                    ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-ld${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
 set(CMAKE_OBJCOPY                   ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-objcopy${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
 set(CMAKE_RANLIB                    ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-ranlib${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
 set(CMAKE_SIZE                      ${BAREMETAL_ARM_TOOLCHAIN_PATH}aarch64-none-elf-size${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
@@ -28,6 +35,8 @@ LIST(APPEND TARGET_LIST "4")
 set(TARGET_PI "4" CACHE STRING "Target")
 set_property(CACHE TARGET_PI PROPERTY STRINGS ${TARGET_LIST})
 
+set (LOADADDR 0x80000)
+
 if (TARGET_PI EQUAL "3")
    set (ARCH   "-DAARCH=64 -mcpu=cortex-a53 -mlittle-endian -mcmodel=small")
    set (TARGET "kernel8")
@@ -41,9 +50,13 @@ else ()
 endif()
 
 set(SUGARPI_C_FLAGS                 "-D__circle__ -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_MULTITHREAD -DNOFILTER -DNOZLIB -DLOG_MIXER -DLOGFDC  -DNO_RAW_FORMAT" CACHE INTERNAL "")
-set(SUGARPI_C_FLAGS                 "${SUGARPI_C_FLAGS} -DRASPPI=${TARGET_PI}")
+set(SUGARPI_C_FLAGS                 "${SUGARPI_C_FLAGS} -DRASPPI=${TARGET_PI} -DSTDLIB_SUPPORT=1 -D__VCCOREVER__=0x04000000 -U__unix__ -U__linux__")
 set(SUGARPI_C_FLAGS                 "${SUGARPI_C_FLAGS} ${ARCH}")
-set(SUGARPI_CXX_FLAGS               "-std=c++1z" CACHE INTERNAL "")
+
+set(SUGARPI_CXX_FLAGS                 "-D__circle__ -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_MULTITHREAD -DNOFILTER -DNOZLIB -DLOG_MIXER -DLOGFDC  -DNO_RAW_FORMAT" CACHE INTERNAL "")
+set(SUGARPI_CXX_FLAGS                 "${SUGARPI_CXX_FLAGS} -DRASPPI=${TARGET_PI} -DSTDLIB_SUPPORT=1 -D__VCCOREVER__=0x04000000 -U__unix__ -U__linux__")
+set(SUGARPI_CXX_FLAGS                 "${SUGARPI_CXX_FLAGS} ${ARCH}")
+set(SUGARPI_CXX_FLAGS               "${SUGARPI_CXX_FLAGS} -std=c++1z -fno-exceptions -fno-rtti -nostdinc++" CACHE INTERNAL "")
 
 set(CMAKE_C_FLAGS                   "${SUGARPI_C_FLAGS} -Wno-psabi --specs=nosys.specs -fdata-sections -ffunction-sections -Wl,--gc-sections" CACHE INTERNAL "")
 set(CMAKE_CXX_FLAGS                 "${SUGARPI_CXX_FLAGS} ${CMAKE_C_FLAGS} -fno-exceptions" CACHE INTERNAL "")
@@ -57,8 +70,8 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
-set(CMAKE_EXE_LINKER_FLAGS "--section-start=.init=0x80000")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Map kernel.map")
+#set(CMAKE_EXE_LINKER_FLAGS "-print-file-name=libgcc.a -print-file-name=libm.a")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Map kernel.map --section-start=.init=0x80000 ")
 
 
 set (CIRCLEHOME ${CMAKE_CURRENT_LIST_DIR}/circle)
@@ -148,14 +161,15 @@ set(Source_Files
 )
 
 set(ALL_FILES ${Source_Files})
+
 add_executable(SugarPi ${ALL_FILES} )
-target_link_libraries (SugarPi ${LIBS} )
 
-
+target_link_libraries (SugarPi ${LIBS}  )
 
 target_include_directories (SugarPi PRIVATE ${CMAKE_CURRENT_LIST_DIR}/circle/include  )
 target_include_directories (SugarPi PRIVATE ${CMAKE_CURRENT_LIST_DIR}/circle/addon  )
 target_include_directories (SugarPi PRIVATE ${CMAKE_CURRENT_LIST_DIR} )
+
 
 add_custom_command(
     TARGET SugarPi POST_BUILD
