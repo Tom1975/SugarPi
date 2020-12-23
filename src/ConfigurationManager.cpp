@@ -184,6 +184,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
          }
       }
    }
+   delete []buff;
    f_close(&File);
 }
 

@@ -1,15 +1,63 @@
 //
+#include "KeyboardPi.h"
+
 #include <memory.h>
 #include <SDCard/emmc.h>
 #include <fatfs/ff.h>
 
-#include "KeyboardPi.h"
+#include "CPCCore/CPCCoreEmu/simple_string.h"
 
 #define DEVICE_INDEX	1		// "upad1"
 
 
+class gamepad_def
+{
+   public:
+
+   // Attributes
+   unsigned int vid;
+   unsigned int pid;
+   unsigned int version;
+
+   // Values for buttons
+   
+   // Helper 
+   bool SetValue(const char* key, const char* value)
+   {
+      if ( strcmp(key, "") == 0) 
+      {
+
+      }
+   }
+
+};
+
+typedef char t_id[9];
+
 KeyboardPi* KeyboardPi::this_ptr_ = 0;
 
+
+unsigned int getline ( const char* buffer, int size, std::string& out)
+{
+   if ( size == 0)
+   {
+      return 0;
+   }
+      
+   // looking for /n
+   int offset = 0;
+   while (buffer[offset] != 0x0A && buffer[offset] != 0x0D && offset < size)
+   {
+      offset++;
+   }
+
+   char* line = new char[offset+1];
+   memcpy ( line, buffer, offset);
+   line[offset] = '\0';
+   out = std::string(line);
+   delete []line;
+   return (offset == size)?offset:offset+1;
+}
 
 KeyboardPi::KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service) :
    logger_(logger),
@@ -216,22 +264,99 @@ void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState
       this_ptr_->select_ = true;
    }
 }
-
+ #define GAMECONTROLLERDB_FILE "SD:/Config/gamecontrollerdb.txt"
 void KeyboardPi::LoadGameControllerDB()
 {
    // Open file
    FIL File;
-   FRESULT Result = f_open(&File, "SD:/Config/gamecontrollerdb.txt", FA_READ | FA_OPEN_EXISTING);
+   FRESULT Result = f_open(&File, GAMECONTROLLERDB_FILE, FA_READ | FA_OPEN_EXISTING);
    if (Result != FR_OK)
    {
       CLogger::Get ()->Write("ConfigurationManager", LogNotice, "Cannot open Config/gamecontrollerdb.txt file");
       return;
    }
-   
+
    // Load every known gamepad to internal structure
+FILINFO file_info;
+   f_stat(GAMECONTROLLERDB_FILE, &file_info);
+   unsigned char* buff = new unsigned char[file_info.fsize];
+   unsigned nBytesRead;
 
+   f_read(&File, buff, file_info.fsize, &nBytesRead);
+   if (file_info.fsize != nBytesRead)
+   {
+      // ERROR
+      f_close(&File);
+      logger_->Write("KeyboardPi", LogNotice, "Error reading gamecontrollerdb  ");
+      return;
+   }
 
+   // get next line
+   const char* ptr_buffer = (char*)buff;
+   unsigned int offset = 0;
+   unsigned int end_line;
+   std::string s;
+   while ((end_line = getline(&ptr_buffer[offset], nBytesRead, s)) > 0)
+   {
+      gamepad_def def;
+      // Do not use emty lines, and comment lines
+      if (s.size() == 0 ||s[0] == '#')
+      {
+         continue;
+      }
 
+      // read : vid/pid
+      t_id num_buffer[4];
+      memset (num_buffer, 0, sizeof(num_buffer));
+      bool error = false;
+      for (int i = 0; i < 4 && !error; i++)
+      {
+         s.substr
+         strncpy(num_buffer[i], s.substr(i*8, 8).c_str(), 9 );
+         if (strlen(num_buffer[i]) != 8)
+         {
+            logger_->Write("KeyboardPi", LogNotice, "Extracting pid/vid informations error : Length incorrect");
+            // Error, continue next line
+            error = true;
+         }
+      }
+
+      if (error) continue;
+      char* ptr;
+      def.vid = strtol(num_buffer[1], &ptr, 16);
+      def.pid = strtol(num_buffer[2], &ptr, 16);
+      def.version = strtol(num_buffer[3], &ptr, 16);
+      // remove ids
+      s = s.substr(33);
+      // extract name (until next comma)
+      std::string::size_type end_name = s.find (',');
+      if (end_name == npos) continue;
+
+      def.name = s.substr (0, end_name-1);
+      s = substr (end_name+1);
+
+      // extract buttons, axis, etc. Everything has the form : x:y,
+      std::string::size_type end_str = s.find (',');
+      while (end_str != npos)
+      {
+         std::string parameter = s.substr (0, end_str-1);
+         std::string pos_middle = parameter.find (':');
+         if ( pos_middle != npos)
+         {
+            std::string key = parameter.substr(0, pos_middle-1);
+            std::string value = parameter.substr(pos_middle+1);
+
+            // Affect to proper attribute.
+            def.SetValue(key.c_str(), value.c_str());
+         }
+
+         s = substr (end_str+1);
+         end_str = s.find (',');
+      }
+
+   }
+
+   delete []buff;
    f_close(&File);
 
 }
