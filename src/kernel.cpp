@@ -34,7 +34,7 @@ CKernel::CKernel(void)
    m_Logger(m_Options.GetLogLevel(), &m_Timer),
    cpu_throttle_(nullptr),
    m_EMMC(&m_Interrupt, &m_Timer, &m_ActLED),
-   dwhci_device_(&m_Interrupt, &m_Timer),
+   dwhci_device_(&m_Interrupt, &m_Timer, TRUE),
    vchiq_(&m_Memory, &m_Interrupt),
    display_(nullptr),
    keyboard_(nullptr),

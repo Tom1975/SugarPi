@@ -99,6 +99,7 @@ void Emulation::Run(unsigned nCore)
       while(sound_run_)
       {
          sound_mixer_->PrepareBufferThread();
+         keyboard_->UpdatePlugnPlay();
          scheduler_->Yield();
       }
       

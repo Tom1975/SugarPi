@@ -7,6 +7,7 @@
 
 #include "CPCCore/CPCCoreEmu/IKeyboard.h"
 
+#define MAX_GAMEPADS	2
 
 class KeyboardPi : public IKeyboardHandler
 {
@@ -16,6 +17,7 @@ public:
 
    virtual bool Initialize();
    virtual unsigned char GetKeyboardMap(int index);
+   virtual void UpdatePlugnPlay();
    virtual void Init(bool* register_replaced);
    virtual void ForceKeyboardState(unsigned char key_states[10]) {};
 
@@ -25,16 +27,19 @@ public:
    virtual bool IsUp();
    virtual bool IsAction();
    virtual void ReinitSelect();
+   static void GamePadRemovedHandler (CDevice *pDevice, void *pContext);
    static void GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState);
 
 protected:
+   void LoadGameControllerDB();
+
    CLogger*          logger_;
    CDeviceNameService* device_name_service_;
    CUSBHCIDevice		*dwhci_device_;
-   CUSBGamePadDevice* gamepad_;
+   CUSBGamePadDevice* gamepad_[MAX_GAMEPADS];
 
-   TGamePadState	    gamepad_state_;
-   TGamePadState	    gamepad_state_buffered_;
+   TGamePadState	    gamepad_state_[MAX_GAMEPADS];
+   TGamePadState	    gamepad_state_buffered_[MAX_GAMEPADS];
    unsigned           action_buttons_;
 
    static KeyboardPi* this_ptr_;
