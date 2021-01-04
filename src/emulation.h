@@ -40,7 +40,6 @@ protected:
    
    CLogger*          logger_;
    CTimer*           timer_;
-   FATFS			      m_FileSystem;
    CSpinLock         sound_mutex_;
    CScheduler*       scheduler_;
 

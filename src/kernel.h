@@ -85,6 +85,7 @@ private:
    CEMMCDevice		   m_EMMC;
    CUSBHCIDevice		      dwhci_device_;
    CExceptionHandler * exception_handler_;
+   FATFS			      m_FileSystem;
 
    CScheduler		   scheduler_;
    CVCHIQDevice		vchiq_;

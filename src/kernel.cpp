@@ -112,6 +112,11 @@ boolean CKernel::Initialize (void)
    }
    m_Logger.Write("Kernel", LogNotice, "Initialisationfoe Done : %i", bOK);
 
+   if (f_mount(&m_FileSystem, DRIVE, 1) != FR_OK)
+   {
+      m_Logger.Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
+   }
+
 #ifdef USE_VCHIQ_SOUND   
    sound_ = new SoundPi(&m_Logger, &vchiq_, &scheduler_);
 #else
