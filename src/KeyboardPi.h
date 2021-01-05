@@ -38,7 +38,7 @@ class GamepadDef
       }
 
       bool SetValue(const char* key, const char* value);
-      IGamepadPressed* CreateFunction(const char* value);
+      IGamepadPressed* CreateFunction(const char* value, bool min = true);
 
       // Attributes
       std::string name;

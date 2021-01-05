@@ -42,21 +42,22 @@ class GamepadHatPressed : public IGamepadPressed
 class GamepadAxisPressed : public IGamepadPressed
 {
    public:
-      GamepadAxisPressed (unsigned int axis_index) : axis_index_(axis_index)
+      GamepadAxisPressed (unsigned int axis_index, bool axis_min) : axis_index_(axis_index), axis_min_(axis_min)
       {
       }
 
       virtual bool IsPressed(TGamePadState* state)
       {
-         return state->axes[axis_index_].value > ((state->axes[axis_index_].maximum+state->axes[axis_index_].minimum)/2 );
+         return state->axes[axis_index_].value == (axis_min_?state->axes[axis_index_].minimum:state->axes[axis_index_].maximum);
       }
    protected:
       unsigned int axis_index_;
+      bool axis_min_;
 };
 
    //////////////////////////////////////   
    // Helper 
-IGamepadPressed* GamepadDef::CreateFunction(const char* value)
+IGamepadPressed* GamepadDef::CreateFunction(const char* value, bool min)
 {
    if (strlen (value) < 2) return nullptr;
 
@@ -65,7 +66,7 @@ IGamepadPressed* GamepadDef::CreateFunction(const char* value)
       case 'a':
       {
          unsigned int axis = atoi(&value [1]);
-         return new GamepadAxisPressed(axis);
+         return new GamepadAxisPressed(axis, min);
          break;
       }
       case 'b':
@@ -105,7 +106,7 @@ bool GamepadDef::SetValue(const char* key, const char* value)
       delete game_pad_button_X;
       game_pad_button_X = CreateFunction(value);
    }
-   else if ( strcmp(key, "dpdown") == 0) 
+   /*else if ( strcmp(key, "dpdown") == 0) 
    {
       delete game_pad_button_down;
       game_pad_button_down = CreateFunction(value);
@@ -124,7 +125,7 @@ bool GamepadDef::SetValue(const char* key, const char* value)
    {
       delete game_pad_button_up;
       game_pad_button_up = CreateFunction(value);
-   }      
+   } */
    else if ( strcmp(key, "start") == 0) 
    {
       delete game_pad_button_start;
@@ -135,6 +136,22 @@ bool GamepadDef::SetValue(const char* key, const char* value)
       delete game_pad_button_select;
       game_pad_button_select = CreateFunction(value);
    }      
+   else if ( strcmp(key, "leftx") == 0) 
+   {
+      delete game_pad_button_left;
+      game_pad_button_left = CreateFunction(value, false);
+      delete game_pad_button_right;
+      game_pad_button_right = CreateFunction(value, true);
+
+   }
+   else if ( strcmp(key, "lefty") == 0) 
+   {
+      delete game_pad_button_down;
+      game_pad_button_down = CreateFunction(value, true);
+      delete game_pad_button_up;
+      game_pad_button_up = CreateFunction(value, false);
+
+   }
    return true;
 }
 
