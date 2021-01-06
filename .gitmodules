@@ -3,5 +3,5 @@
 	url = https://github.com/Tom1975/CPCCore.git
 [submodule "circle"]
 	path = circle
-	url = https://github.com/rsta2/circle.git
+	url = https://github.com/Tom1975/circle
 	branch = master
