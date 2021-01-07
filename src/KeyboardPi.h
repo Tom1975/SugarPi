@@ -18,23 +18,32 @@ class IGamepadPressed
       virtual bool IsPressed(TGamePadState*) = 0;
 };
 
+class GamepadActionHandler
+{
+   public:
+      GamepadActionHandler ();
+      virtual ~GamepadActionHandler();
+
+      virtual void AddHandler(IGamepadPressed*);
+      virtual bool IsPressed(TGamePadState*);
+
+   protected:
+      struct Handler
+      {
+         IGamepadPressed* action_handler;
+         Handler* next_handler;
+      };
+      Handler* handler_;
+};
+
 class GamepadDef
 {
    public:
-      GamepadDef():game_pad_button_X(nullptr),game_pad_button_A(nullptr),game_pad_button_up(nullptr),game_pad_button_down(nullptr),
-         game_pad_button_left(nullptr),game_pad_button_right(nullptr),game_pad_button_start(nullptr),game_pad_button_select(nullptr)
+      GamepadDef()
       {
       }
       virtual ~GamepadDef()
       {
-         delete game_pad_button_X;
-         delete game_pad_button_A;
-         delete game_pad_button_up;
-         delete game_pad_button_down;
-         delete game_pad_button_left;
-         delete game_pad_button_right;
-         delete game_pad_button_start;
-         delete game_pad_button_select;
       }
 
       bool SetValue(const char* key, const char* value);
@@ -50,14 +59,14 @@ class GamepadDef
       // Values for buttons
       bool IsPressed ( TGamePadState* );
 
-      IGamepadPressed* game_pad_button_X;
-      IGamepadPressed* game_pad_button_A;
-      IGamepadPressed* game_pad_button_up;
-      IGamepadPressed* game_pad_button_down;
-      IGamepadPressed* game_pad_button_left;
-      IGamepadPressed* game_pad_button_right;
-      IGamepadPressed* game_pad_button_start;
-      IGamepadPressed* game_pad_button_select;
+      GamepadActionHandler game_pad_button_X;
+      GamepadActionHandler game_pad_button_A;
+      GamepadActionHandler game_pad_button_up;
+      GamepadActionHandler game_pad_button_down;
+      GamepadActionHandler game_pad_button_left;
+      GamepadActionHandler game_pad_button_right;
+      GamepadActionHandler game_pad_button_start;
+      GamepadActionHandler game_pad_button_select;
 
 };
 
@@ -73,7 +82,7 @@ public:
    virtual void Init(bool* register_replaced);
    virtual void ForceKeyboardState(unsigned char key_states[10]) {};
 
-   bool AddAction (IGamepadPressed* action, unsigned nDeviceIndex);
+   bool AddAction (GamepadActionHandler* action, unsigned nDeviceIndex);
    void CheckActions(unsigned nDeviceIndex) ;
 
    virtual void ClearBuffer();

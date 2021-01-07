@@ -8,6 +8,55 @@
 #define DEVICE_INDEX	1		// "upad1"
 
 
+GamepadActionHandler::GamepadActionHandler () : handler_(nullptr)
+{
+
+}
+
+GamepadActionHandler::~GamepadActionHandler()
+{
+   // Delete handlers
+   while (handler_ != nullptr)
+   {
+      Handler* next_handler = handler_->next_handler;
+      delete handler_;
+      handler_ =  next_handler;
+   }
+}
+
+void GamepadActionHandler::AddHandler(IGamepadPressed* handler)
+{
+   Handler* next_handler = handler_;
+   if ( handler_ == nullptr)
+   {
+      handler_ = new Handler;
+      handler_->action_handler = handler;
+      handler_->next_handler = nullptr;
+   }
+   else
+   {
+      while (next_handler->next_handler != nullptr)
+      {
+         next_handler = next_handler->next_handler;
+      }
+      next_handler->next_handler = new Handler;
+      next_handler->next_handler->next_handler = nullptr;
+      next_handler->next_handler->action_handler = handler;
+   }
+}
+
+bool GamepadActionHandler::IsPressed(TGamePadState* state)
+{
+   Handler* current_handler = handler_;
+   while ( current_handler != nullptr)
+   {
+      if (  current_handler->action_handler->IsPressed(state))
+         return true;
+   }
+   return false;
+}
+
+
 class GamepadButtonPressed : public IGamepadPressed
 {
    public:
@@ -98,58 +147,45 @@ bool GamepadDef::SetValue(const char* key, const char* value)
 {
    if ( strcmp(key, "a") == 0) 
    {
-      delete game_pad_button_A;
-      game_pad_button_A = CreateFunction(value);
+      game_pad_button_A.AddHandler ( CreateFunction(value) );
    }
    else if ( strcmp(key, "x") == 0) 
    {
-      delete game_pad_button_X;
-      game_pad_button_X = CreateFunction(value);
+      game_pad_button_X.AddHandler ( CreateFunction(value) );
    }
-   /*else if ( strcmp(key, "dpdown") == 0) 
+   else if ( strcmp(key, "dpdown") == 0) 
    {
-      delete game_pad_button_down;
-      game_pad_button_down = CreateFunction(value);
+      game_pad_button_down.AddHandler ( CreateFunction(value) );
    }      
    else if ( strcmp(key, "dpleft") == 0) 
    {
-      delete game_pad_button_left;
-      game_pad_button_left = CreateFunction(value);
+      game_pad_button_left.AddHandler ( CreateFunction(value) );
    }      
    else if ( strcmp(key, "dpright") == 0) 
    {
-      delete game_pad_button_right;
-      game_pad_button_right = CreateFunction(value);
+      game_pad_button_right.AddHandler ( CreateFunction(value) );
    }          
    else if ( strcmp(key, "dpup") == 0) 
    {
-      delete game_pad_button_up;
-      game_pad_button_up = CreateFunction(value);
-   } */
+      game_pad_button_up.AddHandler ( CreateFunction(value) );
+   }
    else if ( strcmp(key, "start") == 0) 
    {
-      delete game_pad_button_start;
-      game_pad_button_start = CreateFunction(value);
+      game_pad_button_start.AddHandler ( CreateFunction(value) );
    }      
    else if ( strcmp(key, "back") == 0) 
    {
-      delete game_pad_button_select;
-      game_pad_button_select = CreateFunction(value);
+      game_pad_button_select.AddHandler ( CreateFunction(value) );
    }      
    else if ( strcmp(key, "leftx") == 0) 
    {
-      delete game_pad_button_left;
-      game_pad_button_left = CreateFunction(value, false);
-      delete game_pad_button_right;
-      game_pad_button_right = CreateFunction(value, true);
-
+      game_pad_button_left.AddHandler ( CreateFunction(value, false) );
+      game_pad_button_right.AddHandler ( CreateFunction(value, true) );
    }
    else if ( strcmp(key, "lefty") == 0) 
    {
-      delete game_pad_button_down;
-      game_pad_button_down = CreateFunction(value, true);
-      delete game_pad_button_up;
-      game_pad_button_up = CreateFunction(value, false);
+      game_pad_button_down.AddHandler ( CreateFunction(value, true) );
+      game_pad_button_up.AddHandler ( CreateFunction(value, false) );
 
    }
    return true;
@@ -271,18 +307,18 @@ unsigned char KeyboardPi::GetKeyboardMap(int index)
          unsigned char result = 0xFF;
          // button 1
          //if (gamepad_state_[0].buttons& GamePadButtonStart)result &= ~0x80;
-         if (gamepad_active_[0]->game_pad_button_start->IsPressed(&gamepad_state_[0]))result &= ~0x80;
+         if (gamepad_active_[0]->game_pad_button_start.IsPressed(&gamepad_state_[0]))result &= ~0x80;
          return result;
       }
       if (index == 9 )
       {
          unsigned char result = 0xFF;
-         if (gamepad_active_[0]->game_pad_button_X->IsPressed(&gamepad_state_[0]))result &= ~0x10;
-         if (gamepad_active_[0]->game_pad_button_A->IsPressed(&gamepad_state_[0]))result &= ~0x20;
-         if (gamepad_active_[0]->game_pad_button_up->IsPressed(&gamepad_state_[0]))result &= ~0x1;
-         if (gamepad_active_[0]->game_pad_button_down->IsPressed(&gamepad_state_[0]))result &= ~0x2;
-         if (gamepad_active_[0]->game_pad_button_left->IsPressed(&gamepad_state_[0]))result &= ~0x4;
-         if (gamepad_active_[0]->game_pad_button_right->IsPressed(&gamepad_state_[0]))result &= ~0x8;
+         if (gamepad_active_[0]->game_pad_button_X.IsPressed(&gamepad_state_[0]))result &= ~0x10;
+         if (gamepad_active_[0]->game_pad_button_A.IsPressed(&gamepad_state_[0]))result &= ~0x20;
+         if (gamepad_active_[0]->game_pad_button_up.IsPressed(&gamepad_state_[0]))result &= ~0x1;
+         if (gamepad_active_[0]->game_pad_button_down.IsPressed(&gamepad_state_[0]))result &= ~0x2;
+         if (gamepad_active_[0]->game_pad_button_left.IsPressed(&gamepad_state_[0]))result &= ~0x4;
+         if (gamepad_active_[0]->game_pad_button_right.IsPressed(&gamepad_state_[0]))result &= ~0x8;
             
             /*
             // button 1
@@ -305,7 +341,7 @@ unsigned char KeyboardPi::GetKeyboardMap(int index)
    return 0xFF;
 }
 
-bool KeyboardPi::AddAction (IGamepadPressed* action, unsigned nDeviceIndex)
+bool KeyboardPi::AddAction (GamepadActionHandler* action, unsigned nDeviceIndex)
 {
    if ( action == nullptr ) return false;
    bool x = action->IsPressed(&gamepad_state_[nDeviceIndex]);
@@ -316,14 +352,14 @@ bool KeyboardPi::AddAction (IGamepadPressed* action, unsigned nDeviceIndex)
 void KeyboardPi::CheckActions (unsigned nDeviceIndex)
 {
    if ( gamepad_active_[nDeviceIndex] == nullptr) return;
-   action_buttons_ |= AddAction(gamepad_active_[nDeviceIndex]->game_pad_button_X, nDeviceIndex)?GamePadButtonX:0;
-   action_buttons_ |= AddAction(gamepad_active_[nDeviceIndex]->game_pad_button_A, nDeviceIndex)?GamePadButtonA:0;
-   action_buttons_ |= AddAction(gamepad_active_[nDeviceIndex]->game_pad_button_up, nDeviceIndex)?GamePadButtonUp:0;
-   action_buttons_ |= AddAction(gamepad_active_[nDeviceIndex]->game_pad_button_down, nDeviceIndex)?GamePadButtonDown:0;
-   action_buttons_ |= AddAction(gamepad_active_[nDeviceIndex]->game_pad_button_left, nDeviceIndex)?GamePadButtonLeft:0;
-   action_buttons_ |= AddAction(gamepad_active_[nDeviceIndex]->game_pad_button_right, nDeviceIndex)?GamePadButtonRight:0;
-   action_buttons_ |= AddAction(gamepad_active_[nDeviceIndex]->game_pad_button_start, nDeviceIndex)?GamePadButtonStart:0;
-   action_buttons_ |= AddAction(gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex)?GamePadButtonSelect:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_X, nDeviceIndex)?GamePadButtonX:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_A, nDeviceIndex)?GamePadButtonA:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_up, nDeviceIndex)?GamePadButtonUp:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_down, nDeviceIndex)?GamePadButtonDown:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_left, nDeviceIndex)?GamePadButtonLeft:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_right, nDeviceIndex)?GamePadButtonRight:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_start, nDeviceIndex)?GamePadButtonStart:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex)?GamePadButtonSelect:0;
 }
 
 void KeyboardPi::Init(bool* register_replaced)
@@ -421,7 +457,7 @@ void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState
    //if (pState->buttons & GamePadButtonSelect)
    if ( this_ptr_->gamepad_active_[nDeviceIndex] != nullptr)
    {
-      if (this_ptr_->gamepad_active_[nDeviceIndex]->game_pad_button_select->IsPressed(&this_ptr_->gamepad_state_[nDeviceIndex])) 
+      if (this_ptr_->gamepad_active_[nDeviceIndex]->game_pad_button_select.IsPressed(&this_ptr_->gamepad_state_[nDeviceIndex])) 
       {
          // Do something 
          this_ptr_->select_ = true;
