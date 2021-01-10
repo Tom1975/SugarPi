@@ -52,6 +52,7 @@ bool GamepadActionHandler::IsPressed(TGamePadState* state)
    {
       if (  current_handler->action_handler->IsPressed(state))
          return true;
+      current_handler = current_handler->next_handler;
    }
    return false;
 }
@@ -81,7 +82,7 @@ class GamepadHatPressed : public IGamepadPressed
 
       virtual bool IsPressed(TGamePadState* state)
       {
-         return (state->hats[hat_index_] & value_) == value_;
+         return (state->hats[hat_index_] != 0xF) && (state->hats[hat_index_] & value_) == value_;
       }
    protected:
       unsigned int value_;
@@ -97,7 +98,15 @@ class GamepadAxisPressed : public IGamepadPressed
 
       virtual bool IsPressed(TGamePadState* state)
       {
-         return state->axes[axis_index_].value == (axis_min_?state->axes[axis_index_].minimum:state->axes[axis_index_].maximum);
+         if ( axis_min_)
+         {
+            return state->axes[axis_index_].value == state->axes[axis_index_].minimum;
+         }
+         else
+         {
+            return state->axes[axis_index_].value == state->axes[axis_index_].maximum;
+         }
+         
       }
    protected:
       unsigned int axis_index_;
@@ -179,13 +188,13 @@ bool GamepadDef::SetValue(const char* key, const char* value)
    }      
    else if ( strcmp(key, "leftx") == 0) 
    {
-      game_pad_button_left.AddHandler ( CreateFunction(value, false) );
-      game_pad_button_right.AddHandler ( CreateFunction(value, true) );
+      game_pad_button_left.AddHandler ( CreateFunction(value, true) );
+      game_pad_button_right.AddHandler ( CreateFunction(value, false) );
    }
    else if ( strcmp(key, "lefty") == 0) 
    {
-      game_pad_button_down.AddHandler ( CreateFunction(value, true) );
-      game_pad_button_up.AddHandler ( CreateFunction(value, false) );
+      game_pad_button_down.AddHandler ( CreateFunction(value, false) );
+      game_pad_button_up.AddHandler ( CreateFunction(value, true) );
 
    }
    return true;
@@ -299,6 +308,7 @@ void KeyboardPi::UpdatePlugnPlay()
 
 unsigned char KeyboardPi::GetKeyboardMap(int index)
 {
+   mutex_.Acquire();
    // Check : 
    if ( gamepad_active_[0] != nullptr)
    {
@@ -308,6 +318,7 @@ unsigned char KeyboardPi::GetKeyboardMap(int index)
          // button 1
          //if (gamepad_state_[0].buttons& GamePadButtonStart)result &= ~0x80;
          if (gamepad_active_[0]->game_pad_button_start.IsPressed(&gamepad_state_[0]))result &= ~0x80;
+         mutex_.Release();
          return result;
       }
       if (index == 9 )
@@ -335,9 +346,11 @@ unsigned char KeyboardPi::GetKeyboardMap(int index)
             // buttons right
             if (gamepad_state_[0].buttons & GamePadButtonRight) result &= ~0x8;
             */
+         mutex_.Release();
          return result;
       }
    }
+   mutex_.Release();
    return 0xFF;
 }
 
@@ -351,6 +364,7 @@ bool KeyboardPi::AddAction (GamepadActionHandler* action, unsigned nDeviceIndex)
 
 void KeyboardPi::CheckActions (unsigned nDeviceIndex)
 {
+   mutex_.Acquire();
    if ( gamepad_active_[nDeviceIndex] == nullptr) return;
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_X, nDeviceIndex)?GamePadButtonX:0;
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_A, nDeviceIndex)?GamePadButtonA:0;
@@ -360,6 +374,7 @@ void KeyboardPi::CheckActions (unsigned nDeviceIndex)
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_right, nDeviceIndex)?GamePadButtonRight:0;
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_start, nDeviceIndex)?GamePadButtonStart:0;
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex)?GamePadButtonSelect:0;
+   mutex_.Release();
 }
 
 void KeyboardPi::Init(bool* register_replaced)
@@ -382,7 +397,9 @@ bool KeyboardPi::IsDown()
 {
    if (action_buttons_ & (GamePadButtonDown))
    {
+      mutex_.Acquire();
       action_buttons_ &= ~(GamePadButtonDown);
+      mutex_.Release();
       return true;
    }
    else
@@ -396,7 +413,9 @@ bool KeyboardPi::IsUp()
 {
    if (action_buttons_ & (GamePadButtonUp))
    {
+      mutex_.Acquire();
       action_buttons_ &= ~(GamePadButtonUp);
+      mutex_.Release();
       return true;
    }
    else
@@ -409,7 +428,9 @@ bool KeyboardPi::IsAction()
 {
    if (action_buttons_ & (GamePadButtonA|GamePadButtonX))
    {
+      mutex_.Acquire();
       action_buttons_ &= ~(GamePadButtonA | GamePadButtonX);
+      mutex_.Release();
       return true;
    }
    else
@@ -448,21 +469,15 @@ void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState
    assert(pState != 0);
    
    memcpy(&this_ptr_->gamepad_state_[nDeviceIndex], pState, sizeof * pState);
-
    // Set the new pushed buttons
    this_ptr_->CheckActions (nDeviceIndex);
-   this_ptr_->gamepad_state_buffered_[nDeviceIndex] = this_ptr_->gamepad_state_[nDeviceIndex];
 
-   // Select : Open menu
-   //if (pState->buttons & GamePadButtonSelect)
-   if ( this_ptr_->gamepad_active_[nDeviceIndex] != nullptr)
+   if ( this_ptr_->AddAction(&this_ptr_->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
    {
-      if (this_ptr_->gamepad_active_[nDeviceIndex]->game_pad_button_select.IsPressed(&this_ptr_->gamepad_state_[nDeviceIndex])) 
-      {
-         // Do something 
-         this_ptr_->select_ = true;
-      }
+      this_ptr_->select_ = true;
    }
+
+   this_ptr_->gamepad_state_buffered_[nDeviceIndex] = this_ptr_->gamepad_state_[nDeviceIndex];
 }
 
 

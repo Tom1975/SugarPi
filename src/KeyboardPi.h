@@ -104,9 +104,10 @@ protected:
    CUSBHCIDevice		*dwhci_device_;
    CUSBGamePadDevice* gamepad_[MAX_GAMEPADS];
 
-   TGamePadState	    gamepad_state_[MAX_GAMEPADS];
-   TGamePadState	    gamepad_state_buffered_[MAX_GAMEPADS];
-   unsigned           action_buttons_;
+   CSpinLock         mutex_;
+   TGamePadState	   gamepad_state_[MAX_GAMEPADS];
+   TGamePadState	   gamepad_state_buffered_[MAX_GAMEPADS];
+   unsigned          action_buttons_;
 
    static KeyboardPi* this_ptr_;
 
