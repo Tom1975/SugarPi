@@ -308,22 +308,19 @@ void KeyboardPi::UpdatePlugnPlay()
 
 unsigned char KeyboardPi::GetKeyboardMap(int index)
 {
+   unsigned char result = 0xFF;
    mutex_.Acquire();
    // Check : 
    if ( gamepad_active_[0] != nullptr)
    {
       if (index == 5)
       {
-         unsigned char result = 0xFF;
          // button 1
-         //if (gamepad_state_[0].buttons& GamePadButtonStart)result &= ~0x80;
          if (gamepad_active_[0]->game_pad_button_start.IsPressed(&gamepad_state_[0]))result &= ~0x80;
-         mutex_.Release();
-         return result;
       }
-      if (index == 9 )
+      else if (index == 9 )
       {
-         unsigned char result = 0xFF;
+         
          if (gamepad_active_[0]->game_pad_button_X.IsPressed(&gamepad_state_[0]))result &= ~0x10;
          if (gamepad_active_[0]->game_pad_button_A.IsPressed(&gamepad_state_[0]))result &= ~0x20;
          if (gamepad_active_[0]->game_pad_button_up.IsPressed(&gamepad_state_[0]))result &= ~0x1;
@@ -346,12 +343,10 @@ unsigned char KeyboardPi::GetKeyboardMap(int index)
             // buttons right
             if (gamepad_state_[0].buttons & GamePadButtonRight) result &= ~0x8;
             */
-         mutex_.Release();
-         return result;
       }
    }
    mutex_.Release();
-   return 0xFF;
+   return result;
 }
 
 bool KeyboardPi::AddAction (GamepadActionHandler* action, unsigned nDeviceIndex)
@@ -364,8 +359,8 @@ bool KeyboardPi::AddAction (GamepadActionHandler* action, unsigned nDeviceIndex)
 
 void KeyboardPi::CheckActions (unsigned nDeviceIndex)
 {
-   mutex_.Acquire();
    if ( gamepad_active_[nDeviceIndex] == nullptr) return;
+   mutex_.Acquire();
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_X, nDeviceIndex)?GamePadButtonX:0;
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_A, nDeviceIndex)?GamePadButtonA:0;
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_up, nDeviceIndex)?GamePadButtonUp:0;
@@ -471,8 +466,7 @@ void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState
    memcpy(&this_ptr_->gamepad_state_[nDeviceIndex], pState, sizeof * pState);
    // Set the new pushed buttons
    this_ptr_->CheckActions (nDeviceIndex);
-
-   if ( this_ptr_->AddAction(&this_ptr_->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
+   if (( this_ptr_->gamepad_active_[nDeviceIndex] != nullptr) && this_ptr_->AddAction(&this_ptr_->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
    {
       this_ptr_->select_ = true;
    }
