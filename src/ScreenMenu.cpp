@@ -48,6 +48,7 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixe
    font_ = new CoolspotFont(logger_);
    snapshot_ = new CSnapshot(log);
    snapshot_->SetMachine(motherboard_);
+   // Setup
    sugarpi_setup_menu_ = new MenuItem[3];
    sugarpi_setup_menu_[0] =  { "...Back",             &ScreenMenu::Resume};
    sugarpi_setup_menu_[2] = {nullptr, nullptr};

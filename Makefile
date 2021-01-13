@@ -14,6 +14,7 @@ OBJS	= src/main.o\
 		src/log.o\
 		src/SoundPi.o\
 		src/ScreenMenu.o\
+		src/Windows.o\
 		res/coolspot.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
