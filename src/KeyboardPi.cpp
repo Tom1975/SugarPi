@@ -152,50 +152,71 @@ IGamepadPressed* GamepadDef::CreateFunction(const char* value, bool min)
    return nullptr;
 }
 
-bool GamepadDef::SetValue(const char* key, const char* value)
+unsigned int GamepadDef::SetValue(const char* key, const char* value)
 {
    if ( strcmp(key, "a") == 0) 
    {
       game_pad_button_A.AddHandler ( CreateFunction(value) );
+      supported_controls_ |= GamePadButtonA;
    }
    else if ( strcmp(key, "x") == 0) 
    {
       game_pad_button_X.AddHandler ( CreateFunction(value) );
+      supported_controls_ |= GamePadButtonA;
    }
    else if ( strcmp(key, "dpdown") == 0) 
    {
       game_pad_button_down.AddHandler ( CreateFunction(value) );
+      supported_controls_ |= GamePadButtonDown;
    }      
    else if ( strcmp(key, "dpleft") == 0) 
    {
       game_pad_button_left.AddHandler ( CreateFunction(value) );
+      supported_controls_ |= GamePadButtonLeft;
    }      
    else if ( strcmp(key, "dpright") == 0) 
    {
       game_pad_button_right.AddHandler ( CreateFunction(value) );
+      supported_controls_ |= GamePadButtonRight;
    }          
    else if ( strcmp(key, "dpup") == 0) 
    {
       game_pad_button_up.AddHandler ( CreateFunction(value) );
+      supported_controls_ |= GamePadButtonUp;
    }
    else if ( strcmp(key, "start") == 0) 
    {
       game_pad_button_start.AddHandler ( CreateFunction(value) );
+      supported_controls_ |= GamePadButtonStart;
+   }      
+   else if ( strcmp(key, "righttrigger") == 0) 
+   {
+      game_pad_button_start.AddHandler ( CreateFunction(value) );
+      supported_controls_ |= GamePadButtonStart;
    }      
    else if ( strcmp(key, "back") == 0) 
    {
       game_pad_button_select.AddHandler ( CreateFunction(value) );
-   }      
+      supported_controls_ |= GamePadButtonSelect;
+   }
+   if ( strcmp(key, "lefttrigger") == 0) 
+   {
+      game_pad_button_select.AddHandler ( CreateFunction(value) );
+      supported_controls_ |= GamePadButtonSelect;
+   }
    else if ( strcmp(key, "leftx") == 0) 
    {
       game_pad_button_left.AddHandler ( CreateFunction(value, true) );
       game_pad_button_right.AddHandler ( CreateFunction(value, false) );
+      supported_controls_ |= GamePadButtonLeft;
+      supported_controls_ |= GamePadButtonRight;
    }
    else if ( strcmp(key, "lefty") == 0) 
    {
       game_pad_button_down.AddHandler ( CreateFunction(value, false) );
       game_pad_button_up.AddHandler ( CreateFunction(value, true) );
-
+      supported_controls_ |= GamePadButtonUp;
+      supported_controls_ |= GamePadButtonDown;
    }
    return true;
 }
@@ -288,8 +309,8 @@ void KeyboardPi::UpdatePlugnPlay()
          CString* gamepad_name = gamepad_[nDevice-1]->GetDevice()->GetNames();
          const TUSBDeviceDescriptor* descriptor = gamepad_[nDevice-1]->GetDevice()->GetDeviceDescriptor();
 
-         logger_->Write ("Keyboard", LogNotice, "Gamepad : %s - VID=%X; PID=%X", (const char*) (*gamepad_name), descriptor->idVendor, 
-            descriptor->idProduct );
+         logger_->Write ("Keyboard", LogNotice, "Gamepad : %s - VID=%X; PID=%X; bcdDevice = %X", (const char*) (*gamepad_name), descriptor->idVendor, 
+            descriptor->idProduct, descriptor->bcdDevice );
          delete gamepad_name ;
 			const TGamePadState *pState = gamepad_[nDevice-1]->GetInitialState ();
 			assert (pState != 0);
@@ -465,6 +486,7 @@ void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState
    
    memcpy(&this_ptr_->gamepad_state_[nDeviceIndex], pState, sizeof * pState);
    // Set the new pushed buttons
+
    this_ptr_->CheckActions (nDeviceIndex);
    if (( this_ptr_->gamepad_active_[nDeviceIndex] != nullptr) && this_ptr_->AddAction(&this_ptr_->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
    {
@@ -482,7 +504,7 @@ void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState
 
    for (unsigned int index = 0; index < gamepad_list_.size(); index++)
    {
-      if ( gamepad_list_[index]->vid == descriptor->idVendor && gamepad_list_[index]->pid == descriptor->idProduct )
+      if ( gamepad_list_[index]->vid == descriptor->idVendor && gamepad_list_[index]->pid == descriptor->idProduct && gamepad_list_[index]->version == descriptor->bcdDevice)
       {
          logger_->Write("KeyboardPi", LogNotice, "Gamepad found in database !");
          return gamepad_list_[index];
@@ -558,6 +580,9 @@ FILINFO file_info;
       def->vid = strtoul(num_buffer[1], &ptr, 16);
       def->pid = strtoul(num_buffer[2], &ptr, 16);
       def->version = strtoul(num_buffer[3], &ptr, 16);
+
+      // 
+
       // remove ids
       s = s.substr(33);
       // extract name (until next comma)
@@ -567,26 +592,49 @@ FILINFO file_info;
       def->name = s.substr (0, end_name);
       s = s.substr (end_name+1);
 
-      if ( def->vid != 0x79 || def->pid != 6)
-         continue;
 
-      // extract buttons, axis, etc. Everything has the form : x:y,
-      std::string::size_type end_str = s.find (',');
-      while (end_str != std::string::npos)
+      // Do not handle native circle++ handled device:
+      if ( ( def->vid == 0x54C && def->pid == 0x268)
+         ||( def->vid == 0x54C && def->pid == 0x9cc)
+         ||( def->vid == 0x54C && def->pid == 0x5c4)
+         ||( def->vid == 0x45e && def->pid == 0x28e)
+         ||( def->vid == 0x45e && def->pid == 0x28f)
+         ||( def->vid == 0x45e && def->pid == 0x2d1)
+         ||( def->vid == 0x45e && def->pid == 0x2dd)
+         ||( def->vid == 0x45e && def->pid == 0x2e3)
+         ||( def->vid == 0x45e && def->pid == 0x2ea)
+         ||( def->vid == 0x57e && def->pid == 0x2009)
+         )
       {
-         std::string parameter = s.substr (0, end_str);
-         size_t pos_middle = parameter.find (':');
-         if ( pos_middle != std::string::npos)
+         def->game_pad_button_X.AddHandler(new GamepadButtonPressed(10/*GamePadButtonX*/)); 
+         def->game_pad_button_A.AddHandler(new GamepadButtonPressed(9/*GamePadButtonA*/)); 
+         def->game_pad_button_up.AddHandler(new GamepadButtonPressed(15/*GamePadButtonUp*/)); 
+         def->game_pad_button_down.AddHandler(new GamepadButtonPressed(17/*GamePadButtonDown*/)); 
+         def->game_pad_button_left.AddHandler(new GamepadButtonPressed(18/*GamePadButtonLeft*/)); 
+         def->game_pad_button_right.AddHandler(new GamepadButtonPressed(16/*GamePadButtonRight*/)); 
+         def->game_pad_button_select.AddHandler(new GamepadButtonPressed(11/*GamePadButtonSelect*/)); 
+         def->game_pad_button_start.AddHandler(new GamepadButtonPressed(14/*GamePadButtonStart*/)); 
+      }
+      else
+      {
+         // extract buttons, axis, etc. Everything has the form : x:y,
+         std::string::size_type end_str = s.find (',');
+         while (end_str != std::string::npos)
          {
-            std::string key = parameter.substr(0, pos_middle);
-            std::string value = parameter.substr(pos_middle+1);
+            std::string parameter = s.substr (0, end_str);
+            size_t pos_middle = parameter.find (':');
+            if ( pos_middle != std::string::npos)
+            {
+               std::string key = parameter.substr(0, pos_middle);
+               std::string value = parameter.substr(pos_middle+1);
 
-            // Affect to proper attribute.
-            def->SetValue(key.c_str(), value.c_str());
+               // Affect to proper attribute.
+               def->SetValue(key.c_str(), value.c_str());
+            }
+
+            s = s.substr (end_str+1);
+            end_str = s.find (',');
          }
-
-         s = s.substr (end_str+1);
-         end_str = s.find (',');
       }
 
       // Add to controller database

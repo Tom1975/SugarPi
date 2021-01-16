@@ -39,19 +39,20 @@ class GamepadActionHandler
 class GamepadDef
 {
    public:
-      GamepadDef()
+      GamepadDef() : supported_controls_(0), vid(0), pid(0), version(0)
       {
       }
       virtual ~GamepadDef()
       {
       }
 
-      bool SetValue(const char* key, const char* value);
+      unsigned int SetValue(const char* key, const char* value);
       IGamepadPressed* CreateFunction(const char* value, bool min = true);
 
       // Attributes
       std::string name;
 
+      unsigned int supported_controls_;
       unsigned int vid;
       unsigned int pid;
       unsigned int version;
