@@ -35,7 +35,6 @@ public:
    ScreenMenu::Action Handle();
 
    ScreenMenu::Action Resume();
-   ScreenMenu::Action Back();
    ScreenMenu::Action InsertCartridge();
    ScreenMenu::Action SugarSetup();
    ScreenMenu::Action HardwareSetup();

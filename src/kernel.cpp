@@ -34,7 +34,7 @@ CKernel::CKernel(void)
    m_Logger(m_Options.GetLogLevel(), &m_Timer),
    cpu_throttle_(nullptr),
    m_EMMC(&m_Interrupt, &m_Timer, &m_ActLED),
-   dwhci_device_(&m_Interrupt, &m_Timer),
+   dwhci_device_(&m_Interrupt, &m_Timer, TRUE),
    vchiq_(&m_Memory, &m_Interrupt),
    display_(nullptr),
    keyboard_(nullptr),
@@ -111,6 +111,11 @@ boolean CKernel::Initialize (void)
       bOK = vchiq_.Initialize();
    }
    m_Logger.Write("Kernel", LogNotice, "Initialisationfoe Done : %i", bOK);
+
+   if (f_mount(&m_FileSystem, DRIVE, 1) != FR_OK)
+   {
+      m_Logger.Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
+   }
 
 #ifdef USE_VCHIQ_SOUND   
    sound_ = new SoundPi(&m_Logger, &vchiq_, &scheduler_);

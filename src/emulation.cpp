@@ -2,7 +2,6 @@
 #include "ScreenMenu.h"
 
 
-#define DRIVE		"SD:"
 
 
 Emulation::Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer)
@@ -50,11 +49,6 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    sound_mixer_->SetLog(&log_);
    motherboard_->SetLog(&log_);
 
-   if (f_mount(&m_FileSystem, DRIVE, 1) != FR_OK)
-   {
-      logger_->Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
-   }
-
    motherboard_->SetPlus(true);
    motherboard_->InitMotherbard(nullptr, nullptr, display_, nullptr, nullptr, nullptr);
    motherboard_->GetPSG()->SetLog(&log_);
@@ -99,6 +93,7 @@ void Emulation::Run(unsigned nCore)
       while(sound_run_)
       {
          sound_mixer_->PrepareBufferThread();
+         keyboard_->UpdatePlugnPlay();
          scheduler_->Yield();
       }
       
