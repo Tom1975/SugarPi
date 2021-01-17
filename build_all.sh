@@ -34,3 +34,4 @@ echo "cart=SD:/CART/crtc3_projo.cpr" >> config
 
 cp config sdcard/Config
 cp CART/* sdcard/CART
+cp gamecontrollerdb.txt sdcard/Config/gamecontrollerdb.txt
