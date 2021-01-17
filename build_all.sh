@@ -14,7 +14,7 @@ cp circle/boot/fixup4.dat sdcard
 cp circle/boot/bcm2711-rpi-4-b.dtb sdcard
 cp circle/boot/LICENCE.broadcom	sdcard
 cp circle/boot/COPYING.linux sdcard
-cp circle/boot/config.txt sdcard
+cp circle/boot/config64.txt sdcard/config.txt
 
 echo "*** copy default CART sdcard ***"
 
