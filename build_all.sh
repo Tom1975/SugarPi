@@ -14,7 +14,7 @@ cp circle/boot/fixup4.dat sdcard
 cp circle/boot/bcm2711-rpi-4-b.dtb sdcard
 cp circle/boot/LICENCE.broadcom	sdcard
 cp circle/boot/COPYING.linux sdcard
-cp circle/boot/config.txt sdcard
+cp circle/boot/config64.txt sdcard/config.txt
 
 echo "*** copy default CART sdcard ***"
 
@@ -34,3 +34,4 @@ echo "cart=SD:/CART/crtc3_projo.cpr" >> config
 
 cp config sdcard/Config
 cp CART/* sdcard/CART
+cp gamecontrollerdb.txt sdcard/Config/gamecontrollerdb.txt
