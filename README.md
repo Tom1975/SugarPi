@@ -29,3 +29,21 @@ From here, you can :
 - Select the synchronisation type : 
   - Frame sync will synchronise with the frame. It means that the synchronisation will be smooth, but the timings (and the sound) will be (almost) correct, as long as you are plugged on a 50hz monitor or TV.
   - If frame sync is unchecked, synchronisation will be done on sound : Sound should be more precise, but you can experience some tearing on the display.
+
+## Supported hardware
+SugarPi was developped on the Raspberry Pi3B+. It has been adapted to Raspeberry Pi4.
+I didn't test it on Raspberry Pi400, but as Circle++ doesn't support it, it may not work on it.
+
+## Gamepad
+Gamepads are supported through gamecontrollerdb.txt.
+If your hardware is not supported yet, add a line in the 'Linux' section (see [Gamecontrollerdb.txt](https://github.com/gabomdq/SDL_GameControllerDB) for more information). 
+In the future, I'll try to stick to the gamecontrollerdb.txt repository.
+
+## Known issues
+- Some gamepads are not properly supported on Raspberry Pi4 (XBox 360, ...).
+- Raspberry Pi4 may experience slowdowns
+- 
+## Credits
+- [Circle++ library](https://github.com/rsta2/circle) for bare-metal projects on Raspberry Pi 
+- [Gamecontrollerdb.txt](https://github.com/gabomdq/SDL_GameControllerDB) for gamepad mapping support
+- [Sugarbox Core library](https://github.com/Tom1975/CPCCore) for Amstrad CPC core emulation
