@@ -1,10 +1,12 @@
 //
+#include "DisplayPi.h"
+
 #include <memory.h>
 
 #include <circle/types.h>
+#include <circle/bcmpropertytags.h>
+#include <circle/debug.h>
 
-
-#include "DisplayPi.h"
 
 
 DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
@@ -39,6 +41,23 @@ bool DisplayPi::Initialization()
 
    return true;
 }
+
+bool DisplayPi::ListEDID()
+{
+   //  Display all resolution supported
+	CBcmPropertyTags Tags;
+	TPropertyTagEDIDBlock TagEDID;
+	TagEDID.nBlockNumber = 0;
+   Tags.GetTag (PROPTAG_GET_EDID_BLOCK , &TagEDID, sizeof TagEDID, 4);
+	while ( TagEDID.nStatus == 0)
+	{
+      logger_->Write("Display", LogNotice, "EDID message : ");
+      debug_hexdump (TagEDID.Block, 128, "EDID");
+
+		Tags.GetTag (PROPTAG_GET_EDID_BLOCK , &TagEDID, sizeof TagEDID, 4);
+	}   
+}
+
 
 void DisplayPi::SetScanlines(int scan)
 {

@@ -15,6 +15,8 @@ public:
    DisplayPi(CLogger* logger, CTimer* timer);
    virtual ~DisplayPi();
 
+   bool ListEDID();
+   
    bool Initialization();
    void SyncWithFrame (bool set){sync_on_frame_ = set;}
    bool IsSyncOnFrame(){return sync_on_frame_;}
