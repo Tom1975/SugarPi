@@ -292,18 +292,21 @@ void KeyboardPi::UpdatePlugnPlay()
 {
    boolean bUpdated = dwhci_device_->UpdatePlugAndPlay ();
 
-   for (unsigned nDevice = 1; bUpdated && (nDevice <= MAX_GAMEPADS); nDevice++)
-		{
-			if (gamepad_[nDevice-1] != 0)
-			{
-				continue;
-			}
+   if (bUpdated)
+   {
+      // Gamepad
+      for (unsigned nDevice = 1; (nDevice <= MAX_GAMEPADS); nDevice++)
+      {
+         if (gamepad_[nDevice-1] != 0)
+         {
+            continue;
+         }
 
-			gamepad_[nDevice-1] = (CUSBGamePadDevice *)device_name_service_->GetDevice ("upad", nDevice, FALSE);
-			if (gamepad_[nDevice-1] == 0)
-			{
-				continue;
-			}
+         gamepad_[nDevice-1] = (CUSBGamePadDevice *)device_name_service_->GetDevice ("upad", nDevice, FALSE);
+         if (gamepad_[nDevice-1] == 0)
+         {
+            continue;
+         }
 
          // Get gamepad names
          CString* gamepad_name = gamepad_[nDevice-1]->GetDevice()->GetNames();
@@ -312,19 +315,33 @@ void KeyboardPi::UpdatePlugnPlay()
          logger_->Write ("Keyboard", LogNotice, "Gamepad : %s - VID=%X; PID=%X; bcdDevice = %X", (const char*) (*gamepad_name), descriptor->idVendor, 
             descriptor->idProduct, descriptor->bcdDevice );
          delete gamepad_name ;
-			const TGamePadState *pState = gamepad_[nDevice-1]->GetInitialState ();
-			assert (pState != 0);
+         const TGamePadState *pState = gamepad_[nDevice-1]->GetInitialState ();
+         assert (pState != 0);
 
          memcpy(&gamepad_state_[nDevice-1], pState, sizeof (TGamePadState));
-			logger_->Write ("Keyboard", LogNotice, "Gamepad %u: %d Button(s) %d Hat(s)",
-					nDevice, pState->nbuttons, pState->nhats);
+         logger_->Write ("Keyboard", LogNotice, "Gamepad %u: %d Button(s) %d Hat(s)",
+               nDevice, pState->nbuttons, pState->nhats);
 
-			gamepad_[nDevice-1]->RegisterRemovedHandler (GamePadRemovedHandler, this);
-			gamepad_[nDevice-1]->RegisterStatusHandler (GamePadStatusHandler);
+         gamepad_[nDevice-1]->RegisterRemovedHandler (GamePadRemovedHandler, this);
+         gamepad_[nDevice-1]->RegisterStatusHandler (GamePadStatusHandler);
          gamepad_active_[nDevice-1] = LookForDevice (descriptor);
 
-			logger_->Write ("Keyboard", LogNotice, "Use your gamepad controls!");
+         logger_->Write ("Keyboard", LogNotice, "Use your gamepad controls!");
+      }
+
+      // Keyboard
+      if (keyboard_ == 0)
+      {
+         keyboard_ = (CUSBKeyboardDevice *) device_name_service_->GetDevice ("ukbd1", FALSE);
+			if (keyboard_ != 0)
+			{
+				keyboard_->RegisterRemovedHandler (KeyboardRemovedHandler);
+				keyboard_->RegisterKeyStatusHandlerRaw (KeyStatusHandlerRaw);
+
+				logger_->Write ("Keyboard", LogNotice, "Just type something!");
+			}
 		}
+   }
 }
 
 unsigned char KeyboardPi::GetKeyboardMap(int index)
@@ -459,6 +476,37 @@ bool KeyboardPi::IsAction()
 void KeyboardPi::ReinitSelect()
 {
    select_ = false;
+}
+
+void KeyboardPi::KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6])
+{
+	assert (this_ptr_ != 0);
+
+	CString Message;
+	Message.Format ("Key status (modifiers %02X)", (unsigned) ucModifiers);
+
+	for (unsigned i = 0; i < 6; i++)
+	{
+		if (RawKeys[i] != 0)
+		{
+			CString KeyCode;
+			KeyCode.Format (" %02X", (unsigned) RawKeys[i]);
+
+			Message.Append (KeyCode);
+		}
+	}
+
+	CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
+}
+
+void KeyboardPi::KeyboardRemovedHandler (CDevice *pDevice, void *pContext)
+{
+	KeyboardPi *pThis = (KeyboardPi *) pContext;
+	assert (pThis != 0);
+
+	CLogger::Get ()->Write ("Keyboard", LogDebug, "Keyboard removed");
+
+	pThis->keyboard_ = 0;
 }
 
 void KeyboardPi::GamePadRemovedHandler (CDevice *pDevice, void *pContext)
