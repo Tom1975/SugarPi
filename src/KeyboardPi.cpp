@@ -7,7 +7,6 @@
 
 #define DEVICE_INDEX	1		// "upad1"
 
-
 GamepadActionHandler::GamepadActionHandler (unsigned char* line, unsigned int index, unsigned char* line2, unsigned int index2) : handler_(nullptr)
 {
    line_[0] = line;
@@ -302,9 +301,23 @@ KeyboardPi::~KeyboardPi()
    
 }
 
+#define SET_KEYBOARD(raw,line,b)\
+   raw_to_cpc_map_[raw].line_index = &keyboard_lines_[line];\
+   raw_to_cpc_map_[raw].bit = 1<<b;
+
+
 void KeyboardPi::InitKeyboard ()
 {
    memset ( keyboard_lines_, 0xff, sizeof (keyboard_lines_));
+   memset ( raw_to_cpc_map_, 0, sizeof raw_to_cpc_map_);
+   memset ( old_raw_keys_, 0, sizeof old_raw_keys_);
+   
+   SET_KEYBOARD(0x14, 8, 5);              // A 
+   SET_KEYBOARD(0x59, 1, 5);              // FN 1
+   SET_KEYBOARD(0x5A, 1, 6);              // FN 2
+
+
+
 }
 
 bool KeyboardPi::Initialize()
@@ -493,18 +506,38 @@ void KeyboardPi::KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned 
 	CString Message;
 	Message.Format ("Key status (modifiers %02X)", (unsigned) ucModifiers);
 
+   this_ptr_->mutex_.Acquire();
    // Unpress the previous keys
+   for (unsigned i = 0; i < 6; i++)
+   {
+		if (this_ptr_->old_raw_keys_[i] != 0)
+		{
+         if (this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].bit != 0)
+         {
+            *this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].line_index |= (this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].bit);
+         }
+      }
+   }
+   
    // Press the new ones
 	for (unsigned i = 0; i < 6; i++)
 	{
 		if (RawKeys[i] != 0)
 		{
+         
+         if (this_ptr_->raw_to_cpc_map_[RawKeys[i]].bit != 0)
+         {
+            *this_ptr_->raw_to_cpc_map_[RawKeys[i]].line_index &= ~(this_ptr_->raw_to_cpc_map_[RawKeys[i]].bit);
+         }
+
 			CString KeyCode;
 			KeyCode.Format (" %02X", (unsigned) RawKeys[i]);
 
 			Message.Append (KeyCode);
 		}
 	}
+   memcpy( this_ptr_->old_raw_keys_, RawKeys, sizeof (this_ptr_->old_raw_keys_));
+   this_ptr_->mutex_.Release();
 
 	CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
 }

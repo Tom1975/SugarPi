@@ -125,4 +125,12 @@ protected:
    std::vector<GamepadDef*> gamepad_list_;
    GamepadDef*       gamepad_active_[MAX_GAMEPADS];
    bool              select_;
+
+   struct RawToCPC
+   {
+      unsigned char* line_index;
+      unsigned char bit;
+   };
+   RawToCPC raw_to_cpc_map_[0x100];
+   unsigned char old_raw_keys_[6];
 };
