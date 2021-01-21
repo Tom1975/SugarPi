@@ -48,13 +48,13 @@ bool DisplayPi::ListEDID()
 	CBcmPropertyTags Tags;
 	TPropertyTagEDIDBlock TagEDID;
 	TagEDID.nBlockNumber = 0;
-   Tags.GetTag (PROPTAG_GET_EDID_BLOCK , &TagEDID, sizeof TagEDID, 4);
-	while ( TagEDID.nStatus == 0)
+   bool tag_send = Tags.GetTag (PROPTAG_GET_EDID_BLOCK , &TagEDID, sizeof TagEDID, 4);
+	while ( tag_send && TagEDID.nStatus == 0)
 	{
       logger_->Write("Display", LogNotice, "EDID message : ");
       debug_hexdump (TagEDID.Block, 128, "EDID");
 
-		Tags.GetTag (PROPTAG_GET_EDID_BLOCK , &TagEDID, sizeof TagEDID, 4);
+		tag_send = Tags.GetTag (PROPTAG_GET_EDID_BLOCK , &TagEDID, sizeof TagEDID, 4);
 	}   
 }
 
