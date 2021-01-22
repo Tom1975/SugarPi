@@ -7,10 +7,37 @@
 
 #define DEVICE_INDEX	1		// "upad1"
 
+//   SET_KEYBOARD(0x59, 1, 5);              // FN 1
+//   SET_KEYBOARD(0x5A, 1, 6);              // FN 2
+//   SET_KEYBOARD(0x14, 8, 5);              // A 
 
-GamepadActionHandler::GamepadActionHandler () : handler_(nullptr)
+
+unsigned shift_l_modifier_ = 0x02;
+unsigned shift_r_modifier_ = 0x20;
+unsigned ctrl_modifier_ = 0x01;
+unsigned copy_modifier_ = 0x04;
+
+unsigned char default_raw_map[10][8] = 
 {
+   {0x52, 0x4F, 0x51, 0x61, 0x5E, 0x5B, 0x58, 0x63, },   // Cur_up Cur_right Cur_down F9 F6 F3 Enter F.
+   {0x50, 0xE2, 0x5F, 0x60, 0x5D, 0x59, 0x5A, 0x62, },   // cur_left Copy f7 f8 f5 f1 f2 f0
+   {0x4C, 0x30, 0x28, 0x32, 0x5C, 0xE5, 0x38, 0xE0, },   // Clr {[ Return }] F4 Shift `\ Ctrl
+   {0x2E, 0x2D, 0x2F, 0x13, 0x34, 0x33, 0x2E, 0x37, },   // ^£ =- |@ P +; *: ?/ >,
+   {0x27, 0x26, 0x12, 0x0C, 0x0F, 0x0E, 0x10, 0x36, },   // _0 )9 O I L K M <.
+   {0x25, 0x24, 0x18, 0x1C, 0x0B, 0x0D, 0x11, 0x2C, },   // (8 '7 U Y H J N Space
+   {0x23, 0x22, 0x15, 0x17, 0x0A, 0x09, 0x05, 0x19, },   // &,6,Joy1_Up %,5,Joy1_down, R,Joy1_Left T,Joy1_Right G,Joy1Fire2 F,Joy1Fire1 B V
+   {0x21, 0x20, 0x08, 0x1A, 0x16, 0x07, 0x06, 0x1B, },   // $4 #3 E W S D C X
+   {0x1E, 0x1F, 0x29, 0x14, 0x2B, 0x04, 0x39, 0x1D, },   // !1 "2 Esc Q Tab A CapsLock Z
+   {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, }    // Joy0up Joy0down Joy0left Joy0right Joy0F1 Joy0F2 unused Del
+};
 
+GamepadActionHandler::GamepadActionHandler (unsigned char* line, unsigned int index, unsigned char* line2, unsigned int index2) : handler_(nullptr)
+{
+   line_[0] = line;
+   line_[1] = line2;
+
+   index_[0] = index;
+   index_[1] = index2;
 }
 
 GamepadActionHandler::~GamepadActionHandler()
@@ -57,6 +84,17 @@ bool GamepadActionHandler::IsPressed(TGamePadState* state)
    return false;
 }
 
+void GamepadActionHandler::UpdateMap(unsigned int nDeviceIndex, bool pressed)
+{
+   if (pressed)
+   {
+      *line_[nDeviceIndex] &= ~(1<<index_[nDeviceIndex]);
+   }
+   else
+   {
+      *line_[nDeviceIndex] |= (1<<index_[nDeviceIndex]);
+   }
+}
 
 class GamepadButtonPressed : public IGamepadPressed
 {
@@ -115,6 +153,19 @@ class GamepadAxisPressed : public IGamepadPressed
 
    //////////////////////////////////////   
    // Helper 
+GamepadDef::GamepadDef(unsigned char* keymap) : supported_controls_(0), vid(0), pid(0), version(0),
+game_pad_button_X(&keymap[9], 4, &keymap[9], 4),
+game_pad_button_A(&keymap[9], 5, &keymap[9], 5),
+game_pad_button_up(&keymap[9], 0, &keymap[9], 0),
+game_pad_button_down(&keymap[9], 1, &keymap[9], 1),
+game_pad_button_left(&keymap[9], 2, &keymap[9], 2),
+game_pad_button_right(&keymap[9], 3, &keymap[9], 3),
+game_pad_button_start(&keymap[5], 7, &keymap[5], 7),
+game_pad_button_select(0, 0, 0, 0)
+{
+
+}   
+
 IGamepadPressed* GamepadDef::CreateFunction(const char* value, bool min)
 {
    if (strlen (value) < 2) return nullptr;
@@ -256,6 +307,9 @@ KeyboardPi::KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceName
    action_buttons_(0),
    select_(false)
 {
+   memset ( keyboard_lines_, 0xff, sizeof (keyboard_lines_));
+
+   InitKeyboard (default_raw_map);
    this_ptr_ = this;
 
 	for (unsigned i = 0; i < MAX_GAMEPADS; i++)
@@ -271,6 +325,28 @@ KeyboardPi::KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceName
 KeyboardPi::~KeyboardPi()
 {
    
+}
+
+#define SET_KEYBOARD(raw,line,b)\
+   raw_to_cpc_map_[raw].line_index = &keyboard_lines_[line];\
+   raw_to_cpc_map_[raw].bit = 1<<b;
+
+
+ void KeyboardPi::InitKeyboard (unsigned char key_map[10][8])
+{
+   memset ( raw_to_cpc_map_, 0, sizeof raw_to_cpc_map_);
+   memset ( old_raw_keys_, 0, sizeof old_raw_keys_);
+
+   for (int line = 0; line < 10; line++)
+   {
+      for (int bit = 0; bit < 8; bit++)
+      {
+         unsigned char raw_key = key_map[line][bit];
+         raw_to_cpc_map_[raw_key].line_index = &keyboard_lines_[line];
+         raw_to_cpc_map_[raw_key].bit = 1<<bit;
+      }
+   }
+
 }
 
 bool KeyboardPi::Initialize()
@@ -292,18 +368,21 @@ void KeyboardPi::UpdatePlugnPlay()
 {
    boolean bUpdated = dwhci_device_->UpdatePlugAndPlay ();
 
-   for (unsigned nDevice = 1; bUpdated && (nDevice <= MAX_GAMEPADS); nDevice++)
-		{
-			if (gamepad_[nDevice-1] != 0)
-			{
-				continue;
-			}
+   if (bUpdated)
+   {
+      // Gamepad
+      for (unsigned nDevice = 1; (nDevice <= MAX_GAMEPADS); nDevice++)
+      {
+         if (gamepad_[nDevice-1] != 0)
+         {
+            continue;
+         }
 
-			gamepad_[nDevice-1] = (CUSBGamePadDevice *)device_name_service_->GetDevice ("upad", nDevice, FALSE);
-			if (gamepad_[nDevice-1] == 0)
-			{
-				continue;
-			}
+         gamepad_[nDevice-1] = (CUSBGamePadDevice *)device_name_service_->GetDevice ("upad", nDevice, FALSE);
+         if (gamepad_[nDevice-1] == 0)
+         {
+            continue;
+         }
 
          // Get gamepad names
          CString* gamepad_name = gamepad_[nDevice-1]->GetDevice()->GetNames();
@@ -312,68 +391,56 @@ void KeyboardPi::UpdatePlugnPlay()
          logger_->Write ("Keyboard", LogNotice, "Gamepad : %s - VID=%X; PID=%X; bcdDevice = %X", (const char*) (*gamepad_name), descriptor->idVendor, 
             descriptor->idProduct, descriptor->bcdDevice );
          delete gamepad_name ;
-			const TGamePadState *pState = gamepad_[nDevice-1]->GetInitialState ();
-			assert (pState != 0);
+         const TGamePadState *pState = gamepad_[nDevice-1]->GetInitialState ();
+         assert (pState != 0);
 
          memcpy(&gamepad_state_[nDevice-1], pState, sizeof (TGamePadState));
-			logger_->Write ("Keyboard", LogNotice, "Gamepad %u: %d Button(s) %d Hat(s)",
-					nDevice, pState->nbuttons, pState->nhats);
+         logger_->Write ("Keyboard", LogNotice, "Gamepad %u: %d Button(s) %d Hat(s)",
+               nDevice, pState->nbuttons, pState->nhats);
 
-			gamepad_[nDevice-1]->RegisterRemovedHandler (GamePadRemovedHandler, this);
-			gamepad_[nDevice-1]->RegisterStatusHandler (GamePadStatusHandler);
+         gamepad_[nDevice-1]->RegisterRemovedHandler (GamePadRemovedHandler, this);
+         gamepad_[nDevice-1]->RegisterStatusHandler (GamePadStatusHandler);
          gamepad_active_[nDevice-1] = LookForDevice (descriptor);
 
-			logger_->Write ("Keyboard", LogNotice, "Use your gamepad controls!");
+         logger_->Write ("Keyboard", LogNotice, "Use your gamepad controls!");
+      }
+
+      // Keyboard
+      if (keyboard_ == 0)
+      {
+         keyboard_ = (CUSBKeyboardDevice *) device_name_service_->GetDevice ("ukbd1", FALSE);
+			if (keyboard_ != 0)
+			{
+				keyboard_->RegisterRemovedHandler (KeyboardRemovedHandler);
+				keyboard_->RegisterKeyStatusHandlerRaw (KeyStatusHandlerRaw);
+
+				logger_->Write ("Keyboard", LogNotice, "Just type something!");
+			}
 		}
+   }
 }
 
 unsigned char KeyboardPi::GetKeyboardMap(int index)
 {
    unsigned char result = 0xFF;
    mutex_.Acquire();
-   // Check : 
-   if ( gamepad_active_[0] != nullptr)
-   {
-      if (index == 5)
-      {
-         // button 1
-         if (gamepad_active_[0]->game_pad_button_start.IsPressed(&gamepad_state_[0]))result &= ~0x80;
-      }
-      else if (index == 9 )
-      {
-         
-         if (gamepad_active_[0]->game_pad_button_X.IsPressed(&gamepad_state_[0]))result &= ~0x10;
-         if (gamepad_active_[0]->game_pad_button_A.IsPressed(&gamepad_state_[0]))result &= ~0x20;
-         if (gamepad_active_[0]->game_pad_button_up.IsPressed(&gamepad_state_[0]))result &= ~0x1;
-         if (gamepad_active_[0]->game_pad_button_down.IsPressed(&gamepad_state_[0]))result &= ~0x2;
-         if (gamepad_active_[0]->game_pad_button_left.IsPressed(&gamepad_state_[0]))result &= ~0x4;
-         if (gamepad_active_[0]->game_pad_button_right.IsPressed(&gamepad_state_[0]))result &= ~0x8;
-            
-            /*
-            // button 1
-            if (gamepad_state_[0].buttons & GamePadButtonX) result &= ~0x10;
-            
-            // button 2
-            if (gamepad_state_[0].buttons & GamePadButtonA) result &= ~0x20;
-            // buttons up
-            if (gamepad_state_[0].buttons & GamePadButtonUp) result &= ~0x1;
-            // buttons down
-            if (gamepad_state_[0].buttons & GamePadButtonDown) result &= ~0x2;
-            // buttons left
-            if (gamepad_state_[0].buttons & GamePadButtonLeft) result &= ~0x4;
-            // buttons right
-            if (gamepad_state_[0].buttons & GamePadButtonRight) result &= ~0x8;
-            */
-      }
-   }
+
+   result = keyboard_lines_[index];
+
    mutex_.Release();
    return result;
 }
 
-bool KeyboardPi::AddAction (GamepadActionHandler* action, unsigned nDeviceIndex)
+bool KeyboardPi::AddAction (GamepadActionHandler* action, unsigned nDeviceIndex, bool update_map)
 {
    if ( action == nullptr ) return false;
    bool x = action->IsPressed(&gamepad_state_[nDeviceIndex]);
+
+   if (update_map)
+   {
+      action->UpdateMap(nDeviceIndex, x);
+   }
+
    bool buff_x = action->IsPressed(&gamepad_state_buffered_[nDeviceIndex]);
    return ( (buff_x & x)^x);
 }
@@ -382,14 +449,14 @@ void KeyboardPi::CheckActions (unsigned nDeviceIndex)
 {
    if ( gamepad_active_[nDeviceIndex] == nullptr) return;
    mutex_.Acquire();
-   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_X, nDeviceIndex)?GamePadButtonX:0;
-   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_A, nDeviceIndex)?GamePadButtonA:0;
-   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_up, nDeviceIndex)?GamePadButtonUp:0;
-   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_down, nDeviceIndex)?GamePadButtonDown:0;
-   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_left, nDeviceIndex)?GamePadButtonLeft:0;
-   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_right, nDeviceIndex)?GamePadButtonRight:0;
-   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_start, nDeviceIndex)?GamePadButtonStart:0;
-   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex)?GamePadButtonSelect:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_X, nDeviceIndex, true)?GamePadButtonX:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_A, nDeviceIndex, true)?GamePadButtonA:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_up, nDeviceIndex, true)?GamePadButtonUp:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_down, nDeviceIndex, true)?GamePadButtonDown:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_left, nDeviceIndex, true)?GamePadButtonLeft:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_right, nDeviceIndex, true)?GamePadButtonRight:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_start, nDeviceIndex, true)?GamePadButtonStart:0;
+   action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex, true)?GamePadButtonSelect:0;
    mutex_.Release();
 }
 
@@ -459,6 +526,71 @@ bool KeyboardPi::IsAction()
 void KeyboardPi::ReinitSelect()
 {
    select_ = false;
+}
+
+void KeyboardPi::KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6])
+{
+	assert (this_ptr_ != 0);
+
+	CString Message;
+	Message.Format ("Key status (modifiers %02X)", (unsigned) ucModifiers);
+
+   this_ptr_->mutex_.Acquire();
+
+   // Modifier
+   if (this_ptr_->old_modifier_ & shift_l_modifier_) this_ptr_->keyboard_lines_[2] |= 0x20;
+   if (this_ptr_->old_modifier_ & shift_r_modifier_) this_ptr_->keyboard_lines_[2] |= 0x20;
+   if (this_ptr_->old_modifier_ & ctrl_modifier_) this_ptr_->keyboard_lines_[2] |= 0x80;
+   if (this_ptr_->old_modifier_ & copy_modifier_) this_ptr_->keyboard_lines_[1] |= 0x02;
+
+   // Unpress the previous keys
+   for (unsigned i = 0; i < 6; i++)
+   {
+		if (this_ptr_->old_raw_keys_[i] != 0)
+		{
+         if (this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].bit != 0)
+         {
+            *this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].line_index |= (this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].bit);
+         }
+      }
+   }
+   
+   // Press the new ones
+   if (ucModifiers & shift_l_modifier_) this_ptr_->keyboard_lines_[2] &= ~0x20;
+   if (ucModifiers & shift_r_modifier_) this_ptr_->keyboard_lines_[2] &= ~0x20;
+   if (ucModifiers & ctrl_modifier_) this_ptr_->keyboard_lines_[2] &= ~0x80;
+   if (ucModifiers & copy_modifier_) this_ptr_->keyboard_lines_[1] &= ~0x02;
+
+	for (unsigned i = 0; i < 6; i++)
+	{
+		if (RawKeys[i] != 0)
+		{  
+         if (this_ptr_->raw_to_cpc_map_[RawKeys[i]].bit != 0)
+         {
+            *this_ptr_->raw_to_cpc_map_[RawKeys[i]].line_index &= ~(this_ptr_->raw_to_cpc_map_[RawKeys[i]].bit);
+         }
+
+			CString KeyCode;
+			KeyCode.Format (" %02X", (unsigned) RawKeys[i]);
+
+			Message.Append (KeyCode);
+		}
+	}
+   this_ptr_->old_modifier_ = ucModifiers;
+   memcpy( this_ptr_->old_raw_keys_, RawKeys, sizeof (this_ptr_->old_raw_keys_));
+   this_ptr_->mutex_.Release();
+
+	CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
+}
+
+void KeyboardPi::KeyboardRemovedHandler (CDevice *pDevice, void *pContext)
+{
+	KeyboardPi *pThis = (KeyboardPi *) pContext;
+	assert (pThis != 0);
+
+	CLogger::Get ()->Write ("Keyboard", LogDebug, "Keyboard removed");
+
+	pThis->keyboard_ = 0;
 }
 
 void KeyboardPi::GamePadRemovedHandler (CDevice *pDevice, void *pContext)
@@ -573,7 +705,7 @@ FILINFO file_info;
 
       if (error) continue;
 
-      GamepadDef * def = new GamepadDef;
+      GamepadDef * def = new GamepadDef(keyboard_lines_);
 
       char* ptr;
 
@@ -646,3 +778,28 @@ FILINFO file_info;
 
    logger_->Write("KeyboardPi", LogNotice, "Loading game controller db... Done !");
 }
+
+/*
+void KeyboardPi::UpdateKeyboardMap()
+{
+   // Check : 
+   if ( gamepad_active_[0] != nullptr)
+   {
+      if (index == 5)
+      {
+         // button 1
+         if (gamepad_active_[0]->game_pad_button_start.IsPressed(&gamepad_state_[0]))result &= ~0x80;
+      }
+      else if (index == 9 )
+      {
+         
+         if (gamepad_active_[0]->game_pad_button_X.IsPressed(&gamepad_state_[0]))result &= ~0x10;
+         if (gamepad_active_[0]->game_pad_button_A.IsPressed(&gamepad_state_[0]))result &= ~0x20;
+         if (gamepad_active_[0]->game_pad_button_up.IsPressed(&gamepad_state_[0]))result &= ~0x1;
+         if (gamepad_active_[0]->game_pad_button_down.IsPressed(&gamepad_state_[0]))result &= ~0x2;
+         if (gamepad_active_[0]->game_pad_button_left.IsPressed(&gamepad_state_[0]))result &= ~0x4;
+         if (gamepad_active_[0]->game_pad_button_right.IsPressed(&gamepad_state_[0]))result &= ~0x8;
+          
+      }
+   }
+}*/

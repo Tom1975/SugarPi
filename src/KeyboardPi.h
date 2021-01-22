@@ -3,6 +3,7 @@
 //
 #include <circle/usb/usbhcidevice.h>
 #include <circle/usb/usbgamepad.h>
+#include <circle/usb/usbkeyboard.h>
 #include <circle/devicenameservice.h>
 
 #include "CPCCore/CPCCoreEmu/IKeyboard.h"
@@ -21,11 +22,12 @@ class IGamepadPressed
 class GamepadActionHandler
 {
    public:
-      GamepadActionHandler ();
+      GamepadActionHandler (unsigned char* line, unsigned int index, unsigned char* line2, unsigned int index2);
       virtual ~GamepadActionHandler();
 
-      virtual void AddHandler(IGamepadPressed*);
-      virtual bool IsPressed(TGamePadState*);
+      void AddHandler(IGamepadPressed*);
+      bool IsPressed(TGamePadState*);
+      void UpdateMap(unsigned int nDeviceIndex, bool pressed);
 
    protected:
       struct Handler
@@ -34,14 +36,14 @@ class GamepadActionHandler
          Handler* next_handler;
       };
       Handler* handler_;
+      unsigned char* line_[2];
+      unsigned int index_[2];
 };
 
 class GamepadDef
 {
    public:
-      GamepadDef() : supported_controls_(0), vid(0), pid(0), version(0)
-      {
-      }
+      GamepadDef(unsigned char* keymap);
       virtual ~GamepadDef()
       {
       }
@@ -77,42 +79,59 @@ public:
    KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service);
    virtual ~KeyboardPi();
 
-   virtual bool Initialize();
-   virtual unsigned char GetKeyboardMap(int index);
-   virtual void UpdatePlugnPlay();
-   virtual void Init(bool* register_replaced);
-   virtual void ForceKeyboardState(unsigned char key_states[10]) {};
+    bool Initialize();
+    void InitKeyboard (unsigned char key_map[10][8]);
+    virtual unsigned char GetKeyboardMap(int index);
+    void UpdatePlugnPlay();
+    void Init(bool* register_replaced);
+    void ForceKeyboardState(unsigned char key_states[10]) {};
 
-   bool AddAction (GamepadActionHandler* action, unsigned nDeviceIndex);
+   bool AddAction (GamepadActionHandler* action, unsigned nDeviceIndex, bool update_map = false);
    void CheckActions(unsigned nDeviceIndex) ;
 
-   virtual void ClearBuffer();
-   virtual bool IsSelect();
-   virtual bool IsDown();
-   virtual bool IsUp();
-   virtual bool IsAction();
-   virtual void ReinitSelect();
+   void ClearBuffer();
+   bool IsSelect();
+   bool IsDown();
+   bool IsUp();
+   bool IsAction();
+   void ReinitSelect();
 
    static void GamePadRemovedHandler (CDevice *pDevice, void *pContext);
    static void GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState);
-
+   static void KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6]);
+   static void KeyboardRemovedHandler (CDevice *pDevice, void *pContext);
 protected:
    void LoadGameControllerDB();
    GamepadDef* LookForDevice (const TUSBDeviceDescriptor* descriptor);
+   //void UpdateKeyboardMap();
 
    CLogger*          logger_;
    CDeviceNameService* device_name_service_;
    CUSBHCIDevice		*dwhci_device_;
    CUSBGamePadDevice* gamepad_[MAX_GAMEPADS];
+   CUSBKeyboardDevice* keyboard_;
 
    CSpinLock         mutex_;
+
    TGamePadState	   gamepad_state_[MAX_GAMEPADS];
    TGamePadState	   gamepad_state_buffered_[MAX_GAMEPADS];
    unsigned          action_buttons_;
+
+   // Keyboard definition
+   unsigned char keyboard_lines_ [10];
 
    static KeyboardPi* this_ptr_;
 
    std::vector<GamepadDef*> gamepad_list_;
    GamepadDef*       gamepad_active_[MAX_GAMEPADS];
    bool              select_;
+
+   struct RawToCPC
+   {
+      unsigned char* line_index;
+      unsigned char bit;
+   };
+   RawToCPC raw_to_cpc_map_[0x100];
+   unsigned char old_raw_keys_[6];
+   unsigned char old_modifier_;
 };
