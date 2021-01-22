@@ -12,18 +12,23 @@
 //   SET_KEYBOARD(0x14, 8, 5);              // A 
 
 
+unsigned shift_l_modifier_ = 0x02;
+unsigned shift_r_modifier_ = 0x20;
+unsigned ctrl_modifier_ = 0x01;
+unsigned copy_modifier_ = 0x04;
+
 unsigned char default_raw_map[10][8] = 
 {
    {0x52, 0x4F, 0x51, 0x61, 0x5E, 0x5B, 0x58, 0x63, },   // Cur_up Cur_right Cur_down F9 F6 F3 Enter F.
    {0x50, 0xE2, 0x5F, 0x60, 0x5D, 0x59, 0x5A, 0x62, },   // cur_left Copy f7 f8 f5 f1 f2 f0
-   {0x00, 0x00, 0x28, 0x00, 0x5C, 0xE5, 0x00, 0xE0, },   // Clr {[ Return }] F4 Shift `\ Ctrl
-   {0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 0x00, },   // ^£ =- |@ P +; *: ?/ >,
-   {0x27, 0x26, 0x12, 0x0C, 0x0F, 0x0E, 0x10, 0x00, },   // _0 )9 O I L K M <.
+   {0x4C, 0x30, 0x28, 0x32, 0x5C, 0xE5, 0x38, 0xE0, },   // Clr {[ Return }] F4 Shift `\ Ctrl
+   {0x2E, 0x2D, 0x2F, 0x13, 0x34, 0x33, 0x2E, 0x37, },   // ^£ =- |@ P +; *: ?/ >,
+   {0x27, 0x26, 0x12, 0x0C, 0x0F, 0x0E, 0x10, 0x36, },   // _0 )9 O I L K M <.
    {0x25, 0x24, 0x18, 0x1C, 0x0B, 0x0D, 0x11, 0x2C, },   // (8 '7 U Y H J N Space
    {0x23, 0x22, 0x15, 0x17, 0x0A, 0x09, 0x05, 0x19, },   // &,6,Joy1_Up %,5,Joy1_down, R,Joy1_Left T,Joy1_Right G,Joy1Fire2 F,Joy1Fire1 B V
    {0x21, 0x20, 0x08, 0x1A, 0x16, 0x07, 0x06, 0x1B, },   // $4 #3 E W S D C X
    {0x1E, 0x1F, 0x29, 0x14, 0x2B, 0x04, 0x39, 0x1D, },   // !1 "2 Esc Q Tab A CapsLock Z
-   {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }    // Joy0up Joy0down Joy0left Joy0right Joy0F1 Joy0F2 unused Del
+   {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, }    // Joy0up Joy0down Joy0left Joy0right Joy0F1 Joy0F2 unused Del
 };
 
 GamepadActionHandler::GamepadActionHandler (unsigned char* line, unsigned int index, unsigned char* line2, unsigned int index2) : handler_(nullptr)
@@ -531,6 +536,13 @@ void KeyboardPi::KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned 
 	Message.Format ("Key status (modifiers %02X)", (unsigned) ucModifiers);
 
    this_ptr_->mutex_.Acquire();
+
+   // Modifier
+   if (this_ptr_->old_modifier_ & shift_l_modifier_) this_ptr_->keyboard_lines_[2] |= 0x20;
+   if (this_ptr_->old_modifier_ & shift_r_modifier_) this_ptr_->keyboard_lines_[2] |= 0x20;
+   if (this_ptr_->old_modifier_ & ctrl_modifier_) this_ptr_->keyboard_lines_[2] |= 0x80;
+   if (this_ptr_->old_modifier_ & copy_modifier_) this_ptr_->keyboard_lines_[1] |= 0x02;
+
    // Unpress the previous keys
    for (unsigned i = 0; i < 6; i++)
    {
@@ -544,11 +556,15 @@ void KeyboardPi::KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned 
    }
    
    // Press the new ones
+   if (ucModifiers & shift_l_modifier_) this_ptr_->keyboard_lines_[2] &= ~0x20;
+   if (ucModifiers & shift_r_modifier_) this_ptr_->keyboard_lines_[2] &= ~0x20;
+   if (ucModifiers & ctrl_modifier_) this_ptr_->keyboard_lines_[2] &= ~0x80;
+   if (ucModifiers & copy_modifier_) this_ptr_->keyboard_lines_[1] &= ~0x02;
+
 	for (unsigned i = 0; i < 6; i++)
 	{
 		if (RawKeys[i] != 0)
-		{
-         
+		{  
          if (this_ptr_->raw_to_cpc_map_[RawKeys[i]].bit != 0)
          {
             *this_ptr_->raw_to_cpc_map_[RawKeys[i]].line_index &= ~(this_ptr_->raw_to_cpc_map_[RawKeys[i]].bit);
@@ -560,6 +576,7 @@ void KeyboardPi::KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned 
 			Message.Append (KeyCode);
 		}
 	}
+   this_ptr_->old_modifier_ = ucModifiers;
    memcpy( this_ptr_->old_raw_keys_, RawKeys, sizeof (this_ptr_->old_raw_keys_));
    this_ptr_->mutex_.Release();
 

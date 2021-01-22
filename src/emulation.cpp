@@ -145,7 +145,7 @@ void Emulation::RunMainLoop()
    while (!finished )
    {
 #define TIME_SLOT  10000
-      motherboard_->StartOptimizedPlus<true, false, false>(4 * TIME_SLOT*10);
+      motherboard_->StartOptimizedPlus<true, true, false>(4 * TIME_SLOT*10);
             
       // Menu launched ?
       if (keyboard_->IsSelect())

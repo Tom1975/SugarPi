@@ -133,4 +133,5 @@ protected:
    };
    RawToCPC raw_to_cpc_map_[0x100];
    unsigned char old_raw_keys_[6];
+   unsigned char old_modifier_;
 };
