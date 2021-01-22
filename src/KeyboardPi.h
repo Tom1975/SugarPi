@@ -80,8 +80,8 @@ public:
    virtual ~KeyboardPi();
 
     bool Initialize();
-    void InitKeyboard ();
-    unsigned char GetKeyboardMap(int index);
+    void InitKeyboard (unsigned char key_map[10][8]);
+    virtual unsigned char GetKeyboardMap(int index);
     void UpdatePlugnPlay();
     void Init(bool* register_replaced);
     void ForceKeyboardState(unsigned char key_states[10]) {};

@@ -49,6 +49,9 @@ void SugarPiSetup::Load()
       }
    }
 
+   // Keyboard layout (if any)
+   // todo
+   
    // Hardware configuration
 
    // Current cartridge

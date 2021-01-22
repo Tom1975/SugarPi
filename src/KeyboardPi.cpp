@@ -7,6 +7,25 @@
 
 #define DEVICE_INDEX	1		// "upad1"
 
+//   SET_KEYBOARD(0x59, 1, 5);              // FN 1
+//   SET_KEYBOARD(0x5A, 1, 6);              // FN 2
+//   SET_KEYBOARD(0x14, 8, 5);              // A 
+
+
+unsigned char default_raw_map[10][8] = 
+{
+   {0x52, 0x4F, 0x51, 0x61, 0x5E, 0x5B, 0x58, 0x63, },   // Cur_up Cur_right Cur_down F9 F6 F3 Enter F.
+   {0x50, 0xE2, 0x5F, 0x60, 0x5D, 0x59, 0x5A, 0x62, },   // cur_left Copy f7 f8 f5 f1 f2 f0
+   {0x00, 0x00, 0x28, 0x00, 0x5C, 0xE5, 0x00, 0xE0, },   // Clr {[ Return }] F4 Shift `\ Ctrl
+   {0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 0x00, },   // ^£ =- |@ P +; *: ?/ >,
+   {0x27, 0x26, 0x12, 0x0C, 0x0F, 0x0E, 0x10, 0x00, },   // _0 )9 O I L K M <.
+   {0x25, 0x24, 0x18, 0x1C, 0x0B, 0x0D, 0x11, 0x2C, },   // (8 '7 U Y H J N Space
+   {0x23, 0x22, 0x15, 0x17, 0x0A, 0x09, 0x05, 0x19, },   // &,6,Joy1_Up %,5,Joy1_down, R,Joy1_Left T,Joy1_Right G,Joy1Fire2 F,Joy1Fire1 B V
+   {0x21, 0x20, 0x08, 0x1A, 0x16, 0x07, 0x06, 0x1B, },   // $4 #3 E W S D C X
+   {0x1E, 0x1F, 0x29, 0x14, 0x2B, 0x04, 0x39, 0x1D, },   // !1 "2 Esc Q Tab A CapsLock Z
+   {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }    // Joy0up Joy0down Joy0left Joy0right Joy0F1 Joy0F2 unused Del
+};
+
 GamepadActionHandler::GamepadActionHandler (unsigned char* line, unsigned int index, unsigned char* line2, unsigned int index2) : handler_(nullptr)
 {
    line_[0] = line;
@@ -283,7 +302,9 @@ KeyboardPi::KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceName
    action_buttons_(0),
    select_(false)
 {
-   InitKeyboard ();
+   memset ( keyboard_lines_, 0xff, sizeof (keyboard_lines_));
+
+   InitKeyboard (default_raw_map);
    this_ptr_ = this;
 
 	for (unsigned i = 0; i < MAX_GAMEPADS; i++)
@@ -306,17 +327,20 @@ KeyboardPi::~KeyboardPi()
    raw_to_cpc_map_[raw].bit = 1<<b;
 
 
-void KeyboardPi::InitKeyboard ()
+ void KeyboardPi::InitKeyboard (unsigned char key_map[10][8])
 {
-   memset ( keyboard_lines_, 0xff, sizeof (keyboard_lines_));
    memset ( raw_to_cpc_map_, 0, sizeof raw_to_cpc_map_);
    memset ( old_raw_keys_, 0, sizeof old_raw_keys_);
-   
-   SET_KEYBOARD(0x14, 8, 5);              // A 
-   SET_KEYBOARD(0x59, 1, 5);              // FN 1
-   SET_KEYBOARD(0x5A, 1, 6);              // FN 2
 
-
+   for (int line = 0; line < 10; line++)
+   {
+      for (int bit = 0; bit < 8; bit++)
+      {
+         unsigned char raw_key = key_map[line][bit];
+         raw_to_cpc_map_[raw_key].line_index = &keyboard_lines_[line];
+         raw_to_cpc_map_[raw_key].bit = 1<<bit;
+      }
+   }
 
 }
 
