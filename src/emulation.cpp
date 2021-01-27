@@ -61,7 +61,7 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    motherboard_->GetVGA()->SetPAL(true);
 
    // Setup
-   setup_->Init(display, sound_mixer_, motherboard_);
+   setup_->Init(display, sound_mixer_, motherboard_, keyboard_);
    setup_->Load();
 
    motherboard_->GetPSG()->Reset();

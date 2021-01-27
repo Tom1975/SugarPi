@@ -49,12 +49,26 @@ bool DisplayPi::ListEDID()
 	TPropertyTagEDIDBlock TagEDID;
 	TagEDID.nBlockNumber = 0;
    bool tag_send = Tags.GetTag (PROPTAG_GET_EDID_BLOCK , &TagEDID, sizeof TagEDID, 4);
-	while ( tag_send && TagEDID.nStatus == 0)
+	if ( tag_send && TagEDID.nStatus == 0)
 	{
       logger_->Write("Display", LogNotice, "EDID message : ");
-      debug_hexdump (TagEDID.Block, 128, "EDID");
+		// Decodage :
+      // check id
+      unsigned char header[]={0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 };
+      if ( memcmp( &TagEDID.Block[0], header, sizeof(header)) == 0)
+      {
+         // Manufacturer ID, product, serial number
+         // week/year
+         // EDID version
+         logger_->Write("Display", LogNotice, "EDID version : %i.%i", TagEDID.Block[18], TagEDID.Block[19]);
 
-		tag_send = Tags.GetTag (PROPTAG_GET_EDID_BLOCK , &TagEDID, sizeof TagEDID, 4);
+
+      }
+      else
+      {
+         logger_->Write("Display", LogNotice, "EDID Wrong header");
+         debug_hexdump (TagEDID.Block, 128, "EDID");
+      }
 	}   
 }
 

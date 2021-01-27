@@ -3,6 +3,7 @@
 #include <circle/logger.h>
 
 #include "DisplayPi.h"
+#include "KeyboardPi.h"
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
 #include "ConfigurationManager.h"
@@ -13,7 +14,7 @@ public :
    SugarPiSetup ( CLogger* log);
    virtual ~SugarPiSetup();
 
-   void Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard);
+   void Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard, KeyboardPi* keyboard);
 
    void Load();
    void Save();
@@ -37,6 +38,7 @@ protected:
    DisplayPi* display_;
    SoundMixer* sound_;
    Motherboard* motherboard_;
+   KeyboardPi* keyboard_;
 
    ConfigurationManager* config_;
 
