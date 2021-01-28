@@ -822,7 +822,7 @@ FILINFO file_info;
       }
 
       // Decode line to buffer
-      for (int raw_key = 0; raw_key<8 && (2+raw_key * 3) < end_line; raw_key++)
+      for (unsigned int raw_key = 0; raw_key<8 && (2+raw_key * 3) < end_line; raw_key++)
       {
          char number [3];
          memcpy ( number, &ptr_buffer[offset+raw_key*3], 2);
