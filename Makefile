@@ -14,6 +14,7 @@ OBJS	= src/main.o\
 		src/log.o\
 		src/SoundPi.o\
 		src/ScreenMenu.o\
+		src/vc4/interface/vmcs_host/vc_vchi_tvservice.o\
 		src/Windows.o\
 		res/coolspot.o\
 		CPCCore/CPCCoreEmu/Asic.o\
@@ -86,11 +87,12 @@ LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
 			$(CIRCLEHOME)/addon/SDCard/libsdcard.a\
 			$(CIRCLEHOME)/addon/fatfs/libfatfs.a\
          $(CIRCLEHOME)/addon/vc4/sound/libvchiqsound.a\
-         $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a
+         $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a\
+			$(CIRCLEHOME)/addon/vc4/interface/vcos/libvcos.a
 
 
 include circle/Rules.mk
 
-CFLAGS	+= -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC 
-CPPFLAGS += -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -std=c++1z
+CFLAGS	+= -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_MULTITHREAD -I. -Isrc -Isrc/vc4 -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC 
+CPPFLAGS += -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_MULTITHREAD -I. -Isrc -Isrc/vc4 -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -std=c++1z
 
