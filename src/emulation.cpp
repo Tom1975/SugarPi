@@ -95,6 +95,7 @@ void Emulation::Run(unsigned nCore)
          sound_mixer_->PrepareBufferThread();
          keyboard_->UpdatePlugnPlay();
          scheduler_->Yield();
+         display_->TestChangeMode();
       }
       
       logger_->Write("Sound", LogNotice, "SoundMixer Ended");

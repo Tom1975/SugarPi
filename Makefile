@@ -88,7 +88,9 @@ LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
 			$(CIRCLEHOME)/addon/fatfs/libfatfs.a\
          $(CIRCLEHOME)/addon/vc4/sound/libvchiqsound.a\
          $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a\
-			$(CIRCLEHOME)/addon/vc4/interface/vcos/libvcos.a
+			$(CIRCLEHOME)/addon/vc4/interface/vcos/libvcos.a\
+			$(CIRCLEHOME)/addon/vc4/interface/bcm_host/libbcm_host.a\
+			$(CIRCLEHOME)/addon/vc4/interface/vmcs_host/libvmcs_host.a
 
 
 include circle/Rules.mk

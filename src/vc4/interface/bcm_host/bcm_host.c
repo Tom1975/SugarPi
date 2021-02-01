@@ -121,7 +121,8 @@ void bcm_host_init(void)
   
    vc_vchi_gencmd_init (global_initialise_instance, &global_connection, 1);
    vc_vchi_dispmanx_init (global_initialise_instance, &global_connection, 1);
-   //vc_vchi_tv_init (global_initialise_instance, &global_connection, 1);
+   vc_vchi_tv_init (global_initialise_instance, &global_connection, 1);
+
    //vc_vchi_cec_init (global_initialise_instance, &global_connection, 1);
    //vc_vchi_bufman_init (global_initialise_instance, &global_connection, 1);
 

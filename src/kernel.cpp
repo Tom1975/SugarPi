@@ -64,7 +64,7 @@ boolean CKernel::Initialize (void)
 
    if (bOK)
    {
-      bOK = display_->Initialization();
+      //bOK = display_->Initialization();
    }
    if (bOK)
    {
@@ -84,6 +84,7 @@ boolean CKernel::Initialize (void)
       m_Logger.Write("Kernel", LogNotice, "Initialisation done for log.");
       
    }
+   bOK = display_->Initialization();
    
    if (bOK)
    {
@@ -115,6 +116,8 @@ boolean CKernel::Initialize (void)
    {
       m_Logger.Write("Kernel", LogPanic, "Cannot mount drive: %s", DRIVE);
    }
+
+   display_->vc_tvservices_init ();
 
 #ifdef USE_VCHIQ_SOUND   
    sound_ = new SoundPi(&m_Logger, &vchiq_, &scheduler_);

@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _VC_TVSERVICE_H_
 
 //#include "vcinclude/common.h"
-#include "interface/vcos/vcos.h"
+#include "vc4/interface/vcos/vcos.h"
 #include "vc4/vchi/vchi.h"
 #include "interface/vmcs_host/vc_tvservice_defs.h"
 #include "interface/vmcs_host/vc_hdmi.h"

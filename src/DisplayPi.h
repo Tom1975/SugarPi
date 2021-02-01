@@ -18,6 +18,11 @@ public:
    bool ListEDID();
    
    bool Initialization();
+   bool vc_tvservices_init() ;
+
+   void TestChangeMode();
+   static void vc_tvservice_callback (void *callback_data, unsigned int reason, unsigned int param1, unsigned int param2);
+
    void SyncWithFrame (bool set){sync_on_frame_ = set;}
    bool IsSyncOnFrame(){return sync_on_frame_;}
    
@@ -86,7 +91,9 @@ protected:
    bool full_resolution_;
    bool full_resolution_cached_;
 
+   bool screen_on_;
    CSpinLock   mutex_;
+   CSpinLock   start_screen_mutex_;
 
    unsigned int added_line_;
    unsigned int last_tick_frame_;

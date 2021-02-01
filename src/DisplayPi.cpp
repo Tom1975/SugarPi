@@ -7,7 +7,21 @@
 #include <circle/bcmpropertytags.h>
 #include <circle/debug.h>
 
+#include <circle/addon/vc4/interface/bcm_host/bcm_host.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "interface/vmcs_host/vc_tvservice.h"
+#include "interface/vmcs_host/vchost.h"
+
+#ifdef __cplusplus
+}
+#endif
+
+// Maximum mode ID
+#define MAX_MODE_ID (127)
 
 DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
    logger_(logger),
@@ -15,7 +29,9 @@ DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
    frame_buffer_(nullptr),
    full_resolution_(false),
    full_resolution_cached_(false),
+   screen_on_(false),
    mutex_(TASK_LEVEL),
+   start_screen_mutex_(TASK_LEVEL),
    added_line_(1),
    buffer_used_(0),
    nb_frame_in_queue_(0),
@@ -52,7 +68,7 @@ bool DisplayPi::Initialization()
 
    // Now we have real width/height : compute best values for display, to have :
    // - good pixel ratio (4x3)
-   /*
+   long  NbPixelWidth, NbPixelHeight; 
    float ratio = ((float)GetWidth())/((float)GetHeight());
    if ( (screen_width / screen_height ) < ratio )
    {
@@ -67,42 +83,165 @@ bool DisplayPi::Initialization()
       NbPixelHeight = static_cast<long>(screen_width / ratio);
    }   
 
-
-      // Compute height to have a complete screen, without problem with scanlines
-      if ( NbPixelHeight % m_Height != 0)
+   // Compute height to have a complete screen, without problem with scanlines
+   if ( NbPixelHeight % screen_height != 0)
+   {
+      int NbPixelHeightComputed = (NbPixelHeight / screen_height) * screen_height;
+      if ( NbPixelHeight % screen_height > (screen_height/2) )
       {
-         int NbPixelHeightComputed = (NbPixelHeight / m_Height) * m_Height;
-         if ( NbPixelHeight % m_Height > (m_Height/2) )
-         {
-            NbPixelHeightComputed += m_Height;
-         }
-         NbPixelHeight = NbPixelHeightComputed;
-         NbPixelWidth = static_cast<long>(NbPixelHeight*ratio);
+         NbPixelHeightComputed += screen_height;
       }
+      NbPixelHeight = NbPixelHeightComputed;
+      NbPixelWidth = static_cast<long>(NbPixelHeight*ratio);
+   }
 
-      int fXmin, fXmax, fYmin, fYmax;
-      fXmin = (findMode.w - NbPixelWidth) / 2;
-      fXmax = (findMode.w - NbPixelWidth) / 2 + NbPixelWidth;
-      fYmin = ((long)findMode.h - NbPixelHeight) / 2;
-      fYmax = ((long)findMode.h - NbPixelHeight) / 2 + NbPixelHeight;
+   int fXmin, fXmax, fYmin, fYmax;
+   fXmin = (screen_width - NbPixelWidth) / 2;
+   fXmax = (screen_width - NbPixelWidth) / 2 + NbPixelWidth;
+   fYmin = ((long)screen_height - NbPixelHeight) / 2;
+   fYmax = ((long)screen_height - NbPixelHeight) / 2 + NbPixelHeight;
 
-
-      m_DestRectFullScreen.x = fXmin;
-      m_DestRectFullScreen.y = fYmin;
-      m_DestRectFullScreen.w = NbPixelWidth;
-      m_DestRectFullScreen.h = NbPixelHeight;*/   
+/*
+   m_DestRectFullScreen.x = fXmin;
+   m_DestRectFullScreen.y = fYmin;
+   m_DestRectFullScreen.w = NbPixelWidth;
+   m_DestRectFullScreen.h = NbPixelHeight;
+*/
    // - 
+   logger_->Write("DIS", LogNotice, "Computaiton : screen_width = %i; screen_height = %i; fXmin=%i; fYmin = %i; NbPixelWidth = %i; NbPixelHeight = %i",
+       screen_width, screen_height, fXmin, fYmin, NbPixelWidth, NbPixelHeight);
 
-
+/*
    if ( frame_buffer_ != nullptr)
    {
       delete frame_buffer_;
    }
+   
+   frame_buffer_ = new CBcmFrameBuffer(768, 277*2, 32, 1024, 1024* FRAME_BUFFER_SIZE);
+
+   frame_buffer_->Initialize();
+   frame_buffer_->SetVirtualOffset(143, 47/2);*/
+
+   return true;
+}
+
+void DisplayPi::TestChangeMode()
+{
+   static int toto = 1;
+   if ( ++toto == 1000)
+   {
+      logger_->Write("DIS", LogNotice, "100e VSYNC");
+      int change_res = vc_tv_hdmi_power_on_best (640, 480, 72, HDMI_NONINTERLACED, HDMI_MODE_MATCH_FRAMERATE);
+      logger_->Write("DIS", LogNotice, "vc_tv_hdmi_power_on_best = %i ", change_res);
+
+      delete frame_buffer_;
+      frame_buffer_ = new CBcmFrameBuffer(768, 277*2, 32, 1024, 1024* FRAME_BUFFER_SIZE);
+
+      frame_buffer_->Initialize();
+      frame_buffer_->SetVirtualOffset(143, 47/2);
+   }
+}
+
+
+void DisplayPi::vc_tvservice_callback (void *callback_data, unsigned int reason, unsigned int param1, unsigned int param2)
+{
+   DisplayPi* pthis = (DisplayPi*)callback_data;
+   pthis->logger_->Write("DIS", LogNotice, "vc_tvservice_callback CALLABCK. Reson = %i; param1 = %i; param2 = %i", reason, param1, param2);
+   pthis->start_screen_mutex_.Acquire();
+   pthis->screen_on_ = true;
+   pthis->start_screen_mutex_.Release();
+}
+
+bool DisplayPi::vc_tvservices_init()
+{
+   logger_->Write("Display", LogNotice, "vc_tvservices_init");
+   bcm_host_init ();
+
+   HDMI_RES_GROUP_T group = HDMI_RES_GROUP_DMT ;
+   static TV_SUPPORTED_MODE_NEW_T supported_modes[MAX_MODE_ID];
+   HDMI_RES_GROUP_T preferred_group;
+   uint32_t preferred_mode;
+   int num_modes;
+   int i;
+
+   memset(supported_modes, 0, sizeof(supported_modes));
+
+   vc_tv_register_callback (&DisplayPi::vc_tvservice_callback, (void*)this);
+
+   for (int count = 0; count < 2; count++)
+   {
+      logger_->Write("Display", LogNotice, count == 0 ?"DMT":"CEA");      
+      num_modes = vc_tv_hdmi_get_supported_modes_new(count == 0 ?HDMI_RES_GROUP_DMT:HDMI_RES_GROUP_CEA, supported_modes,
+                                                   MAX_MODE_ID/*vcos_countof(supported_modes)*/,
+                                                   &preferred_group,
+                                                   &preferred_mode );
+
+      logger_->Write("Display", LogNotice, "vc_tv_hdmi_get_supported_modes_new : %i; preferred_group = %i; preferred_mode=%i", num_modes,preferred_group, preferred_mode);
+      if ( num_modes < 0 )
+      {
+         logger_->Write("Display", LogNotice, "vc_tv_hdmi_get_supported_modes_new : Failed to get modes");
+         return false;
+      }
+
+      for ( i = 0; i < num_modes; i++ )
+      {                         
+         int preferred = supported_modes[i].group == preferred_group && supported_modes[i].code == preferred_mode;
+         logger_->Write("Display", LogNotice, "%s mode %u: %ux%u @ %uHz, clock:%uMHz %s",
+                     preferred ? "  (prefer)" : supported_modes[i].native ? "  (native)" : "          ",
+                     supported_modes[i].code, supported_modes[i].width,
+                     supported_modes[i].height, supported_modes[i].frame_rate,
+                     //aspect_ratio_str(supported_modes[i].aspect_ratio),
+                     supported_modes[i].pixel_freq / 1000000U, /*p,*/
+                     supported_modes[i].scan_mode ? "interlaced" : "progressive"/*,
+                     supported_modes[i].struct_3d_mask ? threed_str(supported_modes[i].struct_3d_mask, 0) : ""*/);
+      }
+   }
+   /*logger_->Write("Display", LogNotice, "vc_tvservices_init");
+   VCHI_INSTANCE_T initialise_instance;
+
+   vc_host_get_vchi_state (&initialise_instance, 0 );
+   logger_->Write("Display", LogNotice, "vc_host_get_vchi_state done");
+
+   VCHI_CONNECTION_T connection[1];
+   int res = vc_vchi_tv_init(initialise_instance, (VCHI_CONNECTION_T**) &connection, 1);
+   logger_->Write("Display", LogNotice, "vc_vchi_tv_init = %i", res);
+*/
+   // Stop TV
+   /*logger_->Write("DIS", LogNotice, "power off");
+   vc_tv_power_off();
+   logger_->Write("DIS", LogNotice, "power off done");
+   CTimer::Get()->MsDelay(1000);*/
+   // Try best @50hz
+   int change_res = vc_tv_hdmi_power_on_best (640, 480, 72, HDMI_NONINTERLACED, HDMI_MODE_MATCH_FRAMERATE);
+   logger_->Write("DIS", LogNotice, "vc_tv_hdmi_power_on_best = %i ", change_res);
+
+   /*bool end = false;
+   while (!end)
+   {
+      start_screen_mutex_.Acquire();
+      if ( screen_on_)
+      {
+         end = true;
+      }
+      else
+      {
+         CTimer::Get()->MsDelay(100);
+      }
+      start_screen_mutex_.Release();
+   }*/
+   if ( frame_buffer_ != nullptr)
+   {
+      delete frame_buffer_;
+   }
+   
+   // wait for callback to be called
+
    frame_buffer_ = new CBcmFrameBuffer(768, 277*2, 32, 1024, 1024* FRAME_BUFFER_SIZE);
 
    frame_buffer_->Initialize();
    frame_buffer_->SetVirtualOffset(143, 47/2);
 
+   logger_->Write("Display", LogNotice, "vc_tvservices_init done");
    return true;
 }
 
@@ -167,12 +306,12 @@ const char* DisplayPi::GetInformations()
 
 int DisplayPi::GetWidth()
 {
-   return 1024;
+   return 768;//1024;
 }
 
 int DisplayPi::GetHeight()
 {
-   return 1024;
+   return 544;//1024;
 }
 
 void DisplayPi::SetSize(IDisplay::SizeEnum size)
@@ -272,7 +411,6 @@ void DisplayPi::VSync(bool dbg )
             line += frame_buffer_->GetPitch();
          }
       }
-
    }
    else
    {
