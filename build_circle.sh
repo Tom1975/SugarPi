@@ -22,6 +22,10 @@ cd ../vc4/sound
 make clean
 make
 
+#cd ../vc4/interface/vcos
+#make clean
+#make
+
 cd ../vchiq
 make clean
 make

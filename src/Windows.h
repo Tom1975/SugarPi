@@ -3,11 +3,14 @@
 //
 #include <circle/logger.h>
 
+
 class Windows 
 {
 public:
    Windows(Windows* parent = nullptr);
    virtual ~Windows();
+
+   void Redraw ();
 
 protected:
 

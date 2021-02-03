@@ -10,3 +10,9 @@ Windows::~Windows()
 {
 }
 
+void Windows::Redraw ()
+{
+   // Redraw this window
+   
+   // Redraw child window
+}

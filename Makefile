@@ -15,6 +15,21 @@ OBJS	= src/main.o\
 		src/SoundPi.o\
 		src/ScreenMenu.o\
 		src/vc4/interface/vmcs_host/vc_vchi_tvservice.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vmcs_host/vc_vchi_gencmd.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vmcs_host/vc_vchi_dispmanx.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_abort.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_backtrace.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_generic_blockpool.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_generic_event_flags.o\
+	   $(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_generic_named_sem.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_generic_reentrant_mtx.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_generic_safe_string.o\
+	   $(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_init.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_logcat.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_mem_from_malloc.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_msgqueue.o\
+		$(CIRCLEHOME)/addon/vc4/interface/vcos/vcos_pthreads.o\
+		$(CIRCLEHOME)/addon/vc4/interface/bcm_host/bcm_host.o\
 		src/Windows.o\
 		res/coolspot.o\
 		CPCCore/CPCCoreEmu/Asic.o\
@@ -70,7 +85,7 @@ OBJS	= src/main.o\
       CPCCore/CPCCoreEmu/Z80_Opcodes_memr.o\
       CPCCore/CPCCoreEmu/Z80_Opcodes_memw.o\
       CPCCore/CPCCoreEmu/Z80_Opcodes_z80wait.o\
-		CPCCore/CPCCoreEmu/Z84C30.o\
+		CPCCore/CPCCoreEmu/Z84C30.o
 		
 
 EXTRACLEAN = $(OBJS)
@@ -87,10 +102,10 @@ LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
 			$(CIRCLEHOME)/addon/SDCard/libsdcard.a\
 			$(CIRCLEHOME)/addon/fatfs/libfatfs.a\
          $(CIRCLEHOME)/addon/vc4/sound/libvchiqsound.a\
-         $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a\
-			$(CIRCLEHOME)/addon/vc4/interface/vcos/libvcos.a\
-			$(CIRCLEHOME)/addon/vc4/interface/bcm_host/libbcm_host.a\
-			$(CIRCLEHOME)/addon/vc4/interface/vmcs_host/libvmcs_host.a
+         $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a
+			#$(CIRCLEHOME)/addon/vc4/interface/bcm_host/libbcm_host.a
+			#$(CIRCLEHOME)/addon/vc4/interface/vcos/libvcos.a
+			#$(CIRCLEHOME)/addon/vc4/interface/vmcs_host/libvmcs_host.a
 
 
 include circle/Rules.mk
