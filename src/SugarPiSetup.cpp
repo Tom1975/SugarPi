@@ -7,13 +7,15 @@
 #define SECTION_SETUP      "SETUP"
 #define KEY_SYNC           "sync"
 #define KEY_CART           "cart"
+#define KEY_LAYOUT         "layout"
 
 #define KEY_SYNC_SOUND     "sound"
 #define KEY_SYNC_FRAME     "frame"
 
 #define DEFAULT_CART "SD:/CART/crtc3_projo.cpr"
+#define DEFAULT_LAYOUT "SD:/LAYOUT/101_keyboard"
 
-SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr)
+SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr), keyboard_(nullptr)
 {
    config_ = new ConfigurationManager(log);
 }
@@ -23,11 +25,12 @@ SugarPiSetup::~SugarPiSetup()
    delete config_;  
 }
 
-void  SugarPiSetup::Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard)
+void  SugarPiSetup::Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard, KeyboardPi* keyboard)
 {
    display_ = display;
    sound_ = sound;
    motherboard_ = motherboard;
+   keyboard_ = keyboard;
 }
 
 void SugarPiSetup::Load()
@@ -50,6 +53,10 @@ void SugarPiSetup::Load()
    }
 
    // Keyboard layout (if any)
+   if (config_->GetConfiguration (SECTION_SETUP, KEY_LAYOUT, DEFAULT_LAYOUT, buffer, SIZE_OF_BUFFER ))
+   {
+      keyboard_->LoadKeyboardLayout (buffer);
+   }
    // todo
    
    // Hardware configuration

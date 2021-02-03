@@ -15,6 +15,8 @@ public:
    DisplayPi(CLogger* logger, CTimer* timer);
    virtual ~DisplayPi();
 
+   bool ListEDID();
+   
    bool Initialization();
    void SyncWithFrame (bool set){sync_on_frame_ = set;}
    bool IsSyncOnFrame(){return sync_on_frame_;}
@@ -69,7 +71,7 @@ public:
    virtual void Activate(bool on) {};
 
    CBcmFrameBuffer* GetFrameBuffer() {
-      return &frame_buffer_;   }
+      return frame_buffer_;   }
 
    void Lock() { mutex_.Acquire(); }
    void Unlock() { mutex_.Release(); }
@@ -80,7 +82,7 @@ protected:
    //CScreenDevice*		screen_;
    CLogger* logger_;
    CTimer* timer_;
-   CBcmFrameBuffer   frame_buffer_;
+   CBcmFrameBuffer*  frame_buffer_;
    bool full_resolution_;
    bool full_resolution_cached_;
 

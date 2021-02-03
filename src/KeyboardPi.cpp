@@ -630,7 +630,7 @@ void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState
 
 
  #define GAMECONTROLLERDB_FILE "SD:/Config/gamecontrollerdb.txt"
- GamepadDef* KeyboardPi::LookForDevice (const TUSBDeviceDescriptor* descriptor)
+GamepadDef* KeyboardPi::LookForDevice (const TUSBDeviceDescriptor* descriptor)
 {
    GamepadDef* gamepad = nullptr;
 
@@ -779,27 +779,64 @@ FILINFO file_info;
    logger_->Write("KeyboardPi", LogNotice, "Loading game controller db... Done !");
 }
 
-/*
-void KeyboardPi::UpdateKeyboardMap()
+void KeyboardPi::LoadKeyboardLayout (const char* path)
 {
-   // Check : 
-   if ( gamepad_active_[0] != nullptr)
+   // Open file
+   FIL File;
+   FRESULT Result = f_open(&File, path, FA_READ | FA_OPEN_EXISTING);
+   if (Result != FR_OK)
    {
-      if (index == 5)
-      {
-         // button 1
-         if (gamepad_active_[0]->game_pad_button_start.IsPressed(&gamepad_state_[0]))result &= ~0x80;
-      }
-      else if (index == 9 )
-      {
-         
-         if (gamepad_active_[0]->game_pad_button_X.IsPressed(&gamepad_state_[0]))result &= ~0x10;
-         if (gamepad_active_[0]->game_pad_button_A.IsPressed(&gamepad_state_[0]))result &= ~0x20;
-         if (gamepad_active_[0]->game_pad_button_up.IsPressed(&gamepad_state_[0]))result &= ~0x1;
-         if (gamepad_active_[0]->game_pad_button_down.IsPressed(&gamepad_state_[0]))result &= ~0x2;
-         if (gamepad_active_[0]->game_pad_button_left.IsPressed(&gamepad_state_[0]))result &= ~0x4;
-         if (gamepad_active_[0]->game_pad_button_right.IsPressed(&gamepad_state_[0]))result &= ~0x8;
-          
-      }
+      CLogger::Get ()->Write("ConfigurationManager", LogNotice, "Cannot open %s layout file", path);
+      return;
    }
-}*/
+
+   // Load every known gamepad to internal structure
+FILINFO file_info;
+   f_stat(path, &file_info);
+   unsigned char* buff = new unsigned char[file_info.fsize];
+   unsigned nBytesRead;
+
+   f_read(&File, buff, file_info.fsize, &nBytesRead);
+   if (file_info.fsize != nBytesRead)
+   {
+      // ERROR
+      f_close(&File);
+      logger_->Write("KeyboardPi", LogNotice, "Error reading keyboard layout file %s ",path );
+      return;
+   }
+
+   // get next line
+   const char* ptr_buffer = (char*)buff;
+   unsigned int offset = 0;
+   unsigned int end_line;
+   std::string s;
+   int line_index = 0;
+   while ((end_line = getline(&ptr_buffer[offset], nBytesRead, s)) > 0 && line_index < 8)
+   {
+      nBytesRead -= end_line;
+
+      // Do not use emty lines, and comment lines
+      if (s.size() == 0 ||s[0] == '#')
+      {
+         continue;
+      }
+
+      // Decode line to buffer
+      for (unsigned int raw_key = 0; raw_key<8 && (2+raw_key * 3) < end_line; raw_key++)
+      {
+         char number [3];
+         memcpy ( number, &ptr_buffer[offset+raw_key*3], 2);
+         number[2] = '\0';
+         unsigned char value = strtoul(number, NULL, 16);
+         default_raw_map[line_index][raw_key] = value;
+      }
+      offset += end_line;
+      line_index++;
+   }
+   delete []buff;
+   f_close(&File);
+
+   InitKeyboard (default_raw_map);
+   
+   logger_->Write("KeyboardPi", LogNotice, "Loading keyboard layout... Done !");   
+}

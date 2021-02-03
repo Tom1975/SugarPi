@@ -26,12 +26,17 @@ fi
 if [ ! -d "sdcard/Config" ]; then
   mkdir sdcard/Config
 fi
+
+if [ ! -d "sdcard/LAYOUT" ]; then
+  mkdir sdcard/LAYOUT
+fi
+
 echo "[SETUP]" > config
 echo "sync=frame" >> config
 echo "cart=SD:/CART/crtc3_projo.cpr" >> config
 
 
-
+cp res/101_keyboard sdcard/LAYOUT
 cp config sdcard/Config
 cp CART/* sdcard/CART
 cp gamecontrollerdb.txt sdcard/Config/gamecontrollerdb.txt

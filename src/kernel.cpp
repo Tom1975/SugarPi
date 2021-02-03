@@ -65,7 +65,6 @@ boolean CKernel::Initialize (void)
    if (bOK)
    {
       bOK = display_->Initialization();
-     
    }
    if (bOK)
    {
@@ -139,6 +138,9 @@ boolean CKernel::Initialize (void)
       m_Logger.Write("Kernel", LogNotice, "Initialisation done done !");
    }
 
+   m_Logger.Write("Kernel", LogNotice, "EDID...");
+   display_->ListEDID();
+   m_Logger.Write("Kernel", LogNotice, "EDID Done !");
 
    m_Logger.Write("Kernel", LogNotice, "Initialisation done. Waiting for CPUThrottle %i", bOK ? 1 : 0);
 
