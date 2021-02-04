@@ -52,6 +52,14 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixe
    sugarpi_setup_menu_ = new MenuItem[3];
    sugarpi_setup_menu_[0] =  { "...Back",             &ScreenMenu::Resume};
    sugarpi_setup_menu_[2] = {nullptr, nullptr};
+
+   /////////////////////////////////////////////////
+   // Windows creation
+
+   // Create Main window menu 
+   main_menu_ = new Windows ();
+   
+   
 }
 
 ScreenMenu::~ScreenMenu()
@@ -59,6 +67,8 @@ ScreenMenu::~ScreenMenu()
    delete []sugarpi_setup_menu_;
    delete snapshot_;
    delete font_;
+
+   delete main_menu_;
 }
 
 ScreenMenu::Action ScreenMenu::SetSyncVbl()

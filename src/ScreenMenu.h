@@ -11,6 +11,7 @@
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
 #include "SugarPiSetup.h"
+#include "Windows.h"
 
 #define MAX_LANGUAGE 1
 
@@ -85,6 +86,7 @@ protected:
    bool resume_;
    CSnapshot* snapshot_;
 
+   Windows* main_menu_;
 };
 
 #pragma pack(pop)

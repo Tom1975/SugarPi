@@ -6,8 +6,12 @@
 class Windows 
 {
 public:
-   Windows(Windows* parent = nullptr);
+   Windows();
    virtual ~Windows();
+
+   virtual void CreateWindow (Windows* parent, int x, int y, unsigned int width, unsigned int height);
+   virtual void AddChild(Windows* child);
+   virtual void Redraw ();
 
 protected:
 
@@ -27,4 +31,11 @@ protected:
       WindowsQueue* next_;
    };
    WindowsQueue* windows_children_;
+};
+
+class CMenuWindows : public Windows
+{
+public:
+   CMenuWindows ();
+   virtual ~CMenuWindows ();
 };
