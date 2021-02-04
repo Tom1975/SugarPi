@@ -2,7 +2,7 @@
 #include "Windows.h"
 
 
-Windows::Windows() : x_(0), y_(0), width_(0), height_(0), parent_(parent), windows_children_(nullptr)
+Windows::Windows() : x_(0), y_(0), width_(0), height_(0), parent_(nullptr), windows_children_(nullptr)
 {
 }
 
