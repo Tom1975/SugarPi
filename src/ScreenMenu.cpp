@@ -18,6 +18,17 @@
 #define PATH_CARTIRDGE "SD:/CART"
 #define PATH_QUICK_SNA "SD:/quick.sna"
 
+
+MainMenuWindows::MainMenuWindows ()
+{
+
+}
+
+MainMenuWindows::~MainMenuWindows ()
+{
+   
+}
+
 ScreenMenu::MenuItem base_menu[] =
 {
    { "Resume",             &ScreenMenu::Resume},
@@ -57,9 +68,7 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixe
    // Windows creation
 
    // Create Main window menu 
-   main_menu_ = new Windows ();
-   
-   
+   main_menu_ = new MainMenuWindows ();
 }
 
 ScreenMenu::~ScreenMenu()
@@ -380,6 +389,25 @@ void ScreenMenu::DisplayMenu(MenuItem* menu)
    display_->VSync();
 }
 
+IEvent::Event ScreenMenu::GetEvent ()
+{
+   IEvent::Event event = IEvent::NONE;
+
+   if (keyboard_->IsDown())
+   {
+      event = IEvent::DOWN;
+   }
+   if (keyboard_->IsUp())
+   {
+      event = IEvent::UP;
+   }
+   if (keyboard_->IsAction())
+   {
+      event = IEvent::SELECT;
+   }   
+   return event;
+}
+
 ScreenMenu::Action ScreenMenu::Handle()
 {
    Action action = Action_None;
@@ -387,8 +415,11 @@ ScreenMenu::Action ScreenMenu::Handle()
 
    // Wait till next vsync
    display_->VSync();
-   
+
    // Display menu
+   main_menu_->DoScreen (this);
+
+/*
    DisplayMenu(current_menu_);
 
 
@@ -418,6 +449,7 @@ ScreenMenu::Action ScreenMenu::Handle()
       }
 
    }
+   */
    logger_->Write("Menu", LogNotice, "MENU EXITING !");
    display_->SetFullResolution(false);
    display_->VSync();

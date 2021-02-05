@@ -19,7 +19,19 @@
 
 class CoolspotFont;
 
-class ScreenMenu 
+
+
+class MainMenuWindows : public Windows
+{
+public:
+   MainMenuWindows ();
+   virtual ~MainMenuWindows ();
+
+   
+
+};
+
+class ScreenMenu : public IEvent
 {
 
 public:
@@ -33,6 +45,7 @@ public:
    ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup);
    virtual ~ScreenMenu();
 
+   IEvent::Event GetEvent ();
    ScreenMenu::Action Handle();
 
    ScreenMenu::Action Resume();
@@ -86,7 +99,7 @@ protected:
    bool resume_;
    CSnapshot* snapshot_;
 
-   Windows* main_menu_;
+   MainMenuWindows* main_menu_;
 };
 
 #pragma pack(pop)
