@@ -24,10 +24,14 @@ class CoolspotFont;
 class MainMenuWindows : public Windows
 {
 public:
-   MainMenuWindows ();
+   MainMenuWindows (DisplayPi* display);
    virtual ~MainMenuWindows ();
-
    
+   void ResetMenu();
+   MenuWindows* GetMenu(){return menu_;};
+   
+protected:
+   MenuWindows* menu_;
 
 };
 
@@ -36,49 +40,39 @@ class ScreenMenu : public IEvent
 
 public:
 
-   typedef enum
-   {
-      Action_None,
-      Action_Shutdown
-   } Action;
-
    ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup);
    virtual ~ScreenMenu();
 
    IEvent::Event GetEvent ();
-   ScreenMenu::Action Handle();
 
-   ScreenMenu::Action Resume();
-   ScreenMenu::Action InsertCartridge();
-   ScreenMenu::Action SugarSetup();
-   ScreenMenu::Action HardwareSetup();
-   ScreenMenu::Action Reset();
-   ScreenMenu::Action ShutDown();
-   ScreenMenu::Action Load();
-   ScreenMenu::Action Save();
-   ScreenMenu::Action SetSyncVbl();
-   ScreenMenu::Action SetSyncSound();
+   
+   IAction::ActionReturn Handle();
+
+   IAction::ActionReturn Back();
+   IAction::ActionReturn HardwareSetup();
+   IAction::ActionReturn InsertCartridge();
+   IAction::ActionReturn Load();
+   IAction::ActionReturn LoadCartridge( const char* path);
+   IAction::ActionReturn Reset();
+   IAction::ActionReturn Resume();
+   IAction::ActionReturn Save();
+   IAction::ActionReturn SetSync(bool* value);
+   IAction::ActionReturn ShutDown();
+   IAction::ActionReturn SugarSetup();
 
    void Down();
    void Up();
-   ScreenMenu::Action Select();
+   IAction::ActionReturn Select();
 
    class MenuItem
    {
    public:
       const char* label_;
       //Func function_;
-      Action (ScreenMenu::* function)();
+      IAction::ActionReturn (ScreenMenu::* function)();
    };
 
 protected:
-   int HandleMenu( MenuItem* menu);
-   void DisplayMenu(MenuItem* menu);
-   void DisplayButton(MenuItem* menu, int x, int y, bool selected);
-   void DisplayText(const char* txt, int x, int y, bool selected);
-   void BuildMenuSync(MenuItem * sync_menu);
-
-   //int LoadCprFromBuffer(const char* filepath);
 
    CLogger*    logger_;
    DisplayPi* display_;
@@ -89,7 +83,6 @@ protected:
    // Menus 
    CoolspotFont *font_;
    MenuItem* current_menu_;
-   MenuItem *sugarpi_setup_menu_ ;
    unsigned int selected_;
    unsigned int index_base_;
 
@@ -101,5 +94,40 @@ protected:
 
    MainMenuWindows* main_menu_;
 };
+
+class ActionMenu : public IAction
+{
+public:
+   ActionMenu (ScreenMenu* menu, IAction::ActionReturn (ScreenMenu::*pfnAction)()): menu_(menu), pfnAction_(pfnAction)
+   {};
+
+   IAction::ActionReturn DoAction()
+   {
+      return (menu_->*pfnAction_)();
+   };
+
+protected:
+   ScreenMenu* menu_;
+   IAction::ActionReturn (ScreenMenu::* pfnAction_)();
+};
+
+template<typename T>
+class ActionMenuWithParameter : public IAction
+{
+public:
+   ActionMenuWithParameter(ScreenMenu* menu, IAction::ActionReturn (ScreenMenu::*pfnAction)(T), T param) : menu_(menu), pfnAction_(pfnAction), parameter_(param)
+   {};
+
+   IAction::ActionReturn DoAction()
+   {
+      return (menu_->*pfnAction_)(parameter_);
+   };
+
+protected:
+   ScreenMenu* menu_;
+   IAction::ActionReturn (ScreenMenu::* pfnAction_)(T);
+   T parameter_;
+};
+
 
 #pragma pack(pop)

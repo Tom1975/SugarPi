@@ -151,7 +151,8 @@ void Emulation::RunMainLoop()
       if (keyboard_->IsSelect())
       {
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
-         finished = (menu.Handle() == ScreenMenu::Action_Shutdown);
+         // todo : find a smart way to signal exit
+         /*finished = */(menu.Handle()/* == IAction::Action_Shutdown*/);
          keyboard_->ReinitSelect();
          CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
       }

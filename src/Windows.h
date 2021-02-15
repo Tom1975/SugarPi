@@ -2,7 +2,25 @@
 
 //
 #include <circle/logger.h>
+#include <circle/string.h>
 
+#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+
+#include "DisplayPi.h"
+
+class IAction
+{
+public:
+   enum ActionReturn
+   {
+      Action_None,
+      Action_Update,
+      Action_QuitMenu,
+      Action_Back,
+      Action_Shutdown,
+   };
+   virtual ActionReturn DoAction() = 0;
+};
 
 class IEvent
 {
@@ -24,19 +42,33 @@ public:
 class Windows 
 {
 public:
-   Windows();
+   Windows(DisplayPi* display);
    virtual ~Windows();
 
-   virtual unsigned int DoScreen (IEvent* event_handler);
+   virtual IAction::ActionReturn DoScreen (IEvent* event_handler);
 
    virtual void CreateWindow (Windows* parent, int x, int y, unsigned int width, unsigned int height);
    virtual void AddChild(Windows* child);
-   virtual void Redraw ();
 
-   bool HandleEvent( IEvent::Event event);
+   void WindowsToDisplay(int& x, int& y);
+   virtual void Clear();
+   virtual void Redraw (bool clear = true);
+   virtual void RedrawWindow ();
+   virtual void RedrawChildren ();
+
+   virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
+
+   virtual void SetFocus ();
+   virtual void RemoveFocus ();
+
+   void Invalidate ();
+   static Windows* GetFocus() { return focus_;}
+   static void SetFocus(Windows* focus) { focus_ = focus;}
 
 protected:
 
+   // Display
+   DisplayPi* display_;
 
    // Coordinate
    int x_;
@@ -44,8 +76,8 @@ protected:
    unsigned int width_;
    unsigned int height_;
 
-   // curernt Focus window
-   Windows* focus_;
+   // current Focus window
+   static Windows* focus_;
 
    // Windows parent & child
    Windows* parent_;
@@ -58,9 +90,52 @@ protected:
    WindowsQueue* windows_children_;
 };
 
-class CMenuWindows : public Windows
+class MenuItemWindows : public Windows
 {
 public:
-   CMenuWindows ();
-   virtual ~CMenuWindows ();
+   MenuItemWindows (DisplayPi* display);
+   virtual ~MenuItemWindows ();
+
+   virtual void CreateWindow (const char* label, Windows* parent, int x, int y, unsigned int width, unsigned int height);
+   virtual void SetAction (IAction* action);
+   virtual void RedrawWindow ();
+   virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
+
+protected:
+   CString label_;
+   IAction* action_;
+};
+
+class MenuWindows : public Windows
+{
+public:
+   MenuWindows (DisplayPi* display);
+   virtual ~MenuWindows ();
+
+   virtual void AddMenuItem (const char* label, IAction* action = nullptr);
+   virtual void AddCheckMenuItem (const char* label, bool* value, IAction* action = nullptr);
+   virtual void RedrawWindow ();
+   virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
+   virtual void SetFocus (unsigned int index = 0);
+
+protected:
+   int current_focus_;
+   std::vector<MenuItemWindows*> list_item_;
+
+
+};
+
+class CheckMenuItemWindows : public MenuItemWindows
+{
+public:
+   CheckMenuItemWindows (DisplayPi* display);
+   virtual ~CheckMenuItemWindows ();
+
+   virtual void CreateWindow (const char* label, bool* value, Windows* parent, int x, int y, unsigned int width, unsigned int height);
+
+   virtual void RedrawWindow ();
+   virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
+
+protected:
+   bool * value_;
 };

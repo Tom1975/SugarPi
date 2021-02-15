@@ -7,7 +7,8 @@
 #include <circle/bcmpropertytags.h>
 #include <circle/debug.h>
 
-
+#include "res/button_1.h"
+#include "res/coolspot.h"
 
 DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
    logger_(logger),
@@ -21,6 +22,8 @@ DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
    nb_frame_in_queue_(0),
    sync_on_frame_(false)
 {
+   font_ = new CoolspotFont(logger_);
+
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
       frame_used_[i] = FR_FREE;
@@ -30,6 +33,7 @@ DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
 
 DisplayPi::~DisplayPi()
 {
+   delete font_;
    if ( frame_buffer_ != nullptr)
    {
       delete frame_buffer_;
@@ -488,4 +492,41 @@ int DisplayPi::GetDnDPart()
 {
    logger_->Write("Display", LogNotice, "GetDnDPart - NOT IMPLEMENTED ");
    return 0;
+}
+
+
+void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
+{
+   // Display text
+   int i = 0;
+
+   char buff[16];
+   memset(buff, 0, sizeof buff);
+   strncpy(buff, txt, 15);
+   
+   unsigned int x_offset_output = 0;
+
+   while (txt[i] != '\0' )
+   {
+
+      // Display character
+      unsigned char c = txt[i];
+
+      if ( c == ' ')
+      {
+         x_offset_output += 10;
+      }
+      else
+      {
+         // Look for proper bitmap position (on first line only)
+         for (int display_y = 0; display_y < font_->GetLetterHeight(c); display_y++)
+         {
+            int* line = GetVideoBuffer(display_y + y);
+            font_->CopyLetter(c, display_y, &line[x + x_offset_output]);
+         }
+         x_offset_output += font_->GetLetterLength(c);
+      }
+      i++;
+      
+   }
 }

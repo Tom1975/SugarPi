@@ -580,7 +580,7 @@ void KeyboardPi::KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned 
    memcpy( this_ptr_->old_raw_keys_, RawKeys, sizeof (this_ptr_->old_raw_keys_));
    this_ptr_->mutex_.Release();
 
-	CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
+	//CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
 }
 
 void KeyboardPi::KeyboardRemovedHandler (CDevice *pDevice, void *pContext)

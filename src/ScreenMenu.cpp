@@ -1,7 +1,6 @@
 //
 #include "ScreenMenu.h"
 
-
 #include <memory.h>
 
 #include <SDCard/emmc.h>
@@ -19,14 +18,25 @@
 #define PATH_QUICK_SNA "SD:/quick.sna"
 
 
-MainMenuWindows::MainMenuWindows ()
+MainMenuWindows::MainMenuWindows (DisplayPi* display) : Windows (display)
 {
+   // Create Title bitmap
+   // todo
 
+   // Create inner menu
+   menu_ = new MenuWindows (display);
+   menu_->CreateWindow ( this, 240, 70, 1000, 800);
 }
 
 MainMenuWindows::~MainMenuWindows ()
 {
-   
+   delete menu_;
+}
+
+void MainMenuWindows::ResetMenu()
+{
+   // Set focus to first item
+   menu_->SetFocus(0);
 }
 
 ScreenMenu::MenuItem base_menu[] =
@@ -59,50 +69,64 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixe
    font_ = new CoolspotFont(logger_);
    snapshot_ = new CSnapshot(log);
    snapshot_->SetMachine(motherboard_);
-   // Setup
-   sugarpi_setup_menu_ = new MenuItem[3];
-   sugarpi_setup_menu_[0] =  { "...Back",             &ScreenMenu::Resume};
-   sugarpi_setup_menu_[2] = {nullptr, nullptr};
-
    /////////////////////////////////////////////////
    // Windows creation
 
    // Create Main window menu 
-   main_menu_ = new MainMenuWindows ();
+   unsigned int i = 0;
+   main_menu_ = new MainMenuWindows (display_);
+   while (base_menu[i].label_ != nullptr && i < MAX_ITEM_PER_PAGE)
+   {
+      // Display menu bitmap
+      main_menu_->GetMenu()->AddMenuItem(base_menu[i].label_, new ActionMenu(this, base_menu[i].function));
+      
+      i++;
+   }
+   
 }
 
 ScreenMenu::~ScreenMenu()
 {
-   delete []sugarpi_setup_menu_;
    delete snapshot_;
    delete font_;
 
    delete main_menu_;
 }
 
-ScreenMenu::Action ScreenMenu::SetSyncVbl()
+IAction::ActionReturn ScreenMenu::SetSync(bool* value)
 {
-   setup_->SetSync (SugarPiSetup::SYNC_FRAME);
+   setup_->SetSync (*value ? SugarPiSetup::SYNC_FRAME:SugarPiSetup::SYNC_SOUND);
    setup_->Save();
-   BuildMenuSync (&sugarpi_setup_menu_[1]);
-   return Action_None;
+   return IAction::Action_Update;
 }
 
-ScreenMenu::Action ScreenMenu::SetSyncSound()
+IAction::ActionReturn ScreenMenu::Back()
 {
-   setup_->SetSync (SugarPiSetup::SYNC_SOUND);
-   setup_->Save();
-   BuildMenuSync (&sugarpi_setup_menu_[1]);
-   return Action_None;
+   return IAction::Action_Back;
 }
 
-ScreenMenu::Action ScreenMenu::Resume()
+IAction::ActionReturn ScreenMenu::Resume()
 {
    resume_ = true;
-   return Action_None;
+   return IAction::Action_QuitMenu;
 }
 
-ScreenMenu::Action ScreenMenu::InsertCartridge()
+IAction::ActionReturn ScreenMenu::LoadCartridge( const char* path)
+{
+   CString fullpath = PATH_CARTIRDGE;
+   fullpath.Append( "/" );
+   fullpath.Append( path);
+   logger_->Write("Menu", LogNotice, "Load cartridge fullpath : %s", (const char*)fullpath);
+   setup_->LoadCartridge (fullpath);
+   setup_->Save();
+   logger_->Write("Cartridge", LogNotice, "file loaded.Exiting menu");
+
+   motherboard_->OnOff();
+   resume_ = true;
+   return IAction::Action_QuitMenu;
+}
+
+IAction::ActionReturn ScreenMenu::InsertCartridge()
 {
    logger_->Write("Menu", LogNotice, "ACTION : InsertCartridge. Sizeof FILINFO : %i", sizeof(FILINFO));
 
@@ -128,265 +152,122 @@ ScreenMenu::Action ScreenMenu::InsertCartridge()
       Result = f_findnext(&Directory, FileInfo);
    }
 
-   ScreenMenu::MenuItem* submenu = new ScreenMenu::MenuItem[cartridge_list.size()+2];
-   submenu[0].function = nullptr;
-   submenu[0].label_ = "...Back";
-
-   for (size_t i = 0; i < cartridge_list.size(); i++)
-   {
-      submenu[i+1].function= nullptr;
-      submenu[i+1].label_ = cartridge_list[i]->fname;
-      logger_->Write("Menu", LogNotice, "Added %s", cartridge_list[i]->fname);
-   }
-   logger_->Write("Menu", LogNotice, "Loop ended");
-   submenu[cartridge_list.size()+1].function = nullptr;
-   submenu[cartridge_list.size()+1].label_= nullptr;
-
-   // Display menu !
-   MenuItem* old_menu = current_menu_;
-   selected_ = 0;
-   unsigned int old_index = index_base_;
-   index_base_ = 0;
-
-   current_menu_ = submenu;
-
-   logger_->Write("Menu", LogNotice, "Will now display submenu");
-   DisplayMenu(current_menu_);
-   logger_->Write("Menu", LogNotice, "Will submenu displayed");
-
-   // wait for command
-//   while (!keyboard_->IsAction());
-   keyboard_->ReinitSelect();
-   bool end_menu = false;
-   while (end_menu == false)
-   {
-      // Any key pressed ?
-      if (keyboard_->IsDown())
-      {
-         Down();
-         logger_->Write("Menu", LogNotice, "Selection down %i", selected_);
-      }
-      if (keyboard_->IsUp())
-      {
-         Up();
-         logger_->Write("Menu", LogNotice, "Selection up %i", selected_);
-      }
-      if (keyboard_->IsAction())
-      {
-         logger_->Write("Menu", LogNotice, "Selection  : %i ", selected_);
-         // If 0 : end; otherwise, load menu
-         if (selected_ == 0)
-         {
-            end_menu = true;
-         }
-         else
-         {
-
-            CString fullpath = PATH_CARTIRDGE;
-            fullpath.Append( "/" );
-            fullpath.Append( cartridge_list[selected_-1]->fname);
-            logger_->Write("Menu", LogNotice, "Load cartridge fullpath : %s", (const char*)fullpath);
-            setup_->LoadCartridge (fullpath);
-            setup_->Save();
-            logger_->Write("Cartridge", LogNotice, "file loaded.Exiting menu");
-
-            end_menu = true;
-            motherboard_->OnOff();
-            resume_ = true;
-         }
-      }
-
-   }
-   logger_->Write("Cartridge", LogNotice, "Exiting loop...");
-   delete []submenu;
-
-   logger_->Write("Cartridge", LogNotice, "deleting cartridge_list...");
-
-   for (size_t i = 0; i < cartridge_list.size(); i++)
-   {
-      delete cartridge_list[i];
-   }
-   logger_->Write("Cartridge", LogNotice, "deleting cartridge_list done !");
-      
-   index_base_ = old_index;
-   current_menu_ = old_menu;
-   selected_ = 0;
-   return Action_None;
-}
-
-void ScreenMenu::BuildMenuSync(MenuItem * sync_menu)
-{
-   if (display_-> IsSyncOnFrame())
-   {
-      *sync_menu =  { "Set synchro on Frame [X]",   &ScreenMenu::SetSyncSound};
-   }
-   else
-   {
-      *sync_menu =  { "Set synchro on Frame [ ]",   &ScreenMenu::SetSyncVbl};
-   }
-}
-
-ScreenMenu::Action ScreenMenu::SugarSetup()
-{
-   BuildMenuSync (&sugarpi_setup_menu_[1]);
-  
-   HandleMenu (sugarpi_setup_menu_);
-   logger_->Write("Menu", LogNotice, "ScreenMenu::SugarSetup ended");
-   resume_ = false;
-   return Action_None;
-}
-
-int ScreenMenu::HandleMenu( MenuItem* menu)
-{
-   logger_->Write("Menu", LogNotice, "ACTION : Select Sugarpi setup");
-
-   // Display menu !
-   MenuItem* old_menu = current_menu_;
-   selected_ = 0;
-   unsigned int old_index = index_base_;
-   index_base_ = 0;
-
-   current_menu_ = menu;
-   DisplayMenu(current_menu_);
-
-   // wait for command
-   keyboard_->ReinitSelect();
-   bool end_menu = false;
-   while (end_menu == false)
-   {
-      // Any key pressed ?
-      if (keyboard_->IsDown())
-      {
-         Down();
-         logger_->Write("Menu", LogNotice, "Selection down %i", selected_);
-      }
-      if (keyboard_->IsUp())
-      {
-         Up();
-         logger_->Write("Menu", LogNotice, "Selection up %i", selected_);
-      }
-      if (keyboard_->IsAction())
-      {
-         Select();
-         logger_->Write("Menu", LogNotice, "Selection  : %i ", selected_);
-         if (selected_ == 0)
-         {
-            end_menu = true;
-         }         
-      }
-   }
-
-   index_base_ = old_index;
-   current_menu_ = old_menu;
-   selected_ = 0;
+   // Alphabetical Order
+   FILINFO** array_ordered = new FILINFO* [cartridge_list.size()];
+   unsigned int nb_file_ordered = 0;
    
-   logger_->Write("Menu", LogNotice, "ScreenMenu::HandleMenu ended");
-   return Action_None;
+   for (auto& it:cartridge_list)
+   {
+      int place = nb_file_ordered;
+      // find right place
+      for (unsigned int i = 0; i < nb_file_ordered && place == nb_file_ordered; i++)
+      {
+         if ( stricmp (it->fname, array_ordered[i]->fname)< 0)
+         {
+            place = i;
+         }
+      }
+      // insert it  :
+      // Move everything after place
+      if ( place != nb_file_ordered)
+      {
+         for (unsigned int i = 0; i < nb_file_ordered - place; i++)
+         {
+            array_ordered [nb_file_ordered - i] = array_ordered [nb_file_ordered - 1 - i];
+         }
+      }
+      // insert new item
+      array_ordered[place] = it;
+      logger_->Write("Menu", LogNotice, "Added %s, here : %i", it->fname, place);
+      nb_file_ordered++;
+   }
+
+   // Create selection menu
+   Windows* focus = Windows::GetFocus();
+
+   MainMenuWindows* file_menu = new MainMenuWindows (display_);
+
+   file_menu->GetMenu()->AddMenuItem("..", new ActionMenu( this, &ScreenMenu::Back) );
+
+   for (unsigned int i = 0; i < nb_file_ordered; i++)
+   {
+      // Display menu bitmap
+      logger_->Write("Menu", LogNotice, "Added %s to menu", array_ordered[i]->fname);
+      file_menu->GetMenu()->AddMenuItem(array_ordered[i]->fname, new ActionMenuWithParameter<const char*>(this, &ScreenMenu::LoadCartridge, array_ordered[i]->fname) );
+      
+      i++;
+   }
+   file_menu->ResetMenu ();
+
+   IAction::ActionReturn return_value = file_menu->DoScreen (this);
+   logger_->Write("Menu", LogNotice, "file_menu->DoScreen : %i", return_value);
+
+   delete file_menu;
+   delete [] array_ordered;
+   for (auto& it:cartridge_list)
+   {
+      delete it;
+   }
+   Windows::SetFocus(focus);
+   main_menu_->Invalidate ();
+
+   logger_->Write("Menu", LogNotice, "Return from InsertCartridge : %i", return_value);
+   return return_value;
 }
 
+IAction::ActionReturn ScreenMenu::SugarSetup()
+{
+   Windows* focus = Windows::GetFocus();
+   MainMenuWindows* setup_menu = new MainMenuWindows (display_);
 
-ScreenMenu::Action ScreenMenu::HardwareSetup()
+   setup_menu->GetMenu()->AddMenuItem("..", new ActionMenu( this, &ScreenMenu::Back) );
+
+   // Add Synchro menu
+   bool sync = display_-> IsSyncOnFrame();   
+   setup_menu->GetMenu()->AddCheckMenuItem ( "Set synchro on Frame", &sync,  new ActionMenuWithParameter<bool*>(this, &ScreenMenu::SetSync, &sync));
+
+   setup_menu->ResetMenu ();
+   IAction::ActionReturn return_value = setup_menu->DoScreen(this);
+   delete setup_menu;
+
+   Windows::SetFocus(focus);
+   main_menu_->Invalidate ();
+
+   return return_value;
+}
+
+IAction::ActionReturn ScreenMenu::HardwareSetup()
 {
    logger_->Write("Menu", LogNotice, "ACTION : Select setup");
-   return Action_None;
+   return IAction::Action_None;
 }
 
-ScreenMenu::Action ScreenMenu::Save()
+IAction::ActionReturn ScreenMenu::Save()
 {
    snapshot_->SaveSnapshot(PATH_QUICK_SNA);
    resume_ = true;
-   return Action_None;
+   return IAction::Action_QuitMenu;
 }
 
-ScreenMenu::Action ScreenMenu::Load()
+IAction::ActionReturn ScreenMenu::Load()
 {
    snapshot_->LoadSnapshot(PATH_QUICK_SNA);
    resume_ = true;
-   return Action_None;
+   return IAction::Action_QuitMenu;
 }
 
-ScreenMenu::Action ScreenMenu::Reset()
+IAction::ActionReturn ScreenMenu::Reset()
 {
    motherboard_->OnOff();
    resume_ = true;
-   return Action_None;
+   return IAction::Action_QuitMenu;
 }
 
-ScreenMenu::Action ScreenMenu::ShutDown()
+IAction::ActionReturn ScreenMenu::ShutDown()
 {
    logger_->Write("Menu", LogNotice, "ACTION : SHUTDOWN");
    resume_ = true;
-   return Action_Shutdown;
-}
-
-void ScreenMenu::DisplayText(const char* txt, int x, int y, bool selected)
-{
-   // Display text
-   int i = 0;
-
-   char buff[16];
-   memset(buff, 0, sizeof buff);
-   strncpy(buff, txt, 15);
-   
-   unsigned int x_offset_output = 0;
-
-   while (txt[i] != '\0' )
-   {
-
-      // Display character
-      unsigned char c = txt[i];
-
-      if ( c == ' ')
-      {
-         x_offset_output += 10;
-      }
-      else
-      {
-         // Look for proper bitmap position (on first line only)
-         for (int display_y = 0; display_y < font_->GetLetterHeight(c); display_y++)
-         {
-            int* line = display_->GetVideoBuffer(display_y + y);
-            font_->CopyLetter(c, display_y, &line[x + x_offset_output]);
-         }
-         x_offset_output += font_->GetLetterLength(c);
-      }
-      i++;
-      
-   }
-}
-
-void ScreenMenu::DisplayButton(MenuItem* menu, int x, int y, bool selected)
-{
-   // Display text
-   if (selected)
-   {
-      DisplayText("*", x + 2, y , selected);
-   }
-
-   DisplayText(menu->label_, x + 20, y , selected);
-}
-
-void ScreenMenu::DisplayMenu(MenuItem* menu)
-{
-   // Background
-   for (int i = 0; i < display_->GetHeight(); i++)
-   {
-      int* line = display_->GetVideoBuffer(i);
-      memset(line, 0x0, sizeof(int) * display_->GetWidth());
-   }
-
-   DisplayText("SugarPi", 450, 47, false);
-   unsigned int i = 0;
-
-   while (menu[i + index_base_].label_ != nullptr && i < MAX_ITEM_PER_PAGE)
-   {
-      // Display menu bitmap
-      DisplayButton(&menu[i + index_base_], 250, i * 20 + 70, selected_ == i+ index_base_);
-    
-      // log
-      i++;
-   }
-   display_->VSync();
+   return IAction::Action_QuitMenu;
 }
 
 IEvent::Event ScreenMenu::GetEvent ()
@@ -408,85 +289,28 @@ IEvent::Event ScreenMenu::GetEvent ()
    return event;
 }
 
-ScreenMenu::Action ScreenMenu::Handle()
+IAction::ActionReturn ScreenMenu::Handle()
 {
-   Action action = Action_None;
+   logger_->Write("Menu", LogNotice, "MENU ENTER");
+
+   IAction::ActionReturn action = IAction::Action_None;
+   keyboard_->ClearBuffer();
    display_->SetFullResolution(true);
 
    // Wait till next vsync
    display_->VSync();
 
+   // Reset menu
+   logger_->Write("Menu", LogNotice, "Reset menu...");
+   main_menu_->ResetMenu ();
+
    // Display menu
+   logger_->Write("Menu", LogNotice, "Do screen...");
    main_menu_->DoScreen (this);
 
-/*
-   DisplayMenu(current_menu_);
-
-
-   // Reinit actions
-   resume_ = false;
-   keyboard_->ClearBuffer();
-
-   // Handle it
-   while (resume_ == false)
-   {
-      // Any key pressed ?
-      if (keyboard_->IsDown())
-      {
-         logger_->Write("Menu", LogNotice, "Down");
-         Down();
-      }
-      if (keyboard_->IsUp())
-      {
-         logger_->Write("Menu", LogNotice, "Up");
-         Up();
-      }
-      if (keyboard_->IsAction())
-      {
-         logger_->Write("Menu", LogNotice, "Select");
-         action = Select();
-         logger_->Write("Menu", LogNotice, "Select ended");
-      }
-
-   }
-   */
    logger_->Write("Menu", LogNotice, "MENU EXITING !");
    display_->SetFullResolution(false);
    display_->VSync();
 
    return action;
 }
-
-void ScreenMenu::Down()
-{
-   if (current_menu_[selected_ + 1].label_ != nullptr)
-   {
-      selected_++;
-      if (selected_ > MOVE_BASE)
-         index_base_++;
-   }
-   DisplayMenu(current_menu_);
-}
-
-void ScreenMenu::Up()
-{
-   if (selected_ > 0)
-   {
-      selected_--;
-      if (selected_ >= MOVE_BASE && index_base_ > 0)
-         index_base_--;
-
-   }
-   DisplayMenu(current_menu_);
-}
-
-ScreenMenu::Action ScreenMenu::Select()
-{
-   Action action = (this->*(current_menu_[selected_].function))();
-   logger_->Write("Menu", LogNotice, "function ended");
-   if (!resume_)
-      DisplayMenu(current_menu_);
-   logger_->Write("Menu", LogNotice, "ScreenMenu::Select ended");
-   return action;
-}
-

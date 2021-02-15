@@ -9,6 +9,8 @@
 
 #define FRAME_BUFFER_SIZE 2
 
+class CoolspotFont;
+
 class DisplayPi : public IDisplay
 {
 public:
@@ -40,6 +42,8 @@ public:
    // Wait VBL
    virtual void WaitVbl();
 
+   // Services
+   void DisplayText(const char* txt, int x, int y, bool selected = false);
 
    virtual int* GetVideoBuffer(int y);
    virtual void Reset();
@@ -105,4 +109,5 @@ protected:
    unsigned int nb_frame_in_queue_;
 
    bool sync_on_frame_;
+   CoolspotFont *font_;
 };
