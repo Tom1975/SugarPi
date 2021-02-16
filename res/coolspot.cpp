@@ -67,9 +67,11 @@ void CoolspotFont::CopyLetter(unsigned char c, int line, int* buffer)
    int offset = char_position_[char_offset] + (/*coolspot_font.bytes_per_pixel * */line * coolspot_font.width);//coolspot_font.bytes_per_pixel;
    int endoffset = char_position_[char_offset +1]-1 + (/*coolspot_font.bytes_per_pixel * */ line * coolspot_font.width);
 
-   unsigned int* col_buffer = (unsigned int*)buffer;
-
-   memcpy ( col_buffer, &coolspot_font.pixel_data[offset], (endoffset-offset)*4);
+   if ( offset >0 && endoffset > 0)
+   {
+      unsigned int* col_buffer = (unsigned int*)buffer;
+      memcpy ( col_buffer, &coolspot_font.pixel_data[offset], (endoffset-offset)*4);
+   }
 }
 
 int CoolspotFont::GetLetterLength(unsigned char c)

@@ -160,12 +160,12 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
    int limit = 0;
    // Create menu
    unsigned int i = 0;
-   for (i = 0; Result == FR_OK && FileInfo->fname[0] ; i++)
+   for (i = 0; Result == FR_OK && FileInfo->fname[0] && limit < 12; i++)
    {
       limit++;
       if (!(FileInfo->fattrib & (AM_HID | AM_SYS)))
       {
-         logger_->Write("Menu", LogNotice, "Added next %s", FileInfo->fname);
+         logger_->Write("Tape", LogNotice, "Load file => %s", FileInfo->fname);
          cartridge_list.push_back(FileInfo);
       }
       FileInfo = new FILINFO;
@@ -198,7 +198,6 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
       }
       // insert new item
       array_ordered[place] = it;
-      logger_->Write("Menu", LogNotice, "Added %s, here : %i", it->fname, place);
       nb_file_ordered++;
    }
 
@@ -212,7 +211,6 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
    for (unsigned int i = 0; i < nb_file_ordered; i++)
    {
       // Display menu bitmap
-      logger_->Write("Menu", LogNotice, "Added %s to menu", array_ordered[i]->fname);
       file_menu->GetMenu()->AddMenuItem(array_ordered[i]->fname, new ActionMenuWithParameter<const char*>(this, load_action, array_ordered[i]->fname) );
       
       i++;
@@ -246,14 +244,14 @@ IAction::ActionReturn ScreenMenu::InsertDisk()
 {
    // List cartridge available
    // Show contents of root directory
-   return InsertMedia (PATH_CARTIRDGE, &ScreenMenu::LoadDisk);
+   return InsertMedia (PATH_DISK, &ScreenMenu::LoadDisk);
 }
 
 IAction::ActionReturn ScreenMenu::InsertTape()
 {
    // List cartridge available
    // Show contents of root directory
-   return InsertMedia (PATH_CARTIRDGE, &ScreenMenu::LoadTape);
+   return InsertMedia (PATH_TAPE, &ScreenMenu::LoadTape);
 }
 
 IAction::ActionReturn ScreenMenu::SugarSetup()

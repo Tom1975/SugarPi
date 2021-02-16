@@ -513,7 +513,7 @@ void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
       // Display character
       unsigned char c = txt[i];
 
-      if ( c == ' ')
+      if ( c == ' ' || c >= 0x80)
       {
          x_offset_output += 10;
       }
