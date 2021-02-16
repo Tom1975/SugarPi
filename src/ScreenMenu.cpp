@@ -15,6 +15,9 @@
 #define DRIVE		"SD:"
 
 #define PATH_CARTIRDGE "SD:/CART"
+#define PATH_DISK "SD:/DISK"
+#define PATH_TAPE "SD:/TAPE"
+
 #define PATH_QUICK_SNA "SD:/quick.sna"
 
 
@@ -43,6 +46,8 @@ ScreenMenu::MenuItem base_menu[] =
 {
    { "Resume",             &ScreenMenu::Resume},
    { "Insert Cartridge",   &ScreenMenu::InsertCartridge},
+   { "Insert Disk",        &ScreenMenu::InsertDisk},
+   { "Insert Tape",        &ScreenMenu::InsertTape},
    { "SugarPi Setup",      &ScreenMenu::SugarSetup},
 /*   { "Hardware Setup",     &ScreenMenu::HardwareSetup},
    { "Quick Save",         &ScreenMenu::Save},
@@ -58,15 +63,9 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixe
    sound_mixer_(sound_mixer),
    keyboard_(keyboard),
    setup_(setup),
-   //BaseMenu(logger),
-   current_menu_(base_menu),
-   selected_(0),
-   index_base_(0),
    motherboard_(motherboard),
-   resume_(false), 
    snapshot_(nullptr)
 {
-   font_ = new CoolspotFont(logger_);
    snapshot_ = new CSnapshot(log);
    snapshot_->SetMachine(motherboard_);
    /////////////////////////////////////////////////
@@ -88,8 +87,6 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixe
 ScreenMenu::~ScreenMenu()
 {
    delete snapshot_;
-   delete font_;
-
    delete main_menu_;
 }
 
@@ -107,7 +104,6 @@ IAction::ActionReturn ScreenMenu::Back()
 
 IAction::ActionReturn ScreenMenu::Resume()
 {
-   resume_ = true;
    return IAction::Action_QuitMenu;
 }
 
@@ -122,19 +118,43 @@ IAction::ActionReturn ScreenMenu::LoadCartridge( const char* path)
    logger_->Write("Cartridge", LogNotice, "file loaded.Exiting menu");
 
    motherboard_->OnOff();
-   resume_ = true;
+   return IAction::Action_QuitMenu;
+}
+IAction::ActionReturn ScreenMenu::LoadDisk( const char* path)
+{
+   CString fullpath = PATH_DISK;
+   fullpath.Append( "/" );
+   fullpath.Append( path);
+   logger_->Write("Menu", LogNotice, "Load Disk fullpath : %s", (const char*)fullpath);
+   
+   motherboard_->GetFDC()->LoadDisk(0, fullpath, false);
+
+   setup_->Save();
+   logger_->Write("Disk", LogNotice, "file loaded. Exiting menu");
+
+   motherboard_->OnOff();
    return IAction::Action_QuitMenu;
 }
 
-IAction::ActionReturn ScreenMenu::InsertCartridge()
+IAction::ActionReturn ScreenMenu::LoadTape( const char* path)
 {
-   logger_->Write("Menu", LogNotice, "ACTION : InsertCartridge. Sizeof FILINFO : %i", sizeof(FILINFO));
+   CString fullpath = PATH_TAPE;
+   fullpath.Append( "/" );
+   fullpath.Append( path);
+   logger_->Write("Menu", LogNotice, "Load Tape fullpath : %s", (const char*)fullpath);
+   motherboard_->GetTape()->InsertTape (fullpath);
+   setup_->Save();
+   logger_->Write("Tape", LogNotice, "file loaded. Exiting menu");
 
-   // List cartridge available
-   // Show contents of root directory
+   motherboard_->OnOff();
+   return IAction::Action_QuitMenu;
+}
+
+IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionReturn (ScreenMenu::* load_action)(const char*))
+{
    DIR Directory;
    FILINFO *FileInfo = new FILINFO;
-   FRESULT Result = f_findfirst(&Directory, FileInfo, PATH_CARTIRDGE, "*");
+   FRESULT Result = f_findfirst(&Directory, FileInfo, path, "*");
    std::vector<FILINFO*> cartridge_list(20);
 
    int limit = 0;
@@ -158,7 +178,7 @@ IAction::ActionReturn ScreenMenu::InsertCartridge()
    
    for (auto& it:cartridge_list)
    {
-      int place = nb_file_ordered;
+      unsigned int place = nb_file_ordered;
       // find right place
       for (unsigned int i = 0; i < nb_file_ordered && place == nb_file_ordered; i++)
       {
@@ -193,7 +213,7 @@ IAction::ActionReturn ScreenMenu::InsertCartridge()
    {
       // Display menu bitmap
       logger_->Write("Menu", LogNotice, "Added %s to menu", array_ordered[i]->fname);
-      file_menu->GetMenu()->AddMenuItem(array_ordered[i]->fname, new ActionMenuWithParameter<const char*>(this, &ScreenMenu::LoadCartridge, array_ordered[i]->fname) );
+      file_menu->GetMenu()->AddMenuItem(array_ordered[i]->fname, new ActionMenuWithParameter<const char*>(this, load_action, array_ordered[i]->fname) );
       
       i++;
    }
@@ -211,8 +231,29 @@ IAction::ActionReturn ScreenMenu::InsertCartridge()
    Windows::SetFocus(focus);
    main_menu_->Invalidate ();
 
-   logger_->Write("Menu", LogNotice, "Return from InsertCartridge : %i", return_value);
+   logger_->Write("Menu", LogNotice, "Return from InsertMedia : %i", return_value);
    return return_value;
+}
+
+IAction::ActionReturn ScreenMenu::InsertCartridge()
+{
+   // List cartridge available
+   // Show contents of root directory
+   return InsertMedia (PATH_CARTIRDGE, &ScreenMenu::LoadCartridge);
+}
+
+IAction::ActionReturn ScreenMenu::InsertDisk()
+{
+   // List cartridge available
+   // Show contents of root directory
+   return InsertMedia (PATH_CARTIRDGE, &ScreenMenu::LoadDisk);
+}
+
+IAction::ActionReturn ScreenMenu::InsertTape()
+{
+   // List cartridge available
+   // Show contents of root directory
+   return InsertMedia (PATH_CARTIRDGE, &ScreenMenu::LoadTape);
 }
 
 IAction::ActionReturn ScreenMenu::SugarSetup()
@@ -245,28 +286,24 @@ IAction::ActionReturn ScreenMenu::HardwareSetup()
 IAction::ActionReturn ScreenMenu::Save()
 {
    snapshot_->SaveSnapshot(PATH_QUICK_SNA);
-   resume_ = true;
    return IAction::Action_QuitMenu;
 }
 
 IAction::ActionReturn ScreenMenu::Load()
 {
    snapshot_->LoadSnapshot(PATH_QUICK_SNA);
-   resume_ = true;
    return IAction::Action_QuitMenu;
 }
 
 IAction::ActionReturn ScreenMenu::Reset()
 {
    motherboard_->OnOff();
-   resume_ = true;
    return IAction::Action_QuitMenu;
 }
 
 IAction::ActionReturn ScreenMenu::ShutDown()
 {
    logger_->Write("Menu", LogNotice, "ACTION : SHUTDOWN");
-   resume_ = true;
    return IAction::Action_QuitMenu;
 }
 

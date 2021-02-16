@@ -51,18 +51,21 @@ public:
    IAction::ActionReturn Back();
    IAction::ActionReturn HardwareSetup();
    IAction::ActionReturn InsertCartridge();
+   IAction::ActionReturn InsertDisk();
+   IAction::ActionReturn InsertTape();
    IAction::ActionReturn Load();
-   IAction::ActionReturn LoadCartridge( const char* path);
+   IAction::ActionReturn LoadCartridge ( const char* path);
+   IAction::ActionReturn LoadDisk ( const char* path);
+   IAction::ActionReturn LoadTape ( const char* path);
    IAction::ActionReturn Reset();
    IAction::ActionReturn Resume();
    IAction::ActionReturn Save();
    IAction::ActionReturn SetSync(bool* value);
    IAction::ActionReturn ShutDown();
    IAction::ActionReturn SugarSetup();
+   
+   IAction::ActionReturn InsertMedia(const char* path, IAction::ActionReturn (ScreenMenu::* load_action)(const char*));
 
-   void Down();
-   void Up();
-   IAction::ActionReturn Select();
 
    class MenuItem
    {
@@ -74,25 +77,17 @@ public:
 
 protected:
 
-   CLogger*    logger_;
-   DisplayPi* display_;
-   SoundMixer* sound_mixer_;
-   KeyboardPi* keyboard_;
-   SugarPiSetup* setup_;
+   CLogger*       logger_;
+   DisplayPi*     display_;
+   SoundMixer*    sound_mixer_;
+   KeyboardPi*    keyboard_;
+   SugarPiSetup*  setup_;
 
-   // Menus 
-   CoolspotFont *font_;
-   MenuItem* current_menu_;
-   unsigned int selected_;
-   unsigned int index_base_;
-
-   Motherboard* motherboard_;
+   Motherboard*   motherboard_;
 
    // Pending actions
-   bool resume_;
-   CSnapshot* snapshot_;
-
-   MainMenuWindows* main_menu_;
+   CSnapshot*        snapshot_;
+   MainMenuWindows*  main_menu_;
 };
 
 class ActionMenu : public IAction

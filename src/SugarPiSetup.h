@@ -28,6 +28,8 @@ public :
    SYNC_TYPE GetSync ();
 
    void LoadCartridge (const char* path);
+   void LoadDisk (const char* path);
+   void LoadTape (const char* path);
 
 protected:
   

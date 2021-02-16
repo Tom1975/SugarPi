@@ -42,6 +42,7 @@ DisplayPi::~DisplayPi()
 
 bool DisplayPi::Initialization()
 {
+   /*
    unsigned int screen_width = 640;
    unsigned int screen_height = 480;
 
@@ -56,7 +57,7 @@ bool DisplayPi::Initialization()
 
    // Now we have real width/height : compute best values for display, to have :
    // - good pixel ratio (4x3)
-   /*
+   
    float ratio = ((float)GetWidth())/((float)GetHeight());
    if ( (screen_width / screen_height ) < ratio )
    {

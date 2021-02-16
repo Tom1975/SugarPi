@@ -364,7 +364,7 @@ IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
    {
       case IEvent::Event::DOWN:
          // Go down in the menu
-         if  (current_focus_ < list_item_.size()-1)
+         if  (current_focus_ < static_cast<int>(list_item_.size())-1)
          {
             CLogger::Get ()->Write ("Windows", LogNotice,"DOWN in menu");
             current_focus_++;
@@ -382,7 +382,8 @@ IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
             Redraw (true);
          }
          break;
-         
+      default:
+         break;
    }
    
    return IAction::ActionReturn::Action_None;
