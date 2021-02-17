@@ -357,6 +357,9 @@ IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
             Redraw (true);
          }
          break;
+      case IEvent::Event::BACK:
+         return IAction::ActionReturn::Action_Back;
+         break;         
       default:
          break;
    }

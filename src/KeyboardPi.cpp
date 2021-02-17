@@ -475,7 +475,7 @@ bool KeyboardPi::IsSelect()
 {
    return select_;
 }
-
+/*
 bool KeyboardPi::IsDown()
 {
    if (action_buttons_ & (GamePadButtonDown))
@@ -489,15 +489,14 @@ bool KeyboardPi::IsDown()
    {
       return false;
    }
+}*/
 
-}
-
-bool KeyboardPi::IsUp()
+bool KeyboardPi::IsButton(TGamePadButton button)
 {
-   if (action_buttons_ & (GamePadButtonUp))
+   if (action_buttons_ & (button))
    {
       mutex_.Acquire();
-      action_buttons_ &= ~(GamePadButtonUp);
+      action_buttons_ &= ~(button);
       mutex_.Release();
       return true;
    }

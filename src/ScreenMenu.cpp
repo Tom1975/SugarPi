@@ -132,7 +132,6 @@ IAction::ActionReturn ScreenMenu::LoadDisk( const char* path)
    setup_->Save();
    logger_->Write("Disk", LogNotice, "file loaded. Exiting menu");
 
-   motherboard_->OnOff();
    return IAction::Action_QuitMenu;
 }
 
@@ -146,7 +145,6 @@ IAction::ActionReturn ScreenMenu::LoadTape( const char* path)
    setup_->Save();
    logger_->Write("Tape", LogNotice, "file loaded. Exiting menu");
 
-   motherboard_->OnOff();
    return IAction::Action_QuitMenu;
 }
 
@@ -159,19 +157,20 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
 
    int limit = 0;
    // Create menu
+   logger_->Write("Menu", LogNotice, "Insert Media : Start of directory reading...");
    unsigned int i = 0;
-   for (i = 0; Result == FR_OK && FileInfo->fname[0] && limit < 12; i++)
+   for (i = 0; Result == FR_OK && FileInfo->fname[0]; i++)
    {
       limit++;
       if (!(FileInfo->fattrib & (AM_HID | AM_SYS)))
       {
-         logger_->Write("Tape", LogNotice, "Load file => %s", FileInfo->fname);
          cartridge_list.push_back(FileInfo);
       }
       FileInfo = new FILINFO;
       Result = f_findnext(&Directory, FileInfo);
    }
-
+   logger_->Write("Menu", LogNotice, "Insert Media : End of directory reading");
+   logger_->Write("Menu", LogNotice, "Insert Media : Start of alphabetical sorting...");
    // Alphabetical Order
    FILINFO** array_ordered = new FILINFO* [cartridge_list.size()];
    unsigned int nb_file_ordered = 0;
@@ -200,6 +199,9 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
       array_ordered[place] = it;
       nb_file_ordered++;
    }
+   logger_->Write("Menu", LogNotice, "Insert Media : End of alphabetical sorting");
+
+   logger_->Write("Menu", LogNotice, "Insert Media : Strat of Menu creation...");
 
    // Create selection menu
    Windows* focus = Windows::GetFocus();
@@ -215,6 +217,7 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
       
       i++;
    }
+   logger_->Write("Menu", LogNotice, "Insert Media : End of Menu creation");
    file_menu->ResetMenu ();
 
    IAction::ActionReturn return_value = file_menu->DoScreen (this);
@@ -309,17 +312,21 @@ IEvent::Event ScreenMenu::GetEvent ()
 {
    IEvent::Event event = IEvent::NONE;
 
-   if (keyboard_->IsDown())
+   if (keyboard_->IsButton(TGamePadButton::GamePadButtonDown))
    {
       event = IEvent::DOWN;
    }
-   if (keyboard_->IsUp())
+   else if (keyboard_->IsButton(TGamePadButton::GamePadButtonUp))
    {
       event = IEvent::UP;
    }
-   if (keyboard_->IsAction())
+   else if (keyboard_->IsAction())
    {
       event = IEvent::SELECT;
+   }   
+   else if (keyboard_->IsButton(TGamePadButton::GamePadButtonLeft))
+   {
+      event = IEvent::LEFT;
    }   
    return event;
 }

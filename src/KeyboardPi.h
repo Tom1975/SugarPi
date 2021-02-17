@@ -93,8 +93,7 @@ public:
 
    void ClearBuffer();
    bool IsSelect();
-   bool IsDown();
-   bool IsUp();
+   bool IsButton(TGamePadButton button);
    bool IsAction();
    void ReinitSelect();
 
