@@ -72,11 +72,18 @@ void Windows::RedrawWindow ()
 
 void Windows::RedrawChildren ()
 {
+
    WindowsQueue** current_queue = &windows_children_;
    while ( *current_queue != nullptr)
    {  
-      (*current_queue)->wnd_->RedrawWindow();
-      (*current_queue)->wnd_->RedrawChildren();
+      if ( (*current_queue)->wnd_->x_ >= 0 && (*current_queue)->wnd_->y_ >= 0 
+      && (*current_queue)->wnd_->width_ + (*current_queue)->wnd_->x_ < width_ 
+      && (*current_queue)->wnd_->height_ + (*current_queue)->wnd_->y_ < height_ )
+      {
+         (*current_queue)->wnd_->RedrawWindow();
+         (*current_queue)->wnd_->RedrawChildren();
+      }
+
       current_queue = &((*current_queue)->next_);
    }
 
