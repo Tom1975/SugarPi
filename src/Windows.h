@@ -64,7 +64,10 @@ public:
    void Invalidate ();
    static Windows* GetFocus() { return focus_;}
    static void SetFocus(Windows* focus) { focus_ = focus;}
-
+   int GetX(){return x_;}
+   int GetY(){return y_;}
+   unsigned int GetWidth(){return width_;}
+   unsigned int GetHeight(){return height_;}
 protected:
 
    // Display
@@ -106,12 +109,29 @@ protected:
    IAction* action_;
 };
 
+class ScrollWindows : public Windows
+{
+public:
+   ScrollWindows (DisplayPi* display);
+   virtual ~ScrollWindows ();
+
+   virtual void RedrawChildren ();
+   virtual void WindowsToDisplay(int& x, int& y);
+   virtual void Scroll ( int offset_x, int offset_y);
+
+protected:
+   int scroll_offset_x_;
+   int scroll_offset_y_;
+
+};
+
 class MenuWindows : public Windows
 {
 public:
    MenuWindows (DisplayPi* display);
    virtual ~MenuWindows ();
 
+   virtual void CreateWindow ( Windows* parent, int x, int y, unsigned int width, unsigned int height);
    virtual void AddMenuItem (const char* label, IAction* action = nullptr);
    virtual void AddCheckMenuItem (const char* label, bool* value, IAction* action = nullptr);
    virtual void RedrawWindow ();
@@ -119,9 +139,11 @@ public:
    virtual void SetFocus (unsigned int index = 0);
 
 protected:
+   void ComputeScroller();
+
+   ScrollWindows scroll_window_;
    int current_focus_;
    std::vector<MenuItemWindows*> list_item_;
-
 
 };
 

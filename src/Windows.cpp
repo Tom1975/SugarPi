@@ -57,13 +57,19 @@ void Windows::AddChild(Windows* child)
 
 void Windows::WindowsToDisplay(int& x, int& y)
 {
-   Windows* wnd = this;
+   x += x_;
+   y += y_;
+   if ( parent_ != nullptr)
+   {
+      parent_->WindowsToDisplay ( x, y);
+   }
+   /*Windows* wnd = this;
    while ( wnd->parent_ != nullptr)
    {
       wnd = wnd->parent_;
       x += wnd->x_;
       y += wnd->y_;
-   }
+   }*/
 }
 
 void Windows::RedrawWindow ()
@@ -200,8 +206,8 @@ void MenuItemWindows::SetAction (IAction* action)
 
 void MenuItemWindows::RedrawWindow ( )
 {
-   int x = x_ + 15;
-   int y = y_;
+   int x = 15;
+   int y = 0;
    WindowsToDisplay(x, y);   
 
    // Focus ?
@@ -252,8 +258,8 @@ void CheckMenuItemWindows::CreateWindow (const char* label, bool* value, Windows
 
 void CheckMenuItemWindows::RedrawWindow ( )
 {
-   int x = x_ + 15;
-   int y = y_;
+   int x = 15;
+   int y = 0;
    WindowsToDisplay(x, y);   
 
    // Focus ?
@@ -289,8 +295,56 @@ IAction::ActionReturn CheckMenuItemWindows::HandleEvent( IEvent::Event event)
 
    return IAction::ActionReturn::Action_None;
 }
+
 ////////////////////////////////////////////////////////////////////////////////////
-MenuWindows::MenuWindows (DisplayPi* display) : Windows (display), current_focus_(-1)
+
+ScrollWindows::ScrollWindows (DisplayPi* display) : Windows (display), scroll_offset_x_(0), scroll_offset_y_(0)
+{
+
+}
+
+ScrollWindows::~ScrollWindows ()
+{
+   
+}
+
+
+void ScrollWindows::RedrawChildren ()
+{
+
+   WindowsQueue** current_queue = &windows_children_;
+   while ( *current_queue != nullptr)
+   {  
+      if ( (*current_queue)->wnd_->GetX() + scroll_offset_x_>= 0 && (*current_queue)->wnd_->GetY() +scroll_offset_y_>= 0 
+      && (*current_queue)->wnd_->GetWidth() + (*current_queue)->wnd_->GetX() + scroll_offset_x_< width_ 
+      && (*current_queue)->wnd_->GetHeight() + (*current_queue)->wnd_->GetY() + scroll_offset_y_< height_ )
+      {
+         (*current_queue)->wnd_->RedrawWindow();
+         (*current_queue)->wnd_->RedrawChildren();
+      }
+
+      current_queue = &((*current_queue)->next_);
+   }
+}
+
+void ScrollWindows::WindowsToDisplay(int& x, int& y)
+{
+   x += x_ + scroll_offset_x_;
+   y += y_ + scroll_offset_y_;
+   if ( parent_ != nullptr)
+   {
+      parent_->WindowsToDisplay ( x, y);
+   }
+}
+
+void ScrollWindows::Scroll ( int offset_x, int offset_y)
+{
+   scroll_offset_x_ = offset_x;
+   scroll_offset_y_ = offset_y;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+MenuWindows::MenuWindows (DisplayPi* display) : Windows (display), current_focus_(-1), scroll_window_(display)
 {
 
 }
@@ -305,11 +359,20 @@ MenuWindows::~MenuWindows ()
    list_item_.clear();
 }
 
+void MenuWindows::CreateWindow ( Windows* parent, int x, int y, unsigned int width, unsigned int height)
+{
+   Windows::CreateWindow( parent, x, y, width, height);
+
+   // Add a simple windows that will be used for scrolling
+   scroll_window_.CreateWindow ( this, 0, 0, width, height);
+}
+
+
 void MenuWindows::AddMenuItem (const char* label, IAction* action)
 {
    // Add item to menu
    MenuItemWindows* item = new MenuItemWindows (display_);
-   item->CreateWindow ( label, this, 10, list_item_.size()*20, 800, 19);
+   item->CreateWindow ( label, &scroll_window_, 10, list_item_.size()*20, 800, 19);
    item->SetAction(action);
 
    list_item_.push_back(item);
@@ -322,7 +385,7 @@ void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* act
 {
    // Add item to menu
    CheckMenuItemWindows* item = new CheckMenuItemWindows (display_);
-   item->CreateWindow ( label, value, this, 10, list_item_.size()*20, 800, 19);
+   item->CreateWindow ( label, value, &scroll_window_, 10, list_item_.size()*20, 800, 19);
    item->SetAction(action);
 
    list_item_.push_back(item);
@@ -339,6 +402,27 @@ void MenuWindows::RedrawWindow ()
    int y = 47;
    WindowsToDisplay(x, y);
    display_->DisplayText("SugarPi", x, y);
+}
+
+void MenuWindows::ComputeScroller()
+{
+   // check current focus, depending on windows size
+   int distant_to_top = current_focus_ * 20;
+   int distant_to_bottom = (list_item_.size() - (current_focus_+1)) *20;
+   int win_h = distant_to_top - height_ / 2;
+   int win_h2b = distant_to_bottom - height_ / 2;
+
+   // rules : 
+   int scroll_y;
+   if ( win_h < 0 || win_h2b < 0)
+   {
+      scroll_y = 0;
+   } 
+   else
+   {
+      scroll_y = win_h;
+   }
+   scroll_window_.Scroll ( 0, scroll_y);
 }
 
 IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
