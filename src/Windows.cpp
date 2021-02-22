@@ -74,25 +74,28 @@ void Windows::WindowsToDisplay(int& x, int& y)
 
 void Windows::RedrawWindow ()
 {
+   CLogger::Get ()->Write("Menu", LogNotice, "Windows::RedrawWindow");
 }
 
 void Windows::RedrawChildren ()
 {
-
+   CLogger::Get ()->Write("Menu", LogNotice, "Windows::RedrawChildren");
    WindowsQueue** current_queue = &windows_children_;
    while ( *current_queue != nullptr)
    {  
-      if ( (*current_queue)->wnd_->x_ >= 0 && (*current_queue)->wnd_->y_ >= 0 
-      && (*current_queue)->wnd_->width_ + (*current_queue)->wnd_->x_ < width_ 
-      && (*current_queue)->wnd_->height_ + (*current_queue)->wnd_->y_ < height_ )
+      // If a part of the windows can be displayed : do it !
+      /*if ( (*current_queue)->wnd_->x_ + (*current_queue)->wnd_->width_>= 0 && (*current_queue)->wnd_->y_ + (*current_queue)->wnd_->height_ >= 0 
+      && (*current_queue)->wnd_->x_ <= width_ 
+      && (*current_queue)->wnd_->y_ <= height_ )*/
       {
+         CLogger::Get ()->Write("Menu", LogNotice, "Draw a child window...");
          (*current_queue)->wnd_->RedrawWindow();
          (*current_queue)->wnd_->RedrawChildren();
       }
 
       current_queue = &((*current_queue)->next_);
    }
-
+   CLogger::Get ()->Write("Menu", LogNotice, "Windows::RedrawChildren : Done !");
 
 }
 
@@ -120,7 +123,6 @@ void Windows::Redraw (bool clear)
 
 IAction::ActionReturn Windows::DoScreen (IEvent* event_handler)
 {
-
    // Redraw the window
    Redraw (true);
     
@@ -206,6 +208,7 @@ void MenuItemWindows::SetAction (IAction* action)
 
 void MenuItemWindows::RedrawWindow ( )
 {
+   CLogger::Get ()->Write("Menu", LogNotice, "MenuItemWindows::RedrawWindow");
    int x = 15;
    int y = 0;
    WindowsToDisplay(x, y);   
@@ -258,6 +261,7 @@ void CheckMenuItemWindows::CreateWindow (const char* label, bool* value, Windows
 
 void CheckMenuItemWindows::RedrawWindow ( )
 {
+   CLogger::Get ()->Write("Menu", LogNotice, "CheckMenuItemWindows::RedrawWindow");
    int x = 15;
    int y = 0;
    WindowsToDisplay(x, y);   
@@ -311,7 +315,7 @@ ScrollWindows::~ScrollWindows ()
 
 void ScrollWindows::RedrawChildren ()
 {
-
+   CLogger::Get ()->Write("Menu", LogNotice, "ScrollWindows::RedrawChildren");
    WindowsQueue** current_queue = &windows_children_;
    while ( *current_queue != nullptr)
    {  
@@ -325,6 +329,7 @@ void ScrollWindows::RedrawChildren ()
 
       current_queue = &((*current_queue)->next_);
    }
+   CLogger::Get ()->Write("Menu", LogNotice, "ScrollWindows::RedrawChildren Done");
 }
 
 void ScrollWindows::WindowsToDisplay(int& x, int& y)
@@ -370,6 +375,8 @@ void MenuWindows::CreateWindow ( Windows* parent, int x, int y, unsigned int wid
 
 void MenuWindows::AddMenuItem (const char* label, IAction* action)
 {
+   CLogger::Get ()->Write("Menu", LogNotice, "add menu : %s ", label);
+
    // Add item to menu
    MenuItemWindows* item = new MenuItemWindows (display_);
    item->CreateWindow ( label, &scroll_window_, 10, list_item_.size()*20, 800, 19);
@@ -384,6 +391,7 @@ void MenuWindows::AddMenuItem (const char* label, IAction* action)
 void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* action)
 {
    // Add item to menu
+   CLogger::Get ()->Write("Menu", LogNotice, "add menucheck : %s ", label);
    CheckMenuItemWindows* item = new CheckMenuItemWindows (display_);
    item->CreateWindow ( label, value, &scroll_window_, 10, list_item_.size()*20, 800, 19);
    item->SetAction(action);
@@ -398,6 +406,7 @@ void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* act
 
 void MenuWindows::RedrawWindow ()
 {
+   CLogger::Get ()->Write("Menu", LogNotice, "MenuWindows::RedrawWindow");
    int x = 450;
    int y = 47;
    WindowsToDisplay(x, y);
@@ -406,6 +415,7 @@ void MenuWindows::RedrawWindow ()
 
 void MenuWindows::ComputeScroller()
 {
+   CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller");
    // check current focus, depending on windows size
    int distant_to_top = current_focus_ * 20;
    int distant_to_bottom = (list_item_.size() - (current_focus_+1)) *20;
@@ -423,6 +433,7 @@ void MenuWindows::ComputeScroller()
       scroll_y = win_h;
    }
    scroll_window_.Scroll ( 0, scroll_y);
+   CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller : Done");
 }
 
 IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
