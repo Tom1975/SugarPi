@@ -141,8 +141,8 @@ public:
 protected:
    void ComputeScroller();
 
-   ScrollWindows scroll_window_;
    int current_focus_;
+   ScrollWindows scroll_window_;
    std::vector<MenuItemWindows*> list_item_;
 
 };

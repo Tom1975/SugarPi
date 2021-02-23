@@ -139,9 +139,16 @@ IAction::ActionReturn Windows::DoScreen (IEvent* event_handler)
       else
       {
          // Send it to focused window
-         IAction::ActionReturn retval = HandleEvent (event);
+         IAction::ActionReturn retval = IAction::Action_None;
+         if ( focus_ != nullptr)
+         {
+            retval = focus_->HandleEvent (event);
+         }         
          switch( retval )
          {
+            case IAction::Action_None:
+               CTimer::Get ()->MsDelay (1);
+               break;
             case IAction::Action_Back:
             case IAction::Action_QuitMenu:
             case IAction::Action_Shutdown:
@@ -162,11 +169,17 @@ IAction::ActionReturn Windows::DoScreen (IEvent* event_handler)
 
 IAction::ActionReturn Windows::HandleEvent( IEvent::Event event)
 {
+   if ( parent_ != nullptr)
+   {
+      return parent_->HandleEvent(event);
+   }
+
    // try to pass event to focused window
+   /*
    if ( focus_ != nullptr)
    {
       return focus_->HandleEvent (event);
-   }
+   }*/
 
    // Otherwise, nothing to do here... which means we can leave !
    return IAction::ActionReturn::Action_QuitMenu;
@@ -301,7 +314,6 @@ IAction::ActionReturn CheckMenuItemWindows::HandleEvent( IEvent::Event event)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-
 ScrollWindows::ScrollWindows (DisplayPi* display) : Windows (display), scroll_offset_x_(0), scroll_offset_y_(0)
 {
 
