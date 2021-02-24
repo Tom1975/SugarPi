@@ -127,10 +127,10 @@ IAction::ActionReturn ScreenMenu::LoadDisk( const char* path)
    fullpath.Append( path);
    logger_->Write("Menu", LogNotice, "Load Disk fullpath : %s", (const char*)fullpath);
    
-   motherboard_->GetFDC()->LoadDisk(0, fullpath, false);
+   int ret = motherboard_->GetFDC()->LoadDisk(0, fullpath, false);
+   logger_->Write("Disk", LogNotice, "file loaded : %i. Exiting menu", ret);
 
    setup_->Save();
-   logger_->Write("Disk", LogNotice, "file loaded. Exiting menu");
 
    return IAction::Action_QuitMenu;
 }
