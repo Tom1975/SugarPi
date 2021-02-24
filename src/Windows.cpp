@@ -445,7 +445,7 @@ void MenuWindows::ComputeScroller()
       scroll_y = win_h;
    }
    scroll_window_.Scroll ( 0, scroll_y);
-   CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller : Done");
+   CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller Done; y = %i", scroll_y);
 }
 
 IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
