@@ -50,7 +50,7 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    motherboard_->SetLog(&log_);
 
    motherboard_->SetPlus(true);
-   motherboard_->InitMotherbard(nullptr, nullptr, display_, nullptr, nullptr, nullptr);
+   motherboard_->InitMotherbard(&log_, nullptr, display_, nullptr, nullptr, nullptr);
    motherboard_->GetPSG()->SetLog(&log_);
    motherboard_->GetPSG()->InitSound(sound_);
 
