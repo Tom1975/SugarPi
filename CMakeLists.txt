@@ -4,6 +4,21 @@ cmake_minimum_required(VERSION 3.16.3)
 #Project name
 project(SugarPi VERSION 1.2.0)
 
+# include circle dir
+set ( CIRCLEHOME "${CMAKE_CURRENT_SOURCE_DIR}/circle")
+
+include_directories( 
+                     ${CMAKE_CURRENT_SOURCE_DIR}/.
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/vc4
+                     ${CMAKE_CURRENT_SOURCE_DIR}/CPCCore/zlib_pi
+                     ${CIRCLEHOME}/include 
+                     ${CIRCLEHOME}/addon
+                     ${CIRCLEHOME}/addon/vc4
+                     ${CIRCLEHOME}/addon/vc4/interface/Khronos/include
+                     ${CIRCLEHOME}/app/lib
+                   )
+
 #source files directory
 set(Source_Files
       src/main.cpp
