@@ -6,7 +6,72 @@ project(SugarPi VERSION 1.2.0)
 
 #source files directory
 set(Source_Files
-"src/main.c"
+      src/main.cpp
+		src/kernel.cpp
+		src/SugarPiSetup.cpp
+		src/ConfigurationManager.cpp
+		src/DisplayPi.cpp
+		src/emulation.cpp
+		src/KeyboardPi.cpp
+		src/log.cpp
+		src/SoundPi.cpp
+		src/ScreenMenu.cpp
+		src/Windows.cpp
+		res/coolspot.cpp
+		CPCCore/CPCCoreEmu/Asic.cpp
+		CPCCore/CPCCoreEmu/Bus.cpp
+		CPCCore/CPCCoreEmu/CAPSFile.cpp
+		CPCCore/CPCCoreEmu/ClockLine.cpp
+		CPCCore/CPCCoreEmu/CRC.cpp
+		CPCCore/CPCCoreEmu/CRTC.cpp
+		CPCCore/CPCCoreEmu/CRTC_0.cpp
+		CPCCore/CPCCoreEmu/CRTC_1.cpp
+		CPCCore/CPCCoreEmu/CRTC_2.cpp
+		CPCCore/CPCCoreEmu/CRTC_3_4.cpp
+		CPCCore/CPCCoreEmu/DiskBuilder.cpp
+		CPCCore/CPCCoreEmu/DiskContainer.cpp
+		CPCCore/CPCCoreEmu/DiskGen.cpp
+		CPCCore/CPCCoreEmu/DMA.cpp
+		CPCCore/CPCCoreEmu/DskTypeManager.cpp
+		CPCCore/CPCCoreEmu/FDC.cpp
+		CPCCore/CPCCoreEmu/FileAccess.cpp
+		CPCCore/CPCCoreEmu/FormatTypeCTRAW.cpp
+		CPCCore/CPCCoreEmu/FormatTypeDSK.cpp
+		CPCCore/CPCCoreEmu/FormatTypeEDSK.cpp
+		CPCCore/CPCCoreEmu/FormatTypeHFE.cpp
+		CPCCore/CPCCoreEmu/FormatTypeHFEv3.cpp
+		CPCCore/CPCCoreEmu/FormatTypeIPF.cpp
+		CPCCore/CPCCoreEmu/IDisk.cpp
+		CPCCore/CPCCoreEmu/KeyboardHandler.cpp
+		CPCCore/CPCCoreEmu/MediaManager.cpp
+		CPCCore/CPCCoreEmu/Memoire.cpp
+		CPCCore/CPCCoreEmu/Monitor.cpp
+		CPCCore/CPCCoreEmu/Motherboard.cpp
+		CPCCore/CPCCoreEmu/MultifaceII.cpp
+		CPCCore/CPCCoreEmu/PPI.cpp
+		CPCCore/CPCCoreEmu/PlayCity.cpp
+		CPCCore/CPCCoreEmu/PrinterDefault.cpp
+		CPCCore/CPCCoreEmu/PSG.cpp
+		CPCCore/CPCCoreEmu/rand.cpp
+		CPCCore/CPCCoreEmu/Sig.cpp
+		CPCCore/CPCCoreEmu/simple_filesystem.cpp
+		CPCCore/CPCCoreEmu/simple_math.cpp
+		CPCCore/CPCCoreEmu/simple_regex.cpp
+		CPCCore/CPCCoreEmu/simple_stdio.cpp
+		CPCCore/CPCCoreEmu/simple_string.cpp
+		CPCCore/CPCCoreEmu/Snapshot.cpp
+		CPCCore/CPCCoreEmu/SoundMixer.cpp
+		CPCCore/CPCCoreEmu/Tape.cpp
+		CPCCore/CPCCoreEmu/VGA.cpp
+		CPCCore/CPCCoreEmu/YMZ294.cpp
+		CPCCore/CPCCoreEmu/Z80_Full.cpp
+		CPCCore/CPCCoreEmu/Z80_Opcodes_fetch.cpp
+      CPCCore/CPCCoreEmu/Z80_Opcodes_ior.cpp
+      CPCCore/CPCCoreEmu/Z80_Opcodes_iow.cpp
+      CPCCore/CPCCoreEmu/Z80_Opcodes_memr.cpp
+      CPCCore/CPCCoreEmu/Z80_Opcodes_memw.cpp
+      CPCCore/CPCCoreEmu/Z80_Opcodes_z80wait.cpp
+		CPCCore/CPCCoreEmu/Z84C30.cpp
 )
 
 set(ALL_FILES ${Source_Files})
