@@ -1,11 +1,23 @@
 
 #Project version minimum
-cmake_minimum_required(VERSION 3.16.3)
+cmake_minimum_required(VERSION 3.16.5)
+
 #Project name
 project(SugarPi VERSION 1.2.0)
 
 # include circle dir
 set ( CIRCLEHOME "${CMAKE_CURRENT_SOURCE_DIR}/circle")
+
+
+set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ARM_ALLOW_MULTI_CORE  " )
+
+# ARCH	?= -DAARCH=64 -mcpu=cortex-a72 -mlittle-endian -mcmodel=small
+# TARGET	?= kernel8-rpi4
+# PREFIX	= $(PREFIX64)
+# LOADADDR = 0x80000
+# CRTBEGIN != $(CPP) $(ARCH) -print-file-name=crtbegin.o
+# CRTEND   != $(CPP) $(ARCH) -print-file-name=crtend.o
+
 
 include_directories( 
                      ${CMAKE_CURRENT_SOURCE_DIR}/.
