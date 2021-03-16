@@ -1,23 +1,16 @@
 
 #Project version minimum
-cmake_minimum_required(VERSION 3.16.5)
+cmake_minimum_required(VERSION 3.12.1)
 
 #Project name
 project(SugarPi VERSION 1.2.0)
 
 # include circle dir
 set ( CIRCLEHOME "${CMAKE_CURRENT_SOURCE_DIR}/circle")
+set( OPTIMIZE "-O3")
 
-
-set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ARM_ALLOW_MULTI_CORE  " )
-
-# ARCH	?= -DAARCH=64 -mcpu=cortex-a72 -mlittle-endian -mcmodel=small
-# TARGET	?= kernel8-rpi4
-# PREFIX	= $(PREFIX64)
-# LOADADDR = 0x80000
-# CRTBEGIN != $(CPP) $(ARCH) -print-file-name=crtbegin.o
-# CRTEND   != $(CPP) $(ARCH) -print-file-name=crtend.o
-
+set( CFLAGS "${CFLAGS} -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I${CIRCLEHOME}/addon -DLOG_MIXER -DLOGFDC")
+set( CPPFLAGS "${CPPFLAGS} -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -std=c++1z")
 
 include_directories( 
                      ${CMAKE_CURRENT_SOURCE_DIR}/.
