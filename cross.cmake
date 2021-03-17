@@ -150,8 +150,8 @@ set ( DEFINE "${DEFINE} -D__circle__ -DRASPPI=${RASPI} -DSTDLIB_SUPPORT=${STDLIB
 set ( DEFINE "${DEFINE} -D__VCCOREVER__=0x04000000 -U__unix__ -U__linux__")
 
 set( AFLAGS "${AFLAGS} ${ARCH} ${DEFINE} ${INCLUDE} ${OPTIMIZE}")
-set( CFLAGS "${CFLAGS} ${ARCH} -Wall -fsigned-char -ffreestanding ${DEFINE} ${INCLUDE} ${OPTIMIZE} -g")
-set( CPPFLAGS "${CPPFLAGS} ${CFLAGS} -std=c++14 -Wno-aligned-new")
+set( CFLAGS "${CFLAGS} ${ARCH} -Wall -fsigned-char -ffreestanding ${INCLUDE} ${OPTIMIZE} -g")
+set( CPPFLAGS "${CPPFLAGS} ${CFLAGS} -std=c++17 -Wno-aligned-new")
 set( LDFLAGS "${LDFLAGS} --section-start=.init=${LOADADDR}")
 
 
