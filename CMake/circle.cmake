@@ -13,7 +13,7 @@ set( AARCH 64 CACHE STRING "Raspberry pi architecture")
 # Target : Raspberry Pi 3 / 4
 set( RASPI 4 CACHE STRING "Raspberry pi Target")
 set_property(CACHE RASPI PROPERTY STRINGS {3 4})
-set( CROSS_COMPILE aarch64-none-elf- CACHE STRING "Tools prefix")
+set( CROSS_COMPILE /mnt/d/PERSO/sync/Dropbox/Dev/02-Github/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin/aarch64-none-elf- CACHE STRING "Tools prefix")
 
 set (PREFIX	arm-none-eabi- )
 set (PREFIX64 aarch64-none-elf-)
@@ -142,9 +142,9 @@ set ( INCLUDE "${INCLUDE} -I ${CIRCLEHOME}/addon/vc4 -I ${CIRCLEHOME}/addon/vc4/
 set ( DEFINE "${DEFINE} -D__circle__ -DRASPPI=${RASPI} -DSTDLIB_SUPPORT=${STDLIB_SUPPORT}")
 set ( DEFINE "${DEFINE} -D__VCCOREVER__=0x04000000 -U__unix__ -U__linux__")
 
-set( AFLAGS "${AFLAGS} ${ARCH} ${DEFINE} ${INCLUDE} ${OPTIMIZE}")
+set( AFLAGS "${AFLAGS} ${ARCH} ${INCLUDE} ${OPTIMIZE}")
 set( CFLAGS "${CFLAGS} ${ARCH} -Wall -fsigned-char -ffreestanding ${INCLUDE} ${OPTIMIZE} -g")
-set( CPPFLAGS "${CPPFLAGS} ${CFLAGS} -std=c++17 -Wno-aligned-new")
+set( CPPFLAGS "${CPPFLAGS} ${CFLAGS} -std=c++14 -Wno-aligned-new")
 set( LDFLAGS "${LDFLAGS} --section-start=.init=${LOADADDR}")
 
 
@@ -156,14 +156,3 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPPFLAGS}" )
 add_definitions( -DRPI0=${RASPI} )
 add_definitions( ${DEFINE} )
 
-#set toolchain path
-#set(tools /mnt/d/PERSO/sync/Dropbox/Dev/02-Github/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin)
-#set(CMAKE_C_COMPILER ${tools}/aarch64-none-elf-gcc)
-#set(CMAKE_CXX_COMPILER ${tools}/aarch64-none-elf-g++)
-
-#set(CMAKE_EXE_LINKER_FLAGS "--specs=nosys.specs" CACHE INTERNAL "")
-
-#set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-#set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-#set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-#set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
