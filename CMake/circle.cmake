@@ -4,7 +4,7 @@ IF( $TC_PATH )
 STRING(APPEND TC_PATH "/")
 ENDIF()
 
-set (CIRCLEHOME CACHE STRING "./circle")
+#set (CIRCLEHOME CACHE STRING "./circle")
 
 # Specific Sugarpi : Configuration of compiler / build
 # The toolchain prefix for all toolchain executables

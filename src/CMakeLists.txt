@@ -5,6 +5,9 @@ cmake_minimum_required(VERSION 3.12.1)
 #Project name
 project(SugarPi VERSION 1.2.0)
 
+
+include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/circle.cmake)
+
 add_definitions("-std=c++1z")
 add_definitions("-DMINIMUM_DEPENDENCIES")
 
@@ -91,5 +94,6 @@ set(Source_Files
 )
 
 set(ALL_FILES ${Source_Files})
-add_executable(${PROJECT_NAME} ${ALL_FILES})
-target_link_libraries(${PROJECT_NAME} ../CMake/libcircle.a )
+target_link_libraries(SugarPi libcircle)
+add_executable(SugarPi ${ALL_FILES})
+add_dependencies (SugarPi libcircle)

@@ -1,6 +1,5 @@
 project(libcircle)
 
-set (CIRCLEHOME "../../circle")
 include (../circle.cmake)
 
 include_directories( 
