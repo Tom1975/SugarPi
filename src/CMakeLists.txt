@@ -94,6 +94,6 @@ set(Source_Files
 )
 
 set(ALL_FILES ${Source_Files})
-target_link_libraries(SugarPi libcircle)
 add_executable(SugarPi ${ALL_FILES})
-add_dependencies (SugarPi libcircle)
+add_dependencies (SugarPi circle)
+target_link_libraries(SugarPi circle)

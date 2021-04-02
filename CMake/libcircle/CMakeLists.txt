@@ -1,4 +1,4 @@
-project(libcircle)
+project(circle)
 
 include (../circle.cmake)
 
@@ -117,7 +117,6 @@ endif()
 
 
 set(ALL_FILES ${Source_Files})
-add_library(libcircle ${ALL_FILES})
-
+add_library(circle STATIC ${ALL_FILES})
 
 

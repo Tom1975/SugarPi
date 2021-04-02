@@ -13,10 +13,10 @@ set( AARCH 64 CACHE STRING "Raspberry pi architecture")
 # Target : Raspberry Pi 3 / 4
 set( RASPI 4 CACHE STRING "Raspberry pi Target")
 set_property(CACHE RASPI PROPERTY STRINGS {3 4})
-set( CROSS_COMPILE /mnt/d/PERSO/sync/Dropbox/Dev/02-Github/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin/aarch64-none-elf- CACHE STRING "Tools prefix")
+#set( CROSS_COMPILE /mnt/d/PERSO/sync/Dropbox/Dev/02-Github/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin/aarch64-none-elf- CACHE STRING "Tools prefix")
 
-set (PREFIX	arm-none-eabi- )
-set (PREFIX64 aarch64-none-elf-)
+#set (PREFIX	arm-none-eabi- )
+#set (PREFIX64 aarch64-none-elf-)
 
 set( STDLIB_SUPPORT 1 CACHE STRING "STD lib support")
 set( CHECK_DEPS 1 CACHE STRING "set this to 0 to globally disable dependency checking")
@@ -27,12 +27,12 @@ set( GC_SECTIONS 0 CACHE STRING "set this to 1 to enable garbage collection on s
 # attempt to build a simple test program as this will fail without us using
 # the -nostartfiles option on the command line
 
-set( CMAKE_C_COMPILER ${CROSS_COMPILE}gcc )
-set( CMAKE_CXX_COMPILER ${CROSS_COMPILE}g++)
-set( CMAKE_ASM_COMPILER ${CROSS_COMPILE}gcc )
-set( CMAKE_C_LINK_EXECUTABLE ${CROSS_COMPILE}ld )
-set( CMAKE_CXX_LINK_EXECUTABLE ${CROSS_COMPILE}ld )
-set( CMAKE_AR ${CROSS_COMPILE}ar )
+#set( CMAKE_C_COMPILER ${CROSS_COMPILE}gcc )
+#set( CMAKE_CXX_COMPILER ${CROSS_COMPILE}g++)
+#set( CMAKE_ASM_COMPILER ${CROSS_COMPILE}gcc )
+#set( CMAKE_C_LINK_EXECUTABLE ${CROSS_COMPILE}ld )
+#set( CMAKE_CXX_LINK_EXECUTABLE ${CROSS_COMPILE}ld )
+#set( CMAKE_AR ${CROSS_COMPILE}ar )
 
 # Because the cross-compiler cannot directly generate a binary without complaining, just test
 # compiling a static library instead of an executable program
