@@ -93,7 +93,7 @@ set(Source_Files
 		../CPCCore/CPCCoreEmu/Z84C30.cpp
 )
 
-set(ALL_FILES ${Source_Files})
-add_executable(SugarPi ${ALL_FILES})
-add_dependencies (SugarPi circle)
-target_link_libraries(SugarPi circle)
+#set(ALL_FILES ${Source_Files})
+add_executable(SugarPi ${Source_Files})
+#add_dependencies (SugarPi circle)
+#target_link_libraries(SugarPi circle.a)
