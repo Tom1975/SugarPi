@@ -1,8 +1,8 @@
 # Set a toolchain path. You only need to set this if the toolchain isn't in
 # your system path.
-IF( $TC_PATH )
-STRING(APPEND TC_PATH "/")
-ENDIF()
+#IF( $TC_PATH )
+#STRING(APPEND TC_PATH "/")
+#ENDIF()
 
 #set (CIRCLEHOME CACHE STRING "./circle")
 
@@ -42,11 +42,11 @@ set( CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY )
 # whole project. Otherwise, this does not get set into the CACHE and therefore
 # the build doesn't know what the OBJCOPY filepath is
 
-set( CMAKE_OBJCOPY      ${TC_PATH}${CROSS_COMPILE}objcopy
-    CACHE FILEPATH "The toolchain objcopy command " FORCE )
+#set( CMAKE_OBJCOPY      ${TC_PATH}${CROSS_COMPILE}objcopy
+#    CACHE FILEPATH "The toolchain objcopy command " FORCE )
 
-set( CMAKE_OBJDUMP      ${TC_PATH}${CROSS_COMPILE}objdump
-CACHE FILEPATH "The toolchain objdump command " FORCE )
+#set( CMAKE_OBJDUMP      ${TC_PATH}${CROSS_COMPILE}objdump
+#CACHE FILEPATH "The toolchain objdump command " FORCE )
 
 # Set the common build flags, depending ARCH and RASPI
 if ( ${AARCH} STREQUAL 32)

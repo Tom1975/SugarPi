@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.12.1)
 
 #Project name
-project(SugarPi VERSION 1.2.0)
+project(SugarPiWorkspace VERSION 1.2.0)
 
 # include circle dir
 set ( CIRCLEHOME "${CMAKE_CURRENT_SOURCE_DIR}/circle" CACHE STRING "Circle home directory")
