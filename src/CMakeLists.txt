@@ -94,4 +94,5 @@ set(Source_Files
 
 set(ALL_FILES ${Source_Files})
 add_executable(SugarPi ${ALL_FILES} )
-target_link_libraries(SugarPi circle)
+
+target_link_libraries(SugarPi PUBLIC circle ${LIBM_PATH} ${LIBGCC_PATH})

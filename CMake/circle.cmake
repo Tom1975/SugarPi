@@ -153,6 +153,27 @@ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CFLAGS}" )
 set( CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS} ${AFLAGS}" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPPFLAGS}" )
 
+SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${LDFLAGS}")
+
 add_definitions( -DRPI0=${RASPI} )
 add_definitions( ${DEFINE} )
 
+execute_process(COMMAND ${CMAKE_C_COMPILER} ${ARCH} -print-file-name=libgcc.a
+OUTPUT_VARIABLE LIBGCC_PATH
+OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+execute_process(COMMAND ${CMAKE_C_COMPILER} ${ARCH} -print-file-name=libm.a
+OUTPUT_VARIABLE LIBM_PATH
+OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+
+add_compile_definitions(
+STDLIB_SUPPORT=1
+VCCOREVER=0x04000000
+)
+add_compile_options(
+-U__unix__
+-U__linux__
+)
+add_link_options(--section-start=.init=0x8000)
+add_link_options(-T ${CIRCLEHOME}/circle.ld)
