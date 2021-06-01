@@ -5,6 +5,8 @@ cmake_minimum_required(VERSION 3.12.1)
 #Project name
 project(SugarPi VERSION 1.2.0)
 
+include(CMakeListsUserConfig.txt OPTIONAL)
+
 include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/circle.cmake)
 
 add_definitions("-std=c++1z")
@@ -96,3 +98,7 @@ set(ALL_FILES ${Source_Files})
 add_executable(SugarPi ${ALL_FILES} )
 
 target_link_libraries(SugarPi PUBLIC circle ${LIBM_PATH} ${LIBGCC_PATH})
+
+#add_custom_command(TARGET SugarPi POST_BUILD
+#COMMAND objcopy SugarPi -O binary ${KERNEL}
+#)
