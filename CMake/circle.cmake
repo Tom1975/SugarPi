@@ -51,52 +51,28 @@ set( CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY )
 # Set the common build flags, depending ARCH and RASPI
 if ( ${AARCH} STREQUAL 32)
     if ( ${RASPI} STREQUAL 1)
-        if ( NOT ARCH )
-            set ( ARCH "${ARCH} -DAARCH=32 -mcpu=arm1176jzf-s -marm -mfpu=vfp -mfloat-abi=${FLOAT_ABI}")
-        endif()
-        if ( NOT KERNEL )
-            set ( KERNEL  kernel)
-        endif()
+        set ( ARCH  -DAARCH=32 -mcpu=arm1176jzf-s -marm -mfpu=vfp -mfloat-abi=${FLOAT_ABI})
+        set ( KERNEL  kernel.img)
     elseif ( ${RASPI} STREQUAL 2)
-        if ( NOT ARCH )
-            set ( ARCH "-DAARCH=32 -mcpu=cortex-a7 -marm -mfpu=neon-vfpv4 -mfloat-abi=${FLOAT_ABI}")
-        endif()
-        if ( NOT KERNEL )
-            set ( KERNEL  kernel7)
-        endif()
+        set ( ARCH -DAARCH=32 -mcpu=cortex-a7 -marm -mfpu=neon-vfpv4 -mfloat-abi=${FLOAT_ABI})
+        set ( KERNEL  kernel7.img)
     elseif ( ${RASPI} STREQUAL 3)
-        if ( NOT ARCH )
-            set ( ARCH "-DAARCH=32 -mcpu=cortex-a53 -marm -mfpu=neon-fp-armv8 -mfloat-abi=${FLOAT_ABI}")
-        endif()
-        if ( NOT KERNEL )
-            set ( KERNEL  kernel8-32)
-        endif()
+        set ( ARCH -DAARCH=32 -mcpu=cortex-a53 -marm -mfpu=neon-fp-armv8 -mfloat-abi=${FLOAT_ABI})
+        set ( KERNEL  kernel8-32.img)
     elseif ( ${RASPI} STREQUAL 4)
-        if ( NOT ARCH )
-            set ( ARCH "-DAARCH=32 -mcpu=cortex-a72 -marm -mfpu=neon-fp-armv8 -mfloat-abi=${FLOAT_ABI}")
-        endif()
-        if ( NOT KERNEL )
-            set ( KERNEL  kernel7l)
-        endif()
+        set ( ARCH -DAARCH=32 -mcpu=cortex-a72 -marm -mfpu=neon-fp-armv8 -mfloat-abi=${FLOAT_ABI})
+        set ( KERNEL  kernel7l.img)
     else ()
         MESSAGE (ERROR "RASPPI must be set to 1, 2, 3 or 4")
     endif()
     set( LOADADDR  0x8000)
 elseif (${AARCH} STREQUAL 64)
     if ( ${RASPI} STREQUAL 3)
-        if ( NOT ARCH )
-            set ( ARCH "-DAARCH=64 -mcpu=cortex-a53 -mlittle-endian -mcmodel=small")
-        endif()
-        if ( NOT KERNEL )
-            set ( KERNEL  kernel8)
-        endif()
+        set ( ARCH -DAARCH=64 -mcpu=cortex-a53 -mlittle-endian -mcmodel=small)
+        set ( KERNEL  kernel8.img)
     elseif ( ${RASPI} STREQUAL 4)
-        if ( NOT ARCH )
-            set ( ARCH "-DAARCH=64 -mcpu=cortex-a72 -mlittle-endian -mcmodel=small")
-        endif()
-        if ( NOT KERNEL )
-            set ( KERNEL  kernel8-rpi4)
-        endif()
+        set ( ARCH -DAARCH=64 -mcpu=cortex-a72 -mlittle-endian -mcmodel=small)
+        set ( KERNEL  kernel8-rpi4.img)
     else ()
         MESSAGE (ERROR "RASPPI must be set to 3 or 4")
     endif()
@@ -107,6 +83,18 @@ elseif (${AARCH} STREQUAL 64)
 else ()
     MESSAGE (ERROR "AARCH must be set to 32 or 64")
 endif()
+
+#add_compile_definitions(circle)
+add_compile_definitions(RASPPI=${RASPI})
+
+add_compile_options(${ARCH})
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-nostdinc++>)
+add_compile_options(-O2)
+add_compile_options(-Wall -fsigned-char -ffreestanding)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-std=c++17>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-aligned-new>)
 
 # Handle STDLIB_SUPPORT
 if ( ${STDLIB_SUPPORT} STREQUAL 3)
@@ -136,26 +124,30 @@ if ( NOT OPTIMIZE)
     set( OPTIMIZE "-O2")
 endif()
 
-set ( INCLUDE "${INCLUDE} -I ${CIRCLEHOME}/include -I ${CIRCLEHOME}/addon -I ${CIRCLEHOME}/app/lib")
-set ( INCLUDE "${INCLUDE} -I ${CIRCLEHOME}/addon/vc4 -I ${CIRCLEHOME}/addon/vc4/interface/khronos/include")
+#set ( INCLUDE "${INCLUDE} -I ${CIRCLEHOME}/include -I ${CIRCLEHOME}/addon -I ${CIRCLEHOME}/app/lib")
+#set ( INCLUDE "${INCLUDE} -I ${CIRCLEHOME}/addon/vc4 -I ${CIRCLEHOME}/addon/vc4/interface/khronos/include")
 
-set ( DEFINE "${DEFINE} -D__circle__ -DRASPPI=${RASPI} -DSTDLIB_SUPPORT=${STDLIB_SUPPORT}")
-set ( DEFINE "${DEFINE} -D__VCCOREVER__=0x04000000 -U__unix__ -U__linux__")
+#set ( DEFINE "${DEFINE} -D__circle__  -DSTDLIB_SUPPORT=${STDLIB_SUPPORT}")
+#set ( DEFINE "${DEFINE} -D__VCCOREVER__=0x04000000 -U__unix__ -U__linux__")
 
-set( AFLAGS "${AFLAGS} ${ARCH} ${INCLUDE} ${OPTIMIZE}")
-set( CFLAGS "${CFLAGS} ${ARCH} -Wall -fsigned-char -ffreestanding ${INCLUDE} ${OPTIMIZE} -g")
-set( CPPFLAGS "${CPPFLAGS} ${CFLAGS} -std=c++14 -Wno-aligned-new")
+add_compile_definitions( STDLIB_SUPPORT=${STDLIB_SUPPORT} VCCOREVER=0x04000000)
+add_compile_options( -U__unix__ -U__linux__ )
+
+#set( AFLAGS "${AFLAGS} ${ARCH} ${INCLUDE} ${OPTIMIZE}")
+#set( CFLAGS "${CFLAGS} ${ARCH} -Wall -fsigned-char -ffreestanding ${INCLUDE} ${OPTIMIZE} -g")
+#set( CPPFLAGS "${CPPFLAGS} ${CFLAGS} -std=c++14 -Wno-aligned-new")
 
 
 # Set the CMAKE C flags (which should also be used by the assembler!
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CFLAGS}" )
-set( CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS} ${AFLAGS}" )
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPPFLAGS}" )
+#set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CFLAGS}" )
+#set( CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS} ${AFLAGS}" )
+#set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPPFLAGS}" )
 
-SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${LDFLAGS}")
+#SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${LDFLAGS}")
 
 add_definitions( -DRPI0=${RASPI} )
-add_definitions( ${DEFINE} )
+add_definitions( -D__circle__)
+#add_definitions( ${DEFINE} )
 
 execute_process(COMMAND ${CMAKE_C_COMPILER} ${ARCH} -print-file-name=libgcc.a
 OUTPUT_VARIABLE LIBGCC_PATH
@@ -165,15 +157,6 @@ execute_process(COMMAND ${CMAKE_C_COMPILER} ${ARCH} -print-file-name=libm.a
 OUTPUT_VARIABLE LIBM_PATH
 OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-
-add_compile_definitions(
-STDLIB_SUPPORT=1
-VCCOREVER=0x04000000
-)
-add_compile_options(
--U__unix__
--U__linux__
-)
-
 add_link_options(--section-start=.init=${LOADADDR})
 add_link_options(-T ${CIRCLEHOME}/circle.ld)
+

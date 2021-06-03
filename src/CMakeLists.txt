@@ -5,12 +5,9 @@ cmake_minimum_required(VERSION 3.12.1)
 #Project name
 project(SugarPi VERSION 1.2.0)
 
-include(CMakeListsUserConfig.txt OPTIONAL)
+include(cross64.cmake OPTIONAL)
 
 include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/circle.cmake)
-
-add_definitions("-std=c++1z")
-add_definitions("-DMINIMUM_DEPENDENCIES")
 
 include_directories( 
                      ${CMAKE_CURRENT_SOURCE_DIR}/..
@@ -94,8 +91,26 @@ set(Source_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z84C30.cpp
 )
 
+add_definitions("-std=c++1z")
+add_definitions("-DMINIMUM_DEPENDENCIES")
+
+
 set(ALL_FILES ${Source_Files})
+
 add_executable(SugarPi ${ALL_FILES} )
+
+set_target_properties(SugarPi PROPERTIES LINK_FLAGS "Kernel8-rpi4.elf")
+
+target_compile_definitions(SugarPi PUBLIC -DAARCH=64)
+target_compile_definitions(SugarPi PUBLIC -DMINIMUM_DEPENDENCIES)
+target_compile_definitions(SugarPi PUBLIC -DUSE_VCHIQ_SOUND)
+target_compile_definitions(SugarPi PUBLIC -DNO_MULTITHREAD)
+target_compile_definitions(SugarPi PUBLIC -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -DLOG_MIXER -DLOGFDC )
+
+include_directories( 
+	${CIRCLE_HOME}/include
+	${CIRCLE_HOME}/addon
+)
 
 target_link_libraries(SugarPi PUBLIC circle ${LIBM_PATH} ${LIBGCC_PATH})
 
