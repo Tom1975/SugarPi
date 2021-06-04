@@ -2,6 +2,8 @@ project(circle)
 
 include (../circle.cmake)
 
+enable_language(ASM)
+
 include_directories( 
                      ${CIRCLEHOME}/include 
                      ${CIRCLEHOME}/addon
@@ -173,6 +175,11 @@ set ( Addon_fatfs_Source
    ${CIRCLEHOME}/addon/fatfs/ffunicode.c
 )
 
+set ( Vc4_Sound_Source
+   ${CIRCLEHOME}/addon/vc4/sound/vchiqsoundbasedevice.cpp
+   ${CIRCLEHOME}/addon/vc4/sound/vchiqsounddevice.cpp
+)
+
 set ( Vc4_VchiqDevice_Source
    ${CIRCLEHOME}/addon/vc4/vchiq/vchiqdevice.cpp
    ${CIRCLEHOME}/addon/vc4/vchiq/vchiq_arm.c
@@ -232,7 +239,7 @@ set(OBJS64
 )
 
 set ( Source_Files ${Source_Files} ${Usb_Sources} ${Input_Sources} ${Sched_Sources} 
-   ${fs_Sources} ${fsfat_Sources} ${Vc4_VchiqDevice_Source}
+   ${fs_Sources} ${fsfat_Sources} ${Vc4_VchiqDevice_Source} ${Vc4_Sound_Source}
    ${Addon_Linux_Sources} ${Addon_SDCard_Sources} ${Addon_fatfs_Source}
 )
 

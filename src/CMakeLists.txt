@@ -97,9 +97,11 @@ add_definitions("-DMINIMUM_DEPENDENCIES")
 
 set(ALL_FILES ${Source_Files})
 
-add_executable(SugarPi ${ALL_FILES} )
+add_executable(SugarPi )
 
-set_target_properties(SugarPi PROPERTIES LINK_FLAGS "Kernel8-rpi4.elf")
+target_sources(SugarPi PUBLIC ${ALL_FILES} )
+
+set_target_properties(SugarPi PROPERTIES LINK_FLAGS src/${KERNEL}.elf)
 
 target_compile_definitions(SugarPi PUBLIC -DAARCH=64)
 target_compile_definitions(SugarPi PUBLIC -DMINIMUM_DEPENDENCIES)
@@ -114,6 +116,6 @@ include_directories(
 
 target_link_libraries(SugarPi PUBLIC circle ${LIBM_PATH} ${LIBGCC_PATH})
 
-#add_custom_command(TARGET SugarPi POST_BUILD
-#COMMAND objcopy SugarPi -O binary ${KERNEL}
-#)
+add_custom_command(TARGET SugarPi POST_BUILD
+	COMMAND objcopy ${KERNEL}.elf -O binary ${KERNEL}.img
+)

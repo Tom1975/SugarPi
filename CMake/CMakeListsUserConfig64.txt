@@ -1,0 +1,26 @@
+################################################################################################
+# This file contains user specific configuration
+# It may contains some directory definitions (toolchain)
+#
+##### Note : for all paths, use only absolute paths, and do not use anti slash : only '/' ######
+#
+################################################################################################
+
+# The toolchain and sysroot have been downloaded from https://releases.linaro.org/components/toolchain/binaries/latest-7/arm-linux-gnueabihf
+
+message(STATUS "Setting optional environnement")
+
+set(CMAKE_TOOLCHAIN_BASE /mnt/d/PERSO/sync/Dropbox/Dev/02-Github)
+set(CMAKE_TOOLCHAIN ${CMAKE_TOOLCHAIN_BASE}/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf)
+
+set(CUSTOM_C_COMPILER ${CMAKE_TOOLCHAIN}/bin/aarch64-none-elf-gcc)
+set(CUSTOM_CXX_COMPILER ${CMAKE_TOOLCHAIN}/bin/aarch64-none-elf-g++)
+set(CUSTOM_ASM_COMPILER ${CMAKE_TOOLCHAIN}/bin/aarch64-none-elf-gcc)
+set(CUSTOM_AR  ${CMAKE_TOOLCHAIN}/bin/aarch64-none-elf-ar)
+set(CUSTOM_OBJCOPY ${CMAKE_TOOLCHAIN}/bin/aarch64-none-elf-objcopy)
+set(CUSTOM_OBJDUMP ${CMAKE_TOOLCHAIN}/bin/aarch64-none-elf-objdump)
+set(CUSTOM_LD ${CMAKE_TOOLCHAIN}/bin/aarch64-none-elf-ld)
+
+set(CUSTOM_SYSROOT ${CMAKE_TOOLCHAIN_BASE}/lib/gcc/aarch64-none-elf/9.2.1)
+
+
