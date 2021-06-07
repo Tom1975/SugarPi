@@ -101,7 +101,7 @@ add_executable(SugarPi )
 
 target_sources(SugarPi PUBLIC ${ALL_FILES} )
 
-set_target_properties(SugarPi PROPERTIES LINK_FLAGS src/${KERNEL}.elf)
+set_target_properties(SugarPi PROPERTIES LINK_FLAGS ${KERNEL}.elf)
 
 target_compile_definitions(SugarPi PUBLIC -DAARCH=64)
 target_compile_definitions(SugarPi PUBLIC -DMINIMUM_DEPENDENCIES)
@@ -117,5 +117,5 @@ include_directories(
 target_link_libraries(SugarPi PUBLIC circle ${LIBM_PATH} ${LIBGCC_PATH})
 
 add_custom_command(TARGET SugarPi POST_BUILD
-	COMMAND objcopy ${KERNEL}.elf -O binary ${KERNEL}.img
+	COMMAND ${CMAKE_OBJCOPY} ${KERNEL}.elf -O binary ${KERNEL}.img
 )
