@@ -5,12 +5,18 @@
    "version": "0.2.0",
    "configurations": [
       {
+         "name": "GDB",
          "type": "gdb",
          "request": "launch",
-         "name": "GDB",
-         "program": "${workspaceFolder}/${command:AskForProgramName}",
-         "stopOnEntry": true,
-         "arguments": ""
-      }
-   ]
+         "cwd": "${workspaceRoot}",
+         "target": "${workspaceRoot}/build/src/kernel8-rpi4.elf",
+         "gdbpath" : "/mnt/d/DEV/02-BareMetal/gcc-arm/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin/aarch64-none-elf-gdb",
+         "autorun": [
+             "target remote 172.18.24:3333",
+             "symbol-file ./build/src/kernel8-rpi4.elf",
+             "monitor reset"
+             ]
+     }]
+
+   
 }
