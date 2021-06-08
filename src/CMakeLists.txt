@@ -117,5 +117,5 @@ include_directories(
 target_link_libraries(SugarPi PUBLIC circle ${LIBM_PATH} ${LIBGCC_PATH})
 
 add_custom_command(TARGET SugarPi POST_BUILD
-	COMMAND ${CMAKE_OBJCOPY} ${KERNEL}.elf -O binary ${KERNEL}.img
+	COMMAND ${CMAKE_OBJCOPY} ../${KERNEL}.elf -O binary ../${KERNEL}.img
 )

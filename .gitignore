@@ -17,3 +17,5 @@ pi2**
 /.vscode/**
 /build/**
 all
+
+/_build/**
