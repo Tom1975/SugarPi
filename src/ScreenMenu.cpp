@@ -17,6 +17,7 @@
 #define PATH_CARTIRDGE "SD:/CART"
 #define PATH_DISK "SD:/DISK"
 #define PATH_TAPE "SD:/TAPE"
+#define PATH_CONFIGS "SD:/AMSTRAD"
 
 #define PATH_QUICK_SNA "SD:/quick.sna"
 
@@ -45,6 +46,7 @@ void MainMenuWindows::ResetMenu()
 ScreenMenu::MenuItem base_menu[] =
 {
    { "Resume",             &ScreenMenu::Resume},
+   { "Select Amstrad",     &ScreenMenu::SelectAmstrad},
    { "Insert Cartridge",   &ScreenMenu::InsertCartridge},
    { "Insert Disk",        &ScreenMenu::InsertDisk},
    { "Insert Tape",        &ScreenMenu::InsertTape},
@@ -105,6 +107,113 @@ IAction::ActionReturn ScreenMenu::Back()
 IAction::ActionReturn ScreenMenu::Resume()
 {
    return IAction::Action_QuitMenu;
+}
+
+IAction::ActionReturn ScreenMenu::LoadAmstradSetup( const char* path)
+{
+   CString fullpath = PATH_TAPE;
+   fullpath.Append( "/" );
+   fullpath.Append( path);
+   logger_->Write("Menu", LogNotice, "Load Amstrad Setup : %s", (const char*)fullpath);
+
+   // Todo : add
+   // motherboard_->LoadSetup (fullpath);
+   setup_->Save();
+   logger_->Write("Amstrad Setup ", LogNotice, "file loaded. Exiting menu");
+
+   return IAction::Action_QuitMenu;
+}
+
+IAction::ActionReturn ScreenMenu::SelectAmstrad()
+{
+   const char* path = PATH_CONFIGS;
+   DIR Directory;
+   FILINFO *FileInfo = new FILINFO;
+   FRESULT Result = f_findfirst(&Directory, FileInfo, path, "*");
+   std::vector<FILINFO*> config_list(20);
+   
+   int limit = 0;
+   // Create menu
+   logger_->Write("Menu", LogNotice, "Amstrad Setup : Start of directory reading...");
+   unsigned int i = 0;
+   for (i = 0; Result == FR_OK && FileInfo->fname[0]; i++)
+   {
+      limit++;
+      if (!(FileInfo->fattrib & (AM_HID | AM_SYS)))
+      {
+         config_list.push_back(FileInfo);
+      }
+      FileInfo = new FILINFO;
+      Result = f_findnext(&Directory, FileInfo);
+   }
+   logger_->Write("Menu", LogNotice, "Amstrad Setup : End of directory reading");
+   logger_->Write("Menu", LogNotice, "Amstrad Setup : Start of alphabetical sorting...");
+   // Alphabetical Order
+   FILINFO** array_ordered = new FILINFO* [config_list.size()];
+   unsigned int nb_file_ordered = 0;
+
+   for (auto& it:config_list)
+   {
+      unsigned int place = nb_file_ordered;
+      // find right place
+      for (unsigned int i = 0; i < nb_file_ordered && place == nb_file_ordered; i++)
+      {
+         if ( stricmp (it->fname, array_ordered[i]->fname)< 0)
+         {
+            place = i;
+         }
+      }
+      // insert it  :
+      // Move everything after place
+      if ( place != nb_file_ordered)
+      {
+         for (unsigned int i = 0; i < nb_file_ordered - place; i++)
+         {
+            array_ordered [nb_file_ordered - i] = array_ordered [nb_file_ordered - 1 - i];
+         }
+      }
+      // insert new item
+      array_ordered[place] = it;
+      nb_file_ordered++;
+   }
+   
+   logger_->Write("Menu", LogNotice, "Amstrad Setup : End of alphabetical sorting");
+
+   logger_->Write("Menu", LogNotice, "Amstrad SetupInsert Media : Strat of Menu creation...");
+
+   // Create selection menu
+   Windows* focus = Windows::GetFocus();
+
+   MainMenuWindows* file_menu = new MainMenuWindows (display_);
+
+   file_menu->GetMenu()->AddMenuItem("..", new ActionMenu( this, &ScreenMenu::Back) );
+
+   for (unsigned int i = 0; i < nb_file_ordered; i++)
+   {
+      // Display menu bitmap
+      file_menu->GetMenu()->AddMenuItem(array_ordered[i]->fname, new ActionMenuWithParameter<const char*>(this, &ScreenMenu::LoadAmstradSetup, array_ordered[i]->fname) );
+      
+      i++;
+   }
+   logger_->Write("Menu", LogNotice, " : End of Menu creation");
+   file_menu->ResetMenu ();
+
+   IAction::ActionReturn return_value = file_menu->DoScreen (this);
+
+   logger_->Write("Menu", LogNotice, "file_menu->DoScreen : %i", return_value);
+
+   delete file_menu;
+   delete [] array_ordered;
+   for (auto& it:config_list)
+   {
+      delete it;
+   }
+   Windows::SetFocus(focus);
+   main_menu_->Invalidate ();
+
+   logger_->Write("Menu", LogNotice, "Return from SelectAmstrad : %i", return_value);
+
+   return return_value;
 }
 
 IAction::ActionReturn ScreenMenu::LoadCartridge( const char* path)

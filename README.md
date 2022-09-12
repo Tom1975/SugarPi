@@ -32,7 +32,7 @@ From here, you can :
 
 ## Supported hardware
 SugarPi was developped on the Raspberry Pi3B+. It has been adapted to Raspeberry Pi4.
-I didn't test it on Raspberry Pi400, but as Circle++ doesn't support it, it may not work on it.
+It works on the PI400 hardware. Keyboard, here, is usable. Keypad can be used with the *fn* key
 
 ## Gamepad
 Gamepads are supported through gamecontrollerdb.txt.

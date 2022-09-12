@@ -54,12 +54,14 @@ public:
    IAction::ActionReturn InsertDisk();
    IAction::ActionReturn InsertTape();
    IAction::ActionReturn Load();
+   IAction::ActionReturn LoadAmstradSetup( const char* path);
    IAction::ActionReturn LoadCartridge ( const char* path);
    IAction::ActionReturn LoadDisk ( const char* path);
    IAction::ActionReturn LoadTape ( const char* path);
    IAction::ActionReturn Reset();
    IAction::ActionReturn Resume();
    IAction::ActionReturn Save();
+   IAction::ActionReturn SelectAmstrad();
    IAction::ActionReturn SetSync(bool* value);
    IAction::ActionReturn ShutDown();
    IAction::ActionReturn SugarSetup();
