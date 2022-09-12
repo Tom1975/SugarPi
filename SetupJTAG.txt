@@ -1,0 +1,22 @@
+- Connexion :
+
+	FT232H	JTAG	GPIO
+
+	ADBUS0	TCK	25
+	ADBUS1	TDI	26
+	ADBUS2	TDO	24
+	ADBUS3	TMS	27
+	ACBUS0	/TRST	22
+	ACBUS1	/SRST	not connected
+		RCLK	not connected
+	GND		GND
+	
+- Ajouter  enable_jtag_gpio=1 dans config.txt
+
+OPENCOD : 
+cd /d/DEV/02-BareMetal/OpenOCD/
+openocd -f um232h.cfg  -f rpi4.cfg
+
+Connexion : IPCNFIG pour recuperer addresse 
+gdb
+target remote 192.168.211.1:3333 // core 0

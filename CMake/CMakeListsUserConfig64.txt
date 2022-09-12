@@ -10,7 +10,7 @@
 
 message(STATUS "Setting optional environnement")
 
-set(CMAKE_TOOLCHAIN_BASE /mnt/d/PERSO/sync/Dropbox/Dev/02-Github)
+set(CMAKE_TOOLCHAIN_BASE /mnt/d/DEV/02-BareMetal/gcc-arm)
 set(CMAKE_TOOLCHAIN ${CMAKE_TOOLCHAIN_BASE}/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf)
 
 set(CUSTOM_C_COMPILER ${CMAKE_TOOLCHAIN}/bin/aarch64-none-elf-gcc)
