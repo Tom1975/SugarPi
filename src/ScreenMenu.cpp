@@ -9,6 +9,8 @@
 #include "res/button_1.h"
 #include "res/coolspot.h"
 
+#include "MachineSettings.h"
+
 #define MAX_ITEM_PER_PAGE 10
 #define MOVE_BASE 7
 
@@ -21,6 +23,7 @@
 
 #define PATH_QUICK_SNA "SD:/quick.sna"
 
+#define MAX_SIZE_BUFFER 256
 
 MainMenuWindows::MainMenuWindows (DisplayPi* display) : Windows (display)
 {
@@ -124,6 +127,36 @@ IAction::ActionReturn ScreenMenu::LoadAmstradSetup( const char* path)
    return IAction::Action_QuitMenu;
 }
 
+void ScreenMenu::LoadConfiguration  (const char* config_name, const char* ini_file)
+{
+   ConfigurationManager* configuration_manager = setup_-> GetConfigurationManager ();
+   if (configuration_manager == nullptr) return;
+   char tmp_buffer [MAX_SIZE_BUFFER ];
+
+   /*configuration_manager->GetConfiguration(config_name, "LimitSpeed", "Y", tmp_buffer, MAX_SIZE_BUFFER, ini_file);
+   if ( tmp_buffer[0] == 'F') speed_limit_ = E_FULL;
+   else if ( tmp_buffer[0] == 'V') speed_limit_ = E_VBL ;
+   else speed_limit_ = E_NONE ;
+*/
+   configuration_manager->GetConfiguration(config_name, "FD1_Path", "", tmp_buffer, MAX_SIZE_BUFFER, ini_file);
+   if ( strlen(tmp_buffer) > 0)
+   {
+      motherboard_->GetFDC()->LoadDisk (0, tmp_buffer, false);
+   }
+   configuration_manager->GetConfiguration(config_name, "FD2_Path", "", tmp_buffer, MAX_SIZE_BUFFER, ini_file);
+   if ( strlen(tmp_buffer) > 0)
+   {
+      motherboard_->GetFDC()->LoadDisk (1, tmp_buffer, false);
+   }
+
+   // Configuration
+   CString default_path_cfg = PATH_CONFIGS;
+   default_path_cfg.Append( "/" );
+   default_path_cfg.Append( "CPC6128PLUSEN.cfg");
+
+   
+}
+
 IAction::ActionReturn ScreenMenu::SelectAmstrad()
 {
    const char* path = PATH_CONFIGS;
@@ -167,16 +200,18 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
       // Move everything after place
       if ( place != nb_file_ordered)
       {
-         for (unsigned int i = 0; i < nb_file_ordered - place; i++)
+         //for (unsigned int i = 0; i < nb_file_ordered - place; i++)
+         for (unsigned int i = nb_file_ordered; i > place ; i++)
          {
-            array_ordered [nb_file_ordered - i] = array_ordered [nb_file_ordered - 1 - i];
+            array_ordered [i] = array_ordered [i-1];
+            //array_ordered [nb_file_ordered - i] = array_ordered [nb_file_ordered - 1 - i];
          }
       }
       // insert new item
       array_ordered[place] = it;
       nb_file_ordered++;
    }
-   
+
    logger_->Write("Menu", LogNotice, "Amstrad Setup : End of alphabetical sorting");
 
    logger_->Write("Menu", LogNotice, "Amstrad SetupInsert Media : Strat of Menu creation...");

@@ -42,6 +42,7 @@ OBJS	= src/main.o\
 		CPCCore/CPCCoreEmu/IDisk.o\
 		CPCCore/CPCCoreEmu/KeyboardHandler.o\
 		CPCCore/CPCCoreEmu/MediaManager.o\
+		CPCCore/CPCCoreEmu/MachineSettings.o\
 		CPCCore/CPCCoreEmu/Memoire.o\
 		CPCCore/CPCCoreEmu/Monitor.o \
 		CPCCore/CPCCoreEmu/Motherboard.o\

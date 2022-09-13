@@ -31,6 +31,8 @@ public :
    void LoadDisk (const char* path);
    void LoadTape (const char* path);
 
+   ConfigurationManager* GetConfigurationManager(){return config_;}
+
 protected:
   
    int LoadCprFromBuffer(unsigned char* buffer, int size);

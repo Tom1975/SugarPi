@@ -68,6 +68,7 @@ public:
    
    IAction::ActionReturn InsertMedia(const char* path, IAction::ActionReturn (ScreenMenu::* load_action)(const char*));
 
+   void LoadConfiguration  (const char* config_name, const char* ini_file);
 
    class MenuItem
    {
