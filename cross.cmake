@@ -7,6 +7,7 @@ IF( $TC_PATH )
 STRING(APPEND TC_PATH "/")
 ENDIF()
 
+MESSAGE (TC_PATH = ${TC_PATH})
 set (CIRCLEHOME CACHE STRING "./circle")
 
 # Specific Sugarpi : Configuration of compiler / build
@@ -17,6 +18,7 @@ set( AARCH 64 CACHE STRING "Raspberry pi architecture")
 set( RASPI 4 CACHE STRING "Raspberry pi Target")
 set_property(CACHE RASPI PROPERTY STRINGS {3 4})
 set( CROSS_COMPILE aarch64-none-elf- CACHE STRING "Tools prefix")
+
 
 set (PREFIX	arm-none-eabi- )
 set (PREFIX64 aarch64-none-elf-)
@@ -34,12 +36,12 @@ set ( DEFINE -DARM_ALLOW_MULTI_CORE)
 # attempt to build a simple test program as this will fail without us using
 # the -nostartfiles option on the command line
 
-set( CMAKE_C_COMPILER ${CROSS_COMPILE}gcc )
-set( CMAKE_CXX_COMPILER ${CROSS_COMPILE}g++)
-set( CMAKE_ASM_COMPILER ${CROSS_COMPILE}gcc )
-set( CMAKE_C_LINK_EXECUTABLE ${CROSS_COMPILE}ld )
-set( CMAKE_CXX_LINK_EXECUTABLE ${CROSS_COMPILE}ld )
-set( CMAKE_AR ${CROSS_COMPILE}ar )
+set( CMAKE_C_COMPILER ${TC_PATH}${CROSS_COMPILE}gcc )
+set( CMAKE_CXX_COMPILER ${TC_PATH}${CROSS_COMPILE}g++)
+set( CMAKE_ASM_COMPILER ${TC_PATH}${CROSS_COMPILE}gcc )
+set( CMAKE_C_LINK_EXECUTABLE ${TC_PATH}${CROSS_COMPILE}ld )
+set( CMAKE_CXX_LINK_EXECUTABLE ${TC_PATH}${CROSS_COMPILE}ld )
+set( CMAKE_AR ${TC_PATH}${CROSS_COMPILE}ar )
 
 # Because the cross-compiler cannot directly generate a binary without complaining, just test
 # compiling a static library instead of an executable program

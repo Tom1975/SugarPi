@@ -1,3 +1,6 @@
+
+set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+
 project(circle)
 
 include (../circle.cmake)

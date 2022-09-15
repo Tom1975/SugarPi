@@ -9,7 +9,7 @@
 #include "res/button_1.h"
 #include "res/coolspot.h"
 
-#include "MachineSettings.h"
+#include "CPCCore/CPCCoreEmu/MachineSettings.h"
 
 #define MAX_ITEM_PER_PAGE 10
 #define MOVE_BASE 7
