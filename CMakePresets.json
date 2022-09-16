@@ -1,0 +1,164 @@
+﻿{
+    "version": 3,
+   "configurePresets": [
+      {
+         "name": "windows-base",
+         "hidden": true,
+         "generator": "Ninja",
+         "binaryDir": "${sourceDir}/out/build/${presetName}",
+         "installDir": "${sourceDir}/out/install/${presetName}",
+         "cacheVariables": {
+            "CMAKE_C_COMPILER": "cl.exe",
+            "CMAKE_CXX_COMPILER": "cl.exe"
+         },
+         "condition": {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Windows"
+         }
+      },
+      {
+         "name": "x64-debug",
+         "displayName": "x64 Debug",
+         "inherits": "windows-base",
+         "architecture": {
+            "value": "x64",
+            "strategy": "external"
+         },
+         "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Debug"
+         }
+      },
+      {
+         "name": "x64-release",
+         "displayName": "x64 Release",
+         "inherits": "x64-debug",
+         "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Release"
+         }
+      },
+      {
+         "name": "x86-debug",
+         "displayName": "x86 Debug",
+         "inherits": "windows-base",
+         "architecture": {
+            "value": "x86",
+            "strategy": "external"
+         },
+         "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Debug"
+         }
+      },
+      {
+         "name": "x86-release",
+         "displayName": "x86 Release",
+         "inherits": "x86-debug",
+         "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Release"
+         }
+      },
+      {
+         "name": "linux-debug",
+         "displayName": "Linux Debug",
+         "generator": "Ninja",
+         "binaryDir": "${sourceDir}/out/build/${presetName}",
+         "installDir": "${sourceDir}/out/install/${presetName}",
+         "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Debug"
+         },
+         "condition": {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Linux"
+         },
+         "vendor": {
+            "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+               "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+            }
+         }
+      },
+      {
+         "name": "RPI",
+         "displayName": "RPi4",
+         "generator": "Unix Makefiles",
+         "binaryDir": "${sourceDir}/out/build/${presetName}",
+         "installDir": "${sourceDir}/out/install/${presetName}",
+         "cacheVariables": {
+            "TC_PATH": "/mnt/c/THOMAS/Cross_Compile/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin/",
+            "CIRCLEHOME": "${sourceDir}/circle"
+         },
+         "condition": {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Linux"
+         },
+         "vendor": {
+            "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+               "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+            }
+         }
+      },
+      {
+         "name": "RPi4",
+         "displayName": "Raspberry Pi4",
+         "generator": "Unix Makefiles",
+         "binaryDir": "${sourceDir}/out/build/${presetName}",
+         "installDir": "${sourceDir}/out/install/${presetName}",
+         "cacheVariables": {
+            "CMAKE_CXX_COMPILER": "/mnt/c/THOMAS/Cross_Compile/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin/aarch64-none-elf-g++",
+            "CMAKE_CC_COMPILER": "/mnt/c/THOMAS/Cross_Compile/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin/aarch64-none-elf-gcc",
+            "CMAKE_ASM_COMPILER": "/mnt/c/THOMAS/Cross_Compile/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin/aarch64-none-elf-gcc",
+            "CMAKE_C_LINK_EXECUTABLE": "/mnt/c/THOMAS/Cross_Compile/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin/aarch64-none-elf-ld",
+            "CMAKE_CXX_LINK_EXECUTABLE": "/mnt/c/THOMAS/Cross_Compile/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin/aarch64-none-elf-ld",
+            "CMAKE_AR": "/mnt/c/THOMAS/Cross_Compile/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin/aarch64-none-elf-ar"
+         },
+         "condition": {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Linux"
+         },
+         "vendor": {
+            "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+               "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+            }
+         }
+      },
+      {
+         "name": "bare-metal-pi-debug",
+         "displayName": "Pi Debug",
+         "generator": "Unix Makefiles",
+         "binaryDir": "${sourceDir}/out/build/${presetName}",
+         "installDir": "${sourceDir}/out/install/${presetName}",
+         "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Debug",
+            "CMAKE_CXX_COMPILER": "/mnt/c/THOMAS/Cross_Compile/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin/aarch64-none-elf-g++",
+            "TC_PATH": "/mnt/c/THOMAS/Cross_Compile/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin/"
+         },
+         "vendor": {
+            "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+               "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+            }
+         }
+      },
+      {
+         "name": "macos-debug",
+         "displayName": "macOS Debug",
+         "generator": "Ninja",
+         "binaryDir": "${sourceDir}/out/build/${presetName}",
+         "installDir": "${sourceDir}/out/install/${presetName}",
+         "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Debug"
+         },
+         "condition": {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Darwin"
+         },
+         "vendor": {
+            "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+               "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+            }
+         }
+      }
+   ]
+}

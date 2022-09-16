@@ -3,11 +3,13 @@
 cmake_minimum_required(VERSION 3.12.1)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+MESSAGE (" AvANT CROSS CMAKE_C_COMPILER:" ${CMAKE_C_COMPILER})
+include (cross.cmake)
+MESSAGE (" APRES CROSS CMAKE_C_COMPILER:" ${CMAKE_C_COMPILER})
 
 #Project name
 project(SugarPiWorkspace VERSION 1.2.0)
 
-include (cross.cmake)
 # include circle dir
 set ( CIRCLEHOME "${CMAKE_CURRENT_SOURCE_DIR}/circle" CACHE STRING "Circle home directory")
 
