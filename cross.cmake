@@ -3,11 +3,7 @@ set(CMAKE_SYSTEM_PROCESSOR arm)
 
 # Set a toolchain path. You only need to set this if the toolchain isn't in
 # your system path.
-IF( $TC_PATH )
-STRING(APPEND TC_PATH "/")
-ENDIF()
 
-MESSAGE (TC_PATH = ${TC_PATH})
 set (CIRCLEHOME CACHE STRING "./circle")
 
 # Specific Sugarpi : Configuration of compiler / build
@@ -23,7 +19,6 @@ set( CROSS_COMPILE aarch64-none-elf- CACHE STRING "Tools prefix")
 set (PREFIX	arm-none-eabi- )
 set (PREFIX64 aarch64-none-elf-)
 
-
 set( STDLIB_SUPPORT 1 CACHE STRING "STD lib support")
 set( CHECK_DEPS 1 CACHE STRING "set this to 0 to globally disable dependency checking")
 set( FLOAT_ABI hard CACHE STRING "set this to softfp if you want to link specific libraries")
@@ -36,12 +31,6 @@ set ( DEFINE -DARM_ALLOW_MULTI_CORE)
 # attempt to build a simple test program as this will fail without us using
 # the -nostartfiles option on the command line
 
-set( CMAKE_C_COMPILER ${TC_PATH}${CROSS_COMPILE}gcc )
-set( CMAKE_CXX_COMPILER ${TC_PATH}${CROSS_COMPILE}g++)
-set( CMAKE_ASM_COMPILER ${TC_PATH}${CROSS_COMPILE}gcc )
-set( CMAKE_C_LINK_EXECUTABLE ${TC_PATH}${CROSS_COMPILE}ld )
-set( CMAKE_CXX_LINK_EXECUTABLE ${TC_PATH}${CROSS_COMPILE}ld )
-set( CMAKE_AR ${TC_PATH}${CROSS_COMPILE}ar )
 
 # Because the cross-compiler cannot directly generate a binary without complaining, just test
 # compiling a static library instead of an executable program
@@ -59,6 +48,7 @@ CACHE FILEPATH "The toolchain objdump command " FORCE )
 
 # Set the common build flags, depending ARCH and RASPI
 if ( ${AARCH} STREQUAL 32)
+    set ( PREFIX_COMPIL  ${PREFIX})
     if ( ${RASPI} STREQUAL 1)
         if ( NOT ARCH )
             set ( ARCH "${ARCH} -DAARCH=32 -mcpu=arm1176jzf-s -marm -mfpu=vfp -mfloat-abi=${FLOAT_ABI}")
@@ -92,6 +82,7 @@ if ( ${AARCH} STREQUAL 32)
     endif()
     set( LOADADDR  0x8000)
 elseif (${AARCH} STREQUAL 64)
+    set ( PREFIX_COMPIL  ${PREFIX64})
     if ( ${RASPI} STREQUAL 3)
         if ( NOT ARCH )
             set ( ARCH "-DAARCH=64 -mcpu=cortex-a53 -mlittle-endian -mcmodel=small")
@@ -116,6 +107,18 @@ elseif (${AARCH} STREQUAL 64)
 else ()
     MESSAGE (ERROR "AARCH must be set to 32 or 64")
 endif()
+
+execute_process(COMMAND which ${PREFIX_COMPIL}gcc RESULT_VARIABLE result OUTPUT_VARIABLE output )
+find_path(GCC_PATH ${CROSS_COMPILE}gcc )
+get_filename_component(TC_PATH ${GCC_PATH} DIRECTORY )
+
+
+set( CMAKE_C_COMPILER ${TC_PATH}${CROSS_COMPILE}gcc )
+set( CMAKE_CXX_COMPILER ${TC_PATH}${CROSS_COMPILE}g++)
+set( CMAKE_ASM_COMPILER ${TC_PATH}${CROSS_COMPILE}gcc )
+set( CMAKE_C_LINK_EXECUTABLE ${TC_PATH}${CROSS_COMPILE}ld )
+set( CMAKE_CXX_LINK_EXECUTABLE ${TC_PATH}${CROSS_COMPILE}ld )
+set( CMAKE_AR ${TC_PATH}${CROSS_COMPILE}ar )
 
 # Handle STDLIB_SUPPORT
 if ( ${STDLIB_SUPPORT} STREQUAL 3)
