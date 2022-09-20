@@ -109,9 +109,8 @@ else ()
 endif()
 
 execute_process(COMMAND which ${PREFIX_COMPIL}gcc RESULT_VARIABLE result OUTPUT_VARIABLE output )
-find_path(GCC_PATH ${CROSS_COMPILE}gcc )
-get_filename_component(TC_PATH ${GCC_PATH} DIRECTORY )
-
+find_path(TC_PATH ${CROSS_COMPILE}gcc )
+set (TC_PATH  ${TC_PATH}/ )
 
 set( CMAKE_C_COMPILER ${TC_PATH}${CROSS_COMPILE}gcc )
 set( CMAKE_CXX_COMPILER ${TC_PATH}${CROSS_COMPILE}g++)

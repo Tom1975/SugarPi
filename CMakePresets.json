@@ -9,8 +9,6 @@
          "binaryDir": "${sourceDir}/out/build/${presetName}",
          "installDir": "${sourceDir}/out/install/${presetName}",
          "cacheVariables": {
-            "TC_PATH": "/mnt/c/THOMAS/Cross_Compile/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin/",
-            "CIRCLEHOME": "${sourceDir}/circle"
          },
          "condition": {
             "type": "equals",
@@ -21,7 +19,8 @@
          },
          "vendor": {
             "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
-               "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+               "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}",
+               "forceWSL1Toolset": true
             }
          }
       }
