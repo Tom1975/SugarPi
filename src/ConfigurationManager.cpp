@@ -169,7 +169,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
             logger_->Write("ConfigurationManager", LogNotice, "READ value: %s ", value.c_str());
 
             // Add this key/value to current section
-            Section* section;
+            Section* section = nullptr;
             if (config_file_.GetSection (current_section.c_str(), section) == false)
             {
                Association<Section*> new_section;
@@ -235,7 +235,7 @@ void ConfigurationManager::SetConfiguration(const char* section_key, const char*
 {
    logger_->Write("ConfigurationManager", LogNotice, "SetConfiguration : [%s] %s=%s", section_key, key ,value);
 
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section) == false)
    {
       logger_->Write("ConfigurationManager", LogNotice, "Section not found");
@@ -287,7 +287,7 @@ unsigned int ConfigurationManager::GetConfiguration(const char* section, const c
 
 unsigned int ConfigurationManager::GetConfiguration(const char* section_key, const char* key, const char* default_value, char* out_buffer, unsigned int buffer_size)
 {
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section))
    {
       std::string * value_str;
@@ -309,7 +309,7 @@ unsigned int ConfigurationManager::GetConfigurationInt(const char* section_key, 
 
 unsigned int ConfigurationManager::GetConfigurationInt(const char* section_key, const char* key, unsigned int default_value)
 {
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section))
    {
       std::string * value_str;
@@ -340,7 +340,7 @@ const char* ConfigurationManager::GetNextSection()
 
 const char* ConfigurationManager::GetFirstKey(const char* section_key)
 {
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section))
    {
       it_key_ = section->begin();

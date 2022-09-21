@@ -9,17 +9,6 @@ include(cross64.cmake OPTIONAL)
 
 include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/circle.cmake)
 
-include_directories( 
-                     ${CMAKE_CURRENT_SOURCE_DIR}/..
-                     ${CMAKE_CURRENT_SOURCE_DIR}/.
-                     ${CMAKE_CURRENT_SOURCE_DIR}/vc4
-                     ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/zlib_pi
-                     ${CIRCLEHOME}/include 
-                     ${CIRCLEHOME}/addon
-                     ${CIRCLEHOME}/addon/vc4
-                     ${CIRCLEHOME}/addon/vc4/interface/Khronos/include
-                     ${CIRCLEHOME}/app/lib
-                   )
 
 #source files directory
 set(Source_Files
@@ -100,6 +89,20 @@ set(ALL_FILES ${Source_Files})
 add_executable(SugarPi )
 
 target_sources(SugarPi PUBLIC ${ALL_FILES} )
+
+
+target_include_directories ( SugarPi PUBLIC ${CIRCLEHOME}/include )
+                     
+target_include_directories ( SugarPi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..
+                     ${CMAKE_CURRENT_SOURCE_DIR}/.
+                     ${CMAKE_CURRENT_SOURCE_DIR}/vc4
+                     ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/zlib_pi
+                     
+                     ${CIRCLEHOME}/addon
+                     ${CIRCLEHOME}/addon/vc4
+                     ${CIRCLEHOME}/addon/vc4/interface/Khronos/include
+                     ${CIRCLEHOME}/app/lib
+                   )
 
 set_target_properties(SugarPi PROPERTIES LINK_FLAGS ${KERNEL}.elf)
 
