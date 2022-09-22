@@ -4,7 +4,7 @@ set(CMAKE_SYSTEM_PROCESSOR arm)
 # Set a toolchain path. You only need to set this if the toolchain isn't in
 # your system path.
 
-set (CIRCLEHOME CACHE STRING "./circle")
+#set (CIRCLEHOME CACHE STRING "./circle")
 
 # Specific Sugarpi : Configuration of compiler / build
 # The toolchain prefix for all toolchain executables

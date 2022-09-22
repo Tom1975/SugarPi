@@ -16,6 +16,7 @@ set(Source_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/kernel.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetup.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManager.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManager.h
 		${CMAKE_CURRENT_SOURCE_DIR}/DisplayPi.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/emulation.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPi.cpp
