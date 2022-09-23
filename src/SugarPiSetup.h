@@ -6,6 +6,7 @@
 #include "KeyboardPi.h"
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
+#include "CPCCore/CPCCoreEmu/MachineSettings.h"
 #include "ConfigurationManager.h"
 
 class SugarPiSetup
@@ -30,6 +31,7 @@ public :
    void LoadCartridge (const char* path);
    void LoadDisk (const char* path);
    void LoadTape (const char* path);
+   void LoadSetup(const char* path);
 
    ConfigurationManager* GetConfigurationManager(){return config_;}
 

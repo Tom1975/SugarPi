@@ -9,8 +9,6 @@
 #include "res/button_1.h"
 #include "res/coolspot.h"
 
-#include "CPCCore/CPCCoreEmu/MachineSettings.h"
-
 #define MAX_ITEM_PER_PAGE 10
 #define MOVE_BASE 7
 
@@ -120,8 +118,9 @@ IAction::ActionReturn ScreenMenu::LoadAmstradSetup( const char* path)
    logger_->Write("Menu", LogNotice, "Load Amstrad Setup : %s", (const char*)fullpath);
 
    // Todo : add
-   // motherboard_->LoadSetup (fullpath);
+   setup_->LoadSetup (fullpath);
    setup_->Save();
+
    logger_->Write("Amstrad Setup ", LogNotice, "file loaded. Exiting menu");
 
    return IAction::Action_QuitMenu;

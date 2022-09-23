@@ -14,17 +14,27 @@ include (${CMAKE_CURRENT_SOURCE_DIR}/../CMake/circle.cmake)
 set(Source_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/kernel.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/kernel.h
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetup.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetup.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManager.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManager.h
 		${CMAKE_CURRENT_SOURCE_DIR}/DisplayPi.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/DisplayPi.h
 		${CMAKE_CURRENT_SOURCE_DIR}/emulation.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/emulation.h
 		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPi.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPi.h
 		${CMAKE_CURRENT_SOURCE_DIR}/log.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/log.h
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPi.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/SoundPi.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ScreenMenu.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/ScreenMenu.h
 		${CMAKE_CURRENT_SOURCE_DIR}/Windows.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/Windows.h
 		${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.h
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Asic.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Bus.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/CAPSFile.cpp
@@ -98,7 +108,6 @@ target_include_directories ( SugarPi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..
                      ${CMAKE_CURRENT_SOURCE_DIR}/.
                      ${CMAKE_CURRENT_SOURCE_DIR}/vc4
                      ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/zlib_pi
-                     
                      ${CIRCLEHOME}/addon
                      ${CIRCLEHOME}/addon/vc4
                      ${CIRCLEHOME}/addon/vc4/interface/Khronos/include
@@ -117,6 +126,14 @@ include_directories(
 	${CIRCLE_HOME}/include
 	${CIRCLE_HOME}/addon
 )
+
+execute_process(COMMAND ${CMAKE_C_COMPILER} ${ARCH} -print-file-name=libgcc.a
+OUTPUT_VARIABLE LIBGCC_PATH
+OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+execute_process(COMMAND ${CMAKE_C_COMPILER} ${ARCH} -print-file-name=libm.a
+OUTPUT_VARIABLE LIBM_PATH
+OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 target_link_libraries(SugarPi PUBLIC circle ${LIBM_PATH} ${LIBGCC_PATH})
 

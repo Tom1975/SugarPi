@@ -102,6 +102,15 @@ SugarPiSetup::SYNC_TYPE  SugarPiSetup::GetSync ()
    return sync_;
 }
 
+void SugarPiSetup::LoadSetup(const char* path)
+{
+   MachineSettings* settings = MachineSettings::CreateSettings(config_, path);
+
+   // 
+}
+
+
+
 void SugarPiSetup::LoadCartridge (const char* path)
 {
    FIL File;
@@ -201,3 +210,4 @@ int SugarPiSetup::LoadCprFromBuffer(unsigned char* buffer, int size)
 
    return 0;
 }
+
