@@ -1,5 +1,7 @@
 # SugarPi
 
+[![C/C++ CI](https://github.com/Tom1975/SugarPi/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/Tom1975/SugarPi/actions/workflows/c-cpp.yml)
+
 SugarPi is an implementation of Sugarbox for bare-metal raspberry Pi.
 By now, the emulator is working correctly on Raspberry Pi3(+), and more or less on Raspberry Pi4.
 I didn't have a chance to test on Pi2 or 400.
