@@ -39,7 +39,7 @@ void SugarPiSetup::Load()
    // Syncronisation
    #define SIZE_OF_BUFFER 256
    char buffer[SIZE_OF_BUFFER];
-   if (config_->GetConfiguration (SECTION_SETUP, KEY_SYNC, KEY_SYNC_SOUND, buffer, SIZE_OF_BUFFER ))
+   if (config_->GetConfiguration (SECTION_SETUP, KEY_SYNC, KEY_SYNC_FRAME, buffer, SIZE_OF_BUFFER ))
    {
       if (strcmp ( buffer, KEY_SYNC_SOUND) == 0)
       {

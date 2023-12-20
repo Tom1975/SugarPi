@@ -75,7 +75,7 @@ protected:
    class Section : public std::vector <Association<std::string>>
    {
    public:
-      bool GetKey (const char* , std::string*&);
+      bool GetKey (const char* , std::string*);
    };
 
    class ConfigFile : public std::vector <Association<Section*>>
