@@ -3,8 +3,63 @@
 
 #include <memory.h>
 
+#ifdef  __circle__
 #include <SDCard/emmc.h>
 #include <fatfs/ff.h>
+
+#else
+#define FSIZE_t int 
+#define FRESULT int
+#define DIR HANDLE 
+#define FR_OK 0
+
+typedef struct {
+   FSIZE_t	fsize;			/* File size */
+   WORD	fdate;			/* Modified date */
+   WORD	ftime;			/* Modified time */
+   BYTE	fattrib;		/* File attribute */
+   char fname[12 + 1];	/* File name */
+   WIN32_FIND_DATAA data;
+   HANDLE handle;
+} FILINFO;
+
+/* File attribute bits for directory entry (FILINFO.fattrib) */
+#define	AM_RDO	0x01	/* Read only */
+#define	AM_HID	0x02	/* Hidden */
+#define	AM_SYS	0x04	/* System */
+#define AM_DIR	0x10	/* Directory */
+#define AM_ARC	0x20	/* Archive */
+
+void UpdateFILINFO(FILINFO* f)
+{
+   f->fattrib = f->data.dwFileAttributes;
+   memset(f->fname, 0, sizeof(f->fname));
+   strncpy(f->fname, f->data.cFileName, 12);
+}
+
+FRESULT f_findfirst(
+   DIR* dp,				/* Pointer to the blank directory object */
+   FILINFO* fno,			/* Pointer to the file information structure */
+   const char * path,		/* Pointer to the directory to open */
+   const char * pattern	/* Pointer to the matching pattern */
+)
+{
+   *dp = FindFirstFileA( path, &fno->data);		/* Open the target directory */
+   fno->handle = *dp;
+   UpdateFILINFO(fno);
+   return (*dp == nullptr) ? -1 : 0;
+}
+
+FRESULT f_findnext(DIR* dp, FILINFO *FileInfo)
+{
+   FRESULT res = FindNextFileA(FileInfo->handle, &FileInfo->data)?-1:0;
+   UpdateFILINFO(FileInfo);
+   return res;
+
+}
+
+
+#endif
 
 #include "res/button_1.h"
 #include "res/coolspot.h"
@@ -23,14 +78,14 @@
 
 #define MAX_SIZE_BUFFER 256
 
-MainMenuWindows::MainMenuWindows (DisplayPi* display) : Windows (display)
+MainMenuWindows::MainMenuWindows (DisplayPi* display) : Window (display)
 {
    // Create Title bitmap
    // todo
 
    // Create inner menu
    menu_ = new MenuWindows (display);
-   menu_->CreateWindow ( this, 240, 70, 1000, 800);
+   menu_->Create ( this, 240, 70, 1000, 800);
 }
 
 MainMenuWindows::~MainMenuWindows ()
@@ -72,7 +127,7 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixe
    snapshot_ = new CSnapshot(log);
    snapshot_->SetMachine(motherboard_);
    /////////////////////////////////////////////////
-   // Windows creation
+   // Window creation
 
    // Create Main window menu 
    unsigned int i = 0;
@@ -216,7 +271,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    logger_->Write("Menu", LogNotice, "Amstrad SetupInsert Media : Strat of Menu creation...");
 
    // Create selection menu
-   Windows* focus = Windows::GetFocus();
+   Window* focus = Window::GetFocus();
 
    MainMenuWindows* file_menu = new MainMenuWindows (display_);
 
@@ -242,7 +297,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    {
       delete it;
    }
-   Windows::SetFocus(focus);
+   Window::SetFocus(focus);
    main_menu_->Invalidate ();
 
    logger_->Write("Menu", LogNotice, "Return from SelectAmstrad : %i", return_value);
@@ -347,7 +402,7 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
    logger_->Write("Menu", LogNotice, "Insert Media : Strat of Menu creation...");
 
    // Create selection menu
-   Windows* focus = Windows::GetFocus();
+   Window* focus = Window::GetFocus();
 
    MainMenuWindows* file_menu = new MainMenuWindows (display_);
 
@@ -372,7 +427,7 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
    {
       delete it;
    }
-   Windows::SetFocus(focus);
+   Window::SetFocus(focus);
    main_menu_->Invalidate ();
 
    logger_->Write("Menu", LogNotice, "Return from InsertMedia : %i", return_value);
@@ -402,7 +457,7 @@ IAction::ActionReturn ScreenMenu::InsertTape()
 
 IAction::ActionReturn ScreenMenu::SugarSetup()
 {
-   Windows* focus = Windows::GetFocus();
+   Window* focus = Window::GetFocus();
    MainMenuWindows* setup_menu = new MainMenuWindows (display_);
 
    setup_menu->GetMenu()->AddMenuItem("..", new ActionMenu( this, &ScreenMenu::Back) );
@@ -415,7 +470,7 @@ IAction::ActionReturn ScreenMenu::SugarSetup()
    IAction::ActionReturn return_value = setup_menu->DoScreen(this);
    delete setup_menu;
 
-   Windows::SetFocus(focus);
+   Window::SetFocus(focus);
    main_menu_->Invalidate ();
 
    return return_value;

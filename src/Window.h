@@ -1,12 +1,24 @@
 #pragma once
 
 //
+#ifdef  __circle__
 #include <circle/logger.h>
 #include <circle/string.h>
+#define WAIT(x) CTimer::Get ()->MsDelay(x)
+#else
+#include <string>
+#include <chrono>
+#include <thread>
+
+#include "CLogger.h"
+#include "CString.h"
+#define WAIT(x) std::this_thread::sleep_for(std::chrono::milliseconds(x));
+#endif
 
 #include "CPCCore/CPCCoreEmu/simple_vector.hpp"
 
-#include "DisplayPi.h"
+
+class DisplayPi;
 
 class IAction
 {
@@ -39,16 +51,16 @@ public:
    virtual Event GetEvent () = 0;
 };
 
-class Windows 
+class Window
 {
 public:
-   Windows(DisplayPi* display);
-   virtual ~Windows();
+   Window(DisplayPi* display);
+   virtual ~Window();
 
    virtual IAction::ActionReturn DoScreen (IEvent* event_handler);
 
-   virtual void CreateWindow (Windows* parent, int x, int y, unsigned int width, unsigned int height);
-   virtual void AddChild(Windows* child);
+   virtual void Create(Window* parent, int x, int y, unsigned int width, unsigned int height);
+   virtual void AddChild(Window* child);
 
    void WindowsToDisplay(int& x, int& y);
    virtual void Clear();
@@ -62,8 +74,8 @@ public:
    virtual void RemoveFocus ();
 
    void Invalidate ();
-   static Windows* GetFocus() { return focus_;}
-   static void SetFocus(Windows* focus) { focus_ = focus;}
+   static Window* GetFocus() { return focus_;}
+   static void SetFocus(Window* focus) { focus_ = focus;}
    int GetX(){return x_;}
    int GetY(){return y_;}
    unsigned int GetWidth(){return width_;}
@@ -80,26 +92,26 @@ protected:
    unsigned int height_;
 
    // current Focus window
-   static Windows* focus_;
+   static Window* focus_;
 
    // Windows parent & child
-   Windows* parent_;
+   Window* parent_;
 
    struct WindowsQueue
    {
-      Windows* wnd_;
+      Window* wnd_;
       WindowsQueue* next_;
    };
    WindowsQueue* windows_children_;
 };
 
-class MenuItemWindows : public Windows
+class MenuItemWindows : public Window
 {
 public:
    MenuItemWindows (DisplayPi* display);
    virtual ~MenuItemWindows ();
 
-   virtual void CreateWindow (const char* label, Windows* parent, int x, int y, unsigned int width, unsigned int height);
+   virtual void Create(const char* label, Window* parent, int x, int y, unsigned int width, unsigned int height);
    virtual void SetAction (IAction* action);
    virtual void RedrawWindow ();
    virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
@@ -109,7 +121,7 @@ protected:
    IAction* action_;
 };
 
-class ScrollWindows : public Windows
+class ScrollWindows : public Window
 {
 public:
    ScrollWindows (DisplayPi* display);
@@ -125,13 +137,13 @@ protected:
 
 };
 
-class MenuWindows : public Windows
+class MenuWindows : public Window
 {
 public:
    MenuWindows (DisplayPi* display);
    virtual ~MenuWindows ();
 
-   virtual void CreateWindow ( Windows* parent, int x, int y, unsigned int width, unsigned int height);
+   virtual void Create( Window* parent, int x, int y, unsigned int width, unsigned int height);
    virtual void AddMenuItem (const char* label, IAction* action = nullptr);
    virtual void AddCheckMenuItem (const char* label, bool* value, IAction* action = nullptr);
    virtual void RedrawWindow ();
@@ -153,7 +165,7 @@ public:
    CheckMenuItemWindows (DisplayPi* display);
    virtual ~CheckMenuItemWindows ();
 
-   virtual void CreateWindow (const char* label, bool* value, Windows* parent, int x, int y, unsigned int width, unsigned int height);
+   virtual void Create(const char* label, bool* value, Window* parent, int x, int y, unsigned int width, unsigned int height);
 
    virtual void RedrawWindow ();
    virtual IAction::ActionReturn HandleEvent( IEvent::Event event);

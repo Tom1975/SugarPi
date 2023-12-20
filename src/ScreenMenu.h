@@ -1,18 +1,32 @@
 #pragma once
 
+#ifdef  __circle__
 #include <circle/logger.h>
 #include <circle/string.h>
+#else
+#include "CLogger.h"
+#include "CString.h"
+#endif
+
 
 #include "CPCCore/CPCCoreEmu/simple_vector.hpp"
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/Snapshot.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
 
+
+#ifdef  __circle__
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
 #include "SugarPiSetup.h"
-#include "Windows.h"
+#include "Window.h"
+#else
+#include "DisplayPiDesktop.h"
+#include "KeyboardPiDesktop.h"
+#include "SugarPiSetupDesktop.h"
+#include "Window.h"
 
+#endif
 #define MAX_LANGUAGE 1
 
 #pragma pack(push, 1)
@@ -21,7 +35,7 @@ class CoolspotFont;
 
 
 
-class MainMenuWindows : public Windows
+class MainMenuWindows : public Window
 {
 public:
    MainMenuWindows (DisplayPi* display);

@@ -778,7 +778,7 @@ FILINFO file_info;
    logger_->Write("KeyboardPi", LogNotice, "Loading game controller db... Done !");
 }
 
-void KeyboardPi::LoadKeyboardLayout (const char* path)
+void KeyboardPi::LoadKeyboard(const char* path)
 {
    // Open file
    FIL File;

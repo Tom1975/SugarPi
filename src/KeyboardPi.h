@@ -81,7 +81,7 @@ public:
 
     bool Initialize();
     void InitKeyboard (unsigned char key_map[10][8]);
-    void LoadKeyboardLayout (const char* path);
+    void LoadKeyboard(const char* path);
 
     virtual unsigned char GetKeyboardMap(int index);
     void UpdatePlugnPlay();

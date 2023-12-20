@@ -50,15 +50,13 @@ protected:
          Association() : key(), value(){
             //log_s->Write("Association", LogNotice, "default creator");
          }
-         
-         Association(const Association<T>& assoc)
+         Association(Association& assoc)
          {
             //log_s->Write("Association", LogNotice, "assoc creator");
             key = assoc.key;
             value = assoc.value;
          }
-
-         Association& operator=(const Association<T>& _Right)
+         Association& operator=(const Association& _Right)
          {
             //log_s->Write("Association", LogNotice, "operator=");
             key = _Right.key;

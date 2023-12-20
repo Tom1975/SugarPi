@@ -35,7 +35,7 @@ static const struct {
 }
 };
 
-CoolspotFont::CoolspotFont(CLogger*logger) : logger_(logger)
+CoolspotFont::CoolspotFont()
 {
    // init position
    memset(char_position_, 0, sizeof char_position_);

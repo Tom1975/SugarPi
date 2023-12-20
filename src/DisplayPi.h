@@ -1,6 +1,6 @@
 #pragma once
 
-//
+
 #include <circle/screen.h>
 #include <circle/logger.h>
 #include <circle/bcmframebuffer.h>

@@ -31,8 +31,8 @@ set(Source_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPi.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ScreenMenu.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/ScreenMenu.h
-		${CMAKE_CURRENT_SOURCE_DIR}/Windows.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/Windows.h
+		${CMAKE_CURRENT_SOURCE_DIR}/Window.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/Window.h
 		${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.h
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Asic.cpp

@@ -1,8 +1,5 @@
 //
-#include "SugarPiSetup.h"
-#include <fatfs/ff.h>
-
-#define DRIVE		"SD:"
+#include "SugarPiSetupDesktop.h"
 
 #define SECTION_SETUP      "SETUP"
 #define KEY_SYNC           "sync"
@@ -12,8 +9,10 @@
 #define KEY_SYNC_SOUND     "sound"
 #define KEY_SYNC_FRAME     "frame"
 
-#define DEFAULT_CART "SD:/CART/crtc3_projo.cpr"
-#define DEFAULT_LAYOUT "SD:/LAYOUT/101_keyboard"
+
+#define DEFAULT_CART "CART/crtc3_projo.cpr"
+#define DEFAULT_LAYOUT "LAYOUT/101_keyboard"
+
 
 SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr), keyboard_(nullptr)
 {
@@ -35,7 +34,7 @@ void  SugarPiSetup::Init(DisplayPi* display, SoundMixer* sound, Motherboard *mot
 
 void SugarPiSetup::Load()
 {
-   config_->OpenFile(DRIVE "/Config/config");
+   config_->OpenFile("Config/config");
 
    // Syncronisation
    #define SIZE_OF_BUFFER 256
@@ -55,7 +54,7 @@ void SugarPiSetup::Load()
    // Keyboard layout (if any)
    if (config_->GetConfiguration (SECTION_SETUP, KEY_LAYOUT, DEFAULT_LAYOUT, buffer, SIZE_OF_BUFFER ))
    {
-      keyboard_->LoadKeyboard(buffer);
+      keyboard_->LoadKeyboard (buffer);
    }
    // todo
    
@@ -113,32 +112,20 @@ void SugarPiSetup::LoadSetup(const char* path)
 
 void SugarPiSetup::LoadCartridge (const char* path)
 {
-   FIL File;
-   FRESULT Result = f_open(&File, path, FA_READ | FA_OPEN_EXISTING);
+   FILE* f;
 
-   if (Result != FR_OK)
+   if (fopen_s(&f, path, "rb") == 0)
    {
-      log_->Write("Kernel", LogNotice, "Cannot open file: %s", path);
-      return;
+      fseek(f, 0, SEEK_END);
+      int buffer_size = ftell(f);
+      rewind(f);
+      unsigned char* buffer = new unsigned char[buffer_size];
+
+      fread(buffer, buffer_size, 1, f);
+      fclose(f);
+      int ret = LoadCprFromBuffer(buffer, buffer_size);
+      delete[]buffer;
    }
-
-   FILINFO file_info;
-   f_stat(path, &file_info);
-   unsigned char* buff = new unsigned char[file_info.fsize];
-   unsigned nBytesRead;
-
-   f_read(&File, buff, file_info.fsize, &nBytesRead);
-   if (file_info.fsize != nBytesRead)
-   {
-      log_->Write("Kernel", LogNotice, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
-      delete [] buff;
-      return;
-   }
-   
-   cart_path_ = path;
-   LoadCprFromBuffer(buff, nBytesRead);
-
-   delete [] buff;
 }
 
 int SugarPiSetup::LoadCprFromBuffer(unsigned char* buffer, int size)

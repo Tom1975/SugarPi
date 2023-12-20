@@ -1,22 +1,27 @@
 //
 #include <memory.h>
 
-#include <circle/logger.h>
+#include "Window.h"
 
-#include "Windows.h"
+#ifdef RASPPI
+#include "DisplayPi.h"
+#else
+#include "DisplayPiDesktop.h"
+#endif
 
-Windows* Windows::focus_ = nullptr;
+
+Window* Window::focus_ = nullptr;
 
 ////////////////////////////////////////////////////////////////////////////////////
-Windows::Windows(DisplayPi* display) : display_(display), x_(0), y_(0), width_(0), height_(0), parent_(nullptr), windows_children_(nullptr)
+Window::Window(DisplayPi* display) : display_(display), x_(0), y_(0), width_(0), height_(0), parent_(nullptr), windows_children_(nullptr)
 {
 }
 
-Windows::~Windows()
+Window::~Window()
 {
 }
 
-void Windows::CreateWindow (Windows* parent, int x, int y, unsigned int width, unsigned int height)
+void Window::Create (Window* parent, int x, int y, unsigned int width, unsigned int height)
 {
    parent_ = parent;
    x_ = x;
@@ -30,7 +35,7 @@ void Windows::CreateWindow (Windows* parent, int x, int y, unsigned int width, u
    }
 }
 
-void Windows::Clear()
+void Window::Clear()
 {
    // Background
    for (int i = 0; i < display_->GetHeight(); i++)
@@ -41,7 +46,7 @@ void Windows::Clear()
 
 }
 
-void Windows::AddChild(Windows* child)
+void Window::AddChild(Window* child)
 {
    WindowsQueue** current_queue = &windows_children_;
    while ( *current_queue != nullptr)
@@ -55,7 +60,7 @@ void Windows::AddChild(Windows* child)
 
 }
 
-void Windows::WindowsToDisplay(int& x, int& y)
+void Window::WindowsToDisplay(int& x, int& y)
 {
    x += x_;
    y += y_;
@@ -72,12 +77,12 @@ void Windows::WindowsToDisplay(int& x, int& y)
    }*/
 }
 
-void Windows::RedrawWindow ()
+void Window::RedrawWindow ()
 {
    CLogger::Get ()->Write("Menu", LogNotice, "Windows::RedrawWindow");
 }
 
-void Windows::RedrawChildren ()
+void Window::RedrawChildren ()
 {
    CLogger::Get ()->Write("Menu", LogNotice, "Windows::RedrawChildren");
    WindowsQueue** current_queue = &windows_children_;
@@ -99,13 +104,13 @@ void Windows::RedrawChildren ()
 
 }
 
-void Windows::Invalidate ()
+void Window::Invalidate ()
 {
    // Clear from top windows
    Redraw ( true);
 }
 
-void Windows::Redraw (bool clear)
+void Window::Redraw (bool clear)
 {
    if (clear)
       Clear();
@@ -121,7 +126,7 @@ void Windows::Redraw (bool clear)
 
 }
 
-IAction::ActionReturn Windows::DoScreen (IEvent* event_handler)
+IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
 {
    // Redraw the window
    Redraw (true);
@@ -134,7 +139,8 @@ IAction::ActionReturn Windows::DoScreen (IEvent* event_handler)
       if (event == IEvent::NONE)
       {
           // Wait a bit
-         CTimer::Get ()->MsDelay (10);
+
+         WAIT(10);
       }
       else
       {
@@ -147,7 +153,7 @@ IAction::ActionReturn Windows::DoScreen (IEvent* event_handler)
          switch( retval )
          {
             case IAction::Action_None:
-               CTimer::Get ()->MsDelay (1);
+               WAIT(1);
                break;
             case IAction::Action_Back:
             case IAction::Action_QuitMenu:
@@ -167,7 +173,7 @@ IAction::ActionReturn Windows::DoScreen (IEvent* event_handler)
    return exit_function;
 }
 
-IAction::ActionReturn Windows::HandleEvent( IEvent::Event event)
+IAction::ActionReturn Window::HandleEvent( IEvent::Event event)
 {
    if ( parent_ != nullptr)
    {
@@ -185,7 +191,7 @@ IAction::ActionReturn Windows::HandleEvent( IEvent::Event event)
    return IAction::ActionReturn::Action_QuitMenu;
 }
 
-void Windows::SetFocus ()
+void Window::SetFocus ()
 {
    if ( focus_ != nullptr)
    {
@@ -194,12 +200,12 @@ void Windows::SetFocus ()
    focus_ = this;
 }
 
-void Windows::RemoveFocus ()
+void Window::RemoveFocus ()
 {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-MenuItemWindows::MenuItemWindows (DisplayPi* display) : Windows(display), action_(nullptr)
+MenuItemWindows::MenuItemWindows (DisplayPi* display) : Window(display), action_(nullptr)
 {
 
 }
@@ -208,10 +214,10 @@ MenuItemWindows::~MenuItemWindows ()
 
 }
 
-void MenuItemWindows::CreateWindow (const char* label, Windows* parent, int x, int y, unsigned int width, unsigned int height)
+void MenuItemWindows::Create (const char* label, Window* parent, int x, int y, unsigned int width, unsigned int height)
 {
    label_ = label;
-   Windows::CreateWindow ( parent, x, y, width, height);
+   Window::Create ( parent, x, y, width, height);
 }
 
 void MenuItemWindows::SetAction (IAction* action)
@@ -266,9 +272,9 @@ CheckMenuItemWindows::~CheckMenuItemWindows ()
 
 }
 
-void CheckMenuItemWindows::CreateWindow (const char* label, bool* value, Windows* parent, int x, int y, unsigned int width, unsigned int height)
+void CheckMenuItemWindows::Create(const char* label, bool* value, Window* parent, int x, int y, unsigned int width, unsigned int height)
 {
-   MenuItemWindows::CreateWindow( label, parent, x, y, width, height);
+   MenuItemWindows::Create( label, parent, x, y, width, height);
    value_ = value;
 }
 
@@ -287,9 +293,7 @@ void CheckMenuItemWindows::RedrawWindow ( )
    }
    // Draw the check box
    display_->DisplayText ((*value_)?"[X]":"[ ]", x, y);
-
-   display_->DisplayText (label_, x+30, y, focus_==this);
-   
+   display_->DisplayText(label_, x + 30, y, focus_ == this);
 }
 
 IAction::ActionReturn CheckMenuItemWindows::HandleEvent( IEvent::Event event)
@@ -314,7 +318,7 @@ IAction::ActionReturn CheckMenuItemWindows::HandleEvent( IEvent::Event event)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-ScrollWindows::ScrollWindows (DisplayPi* display) : Windows (display), scroll_offset_x_(0), scroll_offset_y_(0)
+ScrollWindows::ScrollWindows (DisplayPi* display) : Window (display), scroll_offset_x_(0), scroll_offset_y_(0)
 {
 
 }
@@ -361,7 +365,7 @@ void ScrollWindows::Scroll ( int offset_x, int offset_y)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-MenuWindows::MenuWindows (DisplayPi* display) : Windows (display), current_focus_(-1), scroll_window_(display)
+MenuWindows::MenuWindows (DisplayPi* display) : Window (display), current_focus_(-1), scroll_window_(display)
 {
 
 }
@@ -376,12 +380,12 @@ MenuWindows::~MenuWindows ()
    list_item_.clear();
 }
 
-void MenuWindows::CreateWindow ( Windows* parent, int x, int y, unsigned int width, unsigned int height)
+void MenuWindows::Create( Window* parent, int x, int y, unsigned int width, unsigned int height)
 {
-   Windows::CreateWindow( parent, x, y, width, height);
+   Window::Create( parent, x, y, width, height);
 
    // Add a simple windows that will be used for scrolling
-   scroll_window_.CreateWindow ( this, 0, 0, width, height);
+   scroll_window_.Create( this, 0, 0, width, height);
 }
 
 
@@ -391,7 +395,7 @@ void MenuWindows::AddMenuItem (const char* label, IAction* action)
 
    // Add item to menu
    MenuItemWindows* item = new MenuItemWindows (display_);
-   item->CreateWindow ( label, &scroll_window_, 10, list_item_.size()*20, 800, 19);
+   item->Create( label, &scroll_window_, 10, list_item_.size()*20, 800, 19);
    item->SetAction(action);
 
    list_item_.push_back(item);
@@ -405,7 +409,7 @@ void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* act
    // Add item to menu
    CLogger::Get ()->Write("Menu", LogNotice, "add menucheck : %s ", label);
    CheckMenuItemWindows* item = new CheckMenuItemWindows (display_);
-   item->CreateWindow ( label, value, &scroll_window_, 10, list_item_.size()*20, 800, 19);
+   item->Create( label, value, &scroll_window_, 10, list_item_.size()*20, 800, 19);
    item->SetAction(action);
 
    list_item_.push_back(item);

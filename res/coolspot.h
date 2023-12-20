@@ -1,11 +1,9 @@
 #pragma once
 
-#include <circle/logger.h>
-
 class CoolspotFont
 {
 public:
-   CoolspotFont(CLogger* logger);
+   CoolspotFont();
    virtual ~CoolspotFont();
 
    void CopyLetter(unsigned char c, int line, int* buffer);
@@ -14,5 +12,4 @@ public:
 
 //protected:
    int char_position_[256];
-   CLogger*    logger_;
 };

@@ -22,7 +22,7 @@ DisplayPi::DisplayPi(CLogger* logger, CTimer* timer) :
    nb_frame_in_queue_(0),
    sync_on_frame_(false)
 {
-   font_ = new CoolspotFont(logger_);
+   font_ = new CoolspotFont();
 
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
