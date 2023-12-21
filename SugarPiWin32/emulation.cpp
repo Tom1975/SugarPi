@@ -129,14 +129,19 @@ void Emulation::Run(unsigned nCore)
 }
 
 
+void Emulation::ForceStop()
+{
+   run_ = false;
+}
 
 void Emulation::RunMainLoop()
 {
+   run_ = true;
    ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
    unsigned nCelsiusOldTmp = 0;
    int count = 0;
    bool finished = false;
-   while (!finished )
+   while (!finished && run_)
    {
 #define TIME_SLOT  10000
       motherboard_->StartOptimizedPlus<true, true, false>(4 * TIME_SLOT*10);

@@ -11,6 +11,7 @@ using namespace Gdiplus;
 
 #include "IDirectories.h"
 #include "CLogger.h"
+#include "res/coolspot.h"
 
 #define REAL_DISP_X  1024 //832 //1024 // 768
 #define REAL_DISP_Y  624 //-16 //624 //576
@@ -152,5 +153,5 @@ protected:
    LPDIRECTDRAWSURFACE7 m_pSurface;
 
    bool sync_on_frame_;
-   //CoolspotFont* font_;
+   CoolspotFont* font_;
 };

@@ -5,10 +5,38 @@
 #include "emulation.h"
 
 ////////////////////////////////////////////////////////////
+bool end = false;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-   return DefWindowProc(hWnd, message, wParam, lParam);
+   switch (message)
+   {
+   case WM_CREATE:
+   {
+      CREATESTRUCT* pCreateStr = (CREATESTRUCT*)lParam;
+      SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG)pCreateStr->lpCreateParams);
+      break;
+   }
+   case WM_QUIT:
+      break;
+   case WM_DESTROY:
+      end = true;
+      PostQuitMessage(0);
+      break;
+   case WM_PAINT:
+   {
+      PAINTSTRUCT ps;
+      HDC hdc = BeginPaint(hWnd, &ps);
+
+
+
+      EndPaint(hWnd, &ps);
+      break;
+   }
+   default:
+      return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
 }
 
 // Windows stuff : Registration, initialisation
@@ -61,30 +89,33 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    KeyboardPi* keyboard = new KeyboardPi(log);
 
    MyRegisterClass(hInstance);
+   Emulation emulation(log);
 
    HWND _hwnd = CreateWindowEx(0, "SugarPi", "SugarPi", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_VISIBLE,
-      CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, 0); // NULL);
+      CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, &emulation); // NULL);
 
    display->Init(hInstance, _hwnd, 0);
 
    // Launch the message pump
    // emulation
-   Emulation emulation(log);
    emulation.Initialize(display, sound, keyboard);	// must be initialized at last
 
    std::thread main_core(Run, &emulation);
 
    // Quit.
    MSG msg;
-   bool end = false;
    while (!end)
    {
-      while (PeekMessage(&msg, NULL, 0, 0, TRUE))
+      while (PeekMessage(&msg, _hwnd, 0, 0, TRUE))
       {
          TranslateMessage(&msg);
          DispatchMessage(&msg);
       }
    }
+
+   emulation.ForceStop();
+
+   main_core.join();
 
    delete keyboard;
    delete display;

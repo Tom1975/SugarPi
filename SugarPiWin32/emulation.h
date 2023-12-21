@@ -20,6 +20,7 @@ public:
    void Run(unsigned nCore);
    void RunMainLoop();
 
+   void ForceStop();
 
 protected:
    
@@ -34,4 +35,5 @@ protected:
 
    bool sound_is_ready;
    bool sound_run_;
+   bool run_;
 };

@@ -22,11 +22,12 @@ DisplayPi::DisplayPi(CLogger* logger) : m_pFSInt(NULL), sync_on_frame_(true)
    SetSize(S_STANDARD);
    m_DnDType = 0;
    m_CurrentPart = 0;
+   font_ = new CoolspotFont();
 }
 
 DisplayPi::~DisplayPi()
 {
-
+   delete font_;
 }
 
 void DisplayPi::ReleaseAll()
@@ -411,13 +412,13 @@ void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
       else
       {
          // Look for proper bitmap position (on first line only)
-         /*for (int display_y = 0; display_y < font_->GetLetterHeight(c); display_y++)
+         for (int display_y = 0; display_y < font_->GetLetterHeight(c); display_y++)
          {
             int* line = GetVideoBuffer(display_y + y);
             font_->CopyLetter(c, display_y, &line[x + x_offset_output]);
          }
          x_offset_output += font_->GetLetterLength(c);
-         */
+         
       }
       i++;
 
