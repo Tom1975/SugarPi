@@ -6,6 +6,7 @@
 #ifdef  __circle__
 #include <SDCard/emmc.h>
 #include <fatfs/ff.h>
+#define 
 
 #else
 #define FSIZE_t int 
@@ -47,14 +48,14 @@ FRESULT f_findfirst(
    *dp = FindFirstFileA( path, &fno->data);		/* Open the target directory */
    fno->handle = *dp;
    UpdateFILINFO(fno);
-   return (*dp == nullptr) ? -1 : 0;
+   return (*dp == INVALID_HANDLE_VALUE) ? -1 : 0;
 }
 
 FRESULT f_findnext(DIR* dp, FILINFO *FileInfo)
 {
-   FRESULT res = FindNextFileA(FileInfo->handle, &FileInfo->data)?-1:0;
+   FRESULT res = FindNextFileA(*dp, &FileInfo->data)?-1:0;
    UpdateFILINFO(FileInfo);
-   return res;
+   return res == 0 ? -1 : 0;;
 
 }
 
@@ -67,14 +68,25 @@ FRESULT f_findnext(DIR* dp, FILINFO *FileInfo)
 #define MAX_ITEM_PER_PAGE 10
 #define MOVE_BASE 7
 
-#define DRIVE		"SD:"
+#ifdef  __circle__
+   #define DRIVE		"SD:"
+   #define PATH_CARTIRDGE "SD:/CART"
+   #define PATH_DISK "SD:/DISK"
+   #define PATH_TAPE "SD:/TAPE"
+   #define PATH_CONFIGS "SD:/AMSTRAD"
 
-#define PATH_CARTIRDGE "SD:/CART"
-#define PATH_DISK "SD:/DISK"
-#define PATH_TAPE "SD:/TAPE"
-#define PATH_CONFIGS "SD:/AMSTRAD"
+   #define PATH_QUICK_SNA "SD:/quick.sna"
+#define INTER_FILE "/"
+#else
+#define INTER_FILE "\\"
+#define DRIVE		"."
+#define PATH_CARTIRDGE ".\\CART"
+#define PATH_DISK ".\\DISK"
+#define PATH_TAPE ".\\TAPE"
+#define PATH_CONFIGS ".\\AMSTRAD"
 
-#define PATH_QUICK_SNA "SD:/quick.sna"
+#define PATH_QUICK_SNA ".\\quick.sna"
+#endif
 
 #define MAX_SIZE_BUFFER 256
 
@@ -168,7 +180,7 @@ IAction::ActionReturn ScreenMenu::Resume()
 IAction::ActionReturn ScreenMenu::LoadAmstradSetup( const char* path)
 {
    CString fullpath = PATH_TAPE;
-   fullpath.Append( "/" );
+   fullpath.Append( INTER_FILE );
    fullpath.Append( path);
    logger_->Write("Menu", LogNotice, "Load Amstrad Setup : %s", (const char*)fullpath);
 
@@ -205,7 +217,7 @@ void ScreenMenu::LoadConfiguration  (const char* config_name, const char* ini_fi
 
    // Configuration
    CString default_path_cfg = PATH_CONFIGS;
-   default_path_cfg.Append( "/" );
+   default_path_cfg.Append( INTER_FILE );
    default_path_cfg.Append( "CPC6128PLUSEN.cfg");
 
    
@@ -308,7 +320,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
 IAction::ActionReturn ScreenMenu::LoadCartridge( const char* path)
 {
    CString fullpath = PATH_CARTIRDGE;
-   fullpath.Append( "/" );
+   fullpath.Append( INTER_FILE );
    fullpath.Append( path);
    logger_->Write("Menu", LogNotice, "Load cartridge fullpath : %s", (const char*)fullpath);
    setup_->LoadCartridge (fullpath);
@@ -321,7 +333,7 @@ IAction::ActionReturn ScreenMenu::LoadCartridge( const char* path)
 IAction::ActionReturn ScreenMenu::LoadDisk( const char* path)
 {
    CString fullpath = PATH_DISK;
-   fullpath.Append( "/" );
+   fullpath.Append( INTER_FILE );
    fullpath.Append( path);
    logger_->Write("Menu", LogNotice, "Load Disk fullpath : %s", (const char*)fullpath);
    
@@ -336,7 +348,7 @@ IAction::ActionReturn ScreenMenu::LoadDisk( const char* path)
 IAction::ActionReturn ScreenMenu::LoadTape( const char* path)
 {
    CString fullpath = PATH_TAPE;
-   fullpath.Append( "/" );
+   fullpath.Append( INTER_FILE );
    fullpath.Append( path);
    logger_->Write("Menu", LogNotice, "Load Tape fullpath : %s", (const char*)fullpath);
    motherboard_->GetTape()->InsertTape (fullpath);
@@ -349,9 +361,13 @@ IAction::ActionReturn ScreenMenu::LoadTape( const char* path)
 IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionReturn (ScreenMenu::* load_action)(const char*))
 {
    DIR Directory;
+   CString search_path = path;
+#ifndef __circle__
+   search_path.Append("\\*.*");
+#endif
    FILINFO *FileInfo = new FILINFO;
    FRESULT Result = f_findfirst(&Directory, FileInfo, path, "*");
-   std::vector<FILINFO*> cartridge_list(20);
+   std::vector<FILINFO*> cartridge_list;
 
    int limit = 0;
    // Create menu
@@ -360,11 +376,12 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
    for (i = 0; Result == FR_OK && FileInfo->fname[0]; i++)
    {
       limit++;
-      if (!(FileInfo->fattrib & (AM_HID | AM_SYS)))
+      if ((FileInfo->fattrib & (AM_HID | AM_SYS|AM_DIR)) == 0)
       {
          cartridge_list.push_back(FileInfo);
       }
       FileInfo = new FILINFO;
+
       Result = f_findnext(&Directory, FileInfo);
    }
    logger_->Write("Menu", LogNotice, "Insert Media : End of directory reading");

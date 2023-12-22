@@ -7,16 +7,38 @@
 ////////////////////////////////////////////////////////////
 bool end = false;
 
+
+class EmualtionWin32
+{
+public:
+   CLogger* log;
+   DisplayPi* display;
+   SoundPi* sound;
+   KeyboardPi* keyboard;
+   Emulation* emulation;
+};
+
+
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+
+   EmualtionWin32* emu = reinterpret_cast<EmualtionWin32*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+
    switch (message)
    {
    case WM_CREATE:
    {
       CREATESTRUCT* pCreateStr = (CREATESTRUCT*)lParam;
-      SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG)pCreateStr->lpCreateParams);
+      SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pCreateStr->lpCreateParams);
       break;
    }
+   case WM_KEYDOWN:
+      emu->keyboard->Presskey(wParam);
+      break;
+   case WM_KEYUP:
+      emu->keyboard->Unpresskey(wParam);
+      break;
    case WM_QUIT:
       break;
    case WM_DESTROY:
@@ -61,7 +83,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
    return RegisterClassEx(&wcex);
 }
 
-void Run(Emulation * emulation)
+void Run(EmualtionWin32* emulation)
 {
    GdiplusStartupInput gdiplusStartupInput;
    ULONG_PTR           gdiplusToken;
@@ -70,7 +92,7 @@ void Run(Emulation * emulation)
    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
 
-   emulation->Run(0);
+   emulation->emulation->Run(0);
 
    GdiplusShutdown(gdiplusToken);
 
@@ -79,28 +101,30 @@ void Run(Emulation * emulation)
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
    // Create the core
-   CLogger* log = new CLogger(LogDebug);
-   DisplayPi* display = new DisplayPi(log);
+   EmualtionWin32 emu;
+
+   emu.log = new CLogger(LogDebug);
+   emu.display = new DisplayPi(emu.log);
 
    // Sound 
-   SoundPi* sound = new SoundPi(log);
+   emu.sound = new SoundPi(emu.log);
 
    // Keyboard
-   KeyboardPi* keyboard = new KeyboardPi(log);
+   emu.keyboard = new KeyboardPi(emu.log);
 
    MyRegisterClass(hInstance);
-   Emulation emulation(log);
+   emu.emulation = new Emulation(emu.log);
 
    HWND _hwnd = CreateWindowEx(0, "SugarPi", "SugarPi", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_VISIBLE,
-      CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, &emulation); // NULL);
+      CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, &emu); // NULL);
 
-   display->Init(hInstance, _hwnd, 0);
+   emu.display->Init(hInstance, _hwnd, 0);
 
    // Launch the message pump
    // emulation
-   emulation.Initialize(display, sound, keyboard);	// must be initialized at last
+   emu.emulation->Initialize(emu.display, emu.sound, emu.keyboard);	// must be initialized at last
 
-   std::thread main_core(Run, &emulation);
+   std::thread main_core(Run, &emu);
 
    // Quit.
    MSG msg;
@@ -113,12 +137,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
       }
    }
 
-   emulation.ForceStop();
+   emu.emulation->ForceStop();
 
    main_core.join();
 
-   delete keyboard;
-   delete display;
-   delete log;
+   delete emu.keyboard;
+   delete emu.display;
+   delete emu.log;
 
 }

@@ -229,7 +229,13 @@ public:
    bool IsAction();
    void ReinitSelect();
 
+   void Presskey(long keyCode);
+   void Unpresskey(long keyCode);
+
 protected:
+   void CodeAction(long keycode, bool activated);
+
+
    CLogger*          logger_;
 
    TGamePadState	   gamepad_state_[MAX_GAMEPADS];

@@ -314,34 +314,39 @@ void DisplayPi::Screenshot()
 
    if (GetNewScreenshotFile(pathFile, MAX_PATH))
    {
-      // Create BMP of the right size
-      HBITMAP hTmpBmp = CreateCompatibleBitmap(m_hwndDC, m_Width, m_Height);
-      HDC hDC = CreateCompatibleDC(m_hwndDC);
-      HBITMAP oldBmp = (HBITMAP)SelectObject(hDC, hTmpBmp);
-
-      // Copy MemDC into it
-      BitBlt(hDC, 0, 0, m_Width, m_Height, m_hwndDC, m_XIn, m_YIn, SRCCOPY);
-      // Save this bitmap to the file
-      Bitmap bmp(hTmpBmp, NULL);
-
-      // Save the altered image.
-      CLSID pngClsid;
-      GetEncoderClsid(L"image/png", &pngClsid);
-
-      size_t size_of_string = strlen(pathFile);
-      wchar_t* stringw = new wchar_t[size_of_string + 1];
-      MultiByteToWideChar(CP_ACP, 0, pathFile, size_of_string, stringw, size_of_string + 1);
-
-      bmp.Save(stringw, &pngClsid, NULL);
-
-      SelectObject(hDC, oldBmp);
-      DeleteObject(oldBmp);
-      DeleteDC(hDC);
+      Screenshot(pathFile);
    }
    else
    {
       // Error !
    }
+}
+
+void DisplayPi::Screenshot(const char* scr_path)
+{
+   // Create BMP of the right size
+   HBITMAP hTmpBmp = CreateCompatibleBitmap(m_hwndDC, m_Width, m_Height);
+   HDC hDC = CreateCompatibleDC(m_hwndDC);
+   HBITMAP oldBmp = (HBITMAP)SelectObject(hDC, hTmpBmp);
+
+   // Copy MemDC into it
+   BitBlt(hDC, 0, 0, m_Width, m_Height, m_hwndDC, m_XIn, m_YIn, SRCCOPY);
+   // Save this bitmap to the file
+   Bitmap bmp(hTmpBmp, NULL);
+
+   // Save the altered image.
+   CLSID pngClsid;
+   GetEncoderClsid(L"image/png", &pngClsid);
+
+   size_t size_of_string = strlen(scr_path);
+   wchar_t* stringw = new wchar_t[size_of_string + 1];
+   MultiByteToWideChar(CP_ACP, 0, scr_path, size_of_string, stringw, size_of_string + 1);
+
+   bmp.Save(stringw, &pngClsid, NULL);
+
+   SelectObject(hDC, oldBmp);
+   DeleteObject(oldBmp);
+   DeleteDC(hDC);
 }
 
 bool DisplayPi::GetNewScreenshotFile(char* buffer_P, unsigned int size_P)

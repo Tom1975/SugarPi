@@ -78,6 +78,7 @@ public:
    };
 
    virtual void Screenshot();
+   virtual void Screenshot(const char* scr_path);
    virtual void ScreenshotEveryFrame(int bSetOn) { m_DoScreenshotSerie = bSetOn; };
    virtual bool IsEveryFrameScreened() {
       return m_DoScreenshotSerie
