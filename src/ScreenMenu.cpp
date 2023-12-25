@@ -117,7 +117,7 @@ void MainMenuWindows::ResetMenu()
 
 void MainMenuWindows::Clear()
 {
-   offset_back_ += 0.1;
+   offset_back_ += 0.01;
    for (int i = y_ + 200; i < display_->GetHeight() && i < y_ + height_; i++)
    {
       int* line = display_->GetVideoBuffer(i);
@@ -126,10 +126,15 @@ void MainMenuWindows::Clear()
          size_to_clear = width_;
 
       static int back_value = 0;
-      back_value += sin(offset_back_) * 0xFF;
+      back_value = sin(offset_back_) * 0xFF;
 
-      for (int j = x_; j < display_->GetWidth() && j < x_ +width_; j++)
-         line[j] = back_value;
+      float save = offset_back_;
+      for (int j = x_; j < display_->GetWidth() && j < x_ + width_; j++)
+      {
+         line[j] = save;
+         save += offset_back_;
+         save += sin(save) * 0xFF;
+      }
    }
 
 }
