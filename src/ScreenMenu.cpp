@@ -90,14 +90,18 @@ FRESULT f_findnext(DIR* dp, FILINFO *FileInfo)
 
 #define MAX_SIZE_BUFFER 256
 
-MainMenuWindows::MainMenuWindows (DisplayPi* display) : Window (display)
+MainMenuWindows::MainMenuWindows (DisplayPi* display) : Window (display), offset_back_(0)
 {
+   Create(0, 0, 0, 640, 480);
    // Create Title bitmap
-   // todo
+   SugarboxLogo* bitmap_ = new SugarboxLogo();
+   logo_ = new BitmapWindows(display);
+   logo_->Create(this, 240, 70, bitmap_);
 
    // Create inner menu
    menu_ = new MenuWindows (display);
-   menu_->Create ( this, 240, 70, 1000, 800);
+   menu_->Create ( this, 240, 200, 1000, 800);
+
 }
 
 MainMenuWindows::~MainMenuWindows ()
@@ -109,6 +113,25 @@ void MainMenuWindows::ResetMenu()
 {
    // Set focus to first item
    menu_->SetFocus(0);
+}
+
+void MainMenuWindows::Clear()
+{
+   offset_back_ += 0.1;
+   for (int i = y_ + 200; i < display_->GetHeight() && i < y_ + height_; i++)
+   {
+      int* line = display_->GetVideoBuffer(i);
+      int size_to_clear = width_ + y_;
+      if (size_to_clear > width_)
+         size_to_clear = width_;
+
+      static int back_value = 0;
+      back_value += sin(offset_back_) * 0xFF;
+
+      for (int j = x_; j < display_->GetWidth() && j < x_ +width_; j++)
+         line[j] = back_value;
+   }
+
 }
 
 ScreenMenu::MenuItem base_menu[] =
@@ -238,7 +261,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    for (i = 0; Result == FR_OK && FileInfo->fname[0]; i++)
    {
       limit++;
-      if (!(FileInfo->fattrib & (AM_HID | AM_SYS)))
+      if ((FileInfo->fattrib & (AM_HID | AM_SYS | AM_DIR)) == 0)
       {
          config_list.push_back(FileInfo);
       }
@@ -366,7 +389,7 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
    search_path.Append("\\*.*");
 #endif
    FILINFO *FileInfo = new FILINFO;
-   FRESULT Result = f_findfirst(&Directory, FileInfo, path, "*");
+   FRESULT Result = f_findfirst(&Directory, FileInfo, search_path, "*");
    std::vector<FILINFO*> cartridge_list;
 
    int limit = 0;
@@ -555,6 +578,7 @@ IAction::ActionReturn ScreenMenu::Handle()
    display_->SetFullResolution(true);
 
    // Wait till next vsync
+   main_menu_->ClearAll();
    display_->VSync();
 
    // Reset menu

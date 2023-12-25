@@ -35,13 +35,27 @@ void Window::Create (Window* parent, int x, int y, unsigned int width, unsigned 
    }
 }
 
-void Window::Clear()
+void Window::ClearAll()
 {
    // Background
-   for (int i = 0; i < display_->GetHeight(); i++)
+   for (int i = 0; i < display_->GetHeight() ; i++)
    {
       int* line = display_->GetVideoBuffer(i);
       memset(line, 0x0, sizeof(int) * display_->GetWidth());
+   }
+}
+
+void Window::Clear()
+{
+   // Background
+   for (int i = x_; i < display_->GetHeight() && i < y_ + height_; i++)
+   {
+      int* line = display_->GetVideoBuffer(i);
+      int size_to_clear = width_ + y_;
+      if (size_to_clear > width_)
+         size_to_clear = width_;
+
+      memset(&line[y_], 0x0, sizeof(int) * size_to_clear);
    }
 
 }
@@ -139,7 +153,7 @@ IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
       if (event == IEvent::NONE)
       {
           // Wait a bit
-
+         Redraw(true);
          WAIT(10);
       }
       else
@@ -426,7 +440,6 @@ void MenuWindows::RedrawWindow ()
    int x = 450;
    int y = 47;
    WindowsToDisplay(x, y);
-   display_->DisplayText("SugarPi", x, y);
 }
 
 void MenuWindows::ComputeScroller()
@@ -495,3 +508,34 @@ void MenuWindows::SetFocus (unsigned int index)
    }
    
 }
+
+BitmapWindows::BitmapWindows(DisplayPi* display): Window(display)
+{
+
+}
+
+BitmapWindows::~BitmapWindows()
+{
+
+}
+
+void BitmapWindows::Create(Window* parent, int x, int y, PiBitmap* bmp)
+{
+   bmp_ = bmp;
+   bmp_->GetSize(width_, height_);
+   Window::Create(parent, x, y, width_, height_);  
+}
+
+void BitmapWindows::RedrawWindow()
+{
+   static float offset;
+   for (int i = 0; i < height_; i++)
+   {
+      int* line = display_->GetVideoBuffer(i + y_);
+      bmp_->DrawLogo(i, &line[x_ + (int) (sin(offset)*20)]);
+      offset += 0.02;
+   }
+   
+
+}
+

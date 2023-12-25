@@ -61,6 +61,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/SugarboxLogo.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/SugarboxLogo.h
 
 )
 
@@ -134,7 +136,7 @@ set(ALL_FILES ${Source_Files} ${CpcCore_Files} ${SugarPi_Files})
 add_executable(SugarPiWin32 WIN32)
 
 target_sources(SugarPiWin32 PUBLIC ${ALL_FILES} )
-target_link_libraries(SugarPiWin32 PUBLIC Shlwapi.lib 	Winmm.lib)
+target_link_libraries(SugarPiWin32 PUBLIC Shlwapi.lib Dwmapi.lib Winmm.lib)
 
 target_include_directories ( SugarPiWin32 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/.)
 target_include_directories ( SugarPiWin32 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../)

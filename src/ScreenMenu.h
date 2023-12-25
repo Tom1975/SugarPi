@@ -25,6 +25,7 @@
 #include "KeyboardPiDesktop.h"
 #include "SugarPiSetupDesktop.h"
 #include "Window.h"
+#include "res/SugarboxLogo.h"
 
 #endif
 #define MAX_LANGUAGE 1
@@ -43,10 +44,14 @@ public:
    
    void ResetMenu();
    MenuWindows* GetMenu(){return menu_;};
-   
-protected:
-   MenuWindows* menu_;
+   virtual void Clear();
 
+protected:
+   BitmapWindows* logo_;
+   MenuWindows* menu_;
+   SugarboxLogo* bitmap_;
+
+   float offset_back_;
 };
 
 class ScreenMenu : public IEvent

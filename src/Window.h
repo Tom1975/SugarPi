@@ -15,6 +15,7 @@
 #define WAIT(x) std::this_thread::sleep_for(std::chrono::milliseconds(x));
 #endif
 
+#include "PiBitmap.h"
 #include "CPCCore/CPCCoreEmu/simple_vector.hpp"
 
 
@@ -64,6 +65,7 @@ public:
 
    void WindowsToDisplay(int& x, int& y);
    virtual void Clear();
+   virtual void ClearAll();
    virtual void Redraw (bool clear = true);
    virtual void RedrawWindow ();
    virtual void RedrawChildren ();
@@ -173,3 +175,18 @@ public:
 protected:
    bool * value_;
 };
+
+class BitmapWindows : public Window
+{
+public:
+   BitmapWindows(DisplayPi* display);
+   virtual ~BitmapWindows();
+
+   virtual void Create(Window* parent, int x, int y, PiBitmap* bmp);
+   virtual void RedrawWindow();
+
+protected:
+   PiBitmap* bmp_;
+   int width_, height_;
+};
+

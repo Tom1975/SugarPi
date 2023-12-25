@@ -1,5 +1,6 @@
 #include "DisplayPiDesktop.h"
 #include "Shlwapi.h"
+#include "dwmapi.h"
 #include <vector>
 #include <DXGI.h>
 
@@ -173,6 +174,10 @@ void DisplayPi::StartSync()
 void DisplayPi::VSync(bool bDbg)
 {
    BitBlt(m_hwndDC, m_XIn, m_YIn, m_Width, m_Height, m_MemDC, m_X, m_Y, SRCCOPY);
+   // Wait VbL ?
+
+   
+
 }
 
 void DisplayPi::DisplayDebug(int x, int y)

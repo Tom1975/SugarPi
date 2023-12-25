@@ -31,7 +31,7 @@ set ( DEFINE -DARM_ALLOW_MULTI_CORE)
 # attempt to build a simple test program as this will fail without us using
 # the -nostartfiles option on the command line
 
-
+                                         
 # Because the cross-compiler cannot directly generate a binary without complaining, just test
 # compiling a static library instead of an executable program
 set( CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY )
@@ -108,9 +108,17 @@ else ()
     MESSAGE (ERROR "AARCH must be set to 32 or 64")
 endif()
 
-execute_process(COMMAND which ${PREFIX_COMPIL}gcc RESULT_VARIABLE result OUTPUT_VARIABLE output )
+execute_process(COMMAND echo $PATH RESULT_VARIABLE result OUTPUT_VARIABLE output )
+MESSAGE (output  : ${output})
+
+execute_process(COMMAND which gcc RESULT_VARIABLE result OUTPUT_VARIABLE output )
 find_path(TC_PATH ${CROSS_COMPILE}gcc )
 set (TC_PATH  ${TC_PATH}/ )
+
+MESSAGE (output  : ${output})
+MESSAGE (gcc  : ${CROSS_COMPILE}gcc)
+MESSAGE (TC_PATH  : ${TC_PATH})
+
 
 set( CMAKE_C_COMPILER ${TC_PATH}${CROSS_COMPILE}gcc )
 set( CMAKE_CXX_COMPILER ${TC_PATH}${CROSS_COMPILE}g++)
