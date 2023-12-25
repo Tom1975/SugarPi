@@ -70,6 +70,13 @@ void CoolspotFont::CopyLetter(unsigned char c, int line, int* buffer)
    if ( offset >0 && endoffset > 0)
    {
       unsigned int* col_buffer = (unsigned int*)buffer;
+      for (offset; offset< endoffset ; offset++)
+      {
+         if (coolspot_font.pixel_data[offset] != 0)
+         {
+            *col_buffer++ = coolspot_font.pixel_data[offset];
+         }
+      }
       memcpy ( col_buffer, &coolspot_font.pixel_data[offset], (endoffset-offset)*4);
    }
 }
