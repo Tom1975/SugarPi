@@ -248,9 +248,6 @@ void DisplayPi::Loop()
 
 void DisplayPi::VSync(bool dbg )
 {
-   // Set current frame as ready
-   //logger_->Write("DIS", LogNotice, "VSync : Frame ready is %i", buffer_used_);
-
 #ifndef USE_QEMU_SUGARPI
    bool clear_framebuffer = false;
    if (full_resolution_cached_ != full_resolution_)
@@ -291,7 +288,6 @@ void DisplayPi::VSync(bool dbg )
          {
             frame_queue_[nb_frame_in_queue_++] = buffer_used_;
             frame_used_[buffer_used_] = FR_READY;
-            //logger_->Write("DIS", LogNotice, "VSync : Add %i - nb_frame_in_queue_ : %i", buffer_used_, nb_frame_in_queue_);
 
             frame_used_[i] = FR_USED;
             buffer_used_ = i;
@@ -415,6 +411,11 @@ void DisplayPi::Screenshot()
 {
    logger_->Write("Display", LogNotice, "Screenshot - NOT IMPLEMENTED ");
 
+}
+
+void DisplayPi::Screenshot(const char* scr_path)
+{
+   logger_->Write("Display", LogNotice, "Screenshot - NOT IMPLEMENTED ");
 }
 
 void DisplayPi::ScreenshotEveryFrame(int on)

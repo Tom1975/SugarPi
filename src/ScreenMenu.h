@@ -19,15 +19,14 @@
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
 #include "SugarPiSetup.h"
-#include "Window.h"
 #else
 #include "DisplayPiDesktop.h"
 #include "KeyboardPiDesktop.h"
 #include "SugarPiSetupDesktop.h"
+#endif
 #include "Window.h"
 #include "res/SugarboxLogo.h"
 
-#endif
 #define MAX_LANGUAGE 1
 
 #pragma pack(push, 1)
@@ -50,8 +49,6 @@ protected:
    BitmapWindows* logo_;
    MenuWindows* menu_;
    SugarboxLogo* bitmap_;
-
-   float offset_back_;
 };
 
 class ScreenMenu : public IEvent

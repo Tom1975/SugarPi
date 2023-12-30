@@ -146,7 +146,7 @@ target_include_directories ( SugarPiWin32 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../
 target_compile_definitions(SugarPiWin32 PUBLIC -DNO_MULTITHREAD)
 
 target_compile_features(SugarPiWin32  PRIVATE cxx_std_17)
-target_compile_definitions(SugarPiWin32 PUBLIC -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -DLOG_MIXER -DLOGFDC )
+target_compile_definitions(SugarPiWin32 PUBLIC -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -DLOG_MIXER -DLOGFDC -DNO_CUSTOM_OPCODES )
 
 set (CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/Install)
 install (TARGETS SugarPiWin32 RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})

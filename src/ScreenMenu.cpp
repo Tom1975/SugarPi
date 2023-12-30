@@ -6,7 +6,6 @@
 #ifdef  __circle__
 #include <SDCard/emmc.h>
 #include <fatfs/ff.h>
-#define 
 
 #else
 #define FSIZE_t int 
@@ -90,7 +89,7 @@ FRESULT f_findnext(DIR* dp, FILINFO *FileInfo)
 
 #define MAX_SIZE_BUFFER 256
 
-MainMenuWindows::MainMenuWindows (DisplayPi* display) : Window (display), offset_back_(0)
+MainMenuWindows::MainMenuWindows (DisplayPi* display) : Window (display)
 {
    Create(0, 0, 0, 640, 480);
    // Create Title bitmap
@@ -117,25 +116,25 @@ void MainMenuWindows::ResetMenu()
 
 void MainMenuWindows::Clear()
 {
-   offset_back_ += 0.01;
-   for (int i = y_ + 200; i < display_->GetHeight() && i < y_ + height_; i++)
+   static int offset_grid = 0;
+   static int offset_grid_y = 0;
+   for (int i = y_ /* + 200*/; i < display_->GetHeight() && i < y_ + height_; i++)
    {
       int* line = display_->GetVideoBuffer(i);
       int size_to_clear = width_ + y_;
       if (size_to_clear > width_)
          size_to_clear = width_;
 
-      static int back_value = 0;
-      back_value = sin(offset_back_) * 0xFF;
-
-      float save = offset_back_;
       for (int j = x_; j < display_->GetWidth() && j < x_ + width_; j++)
       {
-         line[j] = save;
-         save += offset_back_;
-         save += sin(save) * 0xFF;
+         if (((j + ((offset_grid_y+i)&0x10) + offset_grid) & 0x1F) >= 0x10)
+            line[j] = 0xCCCCCC;
+         else 
+            line[j] = 0xDDDDDD;
       }
    }
+   offset_grid += 0x1;
+   offset_grid_y += 0x1;
 
 }
 

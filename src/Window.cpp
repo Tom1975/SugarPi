@@ -9,6 +9,7 @@
 #include "DisplayPiDesktop.h"
 #endif
 
+#include <math.h>
 
 Window* Window::focus_ = nullptr;
 
@@ -93,12 +94,10 @@ void Window::WindowsToDisplay(int& x, int& y)
 
 void Window::RedrawWindow ()
 {
-   CLogger::Get ()->Write("Menu", LogNotice, "Windows::RedrawWindow");
 }
 
 void Window::RedrawChildren ()
 {
-   CLogger::Get ()->Write("Menu", LogNotice, "Windows::RedrawChildren");
    WindowsQueue** current_queue = &windows_children_;
    while ( *current_queue != nullptr)
    {  
@@ -107,15 +106,12 @@ void Window::RedrawChildren ()
       && (*current_queue)->wnd_->x_ <= width_ 
       && (*current_queue)->wnd_->y_ <= height_ )*/
       {
-         CLogger::Get ()->Write("Menu", LogNotice, "Draw a child window...");
          (*current_queue)->wnd_->RedrawWindow();
          (*current_queue)->wnd_->RedrawChildren();
       }
 
       current_queue = &((*current_queue)->next_);
    }
-   CLogger::Get ()->Write("Menu", LogNotice, "Windows::RedrawChildren : Done !");
-
 }
 
 void Window::Invalidate ()
@@ -241,7 +237,6 @@ void MenuItemWindows::SetAction (IAction* action)
 
 void MenuItemWindows::RedrawWindow ( )
 {
-   CLogger::Get ()->Write("Menu", LogNotice, "MenuItemWindows::RedrawWindow");
    int x = 15;
    int y = 0;
    WindowsToDisplay(x, y);   
@@ -294,7 +289,6 @@ void CheckMenuItemWindows::Create(const char* label, bool* value, Window* parent
 
 void CheckMenuItemWindows::RedrawWindow ( )
 {
-   CLogger::Get ()->Write("Menu", LogNotice, "CheckMenuItemWindows::RedrawWindow");
    int x = 15;
    int y = 0;
    WindowsToDisplay(x, y);   
@@ -345,7 +339,6 @@ ScrollWindows::~ScrollWindows ()
 
 void ScrollWindows::RedrawChildren ()
 {
-   CLogger::Get ()->Write("Menu", LogNotice, "ScrollWindows::RedrawChildren");
    WindowsQueue** current_queue = &windows_children_;
    while ( *current_queue != nullptr)
    {  
@@ -359,7 +352,6 @@ void ScrollWindows::RedrawChildren ()
 
       current_queue = &((*current_queue)->next_);
    }
-   CLogger::Get ()->Write("Menu", LogNotice, "ScrollWindows::RedrawChildren Done");
 }
 
 void ScrollWindows::WindowsToDisplay(int& x, int& y)
@@ -436,7 +428,6 @@ void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* act
 
 void MenuWindows::RedrawWindow ()
 {
-   CLogger::Get ()->Write("Menu", LogNotice, "MenuWindows::RedrawWindow");
    int x = 450;
    int y = 47;
    WindowsToDisplay(x, y);
@@ -476,7 +467,7 @@ IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
          {
             current_focus_++;
             list_item_.at(current_focus_)->SetFocus ();
-            Redraw (true);
+            //Redraw (true);
          }
          break;
       case IEvent::Event::UP:
@@ -485,7 +476,7 @@ IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
          {
             current_focus_--;
             list_item_.at(current_focus_)->SetFocus ();
-            Redraw (true);
+            //Redraw (true);
          }
          break;
       case IEvent::Event::BACK:
@@ -532,8 +523,8 @@ void BitmapWindows::RedrawWindow()
    for (int i = 0; i < height_; i++)
    {
       int* line = display_->GetVideoBuffer(i + y_);
-      bmp_->DrawLogo(i, &line[x_ + (int) (sin(offset)*20)]);
-      offset += 0.02;
+      bmp_->DrawLogo(i, &line[x_ + (int) (sinf(offset)*10)]);
+      offset += 0.002;
    }
    
 

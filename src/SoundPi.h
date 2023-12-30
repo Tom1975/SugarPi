@@ -2,8 +2,8 @@
 
 //
 #include <circle/logger.h>
-#include <circle/pwmsounddevice.h>
-#include <circle/soundbasedevice.h>
+#include <circle/sound/pwmsounddevice.h>
+#include <circle/sound/soundbasedevice.h>
 #include <vc4/vchiq/vchiqdevice.h>
 #include <vc4/sound/vchiqsoundbasedevice.h>
 #include <circle/sched/scheduler.h>
