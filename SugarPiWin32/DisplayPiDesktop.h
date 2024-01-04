@@ -2,6 +2,8 @@
 
 #include <windows.h>
 #include <gdiplus.h>
+#include <d2d1.h>
+#include <mutex>
 using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")
 
@@ -16,7 +18,7 @@ using namespace Gdiplus;
 #define REAL_DISP_X  1024 //832 //1024 // 768
 #define REAL_DISP_Y  624 //-16 //624 //576
 
-
+#define FRAME_BUFFER_SIZE 2
 
 class DisplayPi : public IDisplay, public ICfg
 {
@@ -29,6 +31,7 @@ public:
    bool IsSyncOnFrame() { return sync_on_frame_; }
 
    void SetFullResolution(bool set) { full_resolution_ = set; };
+   void Loop();
 
    virtual void WindowsToTexture(int& x, int& y);
    virtual void SetScanlines(int scan) { m_TypeScanlines = scan; };
@@ -50,8 +53,8 @@ public:
    virtual void VSync(bool bDbg = false);
    virtual void StartSync();
    virtual void WaitVbl();
-   virtual int* GetVideoBuffer(int y) { return &bBytes[(REAL_DISP_Y - y - 2) * REAL_DISP_X]; };
-   virtual void Reset() { memset(bBytes, 0, REAL_DISP_X * REAL_DISP_Y); };
+   virtual int* GetVideoBuffer(int y);
+   virtual void Reset();
    virtual bool SetSyncWithVbl(int speed) { return false; };
    virtual bool IsWaitHandled() { return false; };
    virtual bool GetBlackScreenInterval() { return m_BlackScreen; };
@@ -115,6 +118,7 @@ protected:
 
    // Progress bar for media loading
    bool full_resolution_;
+   bool full_resolution_cached_;
 
    int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
    bool GetNewScreenshotFile(TCHAR* buffer_P, unsigned int size_P);
@@ -143,16 +147,30 @@ protected:
    HBITMAP     m_iBitmap;
    Bitmap* m_BmpMem;
    BITMAPINFO  bi24BitInfo; // We set this up to grab what we want
-   int* bBytes;
-   bool m_bDeviceLost;
-   // DX
-   IDirectDraw7* m_pDD7;
 
-   LPDIRECTDRAW7        m_pDD;        // DirectDraw object
-   LPDIRECTDRAWSURFACE7 m_pDDSFront;  // DirectDraw fronbuffer surface
-   LPDIRECTDRAWSURFACE7 m_pDDSBack;   // DirectDraw backbuffer surface
-   LPDIRECTDRAWSURFACE7 m_pSurface;
+   bool m_bDeviceLost;
 
    bool sync_on_frame_;
    CoolspotFont* font_;
+   CLogger* logger_;
+
+   std::mutex mutex_;
+
+   // Frame buffer availability
+   typedef enum
+   {
+      FR_FREE,
+      FR_USED,
+      FR_READY
+   } FrameState;
+   FrameState frame_used_[FRAME_BUFFER_SIZE];
+   unsigned int buffer_used_;
+
+   unsigned int frame_queue_[FRAME_BUFFER_SIZE];
+   unsigned int nb_frame_in_queue_;
+
+   // DX
+   ID2D1HwndRenderTarget* pRT_;
+   unsigned int* frame_buffer_;
+   ID2D1Bitmap* bitmap_;
 };

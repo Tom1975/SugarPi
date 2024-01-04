@@ -1,9 +1,10 @@
+#include <vector>
+
 #include "DisplayPiDesktop.h"
 #include "Shlwapi.h"
 #include "dwmapi.h"
-#include <vector>
-#include <DXGI.h>
 
+#define WAIT(x) std::this_thread::sleep_for(std::chrono::milliseconds(x));
 
 #define DISP_WIDTH    1024
 #define DISP_HEIGHT   576
@@ -13,7 +14,7 @@
 
 #define SCR_PATH "\\SCR\\"
 
-DisplayPi::DisplayPi(CLogger* logger) : m_pFSInt(NULL), sync_on_frame_(true)
+DisplayPi::DisplayPi(CLogger* logger) : logger_(logger), m_pFSInt(NULL), sync_on_frame_(true), nb_frame_in_queue_(0)
 {
    m_BlackScreen = false;
    m_pDiretories = NULL;
@@ -24,11 +25,20 @@ DisplayPi::DisplayPi(CLogger* logger) : m_pFSInt(NULL), sync_on_frame_(true)
    m_DnDType = 0;
    m_CurrentPart = 0;
    font_ = new CoolspotFont();
+
+   pRT_ = nullptr;
+   frame_buffer_ = nullptr;
+
+   CoInitialize(NULL);
+
 }
 
 DisplayPi::~DisplayPi()
 {
+   if (pRT_)pRT_->Release();
    delete font_;
+   delete frame_buffer_;
+   CoUninitialize();
 }
 
 void DisplayPi::ReleaseAll()
@@ -36,8 +46,8 @@ void DisplayPi::ReleaseAll()
    // release
    ReleaseDC(m_hWnd, m_hwndDC);
 
-   DeleteObject(m_iBitmap);
-   delete m_BmpMem;
+   //DeleteObject(m_iBitmap);
+   //delete m_BmpMem;
 }
 
 void DisplayPi::WindowsToTexture(int& x, int& y)
@@ -82,9 +92,67 @@ int DisplayPi::GetHeight()
    return m_Height; //REAL_DISP_Y;
 }
 
+int* DisplayPi::GetVideoBuffer(int y) 
+{
+   return (int*) & frame_buffer_[(y) * REAL_DISP_X];
+}
+
+void DisplayPi::Reset() 
+{
+   memset(&frame_buffer_[REAL_DISP_X * REAL_DISP_Y* FRAME_BUFFER_SIZE], 0, REAL_DISP_X * REAL_DISP_Y * FRAME_BUFFER_SIZE);
+}
+
+
 void DisplayPi::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface* pFSInt)
 {
+
+   ID2D1Factory* pD2DFactory = NULL;
+   HRESULT hr = D2D1CreateFactory(
+      D2D1_FACTORY_TYPE_SINGLE_THREADED,
+      &pD2DFactory
+   );
+
+
    m_hWnd = hWnd;
+   
+   // Obtain the size of the drawing area.
+   RECT rc;
+   GetClientRect(m_hWnd, &rc);
+
+   // Create a Direct2D render target          
+   
+   hr = pD2DFactory->CreateHwndRenderTarget(
+      D2D1::RenderTargetProperties(),
+      D2D1::HwndRenderTargetProperties(
+         m_hWnd,
+         D2D1::SizeU(
+            rc.right - rc.left,
+            rc.bottom - rc.top)
+      ),
+      &pRT_
+   );
+   pD2DFactory->Release();
+
+   frame_buffer_ = (unsigned int*)malloc(
+      REAL_DISP_X * REAL_DISP_Y*4*2);
+
+   D2D1_SIZE_U size = { 0 };
+   D2D1_BITMAP_PROPERTIES props;
+   pRT_->GetDpi(&props.dpiX, &props.dpiY);
+   D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(
+      DXGI_FORMAT_B8G8R8A8_UNORM,
+      D2D1_ALPHA_MODE_IGNORE
+   );
+   props.pixelFormat = pixelFormat;
+   size.width = REAL_DISP_X;
+   size.height = REAL_DISP_Y;
+
+   hr = pRT_->CreateBitmap(size,
+      frame_buffer_,
+      size.width * 4,
+      props,
+      &bitmap_);
+
    m_hwndDC = GetDC(m_hWnd);
    m_MemDC = CreateCompatibleDC(m_hwndDC);
    m_pFSInt = pFSInt;
@@ -101,11 +169,11 @@ void DisplayPi::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface* pFSIn
    //bBytes = new BYTE[bi24BitInfo.bmiHeader.biWidth * bi24BitInfo.bmiHeader.biHeight * 4]; // create enough room. all pixels * each color component
    HDC hDC;
    hDC = CreateCompatibleDC(NULL);
-   m_iBitmap = CreateDIBSection(hDC, &bi24BitInfo, DIB_RGB_COLORS, (void**)&bBytes, 0, 0); // create a dib section for the dc
+   //m_iBitmap = CreateDIBSection(hDC, &bi24BitInfo, DIB_RGB_COLORS, (void**)&bBytes, 0, 0); // create a dib section for the dc
 
-   m_BmpMem = new Bitmap(m_iBitmap, NULL);
+   //m_BmpMem = new Bitmap(m_iBitmap, NULL);
 
-   SelectObject(m_MemDC, m_iBitmap); // assign the dib section to the dc
+   //SelectObject(m_MemDC, m_iBitmap); // assign the dib section to the dc
    DeleteDC(hDC);
 }
 
@@ -173,12 +241,118 @@ void DisplayPi::StartSync()
 
 void DisplayPi::VSync(bool bDbg)
 {
-   BitBlt(m_hwndDC, m_XIn, m_YIn, m_Width, m_Height, m_MemDC, m_X, m_Y, SRCCOPY);
+  //BitBlt(m_hwndDC, m_XIn, m_YIn, m_Width, m_Height, m_MemDC, m_X, m_Y, SRCCOPY);
    // Wait VbL ?
+#ifndef USE_QEMU_SUGARPI
+   bool clear_framebuffer = false;
+   if (full_resolution_cached_ != full_resolution_)
+   {
+      clear_framebuffer = true;
+      full_resolution_cached_ = full_resolution_;
 
-   
+   }
 
+   if (sync_on_frame_) // To turn on : Use the display core !
+   {
+      HRESULT hr;
+      hr = bitmap_->CopyFromMemory(NULL,
+         &frame_buffer_[0 * REAL_DISP_X * REAL_DISP_Y], REAL_DISP_X * 4);
+
+      pRT_->BeginDraw();
+      D2D1_RECT_F rect = D2D1::RectF(0, 0, 640, 480);
+      D2D1_RECT_F rect_src = D2D1::RectF(143, 47, 783, 527);
+      pRT_->DrawBitmap(bitmap_, &rect, 1,
+         D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &rect_src);
+      hr = pRT_->EndDraw();
+
+      if (clear_framebuffer)
+      {
+         // TODO
+      }
+
+   }
+   else
+   {
+      mutex_.lock();
+      // get a new one (or wait for one to be free)
+      bool found = false;
+
+      for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
+      {
+         if (frame_used_[i] == FR_FREE)
+         {
+            frame_queue_[nb_frame_in_queue_++] = buffer_used_;
+            frame_used_[buffer_used_] = FR_READY;
+
+            frame_used_[i] = FR_USED;
+            buffer_used_ = i;
+            found = true;
+            break;
+         }
+      }
+      if (!found)
+         logger_->Write("DIS", LogNotice, "All buffers are used");
+      mutex_.unlock();
+   }
+#else
+   frame_buffer_->SetVirtualOffset(143, 47 / 2 * 1024);
+   frame_buffer_->WaitForVerticalSync();
+
+#endif
+   //added_line_ ^= 1;
+   //buffer_num_ ^= 1;
+   //added_line_ = 1;
+
+   //   static unsigned int count = 0;
+   //   static unsigned int max_tick = 0;
+   //   static unsigned int nb_long_frame = 0;
+
+      // Frame is ready
+
+      // wait for a new frame to be available
+
+
+
+
+      // If last frame is more than 20ms, just don't do it
+
+      /*frame_buffer_->WaitForVerticalSync();
+      unsigned int new_tick = timer_->GetClockTicks();
+
+      if (new_tick - last_tick_frame_ > max_tick)
+         max_tick = new_tick - last_tick_frame_;
+
+      if (new_tick - last_tick_frame_ > 20500)
+      {
+         nb_long_frame++;
+      }
+
+      if (++count == 500)
+      {
+         logger_->Write("DIS", LogNotice, "500frame : max_frame : %i; Nb frames > 20ms : %i", max_tick, nb_long_frame);
+         max_tick = 0;
+         count = 0;
+         nb_long_frame = 0;
+      }
+      last_tick_frame_ = new_tick;
+      */
+
+#define PROPTAG_BLANK_SCREEN	0x00040002
+      /*CBcmPropertyTags Tags;
+      TBlankScreen blankScreen;
+      blankScreen.blank = 0;
+      if (Tags.GetTag(PROPTAG_BLANK_SCREEN, &blankScreen, sizeof blankScreen, 4))
+      {
+      }
+      else
+      {
+         logger_->Write("Display", LogNotice, "PROPTAG_BLANK_SCREEN - KO...");
+      }
+
+      */
+      //logger_->Write("Display", LogNotice, "Vsync : added_line_=%i", added_line_);
 }
+  
 
 void DisplayPi::DisplayDebug(int x, int y)
 {
@@ -431,6 +605,64 @@ void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
          
       }
       i++;
+
+   }
+}
+
+void DisplayPi::Loop()
+{
+   logger_->Write("DIS", LogNotice, "Starting loop");
+   // Waiting for a new frame to display
+   //int old_frame_index = -1;
+   while (1)
+   {
+      // Display available frame
+      int frame_index = -1;
+      mutex_.lock();
+      if (nb_frame_in_queue_ > 0)
+      {
+         /*if ( old_frame_index != -1)
+         {
+            frame_used_[old_frame_index] = FR_FREE;
+         }*/
+         frame_index = frame_queue_[0];
+         nb_frame_in_queue_--;
+         memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
+
+         //if (frame_index != -1)
+         {
+            //logger_->Write("DIS", LogNotice, "Loop : display %i - nb_frame_in_queue_ : %i", frame_index, nb_frame_in_queue_);
+            mutex_.unlock();
+
+            //frame_buffer_->SetVirtualOffset(143, 47 / 2 + frame_index * 1024);
+
+            HRESULT hr;
+            hr = bitmap_->CopyFromMemory(NULL,
+               &frame_buffer_[frame_index * REAL_DISP_X * REAL_DISP_Y], REAL_DISP_X * 4);
+
+            pRT_->BeginDraw();
+            pRT_->DrawBitmap(bitmap_, NULL, 1,
+                D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, NULL);
+            hr = pRT_->EndDraw();
+
+
+            // Set it as available
+            frame_used_[frame_index] = FR_FREE;
+            //old_frame_index = frame_index;
+         }
+         /*else
+         {
+            mutex_.unlock();
+            logger_->Write("DIS", LogNotice, "No buffer to display");
+            CTimer::Get()->MsDelay(1);
+         }*/
+      }
+      else
+      {
+         mutex_.unlock();
+         WAIT(1);
+      }
+      // sleep ?
 
    }
 }
