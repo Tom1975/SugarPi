@@ -36,4 +36,6 @@ protected:
    bool sound_is_ready;
    bool sound_run_;
    bool run_;
+
+   std::mutex sound_mutex_;
 };

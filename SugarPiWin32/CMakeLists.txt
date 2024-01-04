@@ -53,6 +53,8 @@ set(Source_Files
 set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CString.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CString.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/DisplayPi.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/DisplayPi.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScreenMenu.cpp
@@ -136,7 +138,7 @@ set(ALL_FILES ${Source_Files} ${CpcCore_Files} ${SugarPi_Files})
 add_executable(SugarPiWin32 WIN32)
 
 target_sources(SugarPiWin32 PUBLIC ${ALL_FILES} )
-target_link_libraries(SugarPiWin32 PUBLIC Shlwapi.lib Dwmapi.lib Winmm.lib)
+target_link_libraries(SugarPiWin32 PUBLIC Shlwapi.lib Dwmapi.lib Winmm.lib D2d1.lib)
 
 target_include_directories ( SugarPiWin32 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/.)
 target_include_directories ( SugarPiWin32 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../)
@@ -146,7 +148,7 @@ target_include_directories ( SugarPiWin32 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../
 target_compile_definitions(SugarPiWin32 PUBLIC -DNO_MULTITHREAD)
 
 target_compile_features(SugarPiWin32  PRIVATE cxx_std_17)
-target_compile_definitions(SugarPiWin32 PUBLIC -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -DLOG_MIXER -DLOGFDC -DNO_CUSTOM_OPCODES )
+target_compile_definitions(SugarPiWin32 PUBLIC -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -DLOG_MIXER -DLOGFDC -DNO_CUSTOM_OPCODES -DARM_ALLOW_MULTI_CORE)
 
 set (CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/Install)
 install (TARGETS SugarPiWin32 RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})

@@ -6,9 +6,6 @@
 
 Emulation::Emulation( CLogger* log)
    :
-#ifdef ARM_ALLOW_MULTI_CORE
-   CMultiCoreSupport(pMemorySystem),
-#endif
    logger_(log),
    setup_(nullptr),
    motherboard_(nullptr),
@@ -80,15 +77,16 @@ void Emulation::Run(unsigned nCore)
    {
    case 0:
       // Run sound loop
-      //sound_mutex_.Acquire();
+      sound_mutex_.lock();
       sound_is_ready = true;
-      //sound_mutex_.Release();
+      sound_mutex_.unlock();
       logger_->Write("Sound", LogNotice, "SoundMixer Started");
       while(sound_run_)
       {
          sound_mixer_->PrepareBufferThread();
          keyboard_->UpdatePlugnPlay();
-         scheduler_->Yield();
+         // scheduler call
+         WAIT(1);
       }
       
       logger_->Write("Sound", LogNotice, "SoundMixer Ended");
@@ -99,12 +97,12 @@ void Emulation::Run(unsigned nCore)
          bool exit_loop = false;
          while (!exit_loop )
          {
-            sound_mutex_.Acquire();
+            sound_mutex_.lock();
             exit_loop = sound_is_ready;
-            sound_mutex_.Release();
+            sound_mutex_.unlock();
 
             // Checkin for sound is ready
-            CTimer::Get ()->MsDelay (50);
+            WAIT(50);
             logger_->Write("CORE", LogNotice, "Waiting to start....");
          }
 #endif
@@ -119,7 +117,7 @@ void Emulation::Run(unsigned nCore)
    case 2:
       // Display loop
       logger_->Write("CORE", LogNotice, "Display Loop started");
-      //display_->Loop();
+      display_->Loop();
       logger_->Write("CORE", LogNotice, "Display Loop Ended");
 
    default:

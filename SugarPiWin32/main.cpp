@@ -12,10 +12,11 @@ class EmualtionWin32
 {
 public:
    CLogger* log;
-   DisplayPi* display;
+   DisplayPiDesktop* display;
    SoundPi* sound;
    KeyboardPi* keyboard;
    Emulation* emulation;
+   int nCore;
 };
 
 
@@ -92,7 +93,7 @@ void Run(EmualtionWin32* emulation)
    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
 
-   emulation->emulation->Run(0);
+   emulation->emulation->Run(emulation->nCore);
 
    GdiplusShutdown(gdiplusToken);
 
@@ -104,7 +105,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    EmualtionWin32 emu;
 
    emu.log = new CLogger(LogDebug);
-   emu.display = new DisplayPi(emu.log);
+   emu.display = new DisplayPiDesktop (emu.log);
 
    // Sound 
    emu.sound = new SoundPi(emu.log);
@@ -124,7 +125,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    // emulation
    emu.emulation->Initialize(emu.display, emu.sound, emu.keyboard);	// must be initialized at last
 
-   std::thread main_core(Run, &emu);
+   // 
+   emu.nCore = 1;
+   EmualtionWin32 emu_sound = emu;
+   emu_sound.nCore = 0;
+   EmualtionWin32 emu_disp = emu;
+   emu_disp.nCore = 2;
+   std::thread sound_core(Run, &emu_sound); //Main thread
+   std::thread disp_core(Run, &emu_disp); //Main thread
+   std::thread main_core(Run, &emu); //Main thread
 
    // Quit.
    MSG msg;
