@@ -1,29 +1,27 @@
 #pragma once
 
-#ifdef  __circle__
+
+#include <circle/screen.h>
 #include <circle/logger.h>
-#else
-#include "CLogger.h"
-#endif
+#include <circle/bcmframebuffer.h>
 
-#include "CPCCore/CPCCoreEmu/Screen.h"
+#include "DisplayPi.h"
 
-
-class CoolspotFont;
 #define FRAME_BUFFER_SIZE 2
 
-
-class DisplayPi : public IDisplay
+class DisplayPiImp : public DisplayPi
 {
 public:
-   DisplayPi(CLogger* logger);
-   virtual ~DisplayPi();
+   DisplayPiImp(CLogger* logger, CTimer* timer);
+   virtual ~DisplayPiImp();
 
-   virtual bool Initialization();
-   virtual void SyncWithFrame (bool set){sync_on_frame_ = set;}
-   virtual bool IsSyncOnFrame(){return sync_on_frame_;}
+   bool ListEDID();
    
-   virtual void SetFullResolution (bool set){full_resolution_ = set;};
+   bool Initialization();
+   void SyncWithFrame (bool set){sync_on_frame_ = set;}
+   bool IsSyncOnFrame(){return sync_on_frame_;}
+   
+   void SetFullResolution (bool set){full_resolution_ = set;};
 
    virtual void SetScanlines(int scan);
    virtual bool AFrameIsReady();
@@ -43,8 +41,9 @@ public:
    virtual void WaitVbl();
 
    // Services
-   virtual void DisplayText(const char* txt, int x, int y, bool selected = false);
+   void DisplayText(const char* txt, int x, int y, bool selected = false);
 
+   virtual int* GetVideoBuffer(int y);
    virtual void Reset();
    virtual void FullScreenToggle();
    virtual void ForceFullScreen(bool fullscreen);
@@ -73,21 +72,27 @@ public:
    virtual bool CanVSync() { return true; }
    virtual bool CanInsertBlackFrame() { return false; }
    virtual void Activate(bool on) {};
-   virtual void Loop();
 
-   virtual void Lock() = 0;
-   virtual void Unlock() = 0;
+   CBcmFrameBuffer* GetFrameBuffer() {
+      return frame_buffer_;   }
 
-   virtual int* GetVideoBuffer(int y) = 0;
+   void Lock() { mutex_.Acquire(); }
+   void Unlock() { mutex_.Release(); }
 
-   virtual void SetFrame(int frame_index) = 0;
-   virtual void Draw() = 0;
-   virtual void ClearBuffer(int frame_index) = 0;
+   void Loop();
+   virtual void SetFrame(int frame_index);
+   virtual void Draw();
+   virtual void ClearBuffer(int frame_index);
+
 protected:
    //CScreenDevice*		screen_;
    CLogger* logger_;
+   CTimer* timer_;
+   CBcmFrameBuffer*  frame_buffer_;
    bool full_resolution_;
    bool full_resolution_cached_;
+
+   CSpinLock   mutex_;
 
    unsigned int added_line_;
    unsigned int last_tick_frame_;

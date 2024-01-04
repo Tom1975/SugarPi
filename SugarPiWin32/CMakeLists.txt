@@ -53,6 +53,8 @@ set(Source_Files
 set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CString.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CString.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/DisplayPi.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/DisplayPi.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScreenMenu.cpp

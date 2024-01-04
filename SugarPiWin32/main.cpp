@@ -12,7 +12,7 @@ class EmualtionWin32
 {
 public:
    CLogger* log;
-   DisplayPi* display;
+   DisplayPiDesktop* display;
    SoundPi* sound;
    KeyboardPi* keyboard;
    Emulation* emulation;
@@ -105,7 +105,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    EmualtionWin32 emu;
 
    emu.log = new CLogger(LogDebug);
-   emu.display = new DisplayPi(emu.log);
+   emu.display = new DisplayPiDesktop (emu.log);
 
    // Sound 
    emu.sound = new SoundPi(emu.log);
