@@ -39,6 +39,9 @@ public:
    virtual void WaitVbl();
    virtual void Reset();
 
+   virtual int GetHeight();
+   virtual int GetWidth();
+
 protected:
    IFullScreenInterface* m_pFSInt;
 

@@ -49,6 +49,15 @@ protected:
    BitmapWindows* logo_;
    MenuWindows* menu_;
    SugarboxLogo* bitmap_;
+
+   // Checkboard
+   int* full_line_;
+   int offset_grid;
+   int offset_grid_y;
+
+   int max_w_;
+
+
 };
 
 class ScreenMenu : public IEvent
@@ -107,7 +116,6 @@ protected:
    // Pending actions
    CSnapshot*        snapshot_;
    MainMenuWindows*  main_menu_;
-
 };
 
 class ActionMenu : public IAction

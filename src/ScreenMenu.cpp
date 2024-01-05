@@ -89,8 +89,13 @@ FRESULT f_findnext(DIR* dp, FILINFO *FileInfo)
 
 #define MAX_SIZE_BUFFER 256
 
-MainMenuWindows::MainMenuWindows (DisplayPi* display) : Window (display)
+MainMenuWindows::MainMenuWindows (DisplayPi* display) : 
+   Window (display),
+   full_line_(nullptr)
 {
+   offset_grid = 0;
+   offset_grid_y = 0;
+
    Create(0, 0, 0, 640, 480);
    // Create Title bitmap
    SugarboxLogo* bitmap_ = new SugarboxLogo();
@@ -101,24 +106,7 @@ MainMenuWindows::MainMenuWindows (DisplayPi* display) : Window (display)
    menu_ = new MenuWindows (display);
    menu_->Create ( this, 240, 200, 1000, 800);
 
-}
-
-MainMenuWindows::~MainMenuWindows ()
-{
-   delete menu_;
-}
-
-void MainMenuWindows::ResetMenu()
-{
-   // Set focus to first item
-   menu_->SetFocus(0);
-}
-
-void MainMenuWindows::Clear()
-{
-   static int offset_grid = 0;
-   static int offset_grid_y = 0;
-   int h = display_->GetHeight();
+   // Checkboard
    int w = display_->GetWidth();
 
    int patter_1[0x10];
@@ -129,46 +117,44 @@ void MainMenuWindows::Clear()
       patter_2[l] = 0xDDDDDD;
    }
 
-   int max_w = min(w, x_ + width_);
-   int right_border = max_w - 0x10;
-   int bottom_border = min(h, y_ + height_);
+   max_w_ = min(w, x_ + width_);
+   int right_border = max_w_ - 0x10;
 
    right_border &= 0xFFFFFF0;
+
+   int max_width_check = (max_w_ / 0x10) + 2;
+   full_line_ = new int[max_width_check * 0x10];
+
+   bool b = true;
+   for (int l = 0; l < max_width_check; l++)
+   {
+      memcpy(&full_line_[l * 0x10], b ? patter_1 : patter_2, sizeof(patter_1));
+      b = !b;
+   }
+}
+
+MainMenuWindows::~MainMenuWindows ()
+{
+   delete menu_;
+   delete[]full_line_;
+}
+
+void MainMenuWindows::ResetMenu()
+{
+   // Set focus to first item
+   menu_->SetFocus(0);
+}
+
+void MainMenuWindows::Clear()
+{
+   int h = display_->GetHeight();
+   int bottom_border = min(h, y_ + height_);
 
    for (int i = y_ ; i < bottom_border; i++)
    {
       int* line = display_->GetVideoBuffer(i);
-      // begin the checkboard
-      int x = x_;
       bool bcolor = ((offset_grid_y + i) & 0x10);
-      int color = bcolor ? 0xCCCCCC : 0xDDDDDD;
-
-      for (x; x < offset_grid;x++)
-      {
-         line[x] = color;
-      }
-
-      // full checkbox
-      for (x; x < right_border; x+=0x10)
-      {
-         memcpy(&line[x], bcolor ? patter_1 : patter_2, 0x10 * sizeof(int));
-         bcolor = !bcolor;
-      }
-
-      // end checkboard
-      for (x; x < max_w; x++)
-      {
-         line[x] = bcolor? 0xCCCCCC : 0xDDDDDD;
-      }
-
-
-      /*for (int j = x_; j < w && j < x_ + width_; j++)
-      {
-         if (((j + ((offset_grid_y+i)&0x10) + offset_grid) & 0x1F) >= 0x10)
-            line[j] = 0xCCCCCC;
-         else 
-            line[j] = 0xDDDDDD;
-      }*/
+      memcpy(&line[x_], &full_line_[(offset_grid + (bcolor ? 0x10 : 0))&0x1F], max_w_ * sizeof(int));
    }
    offset_grid += 0x1;
    offset_grid &= 0x1F;
@@ -224,6 +210,7 @@ ScreenMenu::~ScreenMenu()
 {
    delete snapshot_;
    delete main_menu_;
+  
 }
 
 IAction::ActionReturn ScreenMenu::SetSync(bool* value)

@@ -53,6 +53,15 @@ void DisplayPiDesktop::Reset()
    memset(&frame_buffer_[REAL_DISP_X * REAL_DISP_Y* FRAME_BUFFER_SIZE], 0, REAL_DISP_X * REAL_DISP_Y * FRAME_BUFFER_SIZE);
 }
 
+int DisplayPiDesktop::GetHeight()
+{
+   return REAL_DISP_Y;
+}
+
+int DisplayPiDesktop::GetWidth()
+{
+   return REAL_DISP_X;
+}
 
 void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface* pFSInt)
 {
@@ -77,7 +86,7 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
          D2D1::SizeU(
             rc.right - rc.left,
             rc.bottom - rc.top)
-         //,D2D1_PRESENT_OPTIONS_IMMEDIATELY
+         ,D2D1_PRESENT_OPTIONS_IMMEDIATELY
       ),
       &pRT_
    );
