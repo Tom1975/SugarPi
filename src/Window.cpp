@@ -450,6 +450,8 @@ void MenuWindows::AddMenuItem (const char* label, IAction* action)
 
    if ( current_focus_ == -1)
       current_focus_ = 0;
+
+   ComputeScroller();
 }
 
 void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* action)
@@ -465,6 +467,8 @@ void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* act
 
    if ( current_focus_ == -1)
       current_focus_ = 0;
+
+   ComputeScroller();
 }
 
 
@@ -509,7 +513,7 @@ IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
          {
             current_focus_++;
             list_item_.at(current_focus_)->SetFocus ();
-            //Redraw (true);
+            ComputeScroller();
          }
          break;
       case IEvent::Event::UP:
@@ -518,7 +522,7 @@ IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
          {
             current_focus_--;
             list_item_.at(current_focus_)->SetFocus ();
-            //Redraw (true);
+            ComputeScroller();
          }
          break;
       case IEvent::Event::BACK:
@@ -538,6 +542,7 @@ void MenuWindows::SetFocus (unsigned int index)
    {
       current_focus_ = index;
       list_item_.at(index)->SetFocus ();
+      ComputeScroller();
    }
    
 }
