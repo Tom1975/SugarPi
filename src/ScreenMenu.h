@@ -61,7 +61,6 @@ public:
 
    IEvent::Event GetEvent ();
 
-   
    IAction::ActionReturn Handle();
 
    IAction::ActionReturn Back();
@@ -85,6 +84,7 @@ public:
    IAction::ActionReturn InsertMedia(const char* path, IAction::ActionReturn (ScreenMenu::* load_action)(const char*));
 
    void LoadConfiguration  (const char* config_name, const char* ini_file);
+   void ForceStop();
 
    class MenuItem
    {
@@ -107,6 +107,7 @@ protected:
    // Pending actions
    CSnapshot*        snapshot_;
    MainMenuWindows*  main_menu_;
+
 };
 
 class ActionMenu : public IAction

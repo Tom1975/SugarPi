@@ -118,23 +118,62 @@ void MainMenuWindows::Clear()
 {
    static int offset_grid = 0;
    static int offset_grid_y = 0;
-   for (int i = y_ /* + 200*/; i < display_->GetHeight() && i < y_ + height_; i++)
+   int h = display_->GetHeight();
+   int w = display_->GetWidth();
+
+   int patter_1[0x10];
+   int patter_2[0x10];
+   for (int l = 0; l < 0x10; l++)
+   {
+      patter_1[l] = 0xCCCCCC;
+      patter_2[l] = 0xDDDDDD;
+   }
+
+   int max_w = min(w, x_ + width_);
+   int right_border = max_w - 0x10;
+   int bottom_border = min(h, y_ + height_);
+
+   right_border &= 0xFFFFFF0;
+
+   for (int i = y_ ; i < bottom_border; i++)
    {
       int* line = display_->GetVideoBuffer(i);
-      int size_to_clear = width_ + y_;
-      if (size_to_clear > width_)
-         size_to_clear = width_;
+      // begin the checkboard
+      int x = x_;
+      bool bcolor = ((offset_grid_y + i) & 0x10);
+      int color = bcolor ? 0xCCCCCC : 0xDDDDDD;
 
-      for (int j = x_; j < display_->GetWidth() && j < x_ + width_; j++)
+      for (x; x < offset_grid;x++)
+      {
+         line[x] = color;
+      }
+
+      // full checkbox
+      for (x; x < right_border; x+=0x10)
+      {
+         memcpy(&line[x], bcolor ? patter_1 : patter_2, 0x10 * sizeof(int));
+         bcolor = !bcolor;
+      }
+
+      // end checkboard
+      for (x; x < max_w; x++)
+      {
+         line[x] = bcolor? 0xCCCCCC : 0xDDDDDD;
+      }
+
+
+      /*for (int j = x_; j < w && j < x_ + width_; j++)
       {
          if (((j + ((offset_grid_y+i)&0x10) + offset_grid) & 0x1F) >= 0x10)
             line[j] = 0xCCCCCC;
          else 
             line[j] = 0xDDDDDD;
-      }
+      }*/
    }
    offset_grid += 0x1;
+   offset_grid &= 0x1F;
    offset_grid_y += 0x1;
+   offset_grid_y &= 0x1F;
 
 }
 
@@ -550,7 +589,7 @@ IAction::ActionReturn ScreenMenu::ShutDown()
    return IAction::Action_QuitMenu;
 }
 
-IEvent::Event ScreenMenu::GetEvent ()
+IEvent::Event ScreenMenu::GetEvent()
 {
    IEvent::Event event = IEvent::NONE;
 
@@ -571,6 +610,11 @@ IEvent::Event ScreenMenu::GetEvent ()
       event = IEvent::LEFT;
    }   
    return event;
+}
+
+void ScreenMenu::ForceStop()
+{
+   main_menu_->ForceStop();
 }
 
 IAction::ActionReturn ScreenMenu::Handle()

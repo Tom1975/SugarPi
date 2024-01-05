@@ -15,13 +15,6 @@
 DisplayPiDesktop::DisplayPiDesktop(CLogger* logger) : DisplayPi(logger),
    m_pFSInt(NULL)
 {
-   m_pDiretories = NULL;
-   m_X = m_Y = m_Width = m_Height = m_WidthWindow = m_HeightWindow = 0;
-   m_XIn = 0;
-   m_YIn = 0;
-   SetSize(S_STANDARD);
-   font_ = new CoolspotFont();
-
    pRT_ = nullptr;
    frame_buffer_ = nullptr;
 
@@ -37,33 +30,17 @@ DisplayPiDesktop::DisplayPiDesktop(CLogger* logger) : DisplayPi(logger),
 DisplayPiDesktop::~DisplayPiDesktop()
 {
    if (pRT_)pRT_->Release();
-   delete font_;
-   delete frame_buffer_;
+   delete []frame_buffer_;
    CoUninitialize();
 }
 
 void DisplayPiDesktop::ReleaseAll()
 {
-   // release
-   ReleaseDC(m_hWnd, m_hwndDC);
-
-   //DeleteObject(m_iBitmap);
-   //delete m_BmpMem;
 }
 
 void DisplayPiDesktop::WindowsToTexture(int& x, int& y)
 {
 
-}
-
-int DisplayPiDesktop::GetWidth()
-{
-   return m_Width;
-}
-
-int DisplayPiDesktop::GetHeight()
-{
-   return m_Height; //REAL_DISP_Y;
 }
 
 int* DisplayPiDesktop::GetVideoBuffer(int y) 
@@ -79,13 +56,11 @@ void DisplayPiDesktop::Reset()
 
 void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface* pFSInt)
 {
-
    ID2D1Factory* pD2DFactory = NULL;
    HRESULT hr = D2D1CreateFactory(
       D2D1_FACTORY_TYPE_SINGLE_THREADED,
       &pD2DFactory
    );
-
 
    m_hWnd = hWnd;
    
@@ -102,13 +77,14 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
          D2D1::SizeU(
             rc.right - rc.left,
             rc.bottom - rc.top)
+         //,D2D1_PRESENT_OPTIONS_IMMEDIATELY
       ),
       &pRT_
    );
    pD2DFactory->Release();
 
    frame_buffer_ = (unsigned int*)malloc(
-      REAL_DISP_X * REAL_DISP_Y*4*2);
+      REAL_DISP_X * REAL_DISP_Y*4*FRAME_BUFFER_SIZE);
 
    D2D1_SIZE_U size = { 0 };
    D2D1_BITMAP_PROPERTIES props;
@@ -127,28 +103,7 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
       props,
       &bitmap_);
 
-   m_hwndDC = GetDC(m_hWnd);
-   m_MemDC = CreateCompatibleDC(m_hwndDC);
    m_pFSInt = pFSInt;
-
-   // DIB Section
-   bi24BitInfo.bmiHeader.biBitCount = 32; // rgb 8 bytes for each component(3)
-   bi24BitInfo.bmiHeader.biCompression = BI_RGB;// rgb = 3 components
-   bi24BitInfo.bmiHeader.biPlanes = 1;
-   bi24BitInfo.bmiHeader.biSize = sizeof(bi24BitInfo.bmiHeader); // size of this struct
-   bi24BitInfo.bmiHeader.biWidth = REAL_DISP_X/*DISP_WIDTH*/; // width of window
-   bi24BitInfo.bmiHeader.biHeight = REAL_DISP_Y/*DISP_HEIGHT*/; // height of window
-   bi24BitInfo.bmiHeader.biSizeImage = 0;
-
-   //bBytes = new BYTE[bi24BitInfo.bmiHeader.biWidth * bi24BitInfo.bmiHeader.biHeight * 4]; // create enough room. all pixels * each color component
-   HDC hDC;
-   hDC = CreateCompatibleDC(NULL);
-   //m_iBitmap = CreateDIBSection(hDC, &bi24BitInfo, DIB_RGB_COLORS, (void**)&bBytes, 0, 0); // create a dib section for the dc
-
-   //m_BmpMem = new Bitmap(m_iBitmap, NULL);
-
-   //SelectObject(m_MemDC, m_iBitmap); // assign the dib section to the dc
-   DeleteDC(hDC);
 }
 
 void DisplayPiDesktop::WaitVbl()
@@ -169,8 +124,10 @@ void DisplayPiDesktop::Draw()
 {
    HRESULT hr;
    pRT_->BeginDraw();
+
+   D2D1_RECT_F src_rect = {123,47/2,763, 527};
    pRT_->DrawBitmap(bitmap_, NULL, 1,
-      D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, NULL);
+      D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &src_rect);
    hr = pRT_->EndDraw();
 }
 

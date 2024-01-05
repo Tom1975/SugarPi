@@ -14,7 +14,8 @@ Emulation::Emulation( CLogger* log)
    sound_(nullptr),
    sound_mixer_(nullptr),
    sound_is_ready(false),
-   sound_run_(true)
+   sound_run_(true),
+   menu(nullptr)
    
 {
    setup_ = new SugarPiSetup(log);
@@ -23,6 +24,7 @@ Emulation::Emulation( CLogger* log)
 
 Emulation::~Emulation(void)
 {
+   delete menu;
    delete motherboard_;
 }
 
@@ -64,6 +66,8 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    motherboard_->GetSig()->Reset();
    motherboard_->InitStartOptimizedPlus();
    motherboard_->OnOff();
+
+   menu = new ScreenMenu(&log_, logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
 
    
    logger_->Write("Kernel", LogNotice, "End of Emulation init.");
@@ -109,7 +113,7 @@ void Emulation::Run(unsigned nCore)
          logger_->Write("CORE", LogNotice, "Main loop");
          RunMainLoop();
          sound_run_ = false;
-         WAIT(1000);
+         display_->StopLoop();
          logger_->Write("CORE", LogNotice, "Exiting...");
 #ifdef ARM_ALLOW_MULTI_CORE
          break;
@@ -130,16 +134,15 @@ void Emulation::Run(unsigned nCore)
 void Emulation::ForceStop()
 {
    run_ = false;
+   if (menu)menu->ForceStop();
 }
 
 void Emulation::RunMainLoop()
 {
    run_ = true;
-   ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
    unsigned nCelsiusOldTmp = 0;
    int count = 0;
-   bool finished = false;
-   while (!finished && run_)
+   while (run_)
    {
 #define TIME_SLOT  10000
       motherboard_->StartOptimizedPlus<true, true, false>(4 * TIME_SLOT*10);
@@ -147,7 +150,7 @@ void Emulation::RunMainLoop()
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
-         /*finished = */(menu.Handle()/* == IAction::Action_Shutdown*/);
+         menu->Handle();
          keyboard_->ReinitSelect();
       }
    }

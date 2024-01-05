@@ -82,10 +82,13 @@ public:
    int GetY(){return y_;}
    unsigned int GetWidth(){return width_;}
    unsigned int GetHeight(){return height_;}
+
+   void ForceStop();
 protected:
 
    // Display
    DisplayPi* display_;
+   static bool stop_;
 
    // Coordinate
    int x_;

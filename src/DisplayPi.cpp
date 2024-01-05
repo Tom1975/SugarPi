@@ -71,16 +71,6 @@ const char* DisplayPi::GetInformations()
    return "Display for Raspberry PI - Bare metal";
 }
 
-int DisplayPi::GetWidth()
-{
-   return 1024;
-}
-
-int DisplayPi::GetHeight()
-{
-   return 1024;
-}
-
 void DisplayPi::SetSize(IDisplay::SizeEnum size)
 {
    logger_->Write("Display", LogNotice, "SetSize - NOT IMPLEMENTED ");
@@ -92,12 +82,18 @@ IDisplay::SizeEnum  DisplayPi::GetSize()
    return IDisplay::S_STANDARD;
 }
 
+void DisplayPi::StopLoop()
+{
+   loop_run = false;
+}
+
 void DisplayPi::Loop()
 {
+   loop_run = true;
    logger_->Write("DIS", LogNotice, "Starting loop");
    // Waiting for a new frame to display
    //int old_frame_index = -1;
-   while (1)
+   while (loop_run)
    {
       // Display available frame
       int frame_index = -1;

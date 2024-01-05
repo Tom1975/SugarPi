@@ -7,14 +7,32 @@
 #include "DisplayPi.h"
 #else
 #include "DisplayPiDesktop.h"
+
+#ifdef PROFILE
+#include <profileapi.h>
+#define START_CHRONO  QueryPerformanceFrequency((LARGE_INTEGER*)&freq);;QueryPerformanceCounter ((LARGE_INTEGER*)&s1);
+#define STOP_CHRONO   QueryPerformanceCounter ((LARGE_INTEGER*)&s2);t=(DWORD)(((s2 - s1) * 1000000) / freq);
+#define PROF_DISPLAY sprintf(s, "Duree displays Frame: %d us\n", t);OutputDebugString (s);
+static __int64 s1, s2, freq;
+static DWORD t;
+static char s[1024];
+#endif
+
 #endif
 
 #include <math.h>
 
 Window* Window::focus_ = nullptr;
+bool Window::stop_ = false;
 
 ////////////////////////////////////////////////////////////////////////////////////
-Window::Window(DisplayPi* display) : display_(display), x_(0), y_(0), width_(0), height_(0), parent_(nullptr), windows_children_(nullptr)
+Window::Window(DisplayPi* display) : 
+   display_(display), 
+   x_(0), y_(0), 
+   width_(0), height_(0), 
+   parent_(nullptr), 
+   windows_children_(nullptr)
+   
 {
 }
 
@@ -122,6 +140,12 @@ void Window::Invalidate ()
 
 void Window::Redraw (bool clear)
 {
+#ifdef PROFILE
+   static unsigned int nb_frame = 0;
+   START_CHRONO
+      static __int64 s3 = s1;
+#endif
+
    if (clear)
       Clear();
 
@@ -134,6 +158,25 @@ void Window::Redraw (bool clear)
    // Sync
    display_->VSync();
 
+#ifdef PROFILE
+   STOP_CHRONO
+   nb_frame++;
+   DWORD elapsed = (DWORD)(((s2 - s3) * 1000000) / freq);
+   if (elapsed > 1000000)
+   {
+      sprintf(s, "FPS : %f", nb_frame / (elapsed /1000000.0));
+      OutputDebugString(s);
+      s3 = s2;
+      nb_frame = 0;
+   }
+   //PROF_DISPLAY
+#endif
+}
+
+
+void Window::ForceStop()
+{
+   stop_ = true;
 }
 
 IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
@@ -143,14 +186,13 @@ IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
     
    // Wait for an event
    IAction::ActionReturn exit_function = IAction::Action_None;
-   while (exit_function == IAction::Action_None)
+   while (exit_function == IAction::Action_None && !stop_)
    {
       IEvent::Event event = event_handler->GetEvent();
       if (event == IEvent::NONE)
       {
           // Wait a bit
          Redraw(true);
-         WAIT(10);
       }
       else
       {

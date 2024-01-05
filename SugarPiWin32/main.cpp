@@ -137,18 +137,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
    // Quit.
    MSG msg;
-   while (!end)
+   while (GetMessage(&msg, _hwnd, 0, 0) && !end)
    {
-      while (PeekMessage(&msg, _hwnd, 0, 0, TRUE))
-      {
-         TranslateMessage(&msg);
-         DispatchMessage(&msg);
-      }
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
    }
 
    emu.emulation->ForceStop();
 
    main_core.join();
+   sound_core.join();
+   disp_core.join();
 
    delete emu.keyboard;
    delete emu.display;

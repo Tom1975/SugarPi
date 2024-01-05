@@ -8,6 +8,7 @@
 #include "KeyboardPiDesktop.h"
 #include "SoundPiDesktop.h"
 #include "SugarPiSetupDesktop.h"
+#include "ScreenMenu.h"
 #include "log.h"
 
 class Emulation
@@ -33,9 +34,12 @@ protected:
    SoundMixer*       sound_mixer_;
    Log               log_;
 
+   ScreenMenu* menu;
+
    bool sound_is_ready;
    bool sound_run_;
    bool run_;
 
    std::mutex sound_mutex_;
+
 };

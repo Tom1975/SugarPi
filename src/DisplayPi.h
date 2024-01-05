@@ -10,7 +10,7 @@
 
 
 class CoolspotFont;
-#define FRAME_BUFFER_SIZE 2
+#define FRAME_BUFFER_SIZE 3
 
 
 class DisplayPi : public IDisplay
@@ -31,8 +31,8 @@ public:
 
    virtual void Config();
    virtual const char* GetInformations();
-   virtual int GetWidth();
-   virtual int GetHeight();
+   virtual int GetWidth() { return 1024; }
+   virtual int GetHeight() { return 1024; }
    virtual void SetSize(SizeEnum size);
    virtual SizeEnum  GetSize();
    virtual void VSync(bool dbg = false);
@@ -74,6 +74,7 @@ public:
    virtual bool CanInsertBlackFrame() { return false; }
    virtual void Activate(bool on) {};
    virtual void Loop();
+   virtual void StopLoop();
 
    virtual void Lock() = 0;
    virtual void Unlock() = 0;
@@ -106,5 +107,6 @@ protected:
    unsigned int nb_frame_in_queue_;
 
    bool sync_on_frame_;
+   bool loop_run;
    CoolspotFont *font_;
 };
