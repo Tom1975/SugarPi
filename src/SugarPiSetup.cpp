@@ -104,7 +104,7 @@ SugarPiSetup::SYNC_TYPE  SugarPiSetup::GetSync ()
 
 void SugarPiSetup::LoadSetup(const char* path)
 {
-   MachineSettings* settings = MachineSettings::CreateSettings(config_, path);
+   //MachineSettings* settings = MachineSettings::CreateSettings(config_, path);
 
    // 
 }

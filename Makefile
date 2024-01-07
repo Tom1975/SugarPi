@@ -9,6 +9,7 @@ OBJS	= src/main.o\
 		src/SugarPiSetup.o\
 		src/ConfigurationManager.o\
 		src/DisplayPi.o\
+		src/DisplayPiImp.o\
 		src/emulation.o\
 		src/KeyboardPi.o\
 		src/log.o\
@@ -83,6 +84,7 @@ LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
          $(CIRCLEHOME)/lib/fs/libfs.a \
          $(CIRCLEHOME)/lib/usb/libusb.a \
          $(CIRCLEHOME)/lib/input/libinput.a \
+		 $(CIRCLEHOME)/lib/sound/libsound.a \
          $(CIRCLEHOME)/lib/sched/libsched.a \
          $(CIRCLEHOME)/addon/linux/liblinuxemu.a \
 			$(CIRCLEHOME)/addon/SDCard/libsdcard.a\

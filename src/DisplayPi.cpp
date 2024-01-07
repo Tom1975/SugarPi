@@ -91,8 +91,7 @@ void DisplayPi::Loop()
 {
    loop_run = true;
    logger_->Write("DIS", LogNotice, "Starting loop");
-   // Waiting for a new frame to display
-   //int old_frame_index = -1;
+
    while (loop_run)
    {
       // Display available frame
@@ -100,31 +99,19 @@ void DisplayPi::Loop()
       Lock();
       if (nb_frame_in_queue_ > 0)
       {
-         /*if ( old_frame_index != -1)
-         {
-            frame_used_[old_frame_index] = FR_FREE;
-         }*/
+         logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i", nb_frame_in_queue_);
          frame_index = frame_queue_[0];
          nb_frame_in_queue_--;
+
          memmove (frame_queue_, &frame_queue_[1], nb_frame_in_queue_*sizeof(unsigned int));
          
-         //if (frame_index != -1)
-         {
-            //logger_->Write("DIS", LogNotice, "Loop : display %i - nb_frame_in_queue_ : %i", frame_index, nb_frame_in_queue_);
-            Unlock();
-            SetFrame(frame_index);
-            Draw();
+         Unlock();
+         SetFrame(frame_index);
+         logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
+         Draw();
 
-            // Set it as available
-            frame_used_[frame_index] = FR_FREE;
-            //old_frame_index = frame_index;
-         }
-         /*else
-         {
-            mutex_.Release();
-            logger_->Write("DIS", LogNotice, "No buffer to display");
-            CTimer::Get()->MsDelay(1);
-         }*/
+         // Set it as available
+         frame_used_[frame_index] = FR_FREE;
       }
       else
       {
@@ -136,7 +123,6 @@ void DisplayPi::Loop()
    }
 }
 
-
 void DisplayPi::VSync(bool dbg )
 {
 #ifndef USE_QEMU_SUGARPI
@@ -145,11 +131,11 @@ void DisplayPi::VSync(bool dbg )
    {
       clear_framebuffer = true;
       full_resolution_cached_ = full_resolution_;
-      
    }
    
    if (sync_on_frame_) // To turn on : Use the display core !
    {
+      nb_frame_in_queue_ = 0;
       SetFrame(buffer_used_);
       Draw();
 
@@ -157,7 +143,6 @@ void DisplayPi::VSync(bool dbg )
       {
          ClearBuffer(buffer_used_);
       }
-
    }
    else
    {
@@ -165,12 +150,14 @@ void DisplayPi::VSync(bool dbg )
       // get a new one (or wait for one to be free)
       bool found = false;
 
+      frame_queue_[nb_frame_in_queue_++] = buffer_used_;
+      frame_used_[buffer_used_] = FR_READY;
+      logger_->Write("DIS", LogNotice, "VSync : nb_frame_in_queue_ = %i", nb_frame_in_queue_);
       for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
       {
          if (frame_used_[i] == FR_FREE)
          {
-            frame_queue_[nb_frame_in_queue_++] = buffer_used_;
-            frame_used_[buffer_used_] = FR_READY;
+            logger_->Write("DIS", LogNotice, "VSync : a frame is free : %i", i);
 
             frame_used_[i] = FR_USED;
             buffer_used_ = i;
@@ -180,6 +167,7 @@ void DisplayPi::VSync(bool dbg )
       }
       if (!found)
          logger_->Write("DIS", LogNotice, "All buffers are used");
+
       Unlock();
    }
 #else

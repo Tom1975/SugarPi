@@ -117,7 +117,7 @@ MainMenuWindows::MainMenuWindows (DisplayPi* display) :
       patter_2[l] = 0xDDDDDD;
    }
 
-   max_w_ = min(w, x_ + width_);
+   max_w_ = w < (x_ + width_ )?w : (x_ + width_) ;
    int right_border = max_w_ - 0x10;
 
    right_border &= 0xFFFFFF0;
@@ -148,7 +148,7 @@ void MainMenuWindows::ResetMenu()
 void MainMenuWindows::Clear()
 {
    int h = display_->GetHeight();
-   int bottom_border = min(h, y_ + height_);
+   int bottom_border = (h < y_ + height_) ? h : (y_ + height_);
 
    for (int i = y_ ; i < bottom_border; i++)
    {

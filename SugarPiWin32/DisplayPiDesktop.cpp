@@ -19,12 +19,6 @@ DisplayPiDesktop::DisplayPiDesktop(CLogger* logger) : DisplayPi(logger),
    frame_buffer_ = nullptr;
 
    CoInitialize(NULL);
-
-   for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
-   {
-      frame_used_[i] = FR_FREE;
-   }
-   frame_used_[buffer_used_] = FR_USED;
 }
 
 DisplayPiDesktop::~DisplayPiDesktop()

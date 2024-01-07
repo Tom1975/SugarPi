@@ -127,7 +127,7 @@ void Emulation::Run(unsigned nCore)
    case 2:
       // Display loop
       logger_->Write("CORE", LogNotice, "Display Loop started");
-      //display_->Loop();
+      display_->Loop();
       logger_->Write("CORE", LogNotice, "Display Loop Ended");
 
    default:

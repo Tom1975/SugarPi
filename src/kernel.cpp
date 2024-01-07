@@ -42,7 +42,7 @@ CKernel::CKernel(void)
    emulation_(&m_Memory, &m_Logger, &m_Timer)
    
 {
-   display_ = new DisplayPi(&m_Logger, &m_Timer);
+   display_ = new DisplayPiImp(&m_Logger, &m_Timer);
    keyboard_ = new KeyboardPi(&m_Logger, &dwhci_device_, &m_DeviceNameService);
    cpu_throttle_ = new CCPUThrottle();
    exception_handler_ = new CExceptionHandler;

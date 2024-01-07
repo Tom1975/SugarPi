@@ -19,3 +19,5 @@ pi2**
 all
 
 /_build/**
+/build_/**
+/out/**
