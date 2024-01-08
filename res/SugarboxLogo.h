@@ -13,5 +13,7 @@ public:
 
 private:
    static int pixel_data_[];
+   static int first_byte_per_line[];
+   static int last_byte_per_line[];
 
 };

@@ -8,6 +8,9 @@
 // 'SplashScreen', 360x120px
 #define WIDTH 320
 #define HEIGHT 110
+
+int SugarboxLogo::first_byte_per_line[HEIGHT];
+int SugarboxLogo::last_byte_per_line[HEIGHT];
 int SugarboxLogo::pixel_data_[WIDTH*HEIGHT] =
 {
 // 'SugarboxLogo', 320x110px
@@ -125,6 +128,32 @@ int SugarboxLogo::pixel_data_[WIDTH*HEIGHT] =
 
 SugarboxLogo::SugarboxLogo()
 {
+   // Compute first byte to display per line.
+   for (int i = 0; i < HEIGHT; i++)
+   {
+      bool found = false;
+      int j = 0;
+      for (j = 0; j < WIDTH && !found; j++)
+      {
+         found = (pixel_data_[i * WIDTH + j] != 0);
+      }
+      first_byte_per_line[i] = (found) ? j : -1;
+
+      if (first_byte_per_line[i] == -1)
+      {
+         last_byte_per_line[i] = -1;
+      }
+      else
+      {
+         found = false;
+         j = 0;
+         for (j = WIDTH - 1; j >= 0 && !found; j--)
+         {
+            found = (pixel_data_[i * WIDTH + j] != 0);
+         }
+         last_byte_per_line[i] = (found) ? j : -1;
+      }
+   }
 }
 
 SugarboxLogo::~SugarboxLogo()
@@ -134,11 +163,15 @@ SugarboxLogo::~SugarboxLogo()
 
 void SugarboxLogo::DrawLogo(int line, int* buffer)
 {
-   //memcpy(buffer, &pixel_data_[line*WIDTH], WIDTH *sizeof(int));
-   for (int i = 0; i < WIDTH; i++)
+   if (first_byte_per_line[line] == -1) return;
+
+   int* begin = &pixel_data_[first_byte_per_line[line] + line * WIDTH];
+   int* end = &pixel_data_[last_byte_per_line[line] + line * WIDTH];
+   buffer += first_byte_per_line[line];
+   for (; begin<end; ++begin)
    {
-      if (pixel_data_[line * WIDTH + i] != 0)
-         *buffer = pixel_data_[line * WIDTH + i];
+      if ( *begin != 0)
+         *buffer = *begin;
       buffer++;
    }
 }

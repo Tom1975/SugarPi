@@ -78,7 +78,34 @@ void CoolspotFont::CopyLetter(unsigned char c, int line, int* buffer)
          }
          col_buffer++;
       }
-      memcpy ( col_buffer, &coolspot_font.pixel_data[offset], (endoffset-offset)*4);
+   }
+}
+
+
+void CoolspotFont::CopyLetter(unsigned char c, int* buffer, int stride)
+{
+   unsigned int char_offset = (unsigned char)c;
+   if (char_offset >= 0xFF) char_offset = 0xFE;
+
+   int offset = char_position_[char_offset];
+   int endoffset = char_position_[char_offset + 1] - 1;
+
+   if (offset > 0 && endoffset > 0)
+   {
+      for (int y = 0; y < coolspot_font.height; y++)
+      {
+         const unsigned int* begin = &coolspot_font.pixel_data[offset] + y * coolspot_font.width;
+         const unsigned int* end = &coolspot_font.pixel_data[endoffset] + y * coolspot_font.width;
+         unsigned int* col_buffer = (unsigned int*)buffer + y * stride;
+         for (;begin < end; begin++)
+         {
+            if (*begin != 0)
+            {
+               *col_buffer = *begin;
+            }
+            col_buffer++;
+         }
+      }
    }
 }
 

@@ -82,153 +82,6 @@ IDisplay::SizeEnum  DisplayPi::GetSize()
    return IDisplay::S_STANDARD;
 }
 
-void DisplayPi::StopLoop()
-{
-   loop_run = false;
-}
-
-void DisplayPi::Loop()
-{
-   loop_run = true;
-   logger_->Write("DIS", LogNotice, "Starting loop");
-
-   while (loop_run)
-   {
-      // Display available frame
-      int frame_index = -1;
-      Lock();
-      if (nb_frame_in_queue_ > 0)
-      {
-         logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i", nb_frame_in_queue_);
-         frame_index = frame_queue_[0];
-         nb_frame_in_queue_--;
-
-         memmove (frame_queue_, &frame_queue_[1], nb_frame_in_queue_*sizeof(unsigned int));
-         
-         Unlock();
-         SetFrame(frame_index);
-         logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
-         Draw();
-
-         // Set it as available
-         frame_used_[frame_index] = FR_FREE;
-      }
-      else
-      {
-         Unlock();
-         WAIT(1);
-      }
-      // sleep ?
-      
-   }
-}
-
-void DisplayPi::VSync(bool dbg )
-{
-#ifndef USE_QEMU_SUGARPI
-   bool clear_framebuffer = false;
-   if (full_resolution_cached_ != full_resolution_)
-   {
-      clear_framebuffer = true;
-      full_resolution_cached_ = full_resolution_;
-   }
-   
-   if (sync_on_frame_) // To turn on : Use the display core !
-   {
-      nb_frame_in_queue_ = 0;
-      SetFrame(buffer_used_);
-      Draw();
-
-      if (clear_framebuffer)
-      {
-         ClearBuffer(buffer_used_);
-      }
-   }
-   else
-   {
-      Lock();
-      // get a new one (or wait for one to be free)
-      bool found = false;
-
-      frame_queue_[nb_frame_in_queue_++] = buffer_used_;
-      frame_used_[buffer_used_] = FR_READY;
-      logger_->Write("DIS", LogNotice, "VSync : nb_frame_in_queue_ = %i", nb_frame_in_queue_);
-      for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
-      {
-         if (frame_used_[i] == FR_FREE)
-         {
-            logger_->Write("DIS", LogNotice, "VSync : a frame is free : %i", i);
-
-            frame_used_[i] = FR_USED;
-            buffer_used_ = i;
-            found = true;
-            break;
-         }
-      }
-      if (!found)
-         logger_->Write("DIS", LogNotice, "All buffers are used");
-
-      Unlock();
-   }
-#else
-   frame_buffer_->SetVirtualOffset(143, 47 / 2  * 1024);
-   frame_buffer_->WaitForVerticalSync();
-
-#endif
-   //added_line_ ^= 1;
-   //buffer_num_ ^= 1;
-   added_line_ = 1;
-
-//   static unsigned int count = 0;
-//   static unsigned int max_tick = 0;
-//   static unsigned int nb_long_frame = 0;
-
-   // Frame is ready
-
-   // wait for a new frame to be available
-
-
-
-
-   // If last frame is more than 20ms, just don't do it
-   
-   /*frame_buffer_->WaitForVerticalSync();
-   unsigned int new_tick = timer_->GetClockTicks();
-
-   if (new_tick - last_tick_frame_ > max_tick)
-      max_tick = new_tick - last_tick_frame_;
-
-   if (new_tick - last_tick_frame_ > 20500)
-   {
-      nb_long_frame++;
-   }
-  
-   if (++count == 500)
-   {
-      logger_->Write("DIS", LogNotice, "500frame : max_frame : %i; Nb frames > 20ms : %i", max_tick, nb_long_frame);
-      max_tick = 0;
-      count = 0;
-      nb_long_frame = 0;
-   }
-   last_tick_frame_ = new_tick;
-   */
-
-#define PROPTAG_BLANK_SCREEN	0x00040002
-   /*CBcmPropertyTags Tags;
-   TBlankScreen blankScreen;
-   blankScreen.blank = 0;
-   if (Tags.GetTag(PROPTAG_BLANK_SCREEN, &blankScreen, sizeof blankScreen, 4))
-   {
-   }
-   else
-   {
-      logger_->Write("Display", LogNotice, "PROPTAG_BLANK_SCREEN - KO...");
-   }
-   
-   */
-   //logger_->Write("Display", LogNotice, "Vsync : added_line_=%i", added_line_);
-}
-
 // Start of sync
 void DisplayPi::StartSync()
 {
@@ -345,6 +198,101 @@ int DisplayPi::GetDnDPart()
    return 0;
 }
 
+
+void DisplayPi::StopLoop()
+{
+   loop_run = false;
+}
+
+void DisplayPi::Loop()
+{
+   loop_run = true;
+   logger_->Write("DIS", LogNotice, "Starting loop");
+
+   while (loop_run)
+   {
+      // Display available frame
+      int frame_index = -1;
+      Lock();
+      if (nb_frame_in_queue_ > 0)
+      {
+         //logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i", nb_frame_in_queue_);
+         frame_index = frame_queue_[0];
+         nb_frame_in_queue_--;
+
+         memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
+
+         Unlock();
+         SetFrame(frame_index);
+         //logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
+         Draw();
+
+         // Set it as available
+         frame_used_[frame_index] = FR_FREE;
+      }
+      else
+      {
+         Unlock();
+         WAIT(1);
+      }
+      // sleep ?
+
+   }
+}
+
+void DisplayPi::VSync(bool dbg)
+{
+   bool clear_framebuffer = false;
+   if (full_resolution_cached_ != full_resolution_)
+   {
+      clear_framebuffer = true;
+      full_resolution_cached_ = full_resolution_;
+   }
+
+   if (sync_on_frame_) // To turn on : Use the display core !
+   {
+      Lock();
+      nb_frame_in_queue_ = 0;
+      Unlock();
+      SetFrame(buffer_used_);
+      Draw();
+
+      if (clear_framebuffer)
+      {
+         ClearBuffer(buffer_used_);
+      }
+   }
+   else
+   {
+      Lock();
+
+      // The frame is ready : Add it to the queue
+      //logger_->Write("DIS", LogNotice, "VSync : nb_frame_in_queue_ = %i", nb_frame_in_queue_);
+      bool found = false;
+      for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
+      {
+         if (frame_used_[i] == FR_FREE)
+         {
+            frame_queue_[nb_frame_in_queue_++] = buffer_used_;
+            frame_used_[buffer_used_] = FR_READY;
+            //logger_->Write("DIS", LogNotice, "VSync : a frame is free : %i", i);
+            frame_used_[i] = FR_USED;
+            buffer_used_ = i;
+            found = true;
+            break;
+         }
+      }
+      if (!found)
+      {
+         // No more buffer ready...so reuse the one currently added !
+         frame_used_[buffer_used_] = FR_USED;
+      }
+         
+
+      Unlock();
+   }
+   added_line_ = 1;
+}
 
 void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
 {
