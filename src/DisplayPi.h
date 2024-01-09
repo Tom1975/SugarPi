@@ -80,6 +80,7 @@ public:
    virtual void Unlock() = 0;
 
    virtual int* GetVideoBuffer(int y) = 0;
+   virtual int GetStride() = 0;
 
    virtual void SetFrame(int frame_index) = 0;
    virtual void Draw() = 0;

@@ -67,29 +67,71 @@ int main()
    // }
    // 
 
-   std::cout << "// FontWriter.h\n";
+   std::cout << "// CoolspotFont.h\n";
    std::cout << "#pragme once\n\n";
-   std::cout << "class FontWriter\n";
+   std::cout << "class CoolspotFont\n";
    std::cout << "{\n";
-   std::cout << "   FontWriter(unsigned int pitch);\n";
-   std::cout << "   virtual ~FontWriter();\n";
+   std::cout << "   CoolspotFont(unsigned int stride);\n";
+   std::cout << "   virtual ~CoolspotFont();\n";
    std::cout << "   \n";
 
-   for (int i = coolspot_font.first_ascii; i < char_index; i++)
+   for (int i = coolspot_font.first_ascii; i < char_index-1; i++)
    {
-      std::cout << "   void Write_" << i << " (int* buffer, unsigned int pitch);\n";
+      std::cout << "   void Write_" << std::hex << i << " (int* buffer);\n";
    }
 
+   std::cout << "   void Write(unsigned char c, int* buffer);\n";
+
    std::cout << "protected:\n";
-   std::cout << "   unsigned int pitch_;\n";
+   std::cout << "   unsigned int stride_;\n";
+   std::cout << "   typedef void(CoolspotFont::*write_letter) (int *);\n";
+   std::cout << "   write_letter write_[0x100];\n";
    std::cout << "};\n\n\n";
 
 
    // CPP
-   std::cout << "// FontWriter.cpp\n";
-   std::cout << "FontWriter(unsigned int pitch):pitch_(pitch)\n";
-   std::cout << "{\n}\n\n";
-   std::cout << "FontWriter::~FontWriter()\n{\n}\n\n";
+   std::cout << "// CoolspotFont.cpp\n";
+   std::cout << "CoolspotFont::CoolspotFont(unsigned int stride):stride_(stride)\n";
+   std::cout << "{\n";
+
+
+   for (int i = 0; i < coolspot_font.first_ascii; i++)
+   {
+      std::cout << "   write_[0x" << std::hex << i << "] = nullptr; \n";
+   }
+
+   for (int i = coolspot_font.first_ascii; i < char_index-1; i++)
+   {
+
+      int offset = char_position_[i];
+      int endoffset = char_position_[i + 1] - 1;
+
+      if (offset >= 0 && endoffset > 0)
+      {
+         std::cout << "   write_[0x" << std::hex << i << "] = &CoolspotFont::Write_" << std::hex << i << "; \n";
+      }
+      else
+      {
+         std::cout << "   write_[0x" << std::hex <<i<<"] = nullptr; \n";
+      }
+   }
+
+   for (int i = char_index-1; i < 0x100; i++)
+   {
+      std::cout << "   write_[0x" << std::hex << i << "] = nullptr; \n";
+   }
+
+
+   std::cout << "}\n\n";
+   std::cout << "CoolspotFont::~CoolspotFont()\n{\n}\n\n";
+
+   std::cout << "void CoolspotFont::Write(unsigned char c, int* buffer)\n";
+   std::cout << "{\n";
+   std::cout << "   if ( write_[c] != nullptr)\n";
+   std::cout << "   {\n";
+   std::cout << "      (this->*(write_[c]))(buffer);\n";
+   std::cout << "   }\n";
+   std::cout << "}\n";
 
    for (int i = coolspot_font.first_ascii; i < char_index; i++)
    {
@@ -97,35 +139,41 @@ int main()
       int offset = char_position_[i];
       int endoffset = char_position_[i + 1] - 1;
 
-      if (offset > 0 && endoffset > 0)
+      if (offset >= 0 && endoffset > offset)
       {
-         std::cout << "void FontWriter::Write_" << i << " (int* buffer, unsigned int pitch)\n{\n";
-         std::cout << "   int index = 0;\n";
+         std::cout << "void CoolspotFont::Write_" << std::hex << i << " (int* buffer)\n{\n";
 
-         int index_x = 0, index_y = 0;
-         int last_index_x = 0, last_index_y = 0;
+         int index_x = 0, index_y = 1;
+         int last_index_x = 0, last_index_y = 1;
          for (int h = 1; h < coolspot_font.height; h++)
          {
+            index_x = 0;
             for (int w = offset; w < endoffset; w++)
             {
                if (coolspot_font.pixel_data[w + h * coolspot_font.width] != 0)
                {
                   int finaloffset_x = index_x - last_index_x;
-                  int finaloffset_y = index_y - last_index_y;
-                  if (finaloffset_x + finaloffset_y > 0)
+                  int finaloffset_y = index_y - last_index_y ;
+
+                  //if (finaloffset_x + finaloffset_y > 0)
                   {
-                     std::cout << "   buffer += " << finaloffset_x;
+                     if (finaloffset_x >= 0)
+                     {
+                        std::cout << "   buffer = buffer + 0x" << std::hex << finaloffset_x;
+                     }
+                     else
+                     {
+                        std::cout << "   buffer = buffer - 0x" << std::hex << abs(finaloffset_x);
+                     }
                      if (finaloffset_y > 0)
-                        std::cout << " + " << finaloffset_y << " * pitch";
+                        std::cout << " + 0x" << std::hex<< finaloffset_y << " * stride_";
 
                      std::cout << ";\n";
 
                      last_index_x = index_x;
                      last_index_y = index_y;
-                  }
-
-                  
-                  std::cout << "   *buffer = 0x"<< std::hex<<coolspot_font.pixel_data[w + h * coolspot_font.width] << "\n";
+                  }                  
+                  std::cout << "   *buffer = 0x"<< std::hex<<coolspot_font.pixel_data[w + h * coolspot_font.width] << ";\n";
                }
 
                index_x++;

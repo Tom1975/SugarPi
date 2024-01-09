@@ -3,6 +3,10 @@
 cmake_minimum_required(VERSION 3.12.1)
 
 #Project name
+
+add_subdirectory(../tools ${CMAKE_CURRENT_BINARY_DIR}/tools)
+
+
 project(SugarPiWin32 VERSION 1.2.0)
 
 set(CMAKE_CXX_STANDARD 17)

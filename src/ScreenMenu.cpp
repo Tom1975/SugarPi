@@ -150,11 +150,13 @@ void MainMenuWindows::Clear()
    int h = display_->GetHeight();
    int bottom_border = (h < y_ + height_) ? h : (y_ + height_);
 
+   int* line = display_->GetVideoBuffer(y_);
+   int s = display_->GetStride();
    for (int i = y_ ; i < bottom_border; i++)
    {
-      int* line = display_->GetVideoBuffer(i);
       bool bcolor = ((offset_grid_y + i) & 0x10);
       memcpy(&line[x_], &full_line_[(offset_grid + (bcolor ? 0x10 : 0))&0x1F], max_w_ * sizeof(int));
+      line += s;
    }
    offset_grid += 0x1;
    offset_grid &= 0x1F;

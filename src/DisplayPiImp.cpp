@@ -93,6 +93,8 @@ bool DisplayPiImp::Initialization()
    frame_buffer_->Initialize();
    frame_buffer_->SetVirtualOffset(143, 47/2);
 
+   DisplayPi::Initialization();
+
    return true;
 }
 
@@ -145,6 +147,10 @@ void DisplayPiImp::WaitVbl()
    frame_buffer_->WaitForVerticalSync();
 }
 
+int DisplayPiImp::GetStride()
+{
+   return frame_buffer_->GetPitch();
+}
 
 
 int* DisplayPiImp::GetVideoBuffer(int y)

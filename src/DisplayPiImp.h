@@ -27,6 +27,7 @@ public:
 
    virtual void WaitVbl();
    virtual int* GetVideoBuffer(int y);
+   virtual int GetStride();
 
 
    // Capability of device

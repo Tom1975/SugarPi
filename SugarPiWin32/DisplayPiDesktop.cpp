@@ -42,6 +42,11 @@ int* DisplayPiDesktop::GetVideoBuffer(int y)
    return (int*) & frame_buffer_[(y) * REAL_DISP_X + buffer_used_*(REAL_DISP_X * REAL_DISP_Y)];
 }
 
+int DisplayPiDesktop::GetStride()
+{
+   return REAL_DISP_X;
+}
+
 void DisplayPiDesktop::Reset() 
 {
    memset(&frame_buffer_[REAL_DISP_X * REAL_DISP_Y* FRAME_BUFFER_SIZE], 0, REAL_DISP_X * REAL_DISP_Y * FRAME_BUFFER_SIZE);
@@ -107,6 +112,9 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
       &bitmap_);
 
    m_pFSInt = pFSInt;
+
+   Initialization();
+
 }
 
 void DisplayPiDesktop::WaitVbl()

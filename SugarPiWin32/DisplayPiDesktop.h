@@ -28,6 +28,7 @@ public:
    virtual void Lock() { mutex_.lock(); }
    virtual void Unlock() { mutex_.unlock(); }
    virtual int* GetVideoBuffer(int y);
+   virtual int GetStride();
    virtual void SetFrame(int frame_index);
    virtual void Draw();
    virtual void ClearBuffer(int frame_index);

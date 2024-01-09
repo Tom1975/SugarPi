@@ -170,8 +170,7 @@ void SugarboxLogo::DrawLogo(int line, int* buffer)
    buffer += first_byte_per_line[line];
    for (; begin<end; ++begin)
    {
-      if ( *begin != 0)
-         *buffer = *begin;
+      *buffer = (*begin != 0)?*begin: *buffer;
       buffer++;
    }
 }
