@@ -64,10 +64,6 @@ boolean CKernel::Initialize (void)
 
    if (bOK)
    {
-      bOK = display_->Initialization();
-   }
-   if (bOK)
-   {
       bOK = m_Serial.Initialize(115200);
       
    }
@@ -85,6 +81,12 @@ boolean CKernel::Initialize (void)
       
    }
    
+   if (bOK)
+   {
+      bOK = display_->Initialization();
+      m_Logger.Write("Kernel", LogNotice, "display initialization done : %i", bOK);
+   }
+
    if (bOK)
    {
       bOK = m_Interrupt.Initialize();
