@@ -27,10 +27,12 @@ DisplayPiImp::~DisplayPiImp()
 
 bool DisplayPiImp::Initialization()
 {
-   /*
+   ListEDID();
+
    unsigned int screen_width = 640;
    unsigned int screen_height = 480;
 
+   logger_->Write("Display", LogNotice, "Initialization...");
    // Get display property, to compute best values
    CBcmPropertyTags Tags;
 	TPropertyTagDisplayDimensions Dimensions;
@@ -38,12 +40,17 @@ bool DisplayPiImp::Initialization()
 	{
       screen_width  = Dimensions.nWidth;
       screen_height = Dimensions.nHeight;
+      logger_->Write("Display", LogNotice, "PROPTAG_GET_DISPLAY_DIMENSIONS : %i, %i.", screen_width, screen_height);
+   }
+   else
+   {
+      logger_->Write("Display", LogNotice, "PROPTAG_GET_DISPLAY_DIMENSIONS : ERROR !");
    }
 
    // Now we have real width/height : compute best values for display, to have :
    // - good pixel ratio (4x3)
-   
    float ratio = ((float)GetWidth())/((float)GetHeight());
+   int NbPixelWidth, NbPixelHeight;
    if ( (screen_width / screen_height ) < ratio )
    {
       //
@@ -57,30 +64,29 @@ bool DisplayPiImp::Initialization()
       NbPixelHeight = static_cast<long>(screen_width / ratio);
    }   
 
+   // Compute height to have a complete screen, without problem with scanlines
+   int h = GetHeight();
+   if ( NbPixelHeight % h != 0)
+   {
+      logger_->Write("Display", LogNotice, "NbPixelHeight % h : %i, %i.", NbPixelHeight, h);
 
-      // Compute height to have a complete screen, without problem with scanlines
-      if ( NbPixelHeight % m_Height != 0)
+      int NbPixelHeightComputed = (NbPixelHeight / h) * h;
+      if ( NbPixelHeight % h > (h/2) )
       {
-         int NbPixelHeightComputed = (NbPixelHeight / m_Height) * m_Height;
-         if ( NbPixelHeight % m_Height > (m_Height/2) )
-         {
-            NbPixelHeightComputed += m_Height;
-         }
-         NbPixelHeight = NbPixelHeightComputed;
-         NbPixelWidth = static_cast<long>(NbPixelHeight*ratio);
+         NbPixelHeightComputed += h;
       }
+      NbPixelHeight = NbPixelHeightComputed;
+      NbPixelWidth = static_cast<long>(NbPixelHeight*ratio);
+   }
 
-      int fXmin, fXmax, fYmin, fYmax;
-      fXmin = (findMode.w - NbPixelWidth) / 2;
-      fXmax = (findMode.w - NbPixelWidth) / 2 + NbPixelWidth;
-      fYmin = ((long)findMode.h - NbPixelHeight) / 2;
-      fYmax = ((long)findMode.h - NbPixelHeight) / 2 + NbPixelHeight;
+   int fXmin, fXmax, fYmin, fYmax;
+   fXmin = (screen_width - NbPixelWidth) / 2;
+   fXmax = (screen_width - NbPixelWidth) / 2 + NbPixelWidth;
+   fYmin = ((long)screen_height - NbPixelHeight) / 2;
+   fYmax = ((long)screen_height - NbPixelHeight) / 2 + NbPixelHeight;
 
-
-      m_DestRectFullScreen.x = fXmin;
-      m_DestRectFullScreen.y = fYmin;
-      m_DestRectFullScreen.w = NbPixelWidth;
-      m_DestRectFullScreen.h = NbPixelHeight;*/   
+   logger_->Write("Display", LogNotice, "Computed width/height : %i, %i.", NbPixelWidth, NbPixelHeight);
+   logger_->Write("Display", LogNotice, "fXmin = %i, fXmax = %i, fYmin = %i, fYmax  = %i.", fXmin, fXmax, fYmin, fYmax);
    // - 
 
 
@@ -90,7 +96,12 @@ bool DisplayPiImp::Initialization()
    }
    frame_buffer_ = new CBcmFrameBuffer(768, 277*2, 32, 1024, 1024* FRAME_BUFFER_SIZE);
 
-   frame_buffer_->Initialize();
+   if (!frame_buffer_ || !frame_buffer_->Initialize())
+   {
+      logger_->Write("Display", LogNotice, "Error creating framebuffer...");
+      return FALSE;
+   }
+      
    frame_buffer_->SetVirtualOffset(143, 47/2);
 
    DisplayPi::Initialization();

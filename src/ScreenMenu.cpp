@@ -2,6 +2,7 @@
 #include "ScreenMenu.h"
 
 #include <memory.h>
+#include <math.h> 
 
 #ifdef  __circle__
 #include <SDCard/emmc.h>
@@ -158,9 +159,16 @@ void MainMenuWindows::Clear()
       memcpy(&line[x_], &full_line_[(offset_grid + (bcolor ? 0x10 : 0))&0x1F], max_w_ * sizeof(int));
       line += s;
    }
-   offset_grid += 0x1;
+
+   // Move thec background !
+   static float var_x = 0.0, var_y = 0.0;
+
+   var_x += 0.005;
+   var_y += 0.008;
+
+   offset_grid = 200 * sinf(var_x);
    offset_grid &= 0x1F;
-   offset_grid_y += 0x1;
+   offset_grid_y = 120 * sinf(var_y);
    offset_grid_y &= 0x1F;
 
 }

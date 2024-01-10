@@ -85,7 +85,7 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
          D2D1::SizeU(
             rc.right - rc.left,
             rc.bottom - rc.top)
-         ,D2D1_PRESENT_OPTIONS_IMMEDIATELY
+         //,D2D1_PRESENT_OPTIONS_IMMEDIATELY
       ),
       &pRT_
    );
