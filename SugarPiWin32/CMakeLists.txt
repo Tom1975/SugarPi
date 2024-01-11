@@ -61,6 +61,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/DisplayPi.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MainMenuWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MainMenuWindows.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScreenMenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScreenMenu.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.cpp

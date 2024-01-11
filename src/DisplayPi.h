@@ -31,8 +31,8 @@ public:
 
    virtual void Config();
    virtual const char* GetInformations();
-   virtual int GetWidth() { return 1024; }
-   virtual int GetHeight() { return 1024; }
+   virtual int GetWidth() = 0;
+   virtual int GetHeight() = 0;
    virtual void SetSize(SizeEnum size);
    virtual SizeEnum  GetSize();
    virtual void VSync(bool dbg = false);

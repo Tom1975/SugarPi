@@ -143,7 +143,7 @@ void Window::Redraw (bool clear)
 #ifdef PROFILE
    static unsigned int nb_frame = 0;
    START_CHRONO
-      static __int64 s3 = s1;
+   static __int64 s3 = s1;
 #endif
 
    if (clear)
@@ -484,7 +484,7 @@ void MenuWindows::ComputeScroller()
    CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller");
    // check current focus, depending on windows size
    int distant_to_top = current_focus_ * 20;
-   int distant_to_bottom = (list_item_.size() - (current_focus_+1)) *20;
+   int distant_to_bottom = (static_cast<int>(list_item_.size()) - (current_focus_+1)) *20;
    int win_h = distant_to_top - height_ / 2;
    int win_h2b = distant_to_bottom - height_ / 2;
 
@@ -571,7 +571,7 @@ void BitmapWindows::RedrawWindow()
    {
       int* line = display_->GetVideoBuffer(i + y_);
       bmp_->DrawLogo(i, &line[x_ + (int) (sinf(offset)*10)]);
-      offset += 0.002;
+      offset += 0.002f;
    }
    
 

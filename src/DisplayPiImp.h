@@ -29,6 +29,8 @@ public:
    virtual int* GetVideoBuffer(int y);
    virtual int GetStride();
 
+   virtual int GetWidth();
+   virtual int GetHeight();
 
    // Capability of device
    virtual bool CanVSync() { return true; }

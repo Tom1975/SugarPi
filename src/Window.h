@@ -80,8 +80,8 @@ public:
    static void SetFocus(Window* focus) { focus_ = focus;}
    int GetX(){return x_;}
    int GetY(){return y_;}
-   unsigned int GetWidth(){return width_;}
-   unsigned int GetHeight(){return height_;}
+   int GetWidth(){return width_;}
+   int GetHeight(){return height_;}
 
    void ForceStop();
 protected:
@@ -93,8 +93,8 @@ protected:
    // Coordinate
    int x_;
    int y_;
-   unsigned int width_;
-   unsigned int height_;
+   int width_;
+   int height_;
 
    // current Focus window
    static Window* focus_;

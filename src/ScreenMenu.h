@@ -14,51 +14,22 @@
 #include "CPCCore/CPCCoreEmu/Snapshot.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
 
+#include "DisplayPi.h"
 
 #ifdef  __circle__
-#include "DisplayPi.h"
 #include "KeyboardPi.h"
 #include "SugarPiSetup.h"
 #else
-#include "DisplayPiDesktop.h"
 #include "KeyboardPiDesktop.h"
 #include "SugarPiSetupDesktop.h"
 #endif
+
 #include "Window.h"
-#include "res/SugarboxLogo.h"
+#include "MainMenuWindows.h"
 
 #define MAX_LANGUAGE 1
 
 #pragma pack(push, 1)
-
-class CoolspotFont;
-
-
-
-class MainMenuWindows : public Window
-{
-public:
-   MainMenuWindows (DisplayPi* display);
-   virtual ~MainMenuWindows ();
-   
-   void ResetMenu();
-   MenuWindows* GetMenu(){return menu_;};
-   virtual void Clear();
-
-protected:
-   BitmapWindows* logo_;
-   MenuWindows* menu_;
-   SugarboxLogo* bitmap_;
-
-   // Checkboard
-   int* full_line_;
-   int offset_grid;
-   int offset_grid_y;
-
-   int max_w_;
-
-
-};
 
 class ScreenMenu : public IEvent
 {
@@ -82,6 +53,7 @@ public:
    IAction::ActionReturn LoadCartridge ( const char* path);
    IAction::ActionReturn LoadDisk ( const char* path);
    IAction::ActionReturn LoadTape ( const char* path);
+   IAction::ActionReturn Info();
    IAction::ActionReturn Reset();
    IAction::ActionReturn Resume();
    IAction::ActionReturn Save();

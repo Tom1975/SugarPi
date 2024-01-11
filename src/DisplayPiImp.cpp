@@ -10,6 +10,11 @@
 #include "res/button_1.h"
 #include "res/coolspot.h"
 
+
+#define WIDTH_VIRTUAL_SCREEN 1024
+#define HEIGHT_VIRTUAL_SCREEN (288*2)
+
+
 DisplayPiImp::DisplayPiImp(CLogger* logger, CTimer* timer) :DisplayPi(logger),
    timer_(timer),
    frame_buffer_(nullptr),
@@ -94,7 +99,7 @@ bool DisplayPiImp::Initialization()
    {
       delete frame_buffer_;
    }
-   frame_buffer_ = new CBcmFrameBuffer(768, 277*2, 32, 1024, 1024* FRAME_BUFFER_SIZE);
+   frame_buffer_ = new CBcmFrameBuffer(WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, 32, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN * FRAME_BUFFER_SIZE);
 
    if (!frame_buffer_ || !frame_buffer_->Initialize())
    {
@@ -102,7 +107,7 @@ bool DisplayPiImp::Initialization()
       return FALSE;
    }
       
-   frame_buffer_->SetVirtualOffset(143, 47/2);
+   frame_buffer_->SetVirtualOffset(143, 47);
 
    DisplayPi::Initialization();
 
@@ -128,8 +133,7 @@ bool DisplayPiImp::ListEDID()
          // week/year
          // EDID version
          logger_->Write("Display", LogNotice, "EDID version : %i.%i", TagEDID.Block[18], TagEDID.Block[19]);
-		Tags.GetTag (PROPTAG_GET_EDID_BLOCK , &TagEDID, sizeof TagEDID, 4);
-
+         debug_hexdump(TagEDID.Block, 128, "EDID");
       }
       else
       {
@@ -163,6 +167,15 @@ int DisplayPiImp::GetStride()
    return frame_buffer_->GetPitch();
 }
 
+int DisplayPiImp::GetWidth()
+{
+   return WIDTH_VIRTUAL_SCREEN;
+}
+
+int DisplayPiImp::GetHeight()
+{
+   return HEIGHT_VIRTUAL_SCREEN;
+}
 
 int* DisplayPiImp::GetVideoBuffer(int y)
 {
@@ -170,23 +183,16 @@ int* DisplayPiImp::GetVideoBuffer(int y)
    {
       y = y * 2 + added_line_;
    }
-   
 
    y &= 0x3FF;
-   y += buffer_used_ * 1024;
+   y += buffer_used_ * HEIGHT_VIRTUAL_SCREEN;
 
-///// 
-   //logger_->Write("Display", LogNotice, "GetVideoBuffer : y = %i; buffer_used_ : %i, ==>%i", y, buffer_used_, frame_buffer_->GetBuffer() + y * frame_buffer_->GetPitch());
-   return reinterpret_cast<int*>(frame_buffer_->GetBuffer() + y * frame_buffer_->GetPitch());
-
-//   return (int*)(frame_buffer_->GetBuffer() + (y * 2 /*+ added_line_*/)* frame_buffer_->GetPitch() );
-   
-      
+   return reinterpret_cast<int*>(frame_buffer_->GetBuffer() + y * frame_buffer_->GetPitch());      
 }
 
 void DisplayPiImp::SetFrame(int frame_index)
 {
-   frame_buffer_->SetVirtualOffset(143, 47 / 2 + frame_index * 1024);
+   frame_buffer_->SetVirtualOffset(143, 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
 }
 
 void DisplayPiImp::Draw()
@@ -197,10 +203,10 @@ void DisplayPiImp::Draw()
 void DisplayPiImp::ClearBuffer(int frame_index)
 {
 
-   unsigned char* line = reinterpret_cast<unsigned char*>(frame_buffer_->GetBuffer() + frame_index * 1024 * frame_buffer_->GetPitch());
-   for (unsigned int count = 0; count < 1024; count++)
+   unsigned char* line = reinterpret_cast<unsigned char*>(frame_buffer_->GetBuffer() + frame_index * HEIGHT_VIRTUAL_SCREEN * frame_buffer_->GetPitch());
+   for (unsigned int count = 0; count < HEIGHT_VIRTUAL_SCREEN; count++)
    {
-      memset(line, 0x0, 1024 * 4);
+      memset(line, 0x0, WIDTH_VIRTUAL_SCREEN * 4);
       line += frame_buffer_->GetPitch();
    }
 
