@@ -215,10 +215,11 @@ void DisplayPi::Loop()
       // Display available frame
       int frame_index = -1;
       Lock();
-      if (nb_frame_in_queue_ > 0)
+      if (!sync_on_frame_ && nb_frame_in_queue_ > 0)
       {
-         //logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i", nb_frame_in_queue_);
+         
          frame_index = frame_queue_[0];
+         logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i; frame_index = %i", nb_frame_in_queue_, frame_index);
          nb_frame_in_queue_--;
 
          memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
@@ -255,6 +256,7 @@ void DisplayPi::VSync(bool dbg)
       Lock();
       nb_frame_in_queue_ = 0;
       Unlock();
+      logger_->Write("DIS", LogNotice, "A frame is present. sync_on_frame_; frame_index = %i", buffer_used_);
       SetFrame(buffer_used_);
       Draw();
 

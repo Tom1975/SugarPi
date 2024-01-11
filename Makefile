@@ -14,7 +14,7 @@ OBJS	= src/main.o\
 		src/KeyboardPi.o\
 		src/log.o\
 		src/MainMenuWindows.o\
-		src/MainMenuWindowsSoundPi.o\
+		src/SoundPi.o\
 		src/ScreenMenu.o\
 		src/Window.o\
 		res/SugarboxLogo.o\
