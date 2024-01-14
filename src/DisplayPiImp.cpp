@@ -166,7 +166,8 @@ void DisplayPiImp::WaitVbl()
 
 int DisplayPiImp::GetStride()
 {
-   return frame_buffer_->GetPitch();
+   // TODO : stride is for int* !!!
+   return frame_buffer_->GetPitch() / sizeof(int);
 }
 
 int DisplayPiImp::GetWidth()

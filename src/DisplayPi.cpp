@@ -41,7 +41,7 @@ DisplayPi::~DisplayPi()
 
 bool DisplayPi::Initialization()
 {
-   font_ = new CoolspotFont(GetStride());
+   font_ = new CoolspotFont(GetStride() / sizeof(int));
    return true;
 }
 
@@ -307,7 +307,7 @@ void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
    strncpy(buff, txt, 15);
    
    unsigned int x_offset_output = 0;
-
+   logger_->Write("DisplayText", LogNotice, "DisplayText : %s - Font = %X", txt, font_);
    while (txt[i] != '\0' )
    {
 
@@ -320,9 +320,9 @@ void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
       }
       else
       {
-
+         
          int* line = GetVideoBuffer(y);
-         font_->Write(c, &line[x + x_offset_output]);
+         font_->Write(c, line + x + x_offset_output);
          //font_->CopyLetter(c, &line[x + x_offset_output], GetStride());
 
          // Look for proper bitmap position (on first line only)

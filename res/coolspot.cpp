@@ -1,6 +1,12 @@
 /* GIMP RGBA C-Source image dump (coolspot.c) */
 
 #include <memory.h>
+#ifdef  __circle__
+#include <circle/logger.h>
+#else
+#include "CLogger.h"
+#endif
+
 #include "coolspot.h"
 
 // convertion by http://javl.github.io/image2cpp/
@@ -389,7 +395,9 @@ void CoolspotFont::Write(unsigned char c, int* buffer)
 {
    if (write_[c] != nullptr)
    {
+      CLogger::Get()->Write("CoolspotFont::Write", LogNotice, "Write : stride = %i, car = %i - write[c] = %x",stride_, c, write_[c]);
       (this->*(write_[c]))(buffer);
+      CLogger::Get()->Write("CoolspotFont::Write", LogNotice, "Write ok");
    }
 }
 
@@ -1515,7 +1523,7 @@ void CoolspotFont::Write_29(int* buffer)
 
 void CoolspotFont::Write_2a(int* buffer)
 {
-   buffer = buffer + 0x2 + 0x1 * stride_;
+   buffer +=  0x2 + 0x1 * stride_;
    *buffer = 0x193131;
    buffer = buffer + 0x1;
    *buffer = 0x192963;
