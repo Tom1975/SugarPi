@@ -146,17 +146,22 @@ void Window::Redraw (bool clear)
    static __int64 s3 = s1;
 #endif
 
+   CLogger::Get()->Write("Window", LogNotice, "Redraw - 1");
    if (clear)
       Clear();
 
+   CLogger::Get()->Write("Window", LogNotice, "Redraw - 2");
    // Redraw window
    RedrawWindow ();
 
+   CLogger::Get()->Write("Window", LogNotice, "Redraw - 3");
    // Redraw children
    RedrawChildren ();
 
+   CLogger::Get()->Write("Window", LogNotice, "Redraw - 4");
    // Sync
    display_->VSync();
+   CLogger::Get()->Write("Window", LogNotice, "Redraw - VSync done");
 
 #ifdef PROFILE
    STOP_CHRONO
@@ -279,6 +284,7 @@ void MenuItemWindows::SetAction (IAction* action)
 
 void MenuItemWindows::RedrawWindow ( )
 {
+   CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow");
    int x = 15;
    int y = 0;
    WindowsToDisplay(x, y);   
@@ -290,6 +296,7 @@ void MenuItemWindows::RedrawWindow ( )
       display_->DisplayText ("*", x-15, y, focus_==this);
    }
    display_->DisplayText (label_, x, y, focus_==this);
+   CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow end");
 }
 
 IAction::ActionReturn MenuItemWindows::HandleEvent( IEvent::Event event)
@@ -566,6 +573,7 @@ void BitmapWindows::Create(Window* parent, int x, int y, PiBitmap* bmp)
 
 void BitmapWindows::RedrawWindow()
 {
+   CLogger::Get()->Write("BitmapWindows", LogNotice, "RedrawWindow");
    static float offset;
    for (int i = 0; i < height_; i++)
    {
@@ -573,7 +581,7 @@ void BitmapWindows::RedrawWindow()
       bmp_->DrawLogo(i, &line[x_ + (int) (sinf(offset)*10)]);
       offset += 0.002f;
    }
-   
+   CLogger::Get()->Write("Window", LogNotice, "RedrawWindow end");
 
 }
 

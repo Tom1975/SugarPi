@@ -224,10 +224,10 @@ void DisplayPi::Loop()
 
          memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
 
-         Unlock();
          SetFrame(frame_index);
          //logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
          Draw();
+         Unlock();
 
          // Set it as available
          frame_used_[frame_index] = FR_FREE;
@@ -251,11 +251,10 @@ void DisplayPi::VSync(bool dbg)
       full_resolution_cached_ = full_resolution_;
    }
 
-   if (sync_on_frame_) // To turn on : Use the display core !
+   if (true/*sync_on_frame_*/) // To turn on : Use the display core !
    {
       Lock();
       nb_frame_in_queue_ = 0;
-      Unlock();
       logger_->Write("DIS", LogNotice, "A frame is present. sync_on_frame_; frame_index = %i", buffer_used_);
       SetFrame(buffer_used_);
       Draw();
@@ -264,6 +263,7 @@ void DisplayPi::VSync(bool dbg)
       {
          ClearBuffer(buffer_used_);
       }
+      Unlock();
    }
    else
    {

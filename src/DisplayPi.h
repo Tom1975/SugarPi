@@ -10,7 +10,7 @@
 
 
 class CoolspotFont;
-#define FRAME_BUFFER_SIZE 3
+#define FRAME_BUFFER_SIZE 2
 
 
 class DisplayPi : public IDisplay
@@ -78,6 +78,7 @@ public:
 
    virtual void Lock() = 0;
    virtual void Unlock() = 0;
+
 
    virtual int* GetVideoBuffer(int y) = 0;
    virtual int GetStride() = 0;

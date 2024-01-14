@@ -16,7 +16,7 @@ public:
    bool ListEDID();
    
    bool Initialization();
-   void SyncWithFrame (bool set){sync_on_frame_ = set;}
+   void SyncWithFrame (bool set);
    bool IsSyncOnFrame(){return sync_on_frame_;}
    
    void SetFullResolution (bool set){full_resolution_ = set;};

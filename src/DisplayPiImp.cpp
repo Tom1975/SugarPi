@@ -10,6 +10,8 @@
 #include "res/button_1.h"
 #include "res/coolspot.h"
 
+#define WIDTH_SCREEN 640
+#define HEIGHT_SCREEN 480
 
 #define WIDTH_VIRTUAL_SCREEN 1024
 #define HEIGHT_VIRTUAL_SCREEN (288*2)
@@ -99,7 +101,7 @@ bool DisplayPiImp::Initialization()
    {
       delete frame_buffer_;
    }
-   frame_buffer_ = new CBcmFrameBuffer(WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, 32, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN * FRAME_BUFFER_SIZE);
+   frame_buffer_ = new CBcmFrameBuffer(WIDTH_SCREEN, HEIGHT_SCREEN, 32, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN * FRAME_BUFFER_SIZE);
 
    if (!frame_buffer_ || !frame_buffer_->Initialize())
    {
@@ -179,15 +181,27 @@ int DisplayPiImp::GetHeight()
 
 int* DisplayPiImp::GetVideoBuffer(int y)
 {
-   if (!full_resolution_cached_)
+   if (!full_resolution_)
    {
       y = y * 2 + added_line_;
    }
 
-   y &= 0x3FF;
+   if ( y > HEIGHT_VIRTUAL_SCREEN) y = HEIGHT_VIRTUAL_SCREEN-1;
    y += buffer_used_ * HEIGHT_VIRTUAL_SCREEN;
 
    return reinterpret_cast<int*>(frame_buffer_->GetBuffer() + y * frame_buffer_->GetPitch());
+}
+
+void DisplayPiImp::SyncWithFrame (bool set)
+{
+   if (set)
+   {
+      sync_on_frame_ = set;
+   }
+   else
+   {
+      sync_on_frame_ = true;//set;
+   }
 }
 
 void DisplayPiImp::SetFrame(int frame_index)
