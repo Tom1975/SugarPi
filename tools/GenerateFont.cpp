@@ -2,7 +2,7 @@
 //
 
 #include <iostream>
-
+#include <iomanip>
 
 static const struct {
    unsigned int 	 width;
@@ -145,6 +145,9 @@ int main()
 
          int index_x = 0, index_y = 1;
          int last_index_x = 0, last_index_y = 1;
+
+         int nb_consecutive_pixels = 0;
+         unsigned long long current_color = 0;
          for (int h = 1; h < coolspot_font.height; h++)
          {
             index_x = 0;
@@ -152,34 +155,66 @@ int main()
             {
                if (coolspot_font.pixel_data[w + h * coolspot_font.width] != 0)
                {
-                  int finaloffset_x = index_x - last_index_x;
-                  int finaloffset_y = index_y - last_index_y ;
-
-                  //if (finaloffset_x + finaloffset_y > 0)
+                  if (nb_consecutive_pixels == 0)
                   {
-                     if (finaloffset_x >= 0)
-                     {
-                        std::cout << "   buffer = buffer + 0x" << std::hex << finaloffset_x;
-                     }
-                     else
-                     {
-                        std::cout << "   buffer = buffer - 0x" << std::hex << abs(finaloffset_x);
-                     }
-                     if (finaloffset_y > 0)
-                        std::cout << " + 0x" << std::hex<< finaloffset_y << " * stride_";
+                     int finaloffset_x = index_x - last_index_x;
+                     int finaloffset_y = index_y - last_index_y;
 
-                     std::cout << ";\n";
+                     //if (finaloffset_x + finaloffset_y > 0)
+                     {
+                        if (finaloffset_x >= 0)
+                        {
+                           std::cout << "   buffer += 0x" << std::hex << finaloffset_x;
+                        }
+                        else
+                        {
+                           std::cout << "   buffer += -0x" << std::hex << abs(finaloffset_x);
+                        }
+                        if (finaloffset_y > 0)
+                           std::cout << " + 0x" << std::hex << finaloffset_y << " * stride_";
 
-                     last_index_x = index_x;
-                     last_index_y = index_y;
-                  }                  
-                  std::cout << "   *buffer = 0x"<< std::hex<<coolspot_font.pixel_data[w + h * coolspot_font.width] << ";\n";
+                        std::cout << ";\n";
+
+                        last_index_x = index_x;
+                        last_index_y = index_y;
+                     }
+                  }
+                  nb_consecutive_pixels++;
+                  current_color <<= 32;
+                  current_color |= coolspot_font.pixel_data[w + h * coolspot_font.width];
+                  if (nb_consecutive_pixels == 2)
+                  {
+                     nb_consecutive_pixels = 0;
+                     std::cout << "   ( (unsigned long long*)buffer)[0] = 0x" 
+                        << std::hex << std::setfill('0') << std::setw(8) << (current_color & 0xFFFFFFFF) 
+                        << std::hex << std::setfill('0') << std::setw(8) << ((current_color >> 32) & 0xFFFFFFFF) << ";\n";
+                  }
+               }
+               else
+               {
+                  if (nb_consecutive_pixels == 1)
+                  {
+                     nb_consecutive_pixels = 0;
+                     std::cout << "   buffer[0] = 0x" << std::hex << (unsigned int)(current_color & 0xFFFFFFFF) << ";\n";
+                  }
                }
 
                index_x++;
             }
+            if (nb_consecutive_pixels == 1)
+            {
+               nb_consecutive_pixels = 0;
+               std::cout << "   buffer[0] = 0x" << std::hex << (unsigned int)(current_color & 0xFFFFFFFF) << ";\n";
+            }
+
             index_y++;
          }
+         if (nb_consecutive_pixels == 1)
+         {
+            nb_consecutive_pixels = 0;
+            std::cout << "   buffer[0] = 0x" << std::hex << (unsigned int)(current_color & 0xFFFFFFFF) << ";\n";
+         }
+
          std::cout << "}\n\n";
       }
    }

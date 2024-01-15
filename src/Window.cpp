@@ -146,22 +146,22 @@ void Window::Redraw (bool clear)
    static __int64 s3 = s1;
 #endif
 
-   CLogger::Get()->Write("Window", LogNotice, "Redraw - 1");
+   //CLogger::Get()->Write("Window", LogNotice, "Redraw - 1");
    if (clear)
       Clear();
 
-   CLogger::Get()->Write("Window", LogNotice, "Redraw - 2");
+   //CLogger::Get()->Write("Window", LogNotice, "Redraw - 2");
    // Redraw window
    RedrawWindow ();
 
-   CLogger::Get()->Write("Window", LogNotice, "Redraw - 3");
+   //CLogger::Get()->Write("Window", LogNotice, "Redraw - 3");
    // Redraw children
    RedrawChildren ();
 
-   CLogger::Get()->Write("Window", LogNotice, "Redraw - 4");
+   //CLogger::Get()->Write("Window", LogNotice, "Redraw - 4");
    // Sync
    display_->VSync();
-   CLogger::Get()->Write("Window", LogNotice, "Redraw - VSync done");
+   //CLogger::Get()->Write("Window", LogNotice, "Redraw - VSync done");
 
 #ifdef PROFILE
    STOP_CHRONO
@@ -284,7 +284,7 @@ void MenuItemWindows::SetAction (IAction* action)
 
 void MenuItemWindows::RedrawWindow ( )
 {
-   CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow");
+   //CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow");
    int x = 15;
    int y = 0;
    WindowsToDisplay(x, y);   
@@ -296,7 +296,7 @@ void MenuItemWindows::RedrawWindow ( )
       display_->DisplayText ("*", x-15, y, focus_==this);
    }
    display_->DisplayText (label_, x, y, focus_==this);
-   CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow end");
+   //CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow end");
 }
 
 IAction::ActionReturn MenuItemWindows::HandleEvent( IEvent::Event event)
@@ -446,7 +446,7 @@ void MenuWindows::Create( Window* parent, int x, int y, unsigned int width, unsi
 
 void MenuWindows::AddMenuItem (const char* label, IAction* action)
 {
-   CLogger::Get ()->Write("Menu", LogNotice, "add menu : %s ", label);
+   //CLogger::Get ()->Write("Menu", LogNotice, "add menu : %s ", label);
 
    // Add item to menu
    MenuItemWindows* item = new MenuItemWindows (display_);
@@ -464,7 +464,7 @@ void MenuWindows::AddMenuItem (const char* label, IAction* action)
 void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* action)
 {
    // Add item to menu
-   CLogger::Get ()->Write("Menu", LogNotice, "add menucheck : %s ", label);
+   //CLogger::Get ()->Write("Menu", LogNotice, "add menucheck : %s ", label);
    CheckMenuItemWindows* item = new CheckMenuItemWindows (display_);
    item->Create( label, value, &scroll_window_, 10, list_item_.size()*20, 800, 19);
    item->SetAction(action);
@@ -488,7 +488,7 @@ void MenuWindows::RedrawWindow ()
 
 void MenuWindows::ComputeScroller()
 {
-   CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller");
+   //CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller");
    // check current focus, depending on windows size
    int distant_to_top = current_focus_ * 20;
    int distant_to_bottom = (static_cast<int>(list_item_.size()) - (current_focus_+1)) *20;
@@ -506,7 +506,7 @@ void MenuWindows::ComputeScroller()
       scroll_y = win_h;
    }
    scroll_window_.Scroll ( 0, scroll_y);
-   CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller Done; y = %i", scroll_y);
+   //CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller Done; y = %i", scroll_y);
 }
 
 IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
@@ -573,7 +573,7 @@ void BitmapWindows::Create(Window* parent, int x, int y, PiBitmap* bmp)
 
 void BitmapWindows::RedrawWindow()
 {
-   CLogger::Get()->Write("BitmapWindows", LogNotice, "RedrawWindow");
+   //CLogger::Get()->Write("BitmapWindows", LogNotice, "RedrawWindow");
    static float offset;
    for (int i = 0; i < height_; i++)
    {
@@ -581,7 +581,7 @@ void BitmapWindows::RedrawWindow()
       bmp_->DrawLogo(i, &line[x_ + (int) (sinf(offset)*10)]);
       offset += 0.002f;
    }
-   CLogger::Get()->Write("Window", LogNotice, "RedrawWindow end");
+   //CLogger::Get()->Write("Window", LogNotice, "RedrawWindow end");
 
 }
 

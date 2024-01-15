@@ -41,7 +41,7 @@ DisplayPi::~DisplayPi()
 
 bool DisplayPi::Initialization()
 {
-   font_ = new CoolspotFont(GetStride() / sizeof(int));
+   font_ = new CoolspotFont(GetStride());
    return true;
 }
 
@@ -219,7 +219,7 @@ void DisplayPi::Loop()
       {
          
          frame_index = frame_queue_[0];
-         logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i; frame_index = %i", nb_frame_in_queue_, frame_index);
+         //logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i; frame_index = %i", nb_frame_in_queue_, frame_index);
          nb_frame_in_queue_--;
 
          memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
@@ -255,7 +255,7 @@ void DisplayPi::VSync(bool dbg)
    {
       Lock();
       nb_frame_in_queue_ = 0;
-      logger_->Write("DIS", LogNotice, "A frame is present. sync_on_frame_; frame_index = %i", buffer_used_);
+      //logger_->Write("DIS", LogNotice, "A frame is present. sync_on_frame_; frame_index = %i", buffer_used_);
       SetFrame(buffer_used_);
       Draw();
 
@@ -307,7 +307,7 @@ void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
    strncpy(buff, txt, 15);
    
    unsigned int x_offset_output = 0;
-   logger_->Write("DisplayText", LogNotice, "DisplayText : %s - Font = %X", txt, font_);
+   //logger_->Write("DisplayText", LogNotice, "DisplayText : %s - Font = %X", txt, font_);
    while (txt[i] != '\0' )
    {
 
