@@ -207,24 +207,24 @@ void DisplayPiImp::SyncWithFrame (bool set)
 
 void DisplayPiImp::SetFrame(int frame_index)
 {
-   logger_->Write("Display", LogNotice, "SetFrame : 143, %i", 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
+   //logger_->Write("Display", LogNotice, "SetFrame : 143, %i", 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
    frame_buffer_->SetVirtualOffset(143, 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
 }
 
 void DisplayPiImp::Draw()
 {
-   logger_->Write("Display", LogNotice, "Draw");
+   //logger_->Write("Display", LogNotice, "Draw");
    frame_buffer_->WaitForVerticalSync();
 }
 
 void DisplayPiImp::ClearBuffer(int frame_index)
 {
-   logger_->Write("Display", LogNotice, "ClearBuffer : frame_index = %i", frame_index);
+   //logger_->Write("Display", LogNotice, "ClearBuffer : frame_index = %i", frame_index);
    unsigned char* line = reinterpret_cast<unsigned char*>(frame_buffer_->GetBuffer() + frame_index * HEIGHT_VIRTUAL_SCREEN * frame_buffer_->GetPitch());
    for (unsigned int count = 0; count < HEIGHT_VIRTUAL_SCREEN; count++)
    {
       memset(line, 0x0, WIDTH_VIRTUAL_SCREEN * 4);
       line += frame_buffer_->GetPitch();
    }
-   logger_->Write("Display", LogNotice, "End clear");
+   //logger_->Write("Display", LogNotice, "End clear");
 }

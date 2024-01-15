@@ -322,8 +322,8 @@ void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
       {
          
          int* line = GetVideoBuffer(y);
-         font_->Write(c, line + x + x_offset_output);
-         //font_->CopyLetter(c, &line[x + x_offset_output], GetStride());
+         //font_->Write(c, line + x + x_offset_output);
+         font_->CopyLetter(c, &line[x + x_offset_output], GetStride());
 
          // Look for proper bitmap position (on first line only)
          /*for (int display_y = 0; display_y < font_->GetLetterHeight(c) && GetHeight()>display_y + y; display_y++)
