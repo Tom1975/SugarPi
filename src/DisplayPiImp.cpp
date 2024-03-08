@@ -16,11 +16,45 @@
 #define WIDTH_VIRTUAL_SCREEN 1024
 #define HEIGHT_VIRTUAL_SCREEN (288*2)
 
+#define PBASE 0x3F000000
+
+#define SCALER_DISPLIST0                        (PBASE+0x00400020)
+#define SCALER_DISPLIST1                        (PBASE+0x00400024)
+#define SCALER_DISPLIST2                        (PBASE+0x00400028)
+
+#define SCALER_CTL0_END                         1U << 31
+#define SCALER_CTL0_VALID                       1U << 30
+#define SCALER_CTL0_UNITY                       1U << 4
+
+#define SCALER_CTL0_RGBA_EXPAND_ZERO            0
+#define SCALER_CTL0_RGBA_EXPAND_LSB             1
+#define SCALER_CTL0_RGBA_EXPAND_MSB             2
+#define SCALER_CTL0_RGBA_EXPAND_ROUND           3
+
+#define SCALER_CTL0_HFLIP                       1U << 16
+#define SCALER_CTL0_VFLIP                       1U << 15
+
+static inline void put32 (uintptr nAddress, u32 nValue)
+{
+	*(u32 volatile *) nAddress = nValue;
+}
+
+static volatile unsigned int* dlist_memory = (unsigned int*) 0x3F402000;
+
+/* We'll use a simple "double buffering" scheme to avoid writing out a new display list while
+   one is still in-flight. */
+static const unsigned short dlist_buffer_count = 2;
+static const unsigned short dlist_offsets[] = { 0, 128 };
+static unsigned short next_dlist_buffer = 0;
+
+#define WRITE_WORD(word) (dlist_memory[(*offset)++] = word)
+
 
 DisplayPiImp::DisplayPiImp(CLogger* logger, CTimer* timer) :DisplayPi(logger),
    timer_(timer),
    frame_buffer_(nullptr),
-   mutex_(TASK_LEVEL)   
+   mutex_(TASK_LEVEL),
+   current_structure_(nullptr)   
 {
 }
 
@@ -111,9 +145,26 @@ bool DisplayPiImp::Initialization()
       
    frame_buffer_->SetVirtualOffset(143, 47);
 
+   
    DisplayPi::Initialization();
 
    return true;
+}
+
+void DisplayPiImp::InterruptionHandler()
+{
+   // Sync interrupt
+}
+
+void DisplayPiImp::InterruptStub (void *pParam)
+{
+   static_cast<DisplayPiImp*>(pParam)->
+}
+
+bool DisplayPiImp::InitInterrupt(CInterruptSystem* interrupt)
+{
+   // 3f : sync frame ??
+   interrupt->ConnectIRQ (142, &InterruptStub, this);
 }
 
 bool DisplayPiImp::ListEDID()
@@ -207,8 +258,24 @@ void DisplayPiImp::SyncWithFrame (bool set)
 
 void DisplayPiImp::SetFrame(int frame_index)
 {
+   if (current_structure_->nb_buffers_ == 0 )
+   {
+      // Nothing to do
+   }
+   else
+   {
+      current_buffer_ ++;
+      if (current_structure_->nb_buffers_ <= current_buffer_)
+      {
+         current_buffer_ = 0;
+      }
+      // Update structure
+      UpdateWindowsConfiguration();
+   }
+
    //logger_->Write("Display", LogNotice, "SetFrame : 143, %i", 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
-   frame_buffer_->SetVirtualOffset(143, 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
+   //frame_buffer_->SetVirtualOffset(143, 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
+
 }
 
 void DisplayPiImp::Draw()
@@ -228,3 +295,103 @@ void DisplayPiImp::ClearBuffer(int frame_index)
    }
    //logger_->Write("Display", LogNotice, "End clear");
 }
+
+
+void DisplayPiImp::SetWindowsConfiguration(WindowStructure* window_structure, int nb_win)
+{
+   // Create plane list
+   nb_windows_ = nb_win;
+   current_structure_ = window_structure;
+   // Reset current buffer
+   current_buffer_ = 0;
+   animation_step_ = 0;
+
+   if ( plane_)
+   {
+      delete []plane_ ;
+      plane_ = new hvs_plane[nb_windows_];
+   }
+}
+
+void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
+{
+    /* Write out the words for this plane. Each word conveys some information to the HVS on how it
+       should interpret this plane. */
+
+    /* Control Word */
+    const unsigned char number_of_words = 7;
+    unsigned int control_word = SCALER_CTL0_VALID              |        // denotes the start of a plane
+                            SCALER_CTL0_UNITY              |        // indicates no scaling
+                            plane.pixel_order       << 13  |        // pixel order
+                            number_of_words         << 24  |        // number of words in this plane
+                            plane.format;                           // pixel format
+    WRITE_WORD(control_word);
+
+    /* Position Word 0 */
+    unsigned int position_word_0 = plane.start_x        << 0   |
+                               plane.start_y        << 12;
+    WRITE_WORD(position_word_0);
+
+    /* Position Word 1: scaling, only if non-unity */
+
+    /* Position Word 2 */
+    unsigned int position_word_2 = plane.width         << 0    |
+                               plane.height        << 16;
+    WRITE_WORD(position_word_2);
+
+    /* Position Word 3: used by HVS */
+    WRITE_WORD(0xDEADBEEF);
+
+    /* Pointer Word */
+    /* This cast is okay, because the framebuffer pointer can always be held in 4 bytes
+       even though we're on a 64 bit architecture. */
+    unsigned int framebuffer = (unsigned int) (intptr_t) plane.framebuffer;
+    WRITE_WORD(0x80000000 | framebuffer);
+
+    /* Pointer Context: used by HVS */
+    WRITE_WORD(0xDEADBEEF);
+
+    /* Pitch Word */
+    unsigned int pitch_word = plane.pitch;
+    WRITE_WORD(pitch_word);
+}
+
+void DisplayPiImp::write_display_list(hvs_plane planes[], unsigned char count)
+{
+    unsigned short offset = dlist_offsets[next_dlist_buffer];
+    const unsigned short start = offset;
+
+    /* Write out each plane. */
+    for (unsigned char p = 0; p < count; p++) {
+        write_plane(&offset, planes[p]);
+    }
+
+    /* End Word */
+    dlist_memory[offset] = SCALER_CTL0_END;
+
+    /* Tell the HVS where the display list is by writing to the SCALER_DISPLIST1 register. */
+    put32(SCALER_DISPLIST1, start);
+
+    next_dlist_buffer = (next_dlist_buffer + 1) % dlist_buffer_count;
+}
+
+void DisplayPiImp::UpdateWindowsConfiguration()
+{
+   if (current_structure_ != nullptr)
+   {
+      for (int i = 0; i < nb_windows_; i++)
+      {
+         plane_[i].format = current_structure_->format_;
+         plane_[i].pixel_order = current_structure_->order_;
+         plane_[i].start_x = current_structure_->x_;
+         plane_[i].start_y = current_structure_->y_;
+         plane_[i].width = current_structure_->w_;
+         plane_[i].height = current_structure_->h_;
+         plane_[i].pitch = current_structure_->pitch_;
+         plane_[i].framebuffer = current_structure_->buffer_[current_buffer_];
+      }
+
+      write_display_list(plane_, nb_windows_);
+   }
+}
+

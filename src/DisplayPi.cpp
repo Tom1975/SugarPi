@@ -23,7 +23,8 @@ DisplayPi::DisplayPi(CLogger* logger) :
    added_line_(1),
    buffer_used_(0),
    nb_frame_in_queue_(0),
-   sync_on_frame_(false)
+   sync_on_frame_(false),
+   screen_config_changed_(false)
 {
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
@@ -212,33 +213,17 @@ void DisplayPi::Loop()
 
    while (loop_run)
    {
-      // Display available frame
-      int frame_index = -1;
-      Lock();
-      if (!sync_on_frame_ && nb_frame_in_queue_ > 0)
+      // Wait for sync
+
+      // Has screen configuration changed ?
+      if (screen_config_changed_)
       {
+         // Yes : Set it
          
-         frame_index = frame_queue_[0];
-         //logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i; frame_index = %i", nb_frame_in_queue_, frame_index);
-         nb_frame_in_queue_--;
 
-         memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
+         
 
-         SetFrame(frame_index);
-         //logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
-         Draw();
-         Unlock();
-
-         // Set it as available
-         frame_used_[frame_index] = FR_FREE;
       }
-      else
-      {
-         Unlock();
-         WAIT(1);
-      }
-      // sleep ?
-
    }
 }
 
@@ -297,43 +282,8 @@ void DisplayPi::VSync(bool dbg)
    added_line_ = 1;
 }
 
-void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
+// Windows creation
+void DisplayPi::SetWindowStructure ()
 {
-   // Display text
-   int i = 0;
 
-   char buff[16];
-   memset(buff, 0, sizeof buff);
-   strncpy(buff, txt, 15);
-   
-   unsigned int x_offset_output = 0;
-   //logger_->Write("DisplayText", LogNotice, "DisplayText : %s - Font = %X", txt, font_);
-   while (txt[i] != '\0' )
-   {
-
-      // Display character
-      unsigned char c = txt[i];
-
-      if ( c == ' ' || c >= 0x80)
-      {
-         x_offset_output += 10;
-      }
-      else
-      {
-         
-         int* line = GetVideoBuffer(y);
-         //font_->Write(c, line + x + x_offset_output);
-         font_->CopyLetter(c, &line[x + x_offset_output], GetStride());
-
-         // Look for proper bitmap position (on first line only)
-         /*for (int display_y = 0; display_y < font_->GetLetterHeight(c) && GetHeight()>display_y + y; display_y++)
-         {
-            int* line = GetVideoBuffer(display_y + y);
-            font_->CopyLetter(c, display_y, &line[x + x_offset_output]);
-         }*/
-         x_offset_output += font_->GetLetterLength(c);
-      }
-      i++;
-      
-   }
 }

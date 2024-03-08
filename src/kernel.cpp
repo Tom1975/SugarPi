@@ -95,6 +95,10 @@ boolean CKernel::Initialize (void)
 
    if (bOK)
    {
+      bOK = display_->InitInterrupt(&m_Interrupt);
+   }
+   if (bOK)
+   {
       bOK = m_Timer.Initialize();
       m_Logger.Write("Kernel", LogNotice, "Timer initialization done : %i", bOK);
    }
