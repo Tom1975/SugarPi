@@ -158,7 +158,7 @@ void DisplayPiImp::InterruptionHandler()
 
 void DisplayPiImp::InterruptStub (void *pParam)
 {
-   static_cast<DisplayPiImp*>(pParam)->
+   static_cast<DisplayPiImp*>(pParam)->InterruptionHandler();
 }
 
 bool DisplayPiImp::InitInterrupt(CInterruptSystem* interrupt)
@@ -345,7 +345,7 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
     /* Pointer Word */
     /* This cast is okay, because the framebuffer pointer can always be held in 4 bytes
        even though we're on a 64 bit architecture. */
-    unsigned int framebuffer = (unsigned int) (intptr_t) plane.framebuffer;
+    unsigned int framebuffer = (unsigned int) (int ptr) plane.framebuffer;
     WRITE_WORD(0x80000000 | framebuffer);
 
     /* Pointer Context: used by HVS */
