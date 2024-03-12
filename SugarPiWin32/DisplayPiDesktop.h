@@ -43,6 +43,9 @@ public:
    virtual int GetHeight();
    virtual int GetWidth();
 
+   virtual void SetSetup(WindowsType setup);
+   virtual void GetFrameBuffer(int w, int h, int p, int color);
+
 protected:
    IFullScreenInterface* m_pFSInt;
 

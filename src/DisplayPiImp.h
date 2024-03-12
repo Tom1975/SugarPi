@@ -53,6 +53,9 @@ public:
    virtual void SetWindowsConfiguration(WindowStructure* window_structure, int nb_win);
    void UpdateWindowsConfiguration();
 
+   void SetSetup(WindowsType setup);
+   void GetFrameBuffer(int w, int h, int p, int color);
+
 protected:
    void InterruptionHandler();
 

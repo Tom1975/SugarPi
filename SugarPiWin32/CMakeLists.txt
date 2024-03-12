@@ -67,11 +67,12 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScreenMenu.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/WindowsManager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/WindowsManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/SugarboxLogo.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/SugarboxLogo.h
-
 )
 
 set(CpcCore_Files

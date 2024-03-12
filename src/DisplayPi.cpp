@@ -16,7 +16,8 @@
 #endif
 
 
-DisplayPi::DisplayPi(CLogger* logger) :
+DisplayPi::DisplayPi(CLogger* logger) : 
+   WindowsManager(logger),
    logger_(logger),
    full_resolution_(false),
    full_resolution_cached_(false),
@@ -287,3 +288,14 @@ void DisplayPi::SetWindowStructure ()
 {
 
 }
+void DisplayPi::SetWindowsConfiguration(WindowStructure* window_structure, int nb_win)
+{
+   // Set new configuration
+   // Update 
+}
+
+void DisplayPi::UpdateWindowsConfiguration()
+{
+
+}
+

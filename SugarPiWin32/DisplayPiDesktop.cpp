@@ -152,3 +152,14 @@ void DisplayPiDesktop::ClearBuffer(int frame_index)
    }
 
 }
+
+void DisplayPiDesktop::SetSetup(WindowsType setup)
+{
+   // Definition des fenetres (HVS)
+
+}
+
+void DisplayPiDesktop::GetFrameBuffer(int w, int h, int p, int color)
+{
+     
+}

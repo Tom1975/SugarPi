@@ -296,6 +296,16 @@ void DisplayPiImp::ClearBuffer(int frame_index)
    //logger_->Write("Display", LogNotice, "End clear");
 }
 
+void DisplayPiImp::SetSetup(WindowsType setup)
+{
+   // Definition des fenetres (HVS)
+   SetWindowsConfiguration(windows_structures_[setup], window_structures_size_[setup]);
+}
+
+void DisplayPiImp::GetFrameBuffer(int w, int h, int p, int color)
+{
+
+}
 
 void DisplayPiImp::SetWindowsConfiguration(WindowStructure* window_structure, int nb_win)
 {
@@ -309,8 +319,20 @@ void DisplayPiImp::SetWindowsConfiguration(WindowStructure* window_structure, in
    if ( plane_)
    {
       delete []plane_ ;
-      plane_ = new hvs_plane[nb_windows_];
    }
+   plane_ = new hvs_plane[nb_windows_];
+   for (int i = 0; i < nb_windows_; i++)
+   {
+      plane_[i].format = window_structure->format_;
+      plane_[i].pixel_order = window_structure->order_;
+      plane_[i].start_x = window_structure->x_;
+      plane_[i].start_y = window_structure->y_;
+      plane_[i].width = window_structure->w_;
+      plane_[i].height = window_structure->h_;
+      plane_[i].pitch = window_structure->pitch_;
+      plane_[i].framebuffer = window_structure->buffer_[current_buffer_];
+   }
+   write_display_list(plane_, nb_windows_);
 }
 
 void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)

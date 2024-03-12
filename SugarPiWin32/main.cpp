@@ -35,10 +35,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
    }
    case WM_KEYDOWN:
-      emu->keyboard->Presskey(wParam);
+      emu->keyboard->Presskey(static_cast<long>(wParam));
       break;
    case WM_KEYUP:
-      emu->keyboard->Unpresskey(wParam);
+      emu->keyboard->Unpresskey(static_cast<long>(wParam));
       break;
    case WM_QUIT:
       break;
@@ -105,8 +105,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    EmualtionWin32 emu;
 
    emu.log = new CLogger(LogDebug);
-   emu.display = new DisplayPiDesktop (emu.log);
-
    // Sound 
    emu.sound = new SoundPi(emu.log);
 
@@ -115,6 +113,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
    MyRegisterClass(hInstance);
    emu.emulation = new Emulation(emu.log);
+   emu.display = new DisplayPiDesktop(emu.log);
+
 
    HWND _hwnd = CreateWindowEx(0, "SugarPi", "SugarPi", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_VISIBLE,
       CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, &emu); // NULL);

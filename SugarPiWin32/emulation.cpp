@@ -4,8 +4,7 @@
 
 
 
-Emulation::Emulation( CLogger* log)
-   :
+Emulation::Emulation( CLogger* log)  :
    logger_(log),
    setup_(nullptr),
    motherboard_(nullptr),
@@ -15,6 +14,7 @@ Emulation::Emulation( CLogger* log)
    sound_mixer_(nullptr),
    sound_is_ready(false),
    sound_run_(true),
+   run_(false),
    menu(nullptr)
    
 {
@@ -66,6 +66,7 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    motherboard_->GetSig()->Reset();
    motherboard_->InitStartOptimizedPlus();
    motherboard_->OnOff();
+
 
    menu = new ScreenMenu(&log_, logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
 
@@ -150,8 +151,10 @@ void Emulation::RunMainLoop()
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
+         display_->SetSetup(WindowsManager::Menu);
          menu->Handle();
          keyboard_->ReinitSelect();
+         display_->SetSetup(WindowsManager::Main);
       }
    }
 }

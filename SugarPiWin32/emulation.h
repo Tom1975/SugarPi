@@ -9,6 +9,7 @@
 #include "SoundPiDesktop.h"
 #include "SugarPiSetupDesktop.h"
 #include "ScreenMenu.h"
+#include "WindowsManager.h"
 #include "log.h"
 
 class Emulation
@@ -21,10 +22,16 @@ public:
    void Run(unsigned nCore);
    void RunMainLoop();
 
+   WindowsManager* GetWindowManager() {
+      return windows_manager_;
+   }
+
    void ForceStop();
 
 protected:
    
+   WindowsManager*   windows_manager_;
+
    CLogger*          logger_;
    SugarPiSetup*     setup_;
    Motherboard*      motherboard_;
