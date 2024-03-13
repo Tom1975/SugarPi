@@ -5,6 +5,28 @@ WindowsManager::WindowsManager(CLogger* logger) :
    logger_(logger)
 {
    // Create setups
+   // Test
+   windows_structures_[Test] = new WindowStructure[1];
+   window_structures_size_[Test] = 1;
+
+   // background
+   test_buffer_ = new unsigned char [1080*1920];
+   windows_structures_[Test][0] = {
+      /*.format_ = */      HVS_PIXEL_FORMAT_RGBA8888,
+      /*.order_ = */       HVS_PIXEL_ORDER_RGBA,
+      /*.x_ = */           1920/4,
+      /*.y_ = */           1080/4,
+      /*.h_ = */           1080/2,
+      /*.w_ = */           1920/2,
+      /*.pitch_ = */       1080/2 * 4,
+      /*.nb_buffers_ = */  1,
+      /*.buffer_ = */      &test_buffer_,
+      /*.animation_ = */   nullptr,
+      /*.main_ = */        true
+
+   };
+   
+
    // Menu
    windows_structures_[Menu] = new WindowStructure[3];
    window_structures_size_[Menu] = 3;

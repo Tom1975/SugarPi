@@ -56,6 +56,8 @@ public:
    void SetSetup(WindowsType setup);
    void GetFrameBuffer(int w, int h, int p, int color);
 
+   virtual void Loop();
+
 protected:
    void InterruptionHandler();
 

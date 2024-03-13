@@ -417,3 +417,23 @@ void DisplayPiImp::UpdateWindowsConfiguration()
    }
 }
 
+void DisplayPiImp::Loop()
+{
+   loop_run = true;
+   logger_->Write("DISPLAY TEST HVS", LogNotice, "Testing HVS");
+
+   SetSetup (Test);
+   while (loop_run)
+   {
+      
+#define MMIO_BASE       0x3F000000      
+#define RNG_DATA        ((volatile unsigned int*)(MMIO_BASE+0x00104008)) 
+
+    unsigned int* pixels = (unsigned int*) test_buffer_;
+    for (int i = 0; i < 1080*1920/4; ++i) {
+        pixels[i] = *RNG_DATA & 0xFFFFFFFF; // random color
+    }
+   
+   }
+}
+

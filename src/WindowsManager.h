@@ -77,6 +77,7 @@ public:
       Start = 0,
       Menu = 1,
       Main = 2,
+      Test = 3,
 
       EndOfWindowsType
    } ;
@@ -87,9 +88,12 @@ public:
    virtual void SetSetup(WindowsType setup) = 0;
    virtual void GetFrameBuffer(int w, int h, int p, int color) = 0;
 
+
+unsigned char* test_buffer_;
    
 private:
    CLogger* logger_;
+
 
    // Configuration
    WindowStructure* windows_structures_[EndOfWindowsType];
