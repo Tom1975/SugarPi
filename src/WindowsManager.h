@@ -91,7 +91,7 @@ public:
 
 unsigned char* test_buffer_;
    
-private:
+protected:
    CLogger* logger_;
 
 
