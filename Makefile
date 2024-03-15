@@ -17,6 +17,7 @@ OBJS	= src/main.o\
 		src/SoundPi.o\
 		src/ScreenMenu.o\
 		src/Window.o\
+		src/WindowsManager.o\
 		res/SugarboxLogo.o\
 		res/coolspot.o\
 		CPCCore/CPCCoreEmu/Asic.o\
