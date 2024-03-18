@@ -60,6 +60,9 @@ CKernel::~CKernel (void)
 boolean CKernel::Initialize (void)
 {
 
+   // test !!
+
+
    boolean bOK = TRUE;
 
    if (bOK)
@@ -80,6 +83,11 @@ boolean CKernel::Initialize (void)
       m_Logger.Write("Kernel", LogNotice, "Initialisation done for log.");
       
    }
+
+   m_Logger.Write("Kernel", LogNotice, "HVS TEST.");
+   display_->Loop();
+   m_Logger.Write("Kernel", LogNotice, "HVS TEST End.");
+
    
    if (bOK)
    {
