@@ -425,6 +425,8 @@ void DisplayPiImp::Loop()
 {
    loop_run = true;
    logger_->Write("DISPLAY TEST HVS", LogNotice, "Testing HVS");
+   
+   hvs_initialize(logger_);
 
    SetSetup (Test);
    while (loop_run)
@@ -516,6 +518,14 @@ void hvs_initialize(CLogger* logger) {
    state = *REG32(SCALER_DISPSTAT);
    logger->Write("hvs_initialize", LogNotice, "After disable /enable, init value read = %8.8X; State = %8.8X", previous_value, state);
 
+   for (int loop = 0; loop < 50; loop++)
+   {
+      previous_value = *REG32(SCALER_DISPCTRL);
+      state = *REG32(SCALER_DISPSTAT);
+      logger->Write("hvs_initialize", LogNotice, "pooling, init value read = %8.8X; State = %8.8X", previous_value, state);
+
+      for (int loop2 = 0; loop2 < 5000000; loop2++);
+   }
 
   for (int i=0; i<3; i++) {
     hvs_channels[i].dispctrl = SCALER_DISPCTRLX_RESET;
@@ -523,11 +533,29 @@ void hvs_initialize(CLogger* logger) {
     hvs_channels[i].dispbkgnd = 0x1020202; // bit 24
   }
 
+   logger->Write("hvs_initialize", LogNotice, "set dispbase");
   hvs_channels[2].dispbase = BASE_BASE(0)      | BASE_TOP(0x7f0);
   hvs_channels[1].dispbase = BASE_BASE(0xf10)  | BASE_TOP(0x50f0);
   hvs_channels[0].dispbase = BASE_BASE(0x800) | BASE_TOP(0xf00);
 
+   logger->Write("hvs_initialize", LogNotice, "set dispbase done !");
+   logger->Write("hvs_initialize", LogNotice, "set hvs_wipe_displaylist...");
+   
   hvs_wipe_displaylist();
 
+  logger->Write("hvs_initialize", LogNotice, "hvs_wipe_displaylist done !");
+
   *REG32(SCALER_DISPEOLN) = 0x40000000;
+logger->Write("hvs_initialize", LogNotice, "SCALER_DISPEOLN set !");
+
+   for (int loop = 0; loop < 50; loop++)
+   {
+      previous_value = *REG32(SCALER_DISPCTRL);
+      state = *REG32(SCALER_DISPSTAT);
+      logger->Write("hvs_initialize", LogNotice, "pooling, init value read = %8.8X; State = %8.8X", previous_value, state);
+
+      for (int loop2 = 0; loop2 < 5000000; loop2++);
+   }  
+
+ logger->Write("hvs_initialize", LogNotice, "TEST ENDED !");  
 }
