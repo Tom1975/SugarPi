@@ -418,6 +418,9 @@ void DisplayPiImp::UpdateWindowsConfiguration()
    }
 }
 
+
+void hvs_initialize(CLogger* logger);
+
 void DisplayPiImp::Loop()
 {
    loop_run = true;
@@ -438,3 +441,93 @@ void DisplayPiImp::Loop()
    }
 }
 
+#define BCM_PERIPH_BASE_PHYS (0x7e000000U)
+#define BCM_PERIPH_BASE_VIRT    (0x7e000000U)
+
+#define SCALER_BASE (BCM_PERIPH_BASE_VIRT + 0x400000)
+
+#define SCALER_DISPCTRL     (SCALER_BASE + 0x00)
+#define SCALER_DISPSTAT     (SCALER_BASE + 0x04)
+#define SCALER_DISPCTRL_ENABLE  (1<<31)
+#define SCALER_DISPEOLN     (SCALER_BASE + 0x18)
+#define SCALER_DISPLIST0    (SCALER_BASE + 0x20)
+#define SCALER_DISPLIST1    (SCALER_BASE + 0x24)
+#define SCALER_DISPLIST2    (SCALER_BASE + 0x28)
+
+
+struct hvs_channel {
+  volatile unsigned int dispctrl;
+  volatile unsigned int dispbkgnd;
+  volatile unsigned int dispstat;
+  // 31:30  mode
+  // 29     full
+  // 28     empty
+  // 17:12  frame count
+  // 11:0   line
+  volatile unsigned int dispbase;
+};
+
+#define SCALER_DISPCTRL0    (SCALER_BASE + 0x40)
+#define SCALER_DISPCTRLX_ENABLE (1<<31)
+#define SCALER_DISPCTRLX_RESET  (1<<30)
+#define SCALER_DISPCTRL_W(n)    ((n & 0xfff) << 12)
+#define SCALER_DISPCTRL_H(n)    (n & 0xfff)
+#define SCALER_DISPBKGND_AUTOHS    (1<<31)
+#define SCALER_DISPBKGND_INTERLACE (1<<30)
+#define SCALER_DISPBKGND_GAMMA     (1<<29)
+#define SCALER_DISPBKGND_FILL      (1<<24)
+
+#define BASE_BASE(n) (n & 0xffff)
+#define BASE_TOP(n) ((n & 0xffff) << 16)
+
+#define CONTROL_END             (1<<31)
+
+#define SCALER_LIST_MEMORY  (BCM_PERIPH_BASE_VIRT + 0x402000)
+
+#define REG32(addr) ((volatile unsigned int *)(unsigned long long)(addr))
+
+//volatile unsigned int* dlist_memory;
+volatile struct hvs_channel *hvs_channels = (volatile struct hvs_channel*)REG32(SCALER_DISPCTRL0);
+int display_slot = 0;
+
+void hvs_wipe_displaylist(void) {
+  for (int i=0; i<1024; i++) {
+    dlist_memory[i] = CONTROL_END;
+  }
+  display_slot = 0;
+}
+
+void hvs_initialize(CLogger* logger) {
+
+
+   // Read SCALER_DISPCTRL
+   dlist_memory = REG32(SCALER_LIST_MEMORY);
+   unsigned int previous_value = *REG32(SCALER_DISPCTRL);
+   unsigned int state = *REG32(SCALER_DISPSTAT);
+   logger->Write("hvs_initialize", LogNotice, "init value read = %8.8X; State = %8.8X", previous_value, state);
+
+  //timer_initialize(&ddr2_monitor);
+  //timer_set_periodic(&ddr2_monitor, 500, ddr2_checker, NULL);
+  *REG32(SCALER_DISPCTRL) &= ~SCALER_DISPCTRL_ENABLE; // disable HVS
+  *REG32(SCALER_DISPCTRL) = SCALER_DISPCTRL_ENABLE | 0x9a0dddff; // re-enable HVS
+
+   // Read again SCALER_DISPCTRL
+   previous_value = *REG32(SCALER_DISPCTRL);
+   state = *REG32(SCALER_DISPSTAT);
+   logger->Write("hvs_initialize", LogNotice, "After disable /enable, init value read = %8.8X; State = %8.8X", previous_value, state);
+
+
+  for (int i=0; i<3; i++) {
+    hvs_channels[i].dispctrl = SCALER_DISPCTRLX_RESET;
+    hvs_channels[i].dispctrl = 0;
+    hvs_channels[i].dispbkgnd = 0x1020202; // bit 24
+  }
+
+  hvs_channels[2].dispbase = BASE_BASE(0)      | BASE_TOP(0x7f0);
+  hvs_channels[1].dispbase = BASE_BASE(0xf10)  | BASE_TOP(0x50f0);
+  hvs_channels[0].dispbase = BASE_BASE(0x800) | BASE_TOP(0xf00);
+
+  hvs_wipe_displaylist();
+
+  *REG32(SCALER_DISPEOLN) = 0x40000000;
+}
