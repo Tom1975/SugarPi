@@ -10,7 +10,7 @@ WindowsManager::WindowsManager(CLogger* logger) :
    window_structures_size_[Test] = 1;
 
    // background
-   test_buffer_ = new unsigned char [1080*1920];
+   test_buffer_ = new unsigned char [1080*1920*4];
    windows_structures_[Test][0] = {
       /*.format_ = */      HVS_PIXEL_FORMAT_RGBA8888,
       /*.order_ = */       HVS_PIXEL_ORDER_RGBA,

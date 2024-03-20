@@ -25,6 +25,7 @@
 #define SCALER_CTL0_END                         1U << 31
 #define SCALER_CTL0_VALID                       1U << 30
 #define SCALER_CTL0_UNITY                       1U << 4
+#define SCALER5_CTL0_UNITY			               1U << 15
 
 #define SCALER_CTL0_RGBA_EXPAND_ZERO            0
 #define SCALER_CTL0_RGBA_EXPAND_LSB             1
@@ -43,7 +44,7 @@ static volatile unsigned int* dlist_memory = (unsigned int*) PBASE + 0x402000;
 
 /* We'll use a simple "double buffering" scheme to avoid writing out a new display list while
    one is still in-flight. */
-static const unsigned short dlist_buffer_count = 2;
+static const unsigned short dlist_buffer_count = 1;
 static const unsigned short dlist_offsets[] = { 0, 128 };
 static unsigned short next_dlist_buffer = 0;
 
@@ -336,6 +337,7 @@ void DisplayPiImp::SetWindowsConfiguration(WindowStructure* window_structure, in
    write_display_list(plane_, nb_windows_);
 }
 
+ 
 void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
 {
     /* Write out the words for this plane. Each word conveys some information to the HVS on how it
@@ -343,8 +345,8 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
 
     /* Control Word */
     const unsigned char number_of_words = 7;
-    unsigned int control_word = SCALER_CTL0_VALID              |        // denotes the start of a plane
-                            SCALER_CTL0_UNITY              |        // indicates no scaling
+    unsigned int control_word = SCALER_CTL0_VALID               |        // denotes the start of a plane
+                            SCALER5_CTL0_UNITY               |        // indicates no scaling
                             plane.pixel_order       << 13  |        // pixel order
                             number_of_words         << 24  |        // number of words in this plane
                             plane.format;                           // pixel format
@@ -362,6 +364,7 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
                                plane.height        << 16;
     WRITE_WORD(position_word_2);
 
+    
     /* Position Word 3: used by HVS */
     WRITE_WORD(0xDEADBEEF);
 
@@ -377,6 +380,9 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
     /* Pitch Word */
     unsigned int pitch_word = plane.pitch;
     WRITE_WORD(pitch_word);
+
+
+
 }
 
 void DisplayPiImp::write_display_list(hvs_plane planes[], unsigned char count)
@@ -421,6 +427,9 @@ void DisplayPiImp::UpdateWindowsConfiguration()
 
 void hvs_initialize(CLogger* logger);
 
+#define MMIO_BASE       0xFE000000      
+#define RNG_DATA        ((volatile unsigned int*)(MMIO_BASE+0x00104008)) 
+
 void DisplayPiImp::Loop()
 {
    loop_run = true;
@@ -428,18 +437,19 @@ void DisplayPiImp::Loop()
    
    hvs_initialize(logger_);
 
+   logger_->Write("DISPLAY TEST HVS", LogNotice, "hvs_initialize done");
    SetSetup (Test);
+   logger_->Write("DISPLAY TEST HVS", LogNotice, "Setup done");
+
    while (loop_run)
    {
-      
-#define MMIO_BASE       0x3F000000      
-#define RNG_DATA        ((volatile unsigned int*)(MMIO_BASE+0x00104008)) 
+      static unsigned int col = 0;
 
-    unsigned int* pixels = (unsigned int*) test_buffer_;
-    for (int i = 0; i < 1080*1920/4; ++i) {
-        pixels[i] = *RNG_DATA & 0xFFFFFFFF; // random color
+      unsigned int* pixels = (unsigned int*) test_buffer_;
+      for (int i = 0; i < 1080*1920; ++i) {
+           pixels[i] =  col++; // random color
     }
-   
+      logger_->Write("DISPLAY TEST HVS", LogNotice, "display frame ");
    }
 }
 
@@ -487,7 +497,7 @@ struct hvs_channel {
 
 #define CONTROL_END             (1<<31)
 
-#define SCALER_LIST_MEMORY  (BCM_PERIPH_BASE_VIRT + 0x402000)
+#define SCALER_LIST_MEMORY  (BCM_PERIPH_BASE_VIRT + 0x404000) //Pi4 = 4
 
 #define REG32(addr) ((volatile unsigned int *)(unsigned long long)(addr))
 
