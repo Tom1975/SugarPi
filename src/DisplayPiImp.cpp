@@ -16,7 +16,7 @@
 #define WIDTH_VIRTUAL_SCREEN 1024
 #define HEIGHT_VIRTUAL_SCREEN (288*2)
 
-#define PBASE 0x3F000000
+#define PBASE 0xFE000000
 
 #define SCALER_DISPLIST0                        (PBASE+0x00400020)
 #define SCALER_DISPLIST1                        (PBASE+0x00400024)
@@ -444,12 +444,15 @@ void DisplayPiImp::Loop()
 }
 
 #define BCM_PERIPH_BASE_PHYS (0x7e000000U)
-#define BCM_PERIPH_BASE_VIRT    (0x7e000000U)
+
+// ARM Base address (Pi4) - We start in the "Low Peripherals mode" by default. DON'T ADD arm_peri_high=1 in config.txt !!!
+#define BCM_PERIPH_BASE_VIRT    (0xFE000000U)   
 
 #define SCALER_BASE (BCM_PERIPH_BASE_VIRT + 0x400000)
 
 #define SCALER_DISPCTRL     (SCALER_BASE + 0x00)
 #define SCALER_DISPSTAT     (SCALER_BASE + 0x04)
+#define SCALER_DISPID       (SCALER_BASE + 0x08)
 #define SCALER_DISPCTRL_ENABLE  (1<<31)
 #define SCALER_DISPEOLN     (SCALER_BASE + 0x18)
 #define SCALER_DISPLIST0    (SCALER_BASE + 0x20)
@@ -512,6 +515,9 @@ void hvs_initialize(CLogger* logger) {
   //timer_set_periodic(&ddr2_monitor, 500, ddr2_checker, NULL);
   *REG32(SCALER_DISPCTRL) &= ~SCALER_DISPCTRL_ENABLE; // disable HVS
   *REG32(SCALER_DISPCTRL) = SCALER_DISPCTRL_ENABLE | 0x9a0dddff; // re-enable HVS
+
+   unsigned int dispid = *REG32(SCALER_DISPID);
+   logger->Write("hvs_initialize", LogNotice, "SCALER_DISPID : %8.8X => %8.8X", SCALER_DISPID, dispid);
 
    // Read again SCALER_DISPCTRL
    previous_value = *REG32(SCALER_DISPCTRL);
