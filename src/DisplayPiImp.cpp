@@ -39,7 +39,7 @@ static inline void put32 (uintptr nAddress, u32 nValue)
 	*(u32 volatile *) nAddress = nValue;
 }
 
-static volatile unsigned int* dlist_memory = (unsigned int*) 0x3F402000;
+static volatile unsigned int* dlist_memory = (unsigned int*) PBASE + 0x402000;
 
 /* We'll use a simple "double buffering" scheme to avoid writing out a new display list while
    one is still in-flight. */
