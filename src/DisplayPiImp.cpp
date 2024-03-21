@@ -10,22 +10,60 @@
 #include "res/button_1.h"
 #include "res/coolspot.h"
 
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 #define WIDTH_SCREEN 640
 #define HEIGHT_SCREEN 480
 
 #define WIDTH_VIRTUAL_SCREEN 1024
-#define HEIGHT_VIRTUAL_SCREEN (288*2)
+#define HEIGHT_VIRTUAL_SCREEN (288)
 
-#define PBASE 0xFE000000
 
-#define SCALER_DISPLIST0                        (PBASE+0x00400020)
-#define SCALER_DISPLIST1                        (PBASE+0x00400024)
-#define SCALER_DISPLIST2                        (PBASE+0x00400028)
 
+
+
+//////////////////////////////////////////////////////////////////////
+// Address for HVS
+//////////////////////////////////////////////////////////////////////
+
+#if RASPPI == 3
+   #define BCM_PERIPH_BASE_VIRT    (0x3F000000U)   
+#elif RASPPI == 4
+   // ARM Base address (Pi4) - We start in the "Low Peripherals mode" by default. DON'T ADD arm_peri_high=1 in config.txt !!!
+   #define BCM_PERIPH_BASE_VIRT    (0xFE000000U)   
+#else
+   #error "Raspberry target not supported"
+#endif
+
+// Addresses
+#define SCALER_BASE (BCM_PERIPH_BASE_VIRT + 0x400000)
+
+#define SCALER_DISPCTRL     (SCALER_BASE + 0x00)
+#define SCALER_DISPSTAT     (SCALER_BASE + 0x04)
+#define SCALER_DISPID       (SCALER_BASE + 0x08)
+#define SCALER_DISPEOLN     (SCALER_BASE + 0x18)
+#define SCALER_DISPLIST0    (SCALER_BASE + 0x20)
+#define SCALER_DISPLIST1    (SCALER_BASE + 0x24)
+#define SCALER_DISPLIST2    (SCALER_BASE + 0x28)
+#define SCALER_DISPCTRL0    (SCALER_BASE + 0x40)
+
+
+#if RASPPI == 3
+   #define SCALER_LIST_MEMORY  (SCALER_BASE + 0x2000)
+#elif RASPPI == 4
+   #define SCALER_LIST_MEMORY  (SCALER_BASE + 0x4000) //Pi4 = 4
+#endif
+
+// values
+#define SCALER_DISPCTRL_ENABLE  (1<<31)
 #define SCALER_CTL0_END                         1U << 31
 #define SCALER_CTL0_VALID                       1U << 30
-#define SCALER_CTL0_UNITY                       1U << 4
-#define SCALER5_CTL0_UNITY			               1U << 15
+
+#if RASPPI == 3
+   #define SCALER_CTL0_UNITY                    1U << 4
+#elif RASPPI == 4
+   #define SCALER5_CTL0_UNITY			            1U << 15
+#endif
 
 #define SCALER_CTL0_RGBA_EXPAND_ZERO            0
 #define SCALER_CTL0_RGBA_EXPAND_LSB             1
@@ -35,12 +73,38 @@
 #define SCALER_CTL0_HFLIP                       1U << 16
 #define SCALER_CTL0_VFLIP                       1U << 15
 
+#define SCALER_DISPCTRLX_ENABLE                 (1<<31)
+#define SCALER_DISPCTRLX_RESET                  (1<<30)
+#define SCALER_DISPCTRL_W(n)                    ((n & 0xfff) << 12)
+#define SCALER_DISPCTRL_H(n)                    (n & 0xfff)
+#define SCALER_DISPBKGND_AUTOHS                 (1<<31)
+#define SCALER_DISPBKGND_INTERLACE              (1<<30)
+#define SCALER_DISPBKGND_GAMMA                  (1<<29)
+#define SCALER_DISPBKGND_FILL                   (1<<24)
+
+#define BASE_BASE(n)                            (n & 0xffff)
+#define BASE_TOP(n)                             ((n & 0xffff) << 16)
+
+#define CONTROL_END                             (1<<31)
+
+#define REG32(addr) ((volatile unsigned int *)(unsigned long long)(addr))
+
+#define WRITE_WORD(word) (dlist_memory[(*offset)++] = word)
+
 static inline void put32 (uintptr nAddress, u32 nValue)
 {
 	*(u32 volatile *) nAddress = nValue;
 }
 
-static volatile unsigned int* dlist_memory = (unsigned int*) PBASE + 0x402000;
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+static unsigned int offset = 0;
+static volatile unsigned int* dlist_memory = (unsigned int*) SCALER_LIST_MEMORY; 
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
 /* We'll use a simple "double buffering" scheme to avoid writing out a new display list while
    one is still in-flight. */
@@ -48,23 +112,25 @@ static const unsigned short dlist_buffer_count = 1;
 static const unsigned short dlist_offsets[] = { 0, 128 };
 static unsigned short next_dlist_buffer = 0;
 
-#define WRITE_WORD(word) (dlist_memory[(*offset)++] = word)
-
 
 DisplayPiImp::DisplayPiImp(CLogger* logger, CTimer* timer) :DisplayPi(logger),
    timer_(timer),
-   frame_buffer_(nullptr),
    mutex_(TASK_LEVEL),
    current_structure_(nullptr)   
 {
+   for (int i = 0; i < NB_BUFFERS; i++)
+   {
+      cpc_buffers_ [i] = new unsigned char[WIDTH_VIRTUAL_SCREEN * HEIGHT_VIRTUAL_SCREEN * sizeof(unsigned int)];
+   }
+   windows_structures_[Test][0].buffer_ = cpc_buffers_;
 }
 
 DisplayPiImp::~DisplayPiImp()
 {
-   if ( frame_buffer_ != nullptr)
+   for (int i = 0; i < NB_BUFFERS; i++)
    {
-      delete frame_buffer_;
-   }   
+      delete []cpc_buffers_[i];
+   }
 }
 
 bool DisplayPiImp::Initialization()
@@ -131,22 +197,6 @@ bool DisplayPiImp::Initialization()
    logger_->Write("Display", LogNotice, "fXmin = %i, fXmax = %i, fYmin = %i, fYmax  = %i.", fXmin, fXmax, fYmin, fYmax);
    // - 
 
-
-   if ( frame_buffer_ != nullptr)
-   {
-      delete frame_buffer_;
-   }
-   frame_buffer_ = new CBcmFrameBuffer(WIDTH_SCREEN, HEIGHT_SCREEN, 32, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN * FRAME_BUFFER_SIZE);
-
-   if (!frame_buffer_ || !frame_buffer_->Initialize())
-   {
-      logger_->Write("Display", LogNotice, "Error creating framebuffer...");
-      return FALSE;
-   }
-      
-   frame_buffer_->SetVirtualOffset(143, 47);
-
-   
    DisplayPi::Initialization();
 
    return true;
@@ -155,6 +205,7 @@ bool DisplayPiImp::Initialization()
 void DisplayPiImp::InterruptionHandler()
 {
    // Sync interrupt
+   logger_->Write("Display", LogNotice, "InterruptionHandler");
 }
 
 void DisplayPiImp::InterruptStub (void *pParam)
@@ -214,13 +265,14 @@ const char* DisplayPiImp::GetInformations()
 // Wait VBL
 void DisplayPiImp::WaitVbl()
 {
-   frame_buffer_->WaitForVerticalSync();
+   //frame_buffer_->WaitForVerticalSync();
+   // TODO !
 }
 
 int DisplayPiImp::GetStride()
 {
    // TODO : stride is for int* !!!
-   return frame_buffer_->GetPitch() / sizeof(int);
+   return WIDTH_VIRTUAL_SCREEN * sizeof(unsigned int);
 }
 
 int DisplayPiImp::GetWidth()
@@ -235,15 +287,9 @@ int DisplayPiImp::GetHeight()
 
 int* DisplayPiImp::GetVideoBuffer(int y)
 {
-   if (!full_resolution_)
-   {
-      y = y * 2 + added_line_;
-   }
-
    if ( y > HEIGHT_VIRTUAL_SCREEN) y = HEIGHT_VIRTUAL_SCREEN-1;
-   y += buffer_used_ * HEIGHT_VIRTUAL_SCREEN;
 
-   return reinterpret_cast<int*>(frame_buffer_->GetBuffer() + y * frame_buffer_->GetPitch());
+   return reinterpret_cast<int*>( cpc_buffers_[0] +  y * WIDTH_VIRTUAL_SCREEN * sizeof(unsigned int));
 }
 
 void DisplayPiImp::SyncWithFrame (bool set)
@@ -283,18 +329,13 @@ void DisplayPiImp::SetFrame(int frame_index)
 void DisplayPiImp::Draw()
 {
    //logger_->Write("Display", LogNotice, "Draw");
-   frame_buffer_->WaitForVerticalSync();
+   //frame_buffer_->WaitForVerticalSync(); // TODO
 }
 
 void DisplayPiImp::ClearBuffer(int frame_index)
 {
    //logger_->Write("Display", LogNotice, "ClearBuffer : frame_index = %i", frame_index);
-   unsigned char* line = reinterpret_cast<unsigned char*>(frame_buffer_->GetBuffer() + frame_index * HEIGHT_VIRTUAL_SCREEN * frame_buffer_->GetPitch());
-   for (unsigned int count = 0; count < HEIGHT_VIRTUAL_SCREEN; count++)
-   {
-      memset(line, 0x0, WIDTH_VIRTUAL_SCREEN * 4);
-      line += frame_buffer_->GetPitch();
-   }
+   memset( cpc_buffers_[frame_index], 0x0, WIDTH_VIRTUAL_SCREEN * HEIGHT_VIRTUAL_SCREEN * sizeof(unsigned int));
    //logger_->Write("Display", LogNotice, "End clear");
 }
 
@@ -427,9 +468,6 @@ void DisplayPiImp::UpdateWindowsConfiguration()
 
 void hvs_initialize(CLogger* logger);
 
-#define MMIO_BASE       0xFE000000      
-#define RNG_DATA        ((volatile unsigned int*)(MMIO_BASE+0x00104008)) 
-
 void DisplayPiImp::Loop()
 {
    loop_run = true;
@@ -441,33 +479,29 @@ void DisplayPiImp::Loop()
    SetSetup (Test);
    logger_->Write("DISPLAY TEST HVS", LogNotice, "Setup done");
 
+   // Dump display list content
+   int off = 0;
+   for (int i = 0; i < 128; i += 4)
+   {
+      logger_->Write("Display list", LogNotice, "Offset : %i; value = %8.8X",  i, dlist_memory[i]);
+   }
+
+   logger_->Write("Loop", LogNotice, "Start loop");
    while (loop_run)
    {
       static unsigned int col = 0;
 
       unsigned int* pixels = (unsigned int*) test_buffer_;
       for (int i = 0; i < 1080*1920; ++i) {
-           pixels[i] =  col++; // random color
-    }
+           cpc_buffers_[0][i] =  col++; // random color
+      }
+      // wait
+      CTimer::Get ()->MsDelay (1000);
+      
       logger_->Write("DISPLAY TEST HVS", LogNotice, "display frame ");
    }
 }
 
-#define BCM_PERIPH_BASE_PHYS (0x7e000000U)
-
-// ARM Base address (Pi4) - We start in the "Low Peripherals mode" by default. DON'T ADD arm_peri_high=1 in config.txt !!!
-#define BCM_PERIPH_BASE_VIRT    (0xFE000000U)   
-
-#define SCALER_BASE (BCM_PERIPH_BASE_VIRT + 0x400000)
-
-#define SCALER_DISPCTRL     (SCALER_BASE + 0x00)
-#define SCALER_DISPSTAT     (SCALER_BASE + 0x04)
-#define SCALER_DISPID       (SCALER_BASE + 0x08)
-#define SCALER_DISPCTRL_ENABLE  (1<<31)
-#define SCALER_DISPEOLN     (SCALER_BASE + 0x18)
-#define SCALER_DISPLIST0    (SCALER_BASE + 0x20)
-#define SCALER_DISPLIST1    (SCALER_BASE + 0x24)
-#define SCALER_DISPLIST2    (SCALER_BASE + 0x28)
 
 
 struct hvs_channel {
@@ -481,25 +515,6 @@ struct hvs_channel {
   // 11:0   line
   volatile unsigned int dispbase;
 };
-
-#define SCALER_DISPCTRL0    (SCALER_BASE + 0x40)
-#define SCALER_DISPCTRLX_ENABLE (1<<31)
-#define SCALER_DISPCTRLX_RESET  (1<<30)
-#define SCALER_DISPCTRL_W(n)    ((n & 0xfff) << 12)
-#define SCALER_DISPCTRL_H(n)    (n & 0xfff)
-#define SCALER_DISPBKGND_AUTOHS    (1<<31)
-#define SCALER_DISPBKGND_INTERLACE (1<<30)
-#define SCALER_DISPBKGND_GAMMA     (1<<29)
-#define SCALER_DISPBKGND_FILL      (1<<24)
-
-#define BASE_BASE(n) (n & 0xffff)
-#define BASE_TOP(n) ((n & 0xffff) << 16)
-
-#define CONTROL_END             (1<<31)
-
-#define SCALER_LIST_MEMORY  (BCM_PERIPH_BASE_VIRT + 0x404000) //Pi4 = 4
-
-#define REG32(addr) ((volatile unsigned int *)(unsigned long long)(addr))
 
 //volatile unsigned int* dlist_memory;
 volatile struct hvs_channel *hvs_channels = (volatile struct hvs_channel*)REG32(SCALER_DISPCTRL0);

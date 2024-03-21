@@ -6,6 +6,8 @@
 
 #include "DisplayPi.h"
 
+#define NB_BUFFERS 3
+
 class DisplayPiImp : public DisplayPi
 {
 public:
@@ -40,9 +42,6 @@ public:
    virtual bool CanInsertBlackFrame() { return false; }
    virtual void Activate(bool on) {};
 
-   CBcmFrameBuffer* GetFrameBuffer() {
-      return frame_buffer_;   }
-
    void Lock() { mutex_.Acquire(); }
    void Unlock() { mutex_.Release(); }
 
@@ -62,7 +61,6 @@ protected:
    void InterruptionHandler();
 
    CTimer* timer_;
-   CBcmFrameBuffer*  frame_buffer_;
 
    CSpinLock   mutex_;
 
@@ -70,11 +68,14 @@ protected:
    WindowStructure * current_structure_;
    int nb_windows_;
 
+   // Framebuffers
+   unsigned char* cpc_buffers_[NB_BUFFERS];
+
    unsigned int current_buffer_;
    unsigned int animation_step_;
 
 
-      typedef struct {
+   typedef struct {
       hvs_pixel_format format;            // format of the pixels in the plane
       hvs_pixel_order pixel_order;        // order of the components in each pixel
       unsigned short start_x;                   // x position of the left of the plane
