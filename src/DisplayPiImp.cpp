@@ -100,7 +100,7 @@ static inline void put32 (uintptr nAddress, u32 nValue)
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 
-static unsigned int offset = 0;
+//static unsigned int offset = 0;
 static volatile unsigned int* dlist_memory = (unsigned int*) SCALER_LIST_MEMORY; 
 
 //////////////////////////////////////////////////////////////////////
@@ -373,7 +373,7 @@ void DisplayPiImp::SetWindowsConfiguration(WindowStructure* window_structure, in
       plane_[i].width = window_structure->w_;
       plane_[i].height = window_structure->h_;
       plane_[i].pitch = window_structure->pitch_;
-      plane_[i].framebuffer = window_structure->buffer_[current_buffer_];
+      plane_[i].framebuffer = window_structure->buffer_[0];
    }
    write_display_list(plane_, nb_windows_);
 }
@@ -413,7 +413,7 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
     /* This cast is okay, because the framebuffer pointer can always be held in 4 bytes
        even though we're on a 64 bit architecture. */
     unsigned int framebuffer = (unsigned int) (intptr)( plane.framebuffer);
-    WRITE_WORD(0x80000000 | framebuffer);
+    WRITE_WORD(/*0x80000000 */ framebuffer);
 
     /* Pointer Context: used by HVS */
     WRITE_WORD(0xDEADBEEF);
@@ -481,7 +481,7 @@ void DisplayPiImp::Loop()
 
    // Dump display list content
    int off = 0;
-   for (int i = 0; i < 128; i += 4)
+   for (int i = 0; i < 32; i += 1)
    {
       logger_->Write("Display list", LogNotice, "Offset : %i; value = %8.8X",  i, dlist_memory[i]);
    }
