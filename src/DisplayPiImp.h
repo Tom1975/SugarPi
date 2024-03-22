@@ -59,6 +59,7 @@ public:
 
 protected:
    void InterruptionHandler();
+   void DumpDisplayList();
 
    CTimer* timer_;
 

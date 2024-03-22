@@ -394,8 +394,8 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
     WRITE_WORD(control_word);
 
     /* Position Word 0 */
-    unsigned int position_word_0 = plane.start_x        << 0   |
-                               plane.start_y        << 12;
+    unsigned int position_word_0 = plane.start_x    << 0   |
+                               plane.start_y        << 16;  // 16 for y
     WRITE_WORD(position_word_0);
 
     /* Position Word 1: scaling, only if non-unity */
@@ -440,7 +440,9 @@ void DisplayPiImp::write_display_list(hvs_plane planes[], unsigned char count)
     dlist_memory[offset] = SCALER_CTL0_END;
 
     /* Tell the HVS where the display list is by writing to the SCALER_DISPLIST1 register. */
-    put32(SCALER_DISPLIST1, start);
+    put32(SCALER_DISPLIST0, start);
+    put32(SCALER_DISPLIST1, -1);
+    put32(SCALER_DISPLIST2, -1);
 
     next_dlist_buffer = (next_dlist_buffer + 1) % dlist_buffer_count;
 }
@@ -465,6 +467,23 @@ void DisplayPiImp::UpdateWindowsConfiguration()
    }
 }
 
+void DisplayPiImp::DumpDisplayList()
+{
+   for (int i = 0; i < 32; i += 1)
+   {
+      logger_->Write("Scaller registers", LogNotice, "Offset : %i; value = %8.8X",  i, *REG32(BCM_PERIPH_BASE_VIRT + 0x400000 + i*4 ));
+   }
+
+   logger_->Write("Display list", LogNotice, "SCALER_DISPLIST0 : value = %8.8X", *REG32(SCALER_DISPLIST0) );
+   logger_->Write("Display list", LogNotice, "SCALER_DISPLIST1 : value = %8.8X", *REG32(SCALER_DISPLIST1) );
+   logger_->Write("Display list", LogNotice, "SCALER_DISPLIST2 : value = %8.8X", *REG32(SCALER_DISPLIST2) );
+   
+   for (int i = 0; i < 32; i += 1)
+   {
+      logger_->Write("Display list", LogNotice, "Offset : %i; value = %8.8X",  i, dlist_memory[i]);
+   }
+
+}
 
 void hvs_initialize(CLogger* logger);
 
@@ -473,7 +492,11 @@ void DisplayPiImp::Loop()
    loop_run = true;
    logger_->Write("DISPLAY TEST HVS", LogNotice, "Testing HVS");
    
+   DumpDisplayList();
+   logger_->Write("DISPLAY TEST HVS", LogNotice, "Initialisation of HVS");
    hvs_initialize(logger_);
+   logger_->Write("DISPLAY TEST HVS", LogNotice, "Initialisation done");
+   DumpDisplayList();
 
    logger_->Write("DISPLAY TEST HVS", LogNotice, "hvs_initialize done");
    SetSetup (Test);
@@ -481,10 +504,7 @@ void DisplayPiImp::Loop()
 
    // Dump display list content
    int off = 0;
-   for (int i = 0; i < 32; i += 1)
-   {
-      logger_->Write("Display list", LogNotice, "Offset : %i; value = %8.8X",  i, dlist_memory[i]);
-   }
+   DumpDisplayList();
 
    logger_->Write("Loop", LogNotice, "Start loop");
    while (loop_run)
@@ -497,8 +517,6 @@ void DisplayPiImp::Loop()
       }
       // wait
       CTimer::Get ()->MsDelay (1000);
-      
-      logger_->Write("DISPLAY TEST HVS", LogNotice, "display frame ");
    }
 }
 
@@ -548,15 +566,6 @@ void hvs_initialize(CLogger* logger) {
    previous_value = *REG32(SCALER_DISPCTRL);
    state = *REG32(SCALER_DISPSTAT);
    logger->Write("hvs_initialize", LogNotice, "After disable /enable, init value read = %8.8X; State = %8.8X", previous_value, state);
-
-   for (int loop = 0; loop < 50; loop++)
-   {
-      previous_value = *REG32(SCALER_DISPCTRL);
-      state = *REG32(SCALER_DISPSTAT);
-      logger->Write("hvs_initialize", LogNotice, "pooling, init value read = %8.8X; State = %8.8X", previous_value, state);
-
-      for (int loop2 = 0; loop2 < 5000000; loop2++);
-   }
 
   for (int i=0; i<3; i++) {
     hvs_channels[i].dispctrl = SCALER_DISPCTRLX_RESET;
