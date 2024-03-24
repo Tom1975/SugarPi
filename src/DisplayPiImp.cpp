@@ -10,6 +10,8 @@
 #include "res/button_1.h"
 #include "res/coolspot.h"
 
+#include "CPCCore/CPCCoreEmu/rand.h"
+
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 #define WIDTH_SCREEN 640
@@ -386,16 +388,19 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
 
     /* Control Word */
     const unsigned char number_of_words = 7;
-    unsigned int control_word = SCALER_CTL0_VALID               |        // denotes the start of a plane
+    /*unsigned int control_word = SCALER_CTL0_VALID               |        // denotes the start of a plane
                             SCALER5_CTL0_UNITY               |        // indicates no scaling
                             plane.pixel_order       << 13  |        // pixel order
                             number_of_words         << 24  |        // number of words in this plane
                             plane.format;                           // pixel format
+                            */
+   unsigned int control_word = SCALER_CTL0_VALID | SCALER5_CTL0_UNITY | dlist_memory[(*offset)];
     WRITE_WORD(control_word);
 
     /* Position Word 0 */
     unsigned int position_word_0 = plane.start_x    << 0   |
                                plane.start_y        << 16;  // 16 for y
+   position_word_0 = SCALER_CTL0_VALID | SCALER5_CTL0_UNITY | dlist_memory[(*(offset))];
     WRITE_WORD(position_word_0);
 
     /* Position Word 1: scaling, only if non-unity */
@@ -403,6 +408,7 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
     /* Position Word 2 */
     unsigned int position_word_2 = plane.width         << 0    |
                                plane.height        << 16;
+   position_word_2 = SCALER_CTL0_VALID | SCALER5_CTL0_UNITY | dlist_memory[(*(offset+1))];                               
     WRITE_WORD(position_word_2);
 
     
@@ -413,7 +419,19 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
     /* This cast is okay, because the framebuffer pointer can always be held in 4 bytes
        even though we're on a 64 bit architecture. */
     unsigned int framebuffer = (unsigned int) (intptr)( plane.framebuffer);
-    WRITE_WORD(/*0x80000000 */ framebuffer);
+
+logger_->Write("SetSetup", LogNotice, "Preparing FB  ");  
+    void rand_init();
+logger_->Write("SetSetup", LogNotice, "rand_init done  ");    
+
+   unsigned char* fb = static_cast<unsigned char*> (plane.framebuffer);
+    for (int i = 0; i < 1920*1080*4; i++)
+    {
+      fb[i] = 0x23 + 1;
+    }
+    logger_->Write("SetSetup", LogNotice, "FB randomly filled");    
+
+    WRITE_WORD( 0x80000000 | framebuffer);
 
     /* Pointer Context: used by HVS */
     WRITE_WORD(0xDEADBEEF);
@@ -422,27 +440,27 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
     unsigned int pitch_word = plane.pitch;
     WRITE_WORD(pitch_word);
 
-
+   logger_->Write("SetSetup", LogNotice, "All done");    
 
 }
 
 void DisplayPiImp::write_display_list(hvs_plane planes[], unsigned char count)
 {
     unsigned short offset = dlist_offsets[next_dlist_buffer];
-    const unsigned short start = offset;
+    const unsigned short start = offset = 820;
 
     /* Write out each plane. */
-    for (unsigned char p = 0; p < count; p++) {
-        write_plane(&offset, planes[p]);
-    }
+    //for (unsigned char p = 0; p < count; p++) {
+        write_plane(&offset, planes[0]);
+    //}
 
     /* End Word */
     dlist_memory[offset] = SCALER_CTL0_END;
 
     /* Tell the HVS where the display list is by writing to the SCALER_DISPLIST1 register. */
-    put32(SCALER_DISPLIST0, start);
-    put32(SCALER_DISPLIST1, -1);
-    put32(SCALER_DISPLIST2, -1);
+    /*put32(SCALER_DISPLIST0, start);
+    put32(SCALER_DISPLIST1, 0);
+    put32(SCALER_DISPLIST2, 0);*/
 
     next_dlist_buffer = (next_dlist_buffer + 1) % dlist_buffer_count;
 }
@@ -483,6 +501,10 @@ void DisplayPiImp::DumpDisplayList()
       logger_->Write("Display list", LogNotice, "Offset : %i; value = %8.8X",  i, dlist_memory[i]);
    }
 
+   for (int i = 0; i < 32; i += 1)
+   {
+      logger_->Write("Display list #1", LogNotice, "Offset : %i; value = %8.8X",  (*REG32(SCALER_DISPLIST0))+i, dlist_memory[*REG32(SCALER_DISPLIST0)+i]);
+   }
 }
 
 void hvs_initialize(CLogger* logger);
@@ -492,9 +514,8 @@ void DisplayPiImp::Loop()
    loop_run = true;
    logger_->Write("DISPLAY TEST HVS", LogNotice, "Testing HVS");
    
-   DumpDisplayList();
    logger_->Write("DISPLAY TEST HVS", LogNotice, "Initialisation of HVS");
-   hvs_initialize(logger_);
+   //hvs_initialize(logger_);
    logger_->Write("DISPLAY TEST HVS", LogNotice, "Initialisation done");
    DumpDisplayList();
 
@@ -513,7 +534,7 @@ void DisplayPiImp::Loop()
 
       unsigned int* pixels = (unsigned int*) test_buffer_;
       for (int i = 0; i < 1080*1920; ++i) {
-           cpc_buffers_[0][i] =  col++; // random color
+           cpc_buffers_[0][i] =  0x84; // random color
       }
       // wait
       CTimer::Get ()->MsDelay (1000);
@@ -567,7 +588,7 @@ void hvs_initialize(CLogger* logger) {
    state = *REG32(SCALER_DISPSTAT);
    logger->Write("hvs_initialize", LogNotice, "After disable /enable, init value read = %8.8X; State = %8.8X", previous_value, state);
 
-  for (int i=0; i<3; i++) {
+  /*for (int i=0; i<3; i++) {
     hvs_channels[i].dispctrl = SCALER_DISPCTRLX_RESET;
     hvs_channels[i].dispctrl = 0;
     hvs_channels[i].dispbkgnd = 0x1020202; // bit 24
@@ -577,25 +598,16 @@ void hvs_initialize(CLogger* logger) {
   hvs_channels[2].dispbase = BASE_BASE(0)      | BASE_TOP(0x7f0);
   hvs_channels[1].dispbase = BASE_BASE(0xf10)  | BASE_TOP(0x50f0);
   hvs_channels[0].dispbase = BASE_BASE(0x800) | BASE_TOP(0xf00);
-
+*/
    logger->Write("hvs_initialize", LogNotice, "set dispbase done !");
    logger->Write("hvs_initialize", LogNotice, "set hvs_wipe_displaylist...");
    
-  hvs_wipe_displaylist();
+  //hvs_wipe_displaylist();
 
   logger->Write("hvs_initialize", LogNotice, "hvs_wipe_displaylist done !");
 
-  *REG32(SCALER_DISPEOLN) = 0x40000000;
+  //*REG32(SCALER_DISPEOLN) = 0x40000000;
 logger->Write("hvs_initialize", LogNotice, "SCALER_DISPEOLN set !");
-
-   for (int loop = 0; loop < 50; loop++)
-   {
-      previous_value = *REG32(SCALER_DISPCTRL);
-      state = *REG32(SCALER_DISPSTAT);
-      logger->Write("hvs_initialize", LogNotice, "pooling, init value read = %8.8X; State = %8.8X", previous_value, state);
-
-      for (int loop2 = 0; loop2 < 5000000; loop2++);
-   }  
 
  logger->Write("hvs_initialize", LogNotice, "TEST ENDED !");  
 }

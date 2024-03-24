@@ -90,7 +90,7 @@ protected:
    hvs_plane *plane_;
 
 
-   static void write_plane(unsigned short* offset, hvs_plane plane);
-   static void write_display_list(hvs_plane planes[], unsigned char count);
+   void write_plane(unsigned short* offset, hvs_plane plane);
+   void write_display_list(hvs_plane planes[], unsigned char count);
 
 };
