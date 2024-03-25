@@ -10,8 +10,6 @@
 #include "res/button_1.h"
 #include "res/coolspot.h"
 
-#include "CPCCore/CPCCoreEmu/rand.h"
-
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 #define WIDTH_SCREEN 640
@@ -19,10 +17,6 @@
 
 #define WIDTH_VIRTUAL_SCREEN 1024
 #define HEIGHT_VIRTUAL_SCREEN (288)
-
-
-
-
 
 //////////////////////////////////////////////////////////////////////
 // Address for HVS
@@ -123,6 +117,13 @@ DisplayPiImp::DisplayPiImp(CLogger* logger, CTimer* timer) :DisplayPi(logger),
    for (int i = 0; i < NB_BUFFERS; i++)
    {
       cpc_buffers_ [i] = new unsigned char[WIDTH_VIRTUAL_SCREEN * HEIGHT_VIRTUAL_SCREEN * sizeof(unsigned int)];
+      logger_->Write("Display", LogNotice, "cpc_buffers_ %i  =%8.8X ", i, cpc_buffers_ [i]);
+
+      int* ptr = (int*)cpc_buffers_ [i];
+      for (int x = 0; x < WIDTH_VIRTUAL_SCREEN * HEIGHT_VIRTUAL_SCREEN; x++)
+      {
+         ptr[x] = 0x80FF8080; // mostly red ?
+      }
    }
    windows_structures_[Test][0].buffer_ = cpc_buffers_;
 }
@@ -207,16 +208,19 @@ bool DisplayPiImp::Initialization()
 void DisplayPiImp::InterruptionHandler()
 {
    // Sync interrupt
-   logger_->Write("Display", LogNotice, "InterruptionHandler");
+   logger_->Write("DisplayPiImp", LogNotice, "InterruptionHandler");
 }
 
 void DisplayPiImp::InterruptStub (void *pParam)
 {
-   static_cast<DisplayPiImp*>(pParam)->InterruptionHandler();
+   DisplayPiImp* obj = static_cast<DisplayPiImp*>(pParam);
+   obj->logger_->Write("DisplayPiImp", LogNotice, "InterruptStub");
+   obj->InterruptionHandler();
 }
 
 bool DisplayPiImp::InitInterrupt(CInterruptSystem* interrupt)
 {
+   logger_->Write("DisplayPiImp", LogNotice, "InitInterrupt");
    // 3f : sync frame ??
    interrupt->ConnectIRQ (142, &InterruptStub, this);
    return true;
@@ -308,7 +312,8 @@ void DisplayPiImp::SyncWithFrame (bool set)
 
 void DisplayPiImp::SetFrame(int frame_index)
 {
-   if (current_structure_->nb_buffers_ == 0 )
+   // test with a single buffer
+   /*if (current_structure_->nb_buffers_ == 0 )
    {
       // Nothing to do
    }
@@ -322,7 +327,7 @@ void DisplayPiImp::SetFrame(int frame_index)
       // Update structure
       UpdateWindowsConfiguration();
    }
-
+   */
    //logger_->Write("Display", LogNotice, "SetFrame : 143, %i", 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
    //frame_buffer_->SetVirtualOffset(143, 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
 
@@ -337,7 +342,7 @@ void DisplayPiImp::Draw()
 void DisplayPiImp::ClearBuffer(int frame_index)
 {
    //logger_->Write("Display", LogNotice, "ClearBuffer : frame_index = %i", frame_index);
-   memset( cpc_buffers_[frame_index], 0x0, WIDTH_VIRTUAL_SCREEN * HEIGHT_VIRTUAL_SCREEN * sizeof(unsigned int));
+   //memset( cpc_buffers_[frame_index], 0x0, WIDTH_VIRTUAL_SCREEN * HEIGHT_VIRTUAL_SCREEN * sizeof(unsigned int));
    //logger_->Write("Display", LogNotice, "End clear");
 }
 
@@ -387,7 +392,6 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
        should interpret this plane. */
 
     /* Control Word */
-    const unsigned char number_of_words = 7;
     /*unsigned int control_word = SCALER_CTL0_VALID               |        // denotes the start of a plane
                             SCALER5_CTL0_UNITY               |        // indicates no scaling
                             plane.pixel_order       << 13  |        // pixel order
@@ -395,7 +399,7 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
                             plane.format;                           // pixel format
                             */
    unsigned int control_word = SCALER_CTL0_VALID | SCALER5_CTL0_UNITY | dlist_memory[(*offset)];
-    WRITE_WORD(control_word);
+   WRITE_WORD(control_word);
 
     /* Position Word 0 */
     unsigned int position_word_0 = plane.start_x    << 0   |
@@ -421,8 +425,6 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
     unsigned int framebuffer = (unsigned int) (intptr)( plane.framebuffer);
 
 logger_->Write("SetSetup", LogNotice, "Preparing FB  ");  
-    void rand_init();
-logger_->Write("SetSetup", LogNotice, "rand_init done  ");    
 
    unsigned char* fb = static_cast<unsigned char*> (plane.framebuffer);
     for (int i = 0; i < 1920*1080*4; i++)
@@ -447,7 +449,7 @@ logger_->Write("SetSetup", LogNotice, "rand_init done  ");
 void DisplayPiImp::write_display_list(hvs_plane planes[], unsigned char count)
 {
     unsigned short offset = dlist_offsets[next_dlist_buffer];
-    const unsigned short start = offset = 820;
+    offset = 820;
 
     /* Write out each plane. */
     //for (unsigned char p = 0; p < count; p++) {
@@ -524,20 +526,19 @@ void DisplayPiImp::Loop()
    logger_->Write("DISPLAY TEST HVS", LogNotice, "Setup done");
 
    // Dump display list content
-   int off = 0;
    DumpDisplayList();
 
    logger_->Write("Loop", LogNotice, "Start loop");
    while (loop_run)
    {
-      static unsigned int col = 0;
+      /*static unsigned int col = 0;
 
       unsigned int* pixels = (unsigned int*) test_buffer_;
       for (int i = 0; i < 1080*1920; ++i) {
            cpc_buffers_[0][i] =  0x84; // random color
-      }
+      }*/
       // wait
-      CTimer::Get ()->MsDelay (1000);
+      CTimer::Get ()->MsDelay (20);
    }
 }
 

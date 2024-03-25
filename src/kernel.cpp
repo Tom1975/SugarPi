@@ -85,7 +85,7 @@ boolean CKernel::Initialize (void)
    }
 
    m_Logger.Write("Kernel", LogNotice, "HVS TEST.");
-   display_->Loop();
+   //display_->Loop();
    m_Logger.Write("Kernel", LogNotice, "HVS TEST End.");
 
    
