@@ -424,14 +424,7 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
        even though we're on a 64 bit architecture. */
     unsigned int framebuffer = (unsigned int) (intptr)( plane.framebuffer);
 
-logger_->Write("SetSetup", LogNotice, "Preparing FB  ");  
-
-   unsigned char* fb = static_cast<unsigned char*> (plane.framebuffer);
-    for (int i = 0; i < 1920*1080*4; i++)
-    {
-      fb[i] = 0x23 + 1;
-    }
-    logger_->Write("SetSetup", LogNotice, "FB randomly filled");    
+   logger_->Write("SetSetup", LogNotice, "Preparing FB  ");  
 
     WRITE_WORD( 0x80000000 | framebuffer);
 
@@ -529,17 +522,17 @@ void DisplayPiImp::Loop()
    DumpDisplayList();
 
    logger_->Write("Loop", LogNotice, "Start loop");
-   while (loop_run)
+   /*while (loop_run)
    {
-      /*static unsigned int col = 0;
+      static unsigned int col = 0;
 
       unsigned int* pixels = (unsigned int*) test_buffer_;
       for (int i = 0; i < 1080*1920; ++i) {
            cpc_buffers_[0][i] =  0x84; // random color
-      }*/
+      }
       // wait
       CTimer::Get ()->MsDelay (20);
-   }
+   }*/
 }
 
 

@@ -113,7 +113,7 @@ void Emulation::Run(unsigned nCore)
 
             // Checkin for sound is ready
             CTimer::Get ()->MsDelay (50);
-            logger_->Write("CORE", LogNotice, "Waiting to start....");
+            //logger_->Write("CORE", LogNotice, "Waiting to start....");
          }
 #endif
          logger_->Write("CORE", LogNotice, "Main loop");
@@ -127,7 +127,7 @@ void Emulation::Run(unsigned nCore)
    case 2:
       // Display loop
       logger_->Write("CORE", LogNotice, "Display Loop started");
-      display_->Loop();
+      //display_->Loop();
       logger_->Write("CORE", LogNotice, "Display Loop Ended");
 
    default:
@@ -166,7 +166,7 @@ void Emulation::RunMainLoop()
             unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
             if (nCelsiusOldTmp != nCelsius)
             {
-               logger_->Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
+               //logger_->Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
                nCelsiusOldTmp = nCelsius;
             }
 

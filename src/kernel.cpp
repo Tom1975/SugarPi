@@ -166,6 +166,8 @@ TShutdownMode CKernel::Run (void)
 
    m_Logger.Write("Kernel", LogNotice, "Entering running mode...");
 
+   display_->Loop();
+
    //while (1)
    {
       emulation_.Run(0);

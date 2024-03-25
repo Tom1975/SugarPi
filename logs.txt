@@ -1,0 +1,1144 @@
+IHEX-F
+logger: Circle 0.0.1 started on Raspberry Pi 400 4GB (AArch64)
+logger: Revision code is c03130, compiler has been GCC 9.2.1
+Kernel: Initialisation done for log.
+Kernel: HVS TEST.
+Kernel: HVS TEST End.
+Display: EDID message :
+Display: EDID version : 1.3
+EDID: Dumping 0x80 bytes starting at 0x29B0EC
+EDID: B0EC: 00 FF FF FF FF FF FF 00-4C 2D 74 02 39 31 45 4D
+EDID: B0FC: 02 11 01 03 80 29 1A 87-2A DE 95 A3 54 4C 99 26
+EDID: B10C: 0F 50 54 BF EF 80 95 00-95 0F 81 80 81 40 71 4F
+EDID: B11C: 01 01 01 01 01 01 9A 29-A0 D0 51 84 22 30 50 98
+EDID: B12C: 36 00 9A 01 11 00 00 1C-00 00 00 FD 00 38 4B 1E
+EDID: B13C: 51 0E 00 0A 20 20 20 20-20 20 00 00 00 FC 00 53
+EDID: B14C: 79 6E 63 4D 61 73 74 65-72 0A 20 20 00 00 00 FF
+EDID: B15C: 00 48 53 41 50 31 30 34-31 38 31 0A 20 20 00 7F
+Display: Initialization...
+Display: PROPTAG_GET_DISPLAY_DIMENSIONS : 1440, 900.
+Display: NbPixelHeight % h : 900, 288.
+Display: Computed width/height : 3072, 864.
+Display: fXmin = 2147482832, fXmax = -2147481392, fYmin = 18, fYmax  = 882.
+Kernel: display initialization done : 1
+Kernel: Interrupt initialization done : 1
+DisplayPiImp: InitInterrupt
+00:00:00.66 timer: SpeedFactor is 1.51
+00:00:00.66 Kernel: Timer initialization done : 1
+00:00:01.20 emmc: Found a valid version 3.0x SD card
+00:00:01.20 Kernel: EMMC initialization done : 1
+00:00:01.21 Kernel: Initialisation of VCHIQ.....
+00:00:01.21 printk: vchiq: vchiq_init_state: slot_zero = 0x00580000, is_master = 0
+00:00:01.22 Kernel: Initialisationfoe Done : 1
+00:00:01.22 Kernel: Creating SoundPI
+00:00:01.23 Kernel: SoundPI Initialized !
+00:00:01.23 KeyboardPi: Loading game controller db...
+00:00:01.68 KeyboardPi: Loading game controller db... Done !
+00:00:01.79 pcie: Link up, 5.0 Gbps x1
+00:00:02.30 usbdev1: Device ven2109-3431, dev9-0-1 found (HS)
+00:00:02.30 usbdev1: Product: USB2.0 Hub
+00:00:02.35 usbdev1: Interface int9-0-0 found
+00:00:02.35 usbdev1: Using device/interface int9-0-0
+00:00:03.03 usbdev1-2: Device ven79-6 found (LS)
+00:00:03.04 usbdev1-2: Product: DragonRise Inc.   Generic   USB  Joystick
+00:00:03.10 usbdev1-2: Interface int3-0-0 found
+00:00:03.10 usbdev1-2: Using device/interface int3-0-0
+00:00:03.29 usbdev1-4: Device ven4d9-7 found (LS)
+00:00:03.32 usbdev1-4: Product:   Raspberry Pi Internal Keyboard
+00:00:03.37 usbdev1-4: Interface int3-1-1 found
+00:00:03.37 usbdev1-4: Using device/interface int3-1-1
+00:00:03.38 usbdev1-4: Interface int3-0-0 found
+00:00:03.40 usbdev1-4: Using device/interface int3-0-0
+00:00:03.41 usbhub: Port 2: Device configured
+00:00:03.43 usbhub: Port 4: Device configured
+00:00:03.43 xhciroot: Port 1: Device configured
+00:00:03.44 Keyboard: Initialize done.
+00:00:03.44 Keyboard: Gamepad : ven79-6 - VID=79; PID=6; bcdDevice = 107
+00:00:03.45 Keyboard: Gamepad 1: 12 Button(s) 1 Hat(s)
+00:00:03.45 KeyboardPi: Gamepad found in database !
+00:00:03.46 Keyboard: Use your gamepad controls!
+00:00:03.46 Kernel: Initialisation emulation.....
+00:00:03.46 Kernel: Emulation::Initialize
+00:00:03.47 Kernel: Creating Motherboard
+00:00:03.49 ConfigurationManager: OpenFile : SD:/Config/config
+00:00:03.50 ConfigurationManager: Read Config : [SETUP]
+sync=sound
+cart=SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+11 00 00 1C-00 00 00 FD 00 38 4B 1E
+00:00:03.51 ConfigurationManager: READ section SETUP
+00:00:03.52 ConfigurationManager: READ key/value sync=sound
+00:00:03.52 ConfigurationManager: end == std::string::npos
+00:00:03.53 ConfigurationManager: READ key : sync
+00:00:03.53 ConfigurationManager: READ value: sound
+00:00:03.54 ConfigurationManager: READ key/value cart=SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+00:00:03.55 ConfigurationManager: end == std::string::npos
+00:00:03.55 ConfigurationManager: READ key : cart
+00:00:03.55 ConfigurationManager: READ value: SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+00:00:03.58 Kernel: CMultiCoreSupport is going to initialize
+00:00:03.59 mcore: CPU core 1 started
+00:00:03.59 mcore: CPU core 2 started
+00:00:03.59 mcore: CPU core 3 started
+00:00:03.59 Kernel: Initialisation done done !
+00:00:03.59 CORE: Display Loop started
+00:00:03.59 mcore: CPU core 3 will halt now
+00:00:03.60 Kernel: Initialisation done. Waiting for CPUThrottle 1
+00:00:03.60 DISPLAY TEST HVS: Testing HVS
+00:00:03.62 DISPLAY TEST HVS: Initialisation of HVS
+00:00:03.62 Kernel: Initialisation done. Result = 1 - CPU Speed max value : 1800000000
+00:00:03.62 DISPLAY TEST HVS: Initialisation done
+00:00:03.63 Kernel: Entering running mode...
+00:00:03.63 Scaller registers: Offset : 0; value = 9A0DDDFF
+00:00:03.64 Sound: SoundMixer Started
+00:00:03.64 Scaller registers: Offset : 1; value =     2000
+00:00:03.64 CORE: Waiting to start....
+00:00:03.65 Scaller registers: Offset : 2; value = 64647276
+00:00:03.66 Scaller registers: Offset : 3; value =  1BF0000
+00:00:03.66 Scaller registers: Offset : 4; value =      1FF
+00:00:03.67 Scaller registers: Offset : 5; value =        0
+00:00:03.68 Scaller registers: Offset : 6; value = C000006C
+00:00:03.68 Scaller registers: Offset : 7; value =        0
+00:00:03.69 Scaller registers: Offset : 8; value =      334
+00:00:03.69 Scaller registers: Offset : 9; value =        0
+00:00:03.70 Scaller registers: Offset : 10; value =        0
+00:00:03.70 Scaller registers: Offset : 11; value = 42000000
+00:00:03.70 CORE: Waiting to start....
+00:00:03.71 Scaller registers: Offset : 12; value =      334
+00:00:03.71 CORE: Main loop
+00:00:03.72 Scaller registers: Offset : 13; value =       61
+00:00:03.72 Scaller registers: Offset : 14; value =        0
+00:00:03.73 Scaller registers: Offset : 15; value =        0
+00:00:03.73 Scaller registers: Offset : 16; value = 85A00384
+00:00:03.74 Scaller registers: Offset : 17; value = 81000000
+00:00:03.74 LOG: [ASIC ] : Unlocked
+00:00:03.75 Scaller registers: Offset : 18; value = A0D10308
+00:00:03.75 LOG:
+
+00:00:03.75 Scaller registers: Offset : 19; value = 87004B10
+00:00:03.76 Scaller registers: Offset : 20; value =        0
+00:00:03.77 Scaller registers: Offset : 21; value =  1000000
+00:00:03.77 Scaller registers: Offset : 22; value = 120741E0
+00:00:03.78 Scaller registers: Offset : 23; value = 4B000F10
+00:00:03.78 Scaller registers: Offset : 24; value =        0
+00:00:03.79 Scaller registers: Offset : 25; value =        0
+00:00:03.79 Scaller registers: Offset : 26; value = 10300000
+00:00:03.80 Scaller registers: Offset : 27; value =  F000000
+00:00:03.80 Scaller registers: Offset : 28; value =       FF
+00:00:03.81 Scaller registers: Offset : 29; value = 80000000
+00:00:03.82 Scaller registers: Offset : 30; value = 76543210
+00:00:03.82 Scaller registers: Offset : 31; value = FEDCBA98
+00:00:03.83 Display list: SCALER_DISPLIST0 : value =      334
+00:00:03.83 Display list: SCALER_DISPLIST1 : value =        0
+00:00:03.84 Display list: SCALER_DISPLIST2 : value =        0
+00:00:03.84 Display list: Offset : 0; value = 80000000
+00:00:03.85 Display list: Offset : 1; value =        0
+00:00:03.85 Display list: Offset : 2; value =        0
+00:00:03.86 Display list: Offset : 3; value =        0
+00:00:03.86 Display list: Offset : 4; value = 80000000
+00:00:03.87 Display list: Offset : 5; value =  1DF0000
+00:00:03.87 Display list: Offset : 6; value = C032C000
+00:00:03.88 Display list: Offset : 7; value = C0457600
+00:00:03.88 Display list: Offset : 8; value =      A00
+00:00:03.89 Display list: Offset : 9; value = 80000000
+00:00:03.89 Display list: Offset : 10; value = 80000000
+00:00:03.90 Display list: Offset : 11; value = 80000000
+00:00:03.90 Display list: Offset : 12; value = 80000000
+00:00:03.91 Display list: Offset : 13; value = 80000000
+00:00:03.91 Display list: Offset : 14; value = 80000000
+00:00:03.92 Display list: Offset : 15; value = 80000000
+00:00:03.92 Display list: Offset : 16; value = 80000000
+00:00:03.93 Display list: Offset : 17; value = 80000000
+00:00:03.93 Display list: Offset : 18; value = 80000000
+00:00:03.94 Display list: Offset : 19; value = 80000000
+00:00:03.94 heapallocator.cpp(191): stack[1] is 0x1459D4
+00:00:03.95 heapallocator.cpp(191): stack[11] is 0x13F568
+00:00:03.95 heapallocator.cpp(191): stack[17] is 0x13F024
+00:00:03.96 heapallocator.cpp(191): stack[25] is 0x13EF9C
+00:00:03.96 heapallocator.cpp(191): stack[45] is 0x84BAC
+00:00:03.97 heapallocator.cpp(191): assertion failed: pBlockHeader->nMagic == HEAP_BLOCK_MAGIC
+00:00:03.97 mcore: CPU core 0 will halt now
+00:00:03.97 mcore: CPU core 1 will halt now
+IHEX-F
+logger: Circle 0.0.1 started on Raspberry Pi 400 4GB (AArch64)
+logger: Revision code is c03130, compiler has been GCC 9.2.1
+Kernel: Initialisation done for log.
+Kernel: HVS TEST.
+Kernel: HVS TEST End.
+Display: EDID message :
+Display: EDID version : 1.3
+EDID: Dumping 0x80 bytes starting at 0x29B0EC
+EDID: B0EC: 00 FF FF FF FF FF FF 00-4C 2D 74 02 39 31 45 4D
+EDID: B0FC: 02 11 01 03 80 29 1A 87-2A DE 95 A3 54 4C 99 26
+EDID: B10C: 0F 50 54 BF EF 80 95 00-95 0F 81 80 81 40 71 4F
+EDID: B11C: 01 01 01 01 01 01 9A 29-A0 D0 51 84 22 30 50 98
+EDID: B12C: 36 00 9A 01 11 00 00 1C-00 00 00 FD 00 38 4B 1E
+EDID: B13C: 51 0E 00 0A 20 20 20 20-20 20 00 00 00 FC 00 53
+EDID: B14C: 79 6E 63 4D 61 73 74 65-72 0A 20 20 00 00 00 FF
+EDID: B15C: 00 48 53 41 50 31 30 34-31 38 31 0A 20 20 00 7F
+Display: Initialization...
+Display: PROPTAG_GET_DISPLAY_DIMENSIONS : 1440, 900.
+Display: NbPixelHeight % h : 900, 288.
+Display: Computed width/height : 3072, 864.
+Display: fXmin = 2147482832, fXmax = -2147481392, fYmin = 18, fYmax  = 882.
+Kernel: display initialization done : 1
+Kernel: Interrupt initialization done : 1
+DisplayPiImp: InitInterrupt
+00:00:00.66 timer: SpeedFactor is 1.51
+00:00:00.66 Kernel: Timer initialization done : 1
+00:00:01.20 emmc: Found a valid version 3.0x SD card
+00:00:01.20 Kernel: EMMC initialization done : 1
+00:00:01.21 Kernel: Initialisation of VCHIQ.....
+00:00:01.21 printk: vchiq: vchiq_init_state: slot_zero = 0x00580000, is_master = 0
+00:00:01.22 Kernel: Initialisationfoe Done : 1
+00:00:01.22 Kernel: Creating SoundPI
+00:00:01.23 Kernel: SoundPI Initialized !
+00:00:01.23 KeyboardPi: Loading game controller db...
+00:00:01.68 KeyboardPi: Loading game controller db... Done !
+00:00:01.78 pcie: Link up, 5.0 Gbps x1
+00:00:02.29 usbdev1: Device ven2109-3431, dev9-0-1 found (HS)
+00:00:02.30 usbdev1: Product: USB2.0 Hub
+00:00:02.35 usbdev1: Interface int9-0-0 found
+00:00:02.35 usbdev1: Using device/interface int9-0-0
+00:00:03.03 usbdev1-2: Device ven79-6 found (LS)
+00:00:03.04 usbdev1-2: Product: DragonRise Inc.   Generic   USB  Joystick
+00:00:03.10 usbdev1-2: Interface int3-0-0 found
+00:00:03.10 usbdev1-2: Using device/interface int3-0-0
+00:00:03.29 usbdev1-4: Device ven4d9-7 found (LS)
+00:00:03.32 usbdev1-4: Product:   Raspberry Pi Internal Keyboard
+00:00:03.37 usbdev1-4: Interface int3-1-1 found
+00:00:03.37 usbdev1-4: Using device/interface int3-1-1
+00:00:03.38 usbdev1-4: Interface int3-0-0 found
+00:00:03.40 usbdev1-4: Using device/interface int3-0-0
+00:00:03.41 usbhub: Port 2: Device configured
+00:00:03.43 usbhub: Port 4: Device configured
+00:00:03.43 xhciroot: Port 1: Device configured
+00:00:03.44 Keyboard: Initialize done.
+00:00:03.44 Keyboard: Gamepad : ven79-6 - VID=79; PID=6; bcdDevice = 107
+00:00:03.45 Keyboard: Gamepad 1: 12 Button(s) 1 Hat(s)
+00:00:03.45 KeyboardPi: Gamepad found in database !
+00:00:03.45 Keyboard: Use your gamepad controls!
+00:00:03.46 Kernel: Initialisation emulation.....
+00:00:03.46 Kernel: Emulation::Initialize
+00:00:03.47 Kernel: Creating Motherboard
+00:00:03.49 ConfigurationManager: OpenFile : SD:/Config/config
+00:00:03.50 ConfigurationManager: Read Config : [SETUP]
+sync=sound
+cart=SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+11 00 00 1C-00 00 00 FD 00 38 4B 1E
+00:00:03.51 ConfigurationManager: READ section SETUP
+00:00:03.52 ConfigurationManager: READ key/value sync=sound
+00:00:03.52 ConfigurationManager: end == std::string::npos
+00:00:03.53 ConfigurationManager: READ key : sync
+00:00:03.53 ConfigurationManager: READ value: sound
+00:00:03.54 ConfigurationManager: READ key/value cart=SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+00:00:03.54 ConfigurationManager: end == std::string::npos
+00:00:03.55 ConfigurationManager: READ key : cart
+00:00:03.55 ConfigurationManager: READ value: SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+00:00:03.58 Kernel: CMultiCoreSupport is going to initialize
+00:00:03.59 mcore: CPU core 1 started
+00:00:03.59 mcore: CPU core 2 started
+00:00:03.59 mcore: CPU core 3 started
+00:00:03.59 Kernel: Initialisation done done !
+00:00:03.59 CORE: Display Loop started
+00:00:03.59 mcore: CPU core 3 will halt now
+00:00:03.60 Kernel: Initialisation done. Waiting for CPUThrottle 1
+00:00:03.60 DISPLAY TEST HVS: Testing HVS
+00:00:03.62 DISPLAY TEST HVS: Initialisation of HVS
+00:00:03.62 Kernel: Initialisation done. Result = 1 - CPU Speed max value : 1800000000
+00:00:03.62 DISPLAY TEST HVS: Initialisation done
+00:00:03.63 Kernel: Entering running mode...
+00:00:03.63 Scaller registers: Offset : 0; value = 9A0DDDFF
+00:00:03.64 Sound: SoundMixer Started
+00:00:03.64 Scaller registers: Offset : 1; value =     2000
+00:00:03.64 CORE: Waiting to start....
+00:00:03.65 Scaller registers: Offset : 2; value = 64647276
+00:00:03.66 Scaller registers: Offset : 3; value =  1BF0000
+00:00:03.66 Scaller registers: Offset : 4; value =      1FF
+00:00:03.67 Scaller registers: Offset : 5; value =        0
+00:00:03.67 Scaller registers: Offset : 6; value = C000006C
+00:00:03.68 Scaller registers: Offset : 7; value =        0
+00:00:03.69 Scaller registers: Offset : 8; value =      334
+00:00:03.69 Scaller registers: Offset : 9; value =        0
+00:00:03.70 Scaller registers: Offset : 10; value =        0
+00:00:03.70 Scaller registers: Offset : 11; value = 42000000
+00:00:03.70 CORE: Waiting to start....
+00:00:03.71 Scaller registers: Offset : 12; value =      334
+00:00:03.71 CORE: Main loop
+00:00:03.72 Scaller registers: Offset : 13; value =       61
+00:00:03.72 Scaller registers: Offset : 14; value =        0
+00:00:03.73 Scaller registers: Offset : 15; value =        0
+00:00:03.73 Scaller registers: Offset : 16; value = 85A00384
+00:00:03.74 Scaller registers: Offset : 17; value = 81000000
+00:00:03.74 LOG: [ASIC ] : Unlocked
+00:00:03.74 Scaller registers: Offset : 18; value = A0D102CF
+00:00:03.75 LOG:
+
+00:00:03.75 Scaller registers: Offset : 19; value = 87004B10
+00:00:03.76 Scaller registers: Offset : 20; value =        0
+00:00:03.77 Scaller registers: Offset : 21; value =  1000000
+00:00:03.77 Scaller registers: Offset : 22; value = 118741E0
+00:00:03.78 Scaller registers: Offset : 23; value = 4B000F10
+00:00:03.78 Scaller registers: Offset : 24; value =        0
+00:00:03.79 Scaller registers: Offset : 25; value =        0
+00:00:03.79 Scaller registers: Offset : 26; value = 10300000
+00:00:03.80 Scaller registers: Offset : 27; value =  F000000
+00:00:03.80 Scaller registers: Offset : 28; value =       FF
+00:00:03.81 Scaller registers: Offset : 29; value = 80000000
+00:00:03.81 Scaller registers: Offset : 30; value = 76543210
+00:00:03.82 Scaller registers: Offset : 31; value = FEDCBA98
+00:00:03.83 Display list: SCALER_DISPLIST0 : value =      334
+00:00:03.83 Display list: SCALER_DISPLIST1 : value =        0
+00:00:03.84 Display list: SCALER_DISPLIST2 : value =        0
+00:00:03.84 Display list: Offset : 0; value = 80000000
+00:00:03.85 Display list: Offset : 1; value =        0
+00:00:03.85 Display list: Offset : 2; value =        0
+00:00:03.86 Display list: Offset : 3; value =        0
+00:00:03.86 Display list: Offset : 4; value = 80000000
+00:00:03.87 Display list: Offset : 5; value =  1DF0000
+00:00:03.87 Display list: Offset : 6; value = C032C000
+00:00:03.88 Display list: Offset : 7; value = C0457600
+00:00:03.88 Display list: Offset : 8; value =      A00
+00:00:03.89 Display list: Offset : 9; value = 80000000
+00:00:03.89 Display list: Offset : 10; value = 80000000
+00:00:03.90 Display list: Offset : 11; value = 80000000
+00:00:03.90 Display list: Offset : 12; value = 80000000
+00:00:03.91 Display list: Offset : 13; value = 80000000
+00:00:03.91 Display list: Offset : 14; value = 80000000
+00:00:03.91 Display list: Offset : 15; value = 80000000
+00:00:03.92 Display list: Offset : 16; value = 80000000
+00:00:03.92 Display list: Offset : 17; value = 80000000
+00:00:03.93 Display list: Offset : 18; value = 80000000
+00:00:03.93 Display list: Offset : 19; value = 80000000
+00:00:03.94 heapallocator.cpp(191): stack[1] is 0x1459D4
+00:00:03.94 heapallocator.cpp(191): stack[11] is 0x13F568
+00:00:03.95 heapallocator.cpp(191): stack[17] is 0x13F024
+00:00:03.95 heapallocator.cpp(191): stack[25] is 0x13EF9C
+00:00:03.96 heapallocator.cpp(191): stack[45] is 0x84BAC
+00:00:03.97 heapallocator.cpp(191): assertion failed: pBlockHeader->nMagic == HEAP_BLOCK_MAGIC
+00:00:03.97 mcore: CPU core 0 will halt now
+00:00:03.97 mcore: CPU core 1 will halt now
+IHEX-F
+logger: Circle 0.0.1 started on Raspberry Pi 400 4GB (AArch64)
+logger: Revision code is c03130, compiler has been GCC 9.2.1
+Kernel: Initialisation done for log.
+Kernel: HVS TEST.
+Kernel: HVS TEST End.
+Display: EDID message :
+Display: EDID version : 1.3
+EDID: Dumping 0x80 bytes starting at 0x29B0EC
+EDID: B0EC: 00 FF FF FF FF FF FF 00-4C 2D 74 02 39 31 45 4D
+EDID: B0FC: 02 11 01 03 80 29 1A 87-2A DE 95 A3 54 4C 99 26
+EDID: B10C: 0F 50 54 BF EF 80 95 00-95 0F 81 80 81 40 71 4F
+EDID: B11C: 01 01 01 01 01 01 9A 29-A0 D0 51 84 22 30 50 98
+EDID: B12C: 36 00 9A 01 11 00 00 1C-00 00 00 FD 00 38 4B 1E
+EDID: B13C: 51 0E 00 0A 20 20 20 20-20 20 00 00 00 FC 00 53
+EDID: B14C: 79 6E 63 4D 61 73 74 65-72 0A 20 20 00 00 00 FF
+EDID: B15C: 00 48 53 41 50 31 30 34-31 38 31 0A 20 20 00 7F
+Display: Initialization...
+Display: PROPTAG_GET_DISPLAY_DIMENSIONS : 1440, 900.
+Display: NbPixelHeight % h : 900, 288.
+Display: Computed width/height : 3072, 864.
+Display: fXmin = 2147482832, fXmax = -2147481392, fYmin = 18, fYmax  = 882.
+Kernel: display initialization done : 1
+Kernel: Interrupt initialization done : 1
+DisplayPiImp: InitInterrupt
+00:00:00.66 timer: SpeedFactor is 1.51
+00:00:00.66 Kernel: Timer initialization done : 1
+00:00:01.20 emmc: Found a valid version 3.0x SD card
+00:00:01.20 Kernel: EMMC initialization done : 1
+00:00:01.21 Kernel: Initialisation of VCHIQ.....
+00:00:01.21 printk: vchiq: vchiq_init_state: slot_zero = 0x00580000, is_master = 0
+00:00:01.22 Kernel: Initialisationfoe Done : 1
+00:00:01.22 Kernel: Creating SoundPI
+00:00:01.23 Kernel: SoundPI Initialized !
+00:00:01.23 KeyboardPi: Loading game controller db...
+00:00:01.68 KeyboardPi: Loading game controller db... Done !
+00:00:01.79 pcie: Link up, 5.0 Gbps x1
+00:00:02.30 usbdev1: Device ven2109-3431, dev9-0-1 found (HS)
+00:00:02.30 usbdev1: Product: USB2.0 Hub
+00:00:02.35 usbdev1: Interface int9-0-0 found
+00:00:02.35 usbdev1: Using device/interface int9-0-0
+00:00:03.03 usbdev1-2: Device ven79-6 found (LS)
+00:00:03.04 usbdev1-2: Product: DragonRise Inc.   Generic   USB  Joystick
+00:00:03.10 usbdev1-2: Interface int3-0-0 found
+00:00:03.10 usbdev1-2: Using device/interface int3-0-0
+00:00:03.29 usbdev1-4: Device ven4d9-7 found (LS)
+00:00:03.32 usbdev1-4: Product:   Raspberry Pi Internal Keyboard
+00:00:03.37 usbdev1-4: Interface int3-1-1 found
+00:00:03.37 usbdev1-4: Using device/interface int3-1-1
+00:00:03.38 usbdev1-4: Interface int3-0-0 found
+00:00:03.40 usbdev1-4: Using device/interface int3-0-0
+00:00:03.41 usbhub: Port 2: Device configured
+00:00:03.43 usbhub: Port 4: Device configured
+00:00:03.43 xhciroot: Port 1: Device configured
+00:00:03.44 Keyboard: Initialize done.
+00:00:03.44 Keyboard: Gamepad : ven79-6 - VID=79; PID=6; bcdDevice = 107
+00:00:03.45 Keyboard: Gamepad 1: 12 Button(s) 1 Hat(s)
+00:00:03.45 KeyboardPi: Gamepad found in database !
+00:00:03.46 Keyboard: Use your gamepad controls!
+00:00:03.46 Kernel: Initialisation emulation.....
+00:00:03.46 Kernel: Emulation::Initialize
+00:00:03.47 Kernel: Creating Motherboard
+00:00:03.49 ConfigurationManager: OpenFile : SD:/Config/config
+00:00:03.50 ConfigurationManager: Read Config : [SETUP]
+sync=sound
+cart=SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+11 00 00 1C-00 00 00 FD 00 38 4B 1E
+00:00:03.51 ConfigurationManager: READ section SETUP
+00:00:03.52 ConfigurationManager: READ key/value sync=sound
+00:00:03.52 ConfigurationManager: end == std::string::npos
+00:00:03.53 ConfigurationManager: READ key : sync
+00:00:03.53 ConfigurationManager: READ value: sound
+00:00:03.54 ConfigurationManager: READ key/value cart=SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+00:00:03.55 ConfigurationManager: end == std::string::npos
+00:00:03.55 ConfigurationManager: READ key : cart
+00:00:03.55 ConfigurationManager: READ value: SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+00:00:03.58 Kernel: CMultiCoreSupport is going to initialize
+00:00:03.59 mcore: CPU core 1 started
+00:00:03.59 mcore: CPU core 2 started
+00:00:03.59 mcore: CPU core 3 started
+00:00:03.59 Kernel: Initialisation done done !
+00:00:03.59 CORE: Display Loop started
+00:00:03.59 mcore: CPU core 3 will halt now
+00:00:03.60 Kernel: Initialisation done. Waiting for CPUThrottle 1
+00:00:03.60 CORE: Display Loop Ended
+00:00:03.62 mcore: CPU core 2 will halt now
+00:00:03.62 Kernel: Initialisation done. Result = 1 - CPU Speed max value : 1800000000
+00:00:03.63 Kernel: Entering running mode...
+00:00:03.63 DISPLAY TEST HVS: Testing HVS
+00:00:03.63 DISPLAY TEST HVS: Initialisation of HVS
+00:00:03.63 CORE: Waiting to start....
+00:00:03.64 DISPLAY TEST HVS: Initialisation done
+00:00:03.65 Scaller registers: Offset : 0; value = 9A0DDDFF
+00:00:03.65 Scaller registers: Offset : 1; value =     2000
+00:00:03.66 Scaller registers: Offset : 2; value = 64647276
+00:00:03.66 Scaller registers: Offset : 3; value =  1BF0000
+00:00:03.67 Scaller registers: Offset : 4; value =      1FF
+00:00:03.67 Scaller registers: Offset : 5; value =        0
+00:00:03.68 Scaller registers: Offset : 6; value = C000006C
+00:00:03.68 Scaller registers: Offset : 7; value =        0
+00:00:03.69 Scaller registers: Offset : 8; value =      334
+00:00:03.69 CORE: Waiting to start....
+00:00:03.69 Scaller registers: Offset : 9; value =        0
+00:00:03.70 Scaller registers: Offset : 10; value =        0
+00:00:03.71 Scaller registers: Offset : 11; value = 42000000
+00:00:03.71 Scaller registers: Offset : 12; value =      334
+00:00:03.72 Scaller registers: Offset : 13; value =       61
+00:00:03.72 Scaller registers: Offset : 14; value =        0
+00:00:03.73 Scaller registers: Offset : 15; value =        0
+00:00:03.74 Scaller registers: Offset : 16; value = 85A00384
+00:00:03.74 Scaller registers: Offset : 17; value = 81000000
+00:00:03.75 Scaller registers: Offset : 18; value = A0D102DA
+00:00:03.75 CORE: Waiting to start....
+00:00:03.75 Scaller registers: Offset : 19; value = 87004B10
+00:00:03.76 Scaller registers: Offset : 20; value =        0
+00:00:03.77 Scaller registers: Offset : 21; value =  1000000
+00:00:03.77 Scaller registers: Offset : 22; value = 122741E0
+00:00:03.78 Scaller registers: Offset : 23; value = 4B000F10
+00:00:03.78 Scaller registers: Offset : 24; value =        0
+00:00:03.79 Scaller registers: Offset : 25; value =        0
+00:00:03.79 Scaller registers: Offset : 26; value = 10300000
+00:00:03.80 Scaller registers: Offset : 27; value =  F000000
+00:00:03.80 Scaller registers: Offset : 28; value =       FF
+00:00:03.80 CORE: Waiting to start....
+00:00:03.81 Scaller registers: Offset : 29; value = 80000000
+00:00:03.82 Scaller registers: Offset : 30; value = 76543210
+00:00:03.82 Scaller registers: Offset : 31; value = FEDCBA98
+00:00:03.83 Display list: SCALER_DISPLIST0 : value =      334
+00:00:03.83 Display list: SCALER_DISPLIST1 : value =        0
+00:00:03.84 Display list: SCALER_DISPLIST2 : value =        0
+00:00:03.85 Display list: Offset : 0; value = 80000000
+00:00:03.85 Display list: Offset : 1; value =        0
+00:00:03.85 Display list: Offset : 2; value =        0
+00:00:03.86 Display list: Offset : 3; value =        0
+00:00:03.86 CORE: Waiting to start....
+00:00:03.86 Display list: Offset : 4; value = 80000000
+00:00:03.87 Display list: Offset : 5; value =  1DF0000
+00:00:03.88 Display list: Offset : 6; value = C032C000
+00:00:03.88 Display list: Offset : 7; value = C0457600
+00:00:03.89 Display list: Offset : 8; value =      A00
+00:00:03.89 Display list: Offset : 9; value = 80000000
+00:00:03.90 Display list: Offset : 10; value = 80000000
+00:00:03.90 Display list: Offset : 11; value = 80000000
+00:00:03.91 Display list: Offset : 12; value = 80000000
+00:00:03.91 Display list: Offset : 13; value = 80000000
+00:00:03.92 Display list: Offset : 14; value = 80000000
+00:00:03.92 CORE: Waiting to start....
+00:00:03.92 Display list: Offset : 15; value = 80000000
+00:00:03.93 Display list: Offset : 16; value = 80000000
+00:00:03.94 Display list: Offset : 17; value = 80000000
+00:00:03.94 Display list: Offset : 18; value = 80000000
+00:00:03.95 Display list: Offset : 19; value = 80000000
+00:00:03.95 Display list: Offset : 20; value = 80000000
+00:00:03.96 Display list: Offset : 21; value = 80000000
+00:00:03.96 Display list: Offset : 22; value = 80000000
+00:00:03.97 Display list: Offset : 23; value = 80000000
+00:00:03.97 Display list: Offset : 24; value = 80000000
+00:00:03.97 Display list: Offset : 25; value = 80000000
+00:00:03.97 CORE: Waiting to start....
+00:00:03.98 Display list: Offset : 26; value = 80000000
+00:00:03.99 Display list: Offset : 27; value = 80000000
+00:00:03.99 Display list: Offset : 28; value = 80000000
+00:00:04.00 Display list: Offset : 29; value = 80000000
+00:00:04.00 Display list: Offset : 30; value = 80000000
+00:00:04.01 Display list: Offset : 31; value = 80000000
+00:00:04.01 Display list #1: Offset : 820; value = 50805804
+00:00:04.02 Display list #1: Offset : 821; value =      10E
+00:00:04.02 Display list #1: Offset : 822; value =     FFF0
+00:00:04.03 Display list #1: Offset : 823; value =  3840384
+00:00:04.03 CORE: Waiting to start....
+00:00:04.03 Display list #1: Offset : 824; value =    20002
+00:00:04.04 Display list #1: Offset : 825; value =    10000
+00:00:04.05 Display list #1: Offset : 826; value = FEBFA000
+00:00:04.05 Display list #1: Offset : 827; value = FEBFA020
+00:00:04.06 Display list #1: Offset : 828; value =       20
+00:00:04.06 Display list #1: Offset : 829; value =        8
+00:00:04.07 Display list #1: Offset : 830; value =        0
+00:00:04.07 Display list #1: Offset : 831; value = 40009060
+00:00:04.08 Display list #1: Offset : 832; value = 40009060
+00:00:04.09 Display list #1: Offset : 833; value = 4000AA30
+00:00:04.09 CORE: Waiting to start....
+00:00:04.09 Display list #1: Offset : 834; value =      FF4
+00:00:04.10 Display list #1: Offset : 835; value =      FF4
+00:00:04.10 Display list #1: Offset : 836; value = 80000000
+00:00:04.11 Display list #1: Offset : 837; value = 80000000
+00:00:04.12 Display list #1: Offset : 838; value = 80000000
+00:00:04.12 Display list #1: Offset : 839; value = 80000000
+00:00:04.13 Display list #1: Offset : 840; value = 80000000
+00:00:04.13 Display list #1: Offset : 841; value = 80000000
+00:00:04.14 Display list #1: Offset : 842; value = 80000000
+00:00:04.14 Display list #1: Offset : 843; value = 80000000
+00:00:04.14 CORE: Waiting to start....
+00:00:04.15 Display list #1: Offset : 844; value = 80000000
+00:00:04.16 Display list #1: Offset : 845; value = 80000000
+00:00:04.16 Display list #1: Offset : 846; value = 80000000
+00:00:04.17 Display list #1: Offset : 847; value = 80000000
+00:00:04.17 Display list #1: Offset : 848; value = 80000000
+00:00:04.18 Display list #1: Offset : 849; value = 80000000
+00:00:04.18 Display list #1: Offset : 850; value = 80000000
+00:00:04.19 Display list #1: Offset : 851; value = 80000000
+00:00:04.19 DISPLAY TEST HVS: hvs_initialize done
+00:00:04.20 SetSetup: Preparing FB
+00:00:04.20 CORE: Waiting to start....
+00:00:04.20 SetSetup: FB randomly filled
+IHEX-F
+logger: Circle 0.0.1 started on Raspberry Pi 400 4GB (AArch64)
+logger: Revision code is c03130, compiler has been GCC 9.2.1
+Kernel: Initialisation done for log.
+Kernel: HVS TEST.
+Kernel: HVS TEST End.
+Display: EDID message :
+Display: EDID version : 1.3
+EDID: Dumping 0x80 bytes starting at 0x29B0EC
+EDID: B0EC: 00 FF FF FF FF FF FF 00-4C 2D 74 02 39 31 45 4D
+EDID: B0FC: 02 11 01 03 80 29 1A 87-2A DE 95 A3 54 4C 99 26
+EDID: B10C: 0F 50 54 BF EF 80 95 00-95 0F 81 80 81 40 71 4F
+EDID: B11C: 01 01 01 01 01 01 9A 29-A0 D0 51 84 22 30 50 98
+EDID: B12C: 36 00 9A 01 11 00 00 1C-00 00 00 FD 00 38 4B 1E
+EDID: B13C: 51 0E 00 0A 20 20 20 20-20 20 00 00 00 FC 00 53
+EDID: B14C: 79 6E 63 4D 61 73 74 65-72 0A 20 20 00 00 00 FF
+EDID: B15C: 00 48 53 41 50 31 30 34-31 38 31 0A 20 20 00 7F
+Display: Initialization...
+Display: PROPTAG_GET_DISPLAY_DIMENSIONS : 1440, 900.
+Display: NbPixelHeight % h : 900, 288.
+Display: Computed width/height : 3072, 864.
+Display: fXmin = 2147482832, fXmax = -2147481392, fYmin = 18, fYmax  = 882.
+Kernel: display initialization done : 1
+Kernel: Interrupt initialization done : 1
+DisplayPiImp: InitInterrupt
+00:00:00.66 timer: SpeedFactor is 1.51
+00:00:00.66 Kernel: Timer initialization done : 1
+00:00:01.20 emmc: Found a valid version 3.0x SD card
+00:00:01.20 Kernel: EMMC initialization done : 1
+00:00:01.21 Kernel: Initialisation of VCHIQ.....
+00:00:01.21 printk: vchiq: vchiq_init_state: slot_zero = 0x00580000, is_master = 0
+00:00:01.22 Kernel: Initialisationfoe Done : 1
+00:00:01.22 Kernel: Creating SoundPI
+00:00:01.23 Kernel: SoundPI Initialized !
+00:00:01.23 KeyboardPi: Loading game controller db...
+00:00:01.68 KeyboardPi: Loading game controller db... Done !
+00:00:01.79 pcie: Link up, 5.0 Gbps x1
+00:00:02.30 usbdev1: Device ven2109-3431, dev9-0-1 found (HS)
+00:00:02.30 usbdev1: Product: USB2.0 Hub
+00:00:02.35 usbdev1: Interface int9-0-0 found
+00:00:02.36 usbdev1: Using device/interface int9-0-0
+00:00:03.03 usbdev1-2: Device ven79-6 found (LS)
+00:00:03.04 usbdev1-2: Product: DragonRise Inc.   Generic   USB  Joystick
+00:00:03.10 usbdev1-2: Interface int3-0-0 found
+00:00:03.10 usbdev1-2: Using device/interface int3-0-0
+00:00:03.29 usbdev1-4: Device ven4d9-7 found (LS)
+00:00:03.32 usbdev1-4: Product:   Raspberry Pi Internal Keyboard
+00:00:03.37 usbdev1-4: Interface int3-1-1 found
+00:00:03.38 usbdev1-4: Using device/interface int3-1-1
+00:00:03.38 usbdev1-4: Interface int3-0-0 found
+00:00:03.40 usbdev1-4: Using device/interface int3-0-0
+00:00:03.41 usbhub: Port 2: Device configured
+00:00:03.43 usbhub: Port 4: Device configured
+00:00:03.44 xhciroot: Port 1: Device configured
+00:00:03.44 Keyboard: Initialize done.
+00:00:03.44 Keyboard: Gamepad : ven79-6 - VID=79; PID=6; bcdDevice = 107
+00:00:03.45 Keyboard: Gamepad 1: 12 Button(s) 1 Hat(s)
+00:00:03.45 KeyboardPi: Gamepad found in database !
+00:00:03.46 Keyboard: Use your gamepad controls!
+00:00:03.46 Kernel: Initialisation emulation.....
+00:00:03.47 Kernel: Emulation::Initialize
+00:00:03.47 Kernel: Creating Motherboard
+00:00:03.49 ConfigurationManager: OpenFile : SD:/Config/config
+00:00:03.50 ConfigurationManager: Read Config : [SETUP]
+sync=sound
+cart=SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+11 00 00 1C-00 00 00 FD 00 38 4B 1E
+00:00:03.51 ConfigurationManager: READ section SETUP
+00:00:03.52 ConfigurationManager: READ key/value sync=sound
+00:00:03.52 ConfigurationManager: end == std::string::npos
+00:00:03.53 ConfigurationManager: READ key : sync
+00:00:03.53 ConfigurationManager: READ value: sound
+00:00:03.54 ConfigurationManager: READ key/value cart=SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+00:00:03.55 ConfigurationManager: end == std::string::npos
+00:00:03.55 ConfigurationManager: READ key : cart
+00:00:03.56 ConfigurationManager: READ value: SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+00:00:03.58 Kernel: CMultiCoreSupport is going to initialize
+00:00:03.59 mcore: CPU core 1 started
+00:00:03.59 mcore: CPU core 2 started
+00:00:03.59 mcore: CPU core 3 started
+00:00:03.59 Kernel: Initialisation done done !
+00:00:03.59 CORE: Display Loop started
+00:00:03.59 mcore: CPU core 3 will halt now
+00:00:03.60 Kernel: Initialisation done. Waiting for CPUThrottle 1
+00:00:03.60 CORE: Display Loop Ended
+00:00:03.62 mcore: CPU core 2 will halt now
+00:00:03.62 Kernel: Initialisation done. Result = 1 - CPU Speed max value : 1800000000
+00:00:03.63 Kernel: Entering running mode...
+00:00:03.63 DISPLAY TEST HVS: Testing HVS
+00:00:03.64 DISPLAY TEST HVS: Initialisation of HVS
+00:00:03.64 DISPLAY TEST HVS: Initialisation done
+00:00:03.65 Scaller registers: Offset : 0; value = 9A0DDDFF
+00:00:03.65 Scaller registers: Offset : 1; value =     2000
+00:00:03.66 Scaller registers: Offset : 2; value = 64647276
+00:00:03.66 Scaller registers: Offset : 3; value =  1BF0000
+00:00:03.67 Scaller registers: Offset : 4; value =      1FF
+00:00:03.67 Scaller registers: Offset : 5; value =        0
+00:00:03.68 Scaller registers: Offset : 6; value = C000006C
+00:00:03.68 Scaller registers: Offset : 7; value =        0
+00:00:03.69 Scaller registers: Offset : 8; value =      334
+00:00:03.69 Scaller registers: Offset : 9; value =        0
+00:00:03.70 Scaller registers: Offset : 10; value =        0
+00:00:03.70 Scaller registers: Offset : 11; value = 42000000
+00:00:03.71 Scaller registers: Offset : 12; value =      334
+00:00:03.71 Scaller registers: Offset : 13; value =       61
+00:00:03.72 Scaller registers: Offset : 14; value =        0
+00:00:03.73 Scaller registers: Offset : 15; value =        0
+00:00:03.73 Scaller registers: Offset : 16; value = 85A00384
+00:00:03.74 Scaller registers: Offset : 17; value = 81000000
+00:00:03.74 Scaller registers: Offset : 18; value = A0D10283
+00:00:03.75 Scaller registers: Offset : 19; value = 87004B10
+00:00:03.75 Scaller registers: Offset : 20; value =        0
+00:00:03.76 Scaller registers: Offset : 21; value =  1000000
+00:00:03.76 Scaller registers: Offset : 22; value = 105741E0
+00:00:03.77 Scaller registers: Offset : 23; value = 4B000F10
+00:00:03.77 Scaller registers: Offset : 24; value =        0
+00:00:03.78 Scaller registers: Offset : 25; value =        0
+00:00:03.78 Scaller registers: Offset : 26; value = 10300000
+00:00:03.79 Scaller registers: Offset : 27; value =  F000000
+00:00:03.80 Scaller registers: Offset : 28; value =       FF
+00:00:03.80 Scaller registers: Offset : 29; value = 80000000
+00:00:03.81 Scaller registers: Offset : 30; value = 76543210
+00:00:03.81 Scaller registers: Offset : 31; value = FEDCBA98
+00:00:03.82 Display list: SCALER_DISPLIST0 : value =      334
+00:00:03.82 Display list: SCALER_DISPLIST1 : value =        0
+00:00:03.83 Display list: SCALER_DISPLIST2 : value =        0
+00:00:03.83 Display list: Offset : 0; value = 80000000
+00:00:03.84 Display list: Offset : 1; value =        0
+00:00:03.84 Display list: Offset : 2; value =        0
+00:00:03.85 Display list: Offset : 3; value =        0
+00:00:03.85 Display list: Offset : 4; value = 80000000
+00:00:03.86 Display list: Offset : 5; value =  1DF0000
+00:00:03.86 Display list: Offset : 6; value = C032C000
+00:00:03.87 Display list: Offset : 7; value = C0457600
+00:00:03.87 Display list: Offset : 8; value =      A00
+00:00:03.88 Display list: Offset : 9; value = 80000000
+00:00:03.88 Display list: Offset : 10; value = 80000000
+00:00:03.89 Display list: Offset : 11; value = 80000000
+00:00:03.89 Display list: Offset : 12; value = 80000000
+00:00:03.90 Display list: Offset : 13; value = 80000000
+00:00:03.90 Display list: Offset : 14; value = 80000000
+00:00:03.91 Display list: Offset : 15; value = 80000000
+00:00:03.91 Display list: Offset : 16; value = 80000000
+00:00:03.92 Display list: Offset : 17; value = 80000000
+00:00:03.92 Display list: Offset : 18; value = 80000000
+00:00:03.93 Display list: Offset : 19; value = 80000000
+00:00:03.93 Display list: Offset : 20; value = 80000000
+00:00:03.94 Display list: Offset : 21; value = 80000000
+00:00:03.94 Display list: Offset : 22; value = 80000000
+00:00:03.95 Display list: Offset : 23; value = 80000000
+00:00:03.95 Display list: Offset : 24; value = 80000000
+00:00:03.96 Display list: Offset : 25; value = 80000000
+00:00:03.96 Display list: Offset : 26; value = 80000000
+00:00:03.97 Display list: Offset : 27; value = 80000000
+00:00:03.97 Display list: Offset : 28; value = 80000000
+00:00:03.98 Display list: Offset : 29; value = 80000000
+00:00:03.98 Display list: Offset : 30; value = 80000000
+00:00:03.99 Display list: Offset : 31; value = 80000000
+00:00:03.99 Display list #1: Offset : 820; value = 50805804
+00:00:04.00 Display list #1: Offset : 821; value =      10E
+00:00:04.00 Display list #1: Offset : 822; value =     FFF0
+00:00:04.01 Display list #1: Offset : 823; value =  3840384
+00:00:04.01 Display list #1: Offset : 824; value =    20002
+00:00:04.02 Display list #1: Offset : 825; value =    10000
+00:00:04.02 Display list #1: Offset : 826; value = FEBFA000
+00:00:04.03 Display list #1: Offset : 827; value = FEBFA020
+00:00:04.03 Display list #1: Offset : 828; value =       20
+00:00:04.04 Display list #1: Offset : 829; value =        8
+00:00:04.04 Display list #1: Offset : 830; value =        0
+00:00:04.05 Display list #1: Offset : 831; value = 40009060
+00:00:04.05 Display list #1: Offset : 832; value = 40009060
+00:00:04.06 Display list #1: Offset : 833; value = C00004B0
+00:00:04.07 Display list #1: Offset : 834; value =      FF4
+00:00:04.07 Display list #1: Offset : 835; value =      FF4
+00:00:04.08 Display list #1: Offset : 836; value = 80000000
+00:00:04.08 Display list #1: Offset : 837; value = 80000000
+00:00:04.09 Display list #1: Offset : 838; value = 80000000
+00:00:04.09 Display list #1: Offset : 839; value = 80000000
+00:00:04.10 Display list #1: Offset : 840; value = 80000000
+00:00:04.10 Display list #1: Offset : 841; value = 80000000
+00:00:04.11 Display list #1: Offset : 842; value = 80000000
+00:00:04.11 Display list #1: Offset : 843; value = 80000000
+00:00:04.12 Display list #1: Offset : 844; value = 80000000
+00:00:04.12 Display list #1: Offset : 845; value = 80000000
+00:00:04.13 Display list #1: Offset : 846; value = 80000000
+00:00:04.13 Display list #1: Offset : 847; value = 80000000
+00:00:04.14 Display list #1: Offset : 848; value = 80000000
+00:00:04.14 Display list #1: Offset : 849; value = 80000000
+00:00:04.15 Display list #1: Offset : 850; value = 80000000
+00:00:04.16 Display list #1: Offset : 851; value = 80000000
+00:00:04.16 DISPLAY TEST HVS: hvs_initialize done
+00:00:04.16 SetSetup: Preparing FB
+00:00:04.17 SetSetup: All done
+00:00:04.17 DISPLAY TEST HVS: Setup done
+00:00:04.17 Scaller registers: Offset : 0; value = 9A0DDDFF
+00:00:04.18 Scaller registers: Offset : 1; value =        0
+00:00:04.19 Scaller registers: Offset : 2; value = 64647276
+00:00:04.19 Scaller registers: Offset : 3; value =  1BF0000
+00:00:04.20 Scaller registers: Offset : 4; value =      1FF
+00:00:04.20 Scaller registers: Offset : 5; value =        0
+00:00:04.21 Scaller registers: Offset : 6; value = C000006C
+00:00:04.21 Scaller registers: Offset : 7; value =        0
+00:00:04.22 Scaller registers: Offset : 8; value =      334
+00:00:04.22 Scaller registers: Offset : 9; value =        0
+00:00:04.23 Scaller registers: Offset : 10; value =        0
+00:00:04.23 Scaller registers: Offset : 11; value = 42000004
+00:00:04.24 Scaller registers: Offset : 12; value =      334
+00:00:04.24 Scaller registers: Offset : 13; value =       61
+00:00:04.25 Scaller registers: Offset : 14; value =        0
+00:00:04.25 Scaller registers: Offset : 15; value =        0
+00:00:04.26 Scaller registers: Offset : 16; value = 85A00384
+00:00:04.27 Scaller registers: Offset : 17; value = 81000000
+00:00:04.27 Scaller registers: Offset : 18; value = A0D10154
+00:00:04.28 Scaller registers: Offset : 19; value = 87004B10
+00:00:04.28 Scaller registers: Offset : 20; value =        0
+00:00:04.29 Scaller registers: Offset : 21; value =  1000000
+00:00:04.29 Scaller registers: Offset : 22; value = 124741E0
+00:00:04.30 Scaller registers: Offset : 23; value = 4B000F10
+00:00:04.30 Scaller registers: Offset : 24; value =        0
+00:00:04.31 Scaller registers: Offset : 25; value =        0
+00:00:04.31 Scaller registers: Offset : 26; value = 10300000
+00:00:04.32 Scaller registers: Offset : 27; value =  F000000
+00:00:04.32 Scaller registers: Offset : 28; value =       FF
+00:00:04.33 Scaller registers: Offset : 29; value = 80000000
+00:00:04.34 Scaller registers: Offset : 30; value = 76543210
+00:00:04.34 Scaller registers: Offset : 31; value = FEDCBA98
+00:00:04.35 Display list: SCALER_DISPLIST0 : value =      334
+00:00:04.35 Display list: SCALER_DISPLIST1 : value =        0
+00:00:04.36 Display list: SCALER_DISPLIST2 : value =        0
+00:00:04.36 Display list: Offset : 0; value = 80000000
+00:00:04.37 Display list: Offset : 1; value =        0
+00:00:04.37 Display list: Offset : 2; value =        0
+00:00:04.38 Display list: Offset : 3; value =        0
+00:00:04.38 Display list: Offset : 4; value = 80000000
+00:00:04.39 Display list: Offset : 5; value =  1DF0000
+00:00:04.39 Display list: Offset : 6; value = C032C000
+00:00:04.40 Display list: Offset : 7; value = C0457600
+00:00:04.40 Display list: Offset : 8; value =      A00
+00:00:04.41 Display list: Offset : 9; value = 80000000
+00:00:04.41 Display list: Offset : 10; value = 80000000
+00:00:04.42 Display list: Offset : 11; value = 80000000
+00:00:04.42 Display list: Offset : 12; value = 80000000
+00:00:04.43 Display list: Offset : 13; value = 80000000
+00:00:04.43 Display list: Offset : 14; value = 80000000
+00:00:04.44 Display list: Offset : 15; value = 80000000
+00:00:04.44 Display list: Offset : 16; value = 80000000
+00:00:04.45 Display list: Offset : 17; value = 80000000
+00:00:04.45 Display list: Offset : 18; value = 80000000
+00:00:04.46 Display list: Offset : 19; value = 80000000
+00:00:04.46 Display list: Offset : 20; value = 80000000
+00:00:04.47 Display list: Offset : 21; value = 80000000
+00:00:04.47 Display list: Offset : 22; value = 80000000
+00:00:04.48 Display list: Offset : 23; value = 80000000
+00:00:04.48 Display list: Offset : 24; value = 80000000
+00:00:04.49 Display list: Offset : 25; value = 80000000
+00:00:04.49 Display list: Offset : 26; value = 80000000
+00:00:04.50 Display list: Offset : 27; value = 80000000
+00:00:04.50 Display list: Offset : 28; value = 80000000
+00:00:04.51 Display list: Offset : 29; value = 80000000
+00:00:04.51 Display list: Offset : 30; value = 80000000
+00:00:04.51 Display list: Offset : 31; value = 80000000
+00:00:04.52 Display list #1: Offset : 820; value = 5080D804
+00:00:04.53 Display list #1: Offset : 821; value = 4000810E
+00:00:04.53 Display list #1: Offset : 822; value = 6464F276
+00:00:04.54 Display list #1: Offset : 823; value = DEADBEEF
+00:00:04.54 Display list #1: Offset : 824; value =  20B0000
+00:00:04.55 Display list #1: Offset : 825; value = DEADBEEF
+00:00:04.55 Display list #1: Offset : 826; value = DEADB800
+00:00:04.56 Display list #1: Offset : 827; value = 80000000
+00:00:04.56 Display list #1: Offset : 828; value =       20
+00:00:04.57 Display list #1: Offset : 829; value =        8
+00:00:04.57 Display list #1: Offset : 830; value =        0
+00:00:04.58 Display list #1: Offset : 831; value = 40009060
+00:00:04.58 Display list #1: Offset : 832; value = 40009060
+00:00:04.59 Display list #1: Offset : 833; value = 40009170
+00:00:04.59 Display list #1: Offset : 834; value =      FF4
+00:00:04.60 Display list #1: Offset : 835; value =      FF4
+00:00:04.60 Display list #1: Offset : 836; value = 80000000
+00:00:04.61 Display list #1: Offset : 837; value = 80000000
+00:00:04.62 Display list #1: Offset : 838; value = 80000000
+00:00:04.62 Display list #1: Offset : 839; value = 80000000
+00:00:04.63 Display list #1: Offset : 840; value = 80000000
+00:00:04.63 Display list #1: Offset : 841; value = 80000000
+00:00:04.64 Display list #1: Offset : 842; value = 80000000
+00:00:04.64 Display list #1: Offset : 843; value = 80000000
+00:00:04.65 Display list #1: Offset : 844; value = 80000000
+00:00:04.65 Display list #1: Offset : 845; value = 80000000
+00:00:04.66 Display list #1: Offset : 846; value = 80000000
+00:00:04.66 Display list #1: Offset : 847; value = 80000000
+00:00:04.67 Display list #1: Offset : 848; value = 80000000
+00:00:04.67 Display list #1: Offset : 849; value = 80000000
+00:00:04.68 Display list #1: Offset : 850; value = 80000000
+00:00:04.68 Display list #1: Offset : 851; value = 80000000
+00:00:04.69 Loop: Start loop
+00:00:04.69 Sound: SoundMixer Started
+00:00:04.79 CORE: Main loop
+00:00:04.81 LOG: [ASIC ] : Unlocked
+00:00:04.81 LOG:
+
+00:00:05.76 Kernel: Temperature = 39
+00:00:09.03 Kernel: Temperature = 40
+00:00:10.16 heapallocator.cpp(191): stack[1] is 0x1459D4
+00:00:10.16 heapallocator.cpp(191): stack[11] is 0x13F568
+00:00:10.16 heapallocator.cpp(191): stack[17] is 0x13F024
+00:00:10.17 heapallocator.cpp(191): stack[25] is 0x13EF9C
+00:00:10.17 heapallocator.cpp(191): stack[41] is 0x148FF4
+00:00:10.18 heapallocator.cpp(191): stack[45] is 0x85C90
+00:00:10.18 heapallocator.cpp(191): assertion failed: pBlockHeader->nMagic == HEAP_BLOCK_MAGIC
+00:00:10.19 mcore: CPU core 0 will halt now
+IHEX-F
+#ERR:format
+IHEX-F
+IHEX-F
+logger: Circle 0.0.1 started on Raspberry Pi 400 4GB (AArch64)
+logger: Revision code is c03130, compiler has been GCC 9.2.1
+Kernel: Initialisation done for log.
+Kernel: HVS TEST.
+Kernel: HVS TEST End.
+Display: EDID message :
+Display: EDID version : 1.3
+EDID: Dumping 0x80 bytes starting at 0x29B0EC
+EDID: B0EC: 00 FF FF FF FF FF FF 00-4C 2D 74 02 39 31 45 4D
+EDID: B0FC: 02 11 01 03 80 29 1A 87-2A DE 95 A3 54 4C 99 26
+EDID: B10C: 0F 50 54 BF EF 80 95 00-95 0F 81 80 81 40 71 4F
+EDID: B11C: 01 01 01 01 01 01 9A 29-A0 D0 51 84 22 30 50 98
+EDID: B12C: 36 00 9A 01 11 00 00 1C-00 00 00 FD 00 38 4B 1E
+EDID: B13C: 51 0E 00 0A 20 20 20 20-20 20 00 00 00 FC 00 53
+EDID: B14C: 79 6E 63 4D 61 73 74 65-72 0A 20 20 00 00 00 FF
+EDID: B15C: 00 48 53 41 50 31 30 34-31 38 31 0A 20 20 00 7F
+Display: Initialization...
+Display: PROPTAG_GET_DISPLAY_DIMENSIONS : 1440, 900.
+Display: NbPixelHeight % h : 900, 288.
+Display: Computed width/height : 3072, 864.
+Display: fXmin = 2147482832, fXmax = -2147481392, fYmin = 18, fYmax  = 882.
+Kernel: display initialization done : 1
+Kernel: Interrupt initialization done : 1
+DisplayPiImp: InitInterrupt
+00:00:00.66 timer: SpeedFactor is 1.51
+00:00:00.66 Kernel: Timer initialization done : 1
+00:00:01.20 emmc: Found a valid version 3.0x SD card
+00:00:01.20 Kernel: EMMC initialization done : 1
+00:00:01.21 Kernel: Initialisation of VCHIQ.....
+00:00:01.21 printk: vchiq: vchiq_init_state: slot_zero = 0x00580000, is_master = 0
+00:00:01.22 Kernel: Initialisationfoe Done : 1
+00:00:01.22 Kernel: Creating SoundPI
+00:00:01.23 Kernel: SoundPI Initialized !
+00:00:01.23 KeyboardPi: Loading game controller db...
+00:00:01.68 KeyboardPi: Loading game controller db... Done !
+00:00:01.79 pcie: Link up, 5.0 Gbps x1
+00:00:02.30 usbdev1: Device ven2109-3431, dev9-0-1 found (HS)
+00:00:02.30 usbdev1: Product: USB2.0 Hub
+00:00:02.35 usbdev1: Interface int9-0-0 found
+00:00:02.35 usbdev1: Using device/interface int9-0-0
+00:00:03.03 usbdev1-2: Device ven79-6 found (LS)
+00:00:03.04 usbdev1-2: Product: DragonRise Inc.   Generic   USB  Joystick
+00:00:03.10 usbdev1-2: Interface int3-0-0 found
+00:00:03.10 usbdev1-2: Using device/interface int3-0-0
+00:00:03.29 usbdev1-4: Device ven4d9-7 found (LS)
+00:00:03.32 usbdev1-4: Product:   Raspberry Pi Internal Keyboard
+00:00:03.37 usbdev1-4: Interface int3-1-1 found
+00:00:03.37 usbdev1-4: Using device/interface int3-1-1
+00:00:03.38 usbdev1-4: Interface int3-0-0 found
+00:00:03.40 usbdev1-4: Using device/interface int3-0-0
+00:00:03.41 usbhub: Port 2: Device configured
+00:00:03.43 usbhub: Port 4: Device configured
+00:00:03.43 xhciroot: Port 1: Device configured
+00:00:03.44 Keyboard: Initialize done.
+00:00:03.44 Keyboard: Gamepad : ven79-6 - VID=79; PID=6; bcdDevice = 107
+00:00:03.45 Keyboard: Gamepad 1: 12 Button(s) 1 Hat(s)
+00:00:03.45 KeyboardPi: Gamepad found in database !
+00:00:03.46 Keyboard: Use your gamepad controls!
+00:00:03.46 Kernel: Initialisation emulation.....
+00:00:03.46 Kernel: Emulation::Initialize
+00:00:03.47 Kernel: Creating Motherboard
+00:00:03.49 ConfigurationManager: OpenFile : SD:/Config/config
+00:00:03.50 ConfigurationManager: Read Config : [SETUP]
+sync=sound
+cart=SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+11 00 00 1C-00 00 00 FD 00 38 4B 1E
+00:00:03.51 ConfigurationManager: READ section SETUP
+00:00:03.52 ConfigurationManager: READ key/value sync=sound
+00:00:03.52 ConfigurationManager: end == std::string::npos
+00:00:03.53 ConfigurationManager: READ key : sync
+00:00:03.53 ConfigurationManager: READ value: sound
+00:00:03.54 ConfigurationManager: READ key/value cart=SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+00:00:03.55 ConfigurationManager: end == std::string::npos
+00:00:03.55 ConfigurationManager: READ key : cart
+00:00:03.56 ConfigurationManager: READ value: SD:/CART/x17 (Gx-4000-iMPact-December17).cpr
+00:00:03.58 Kernel: CMultiCoreSupport is going to initialize
+00:00:03.59 mcore: CPU core 1 started
+00:00:03.59 mcore: CPU core 2 started
+00:00:03.59 mcore: CPU core 3 started
+00:00:03.59 Kernel: Initialisation done done !
+00:00:03.59 CORE: Display Loop started
+00:00:03.59 mcore: CPU core 3 will halt now
+00:00:03.60 Kernel: Initialisation done. Waiting for CPUThrottle 1
+00:00:03.60 CORE: Display Loop Ended
+00:00:03.62 mcore: CPU core 2 will halt now
+00:00:03.62 Kernel: Initialisation done. Result = 1 - CPU Speed max value : 1800000000
+00:00:03.63 Kernel: Entering running mode...
+00:00:03.63 DISPLAY TEST HVS: Testing HVS
+00:00:03.64 DISPLAY TEST HVS: Initialisation of HVS
+00:00:03.64 DISPLAY TEST HVS: Initialisation done
+00:00:03.64 Scaller registers: Offset : 0; value = 9A0DDDFF
+00:00:03.65 Scaller registers: Offset : 1; value =     2000
+00:00:03.65 Scaller registers: Offset : 2; value = 64647276
+00:00:03.66 Scaller registers: Offset : 3; value =  1BF0000
+00:00:03.67 Scaller registers: Offset : 4; value =      1FF
+00:00:03.67 Scaller registers: Offset : 5; value =        0
+00:00:03.68 Scaller registers: Offset : 6; value = C000006C
+00:00:03.68 Scaller registers: Offset : 7; value =        0
+00:00:03.69 Scaller registers: Offset : 8; value =      334
+00:00:03.69 Scaller registers: Offset : 9; value =        0
+00:00:03.70 Scaller registers: Offset : 10; value =        0
+00:00:03.70 Scaller registers: Offset : 11; value = 42000000
+00:00:03.71 Scaller registers: Offset : 12; value =      334
+00:00:03.71 Scaller registers: Offset : 13; value =       61
+00:00:03.72 Scaller registers: Offset : 14; value =        0
+00:00:03.72 Scaller registers: Offset : 15; value =        0
+00:00:03.73 Scaller registers: Offset : 16; value = 85A00384
+00:00:03.73 Scaller registers: Offset : 17; value = 81000000
+00:00:03.74 Scaller registers: Offset : 18; value = A0D1012E
+00:00:03.75 Scaller registers: Offset : 19; value = 87004B10
+00:00:03.75 Scaller registers: Offset : 20; value =        0
+00:00:03.76 Scaller registers: Offset : 21; value =  1000000
+00:00:03.76 Scaller registers: Offset : 22; value = 11E741E0
+00:00:03.77 Scaller registers: Offset : 23; value = 4B000F10
+00:00:03.77 Scaller registers: Offset : 24; value =        0
+00:00:03.78 Scaller registers: Offset : 25; value =        0
+00:00:03.78 Scaller registers: Offset : 26; value = 10300000
+00:00:03.79 Scaller registers: Offset : 27; value =  F000000
+00:00:03.79 Scaller registers: Offset : 28; value =       FF
+00:00:03.80 Scaller registers: Offset : 29; value = 80000000
+00:00:03.80 Scaller registers: Offset : 30; value = 76543210
+00:00:03.81 Scaller registers: Offset : 31; value = FEDCBA98
+00:00:03.82 Display list: SCALER_DISPLIST0 : value =      334
+00:00:03.82 Display list: SCALER_DISPLIST1 : value =        0
+00:00:03.83 Display list: SCALER_DISPLIST2 : value =        0
+00:00:03.83 Display list: Offset : 0; value = 80000000
+00:00:03.84 Display list: Offset : 1; value =        0
+00:00:03.84 Display list: Offset : 2; value =        0
+00:00:03.85 Display list: Offset : 3; value =        0
+00:00:03.85 Display list: Offset : 4; value = 80000000
+00:00:03.86 Display list: Offset : 5; value =  1DF0000
+00:00:03.86 Display list: Offset : 6; value = C032C000
+00:00:03.87 Display list: Offset : 7; value = C0457600
+00:00:03.87 Display list: Offset : 8; value =      A00
+00:00:03.88 Display list: Offset : 9; value = 80000000
+00:00:03.88 Display list: Offset : 10; value = 80000000
+00:00:03.89 Display list: Offset : 11; value = 80000000
+00:00:03.89 Display list: Offset : 12; value = 80000000
+00:00:03.90 Display list: Offset : 13; value = 80000000
+00:00:03.90 Display list: Offset : 14; value = 80000000
+00:00:03.91 Display list: Offset : 15; value = 80000000
+00:00:03.91 Display list: Offset : 16; value = 80000000
+00:00:03.92 Display list: Offset : 17; value = 80000000
+00:00:03.92 Display list: Offset : 18; value = 80000000
+00:00:03.92 Display list: Offset : 19; value = 80000000
+00:00:03.93 Display list: Offset : 20; value = 80000000
+00:00:03.93 Display list: Offset : 21; value = 80000000
+00:00:03.94 Display list: Offset : 22; value = 80000000
+00:00:03.94 Display list: Offset : 23; value = 80000000
+00:00:03.95 Display list: Offset : 24; value = 80000000
+00:00:03.95 Display list: Offset : 25; value = 80000000
+00:00:03.96 Display list: Offset : 26; value = 80000000
+00:00:03.96 Display list: Offset : 27; value = 80000000
+00:00:03.97 Display list: Offset : 28; value = 80000000
+00:00:03.97 Display list: Offset : 29; value = 80000000
+00:00:03.98 Display list: Offset : 30; value = 80000000
+00:00:03.98 Display list: Offset : 31; value = 80000000
+00:00:03.99 Display list #1: Offset : 820; value = 50805804
+00:00:03.99 Display list #1: Offset : 821; value =      10E
+00:00:04.00 Display list #1: Offset : 822; value =     FFF0
+00:00:04.01 Display list #1: Offset : 823; value =  3840384
+00:00:04.01 Display list #1: Offset : 824; value =    20002
+00:00:04.02 Display list #1: Offset : 825; value =    10000
+00:00:04.02 Display list #1: Offset : 826; value = FEBFA000
+00:00:04.03 Display list #1: Offset : 827; value = FEBFA020
+00:00:04.03 Display list #1: Offset : 828; value =       20
+00:00:04.04 Display list #1: Offset : 829; value =        8
+00:00:04.04 Display list #1: Offset : 830; value =        0
+00:00:04.05 Display list #1: Offset : 831; value = 40009060
+00:00:04.05 Display list #1: Offset : 832; value = 40009060
+00:00:04.06 Display list #1: Offset : 833; value = 800044E0
+00:00:04.06 Display list #1: Offset : 834; value =      FF4
+00:00:04.07 Display list #1: Offset : 835; value =      FF4
+00:00:04.07 Display list #1: Offset : 836; value = 80000000
+00:00:04.08 Display list #1: Offset : 837; value = 80000000
+00:00:04.08 Display list #1: Offset : 838; value = 80000000
+00:00:04.09 Display list #1: Offset : 839; value = 80000000
+00:00:04.10 Display list #1: Offset : 840; value = 80000000
+00:00:04.10 Display list #1: Offset : 841; value = 80000000
+00:00:04.11 Display list #1: Offset : 842; value = 80000000
+00:00:04.11 Display list #1: Offset : 843; value = 80000000
+00:00:04.12 Display list #1: Offset : 844; value = 80000000
+00:00:04.12 Display list #1: Offset : 845; value = 80000000
+00:00:04.13 Display list #1: Offset : 846; value = 80000000
+00:00:04.13 Display list #1: Offset : 847; value = 80000000
+00:00:04.14 Display list #1: Offset : 848; value = 80000000
+00:00:04.14 Display list #1: Offset : 849; value = 80000000
+00:00:04.15 Display list #1: Offset : 850; value = 80000000
+00:00:04.15 Display list #1: Offset : 851; value = 80000000
+00:00:04.16 DISPLAY TEST HVS: hvs_initialize done
+00:00:04.16 SetSetup: Preparing FB
+00:00:04.17 SetSetup: All done
+00:00:04.17 DISPLAY TEST HVS: Setup done
+00:00:04.17 Scaller registers: Offset : 0; value = 9A0DDDFF
+00:00:04.18 Scaller registers: Offset : 1; value =     2000
+00:00:04.18 Scaller registers: Offset : 2; value = 64647276
+00:00:04.19 Scaller registers: Offset : 3; value =  1BF0000
+00:00:04.19 Scaller registers: Offset : 4; value =      1FF
+00:00:04.20 Scaller registers: Offset : 5; value =        0
+00:00:04.20 Scaller registers: Offset : 6; value = C000006C
+00:00:04.21 Scaller registers: Offset : 7; value =        0
+00:00:04.22 Scaller registers: Offset : 8; value =      334
+00:00:04.22 Scaller registers: Offset : 9; value =        0
+00:00:04.23 Scaller registers: Offset : 10; value =        0
+00:00:04.23 Scaller registers: Offset : 11; value = 42000004
+00:00:04.24 Scaller registers: Offset : 12; value =      334
+00:00:04.24 Scaller registers: Offset : 13; value =       61
+00:00:04.25 Scaller registers: Offset : 14; value =        0
+00:00:04.25 Scaller registers: Offset : 15; value =        0
+00:00:04.26 Scaller registers: Offset : 16; value = 85A00384
+00:00:04.26 Scaller registers: Offset : 17; value = 81000000
+00:00:04.27 Scaller registers: Offset : 18; value = A0D1000A
+00:00:04.27 Scaller registers: Offset : 19; value = 87004B10
+00:00:04.28 Scaller registers: Offset : 20; value =        0
+00:00:04.29 Scaller registers: Offset : 21; value =  1000000
+00:00:04.29 Scaller registers: Offset : 22; value = 13E741E0
+00:00:04.30 Scaller registers: Offset : 23; value = 4B000F10
+00:00:04.30 Scaller registers: Offset : 24; value =        0
+00:00:04.31 Scaller registers: Offset : 25; value =        0
+00:00:04.31 Scaller registers: Offset : 26; value = 10300000
+00:00:04.32 Scaller registers: Offset : 27; value =  F000000
+00:00:04.32 Scaller registers: Offset : 28; value =       FF
+00:00:04.33 Scaller registers: Offset : 29; value = 80000000
+00:00:04.33 Scaller registers: Offset : 30; value = 76543210
+00:00:04.34 Scaller registers: Offset : 31; value = FEDCBA98
+00:00:04.34 Display list: SCALER_DISPLIST0 : value =      334
+00:00:04.35 Display list: SCALER_DISPLIST1 : value =        0
+00:00:04.36 Display list: SCALER_DISPLIST2 : value =        0
+00:00:04.36 Display list: Offset : 0; value = 80000000
+00:00:04.37 Display list: Offset : 1; value =        0
+00:00:04.37 Display list: Offset : 2; value =        0
+00:00:04.38 Display list: Offset : 3; value =        0
+00:00:04.38 Display list: Offset : 4; value = 80000000
+00:00:04.39 Display list: Offset : 5; value =  1DF0000
+00:00:04.39 Display list: Offset : 6; value = C032C000
+00:00:04.39 Display list: Offset : 7; value = C0457600
+00:00:04.40 Display list: Offset : 8; value =      A00
+00:00:04.40 Display list: Offset : 9; value = 80000000
+00:00:04.41 Display list: Offset : 10; value = 80000000
+00:00:04.41 Display list: Offset : 11; value = 80000000
+00:00:04.42 Display list: Offset : 12; value = 80000000
+00:00:04.42 Display list: Offset : 13; value = 80000000
+00:00:04.43 Display list: Offset : 14; value = 80000000
+00:00:04.43 Display list: Offset : 15; value = 80000000
+00:00:04.44 Display list: Offset : 16; value = 80000000
+00:00:04.44 Display list: Offset : 17; value = 80000000
+00:00:04.45 Display list: Offset : 18; value = 80000000
+00:00:04.45 Display list: Offset : 19; value = 80000000
+00:00:04.46 Display list: Offset : 20; value = 80000000
+00:00:04.46 Display list: Offset : 21; value = 80000000
+00:00:04.47 Display list: Offset : 22; value = 80000000
+00:00:04.47 Display list: Offset : 23; value = 80000000
+00:00:04.48 Display list: Offset : 24; value = 80000000
+00:00:04.48 Display list: Offset : 25; value = 80000000
+00:00:04.49 Display list: Offset : 26; value = 80000000
+00:00:04.49 Display list: Offset : 27; value = 80000000
+00:00:04.50 Display list: Offset : 28; value = 80000000
+00:00:04.50 Display list: Offset : 29; value = 80000000
+00:00:04.51 Display list: Offset : 30; value = 80000000
+00:00:04.51 Display list: Offset : 31; value = 80000000
+00:00:04.52 Display list #1: Offset : 820; value = 5080D804
+00:00:04.52 Display list #1: Offset : 821; value = 4000810E
+00:00:04.53 Display list #1: Offset : 822; value = 6464F276
+00:00:04.53 Display list #1: Offset : 823; value = DEADBEEF
+00:00:04.54 Display list #1: Offset : 824; value =   B60000
+00:00:04.54 Display list #1: Offset : 825; value = DEADBEEF
+00:00:04.55 Display list #1: Offset : 826; value = DEADB800
+00:00:04.56 Display list #1: Offset : 827; value = 80000000
+00:00:04.56 Display list #1: Offset : 828; value =       20
+00:00:04.57 Display list #1: Offset : 829; value =        8
+00:00:04.57 Display list #1: Offset : 830; value =        0
+00:00:04.58 Display list #1: Offset : 831; value = 40009060
+00:00:04.58 Display list #1: Offset : 832; value = 40009060
+00:00:04.59 Display list #1: Offset : 833; value = 8000DF00
+00:00:04.59 Display list #1: Offset : 834; value =      FF4
+00:00:04.60 Display list #1: Offset : 835; value =      FF4
+00:00:04.60 Display list #1: Offset : 836; value = 80000000
+00:00:04.61 Display list #1: Offset : 837; value = 80000000
+00:00:04.61 Display list #1: Offset : 838; value = 80000000
+00:00:04.62 Display list #1: Offset : 839; value = 80000000
+00:00:04.62 Display list #1: Offset : 840; value = 80000000
+00:00:04.63 Display list #1: Offset : 841; value = 80000000
+00:00:04.63 Display list #1: Offset : 842; value = 80000000
+00:00:04.64 Display list #1: Offset : 843; value = 80000000
+00:00:04.65 Display list #1: Offset : 844; value = 80000000
+00:00:04.65 Display list #1: Offset : 845; value = 80000000
+00:00:04.66 Display list #1: Offset : 846; value = 80000000
+00:00:04.66 Display list #1: Offset : 847; value = 80000000
+00:00:04.67 Display list #1: Offset : 848; value = 80000000
+00:00:04.67 Display list #1: Offset : 849; value = 80000000
+00:00:04.68 Display list #1: Offset : 850; value = 80000000
+00:00:04.68 Display list #1: Offset : 851; value = 80000000
+00:00:04.69 Loop: Start loop
+00:00:04.69 Sound: SoundMixer Started
+00:00:04.79 CORE: Main loop
+00:00:04.81 LOG: [ASIC ] : Unlocked
+00:00:04.81 LOG:
+
+00:00:17.97 LOG: [ASIC ] : Unlocked
+00:00:17.97 LOG:
+
+00:00:19.41 heapallocator.cpp(191): stack[1] is 0x145994
+00:00:19.42 heapallocator.cpp(191): stack[11] is 0x13F528
+00:00:19.42 heapallocator.cpp(191): stack[17] is 0x13EFE4
+00:00:19.43 heapallocator.cpp(191): stack[25] is 0x13EF5C
+00:00:19.43 heapallocator.cpp(191): stack[43] is 0x141D9C
+00:00:19.44 heapallocator.cpp(191): stack[45] is 0x9BE48
+00:00:19.44 heapallocator.cpp(191): assertion failed: pBlockHeader->nMagic == HEAP_BLOCK_MAGIC
+00:00:19.45 mcore: CPU core 0 will halt now
