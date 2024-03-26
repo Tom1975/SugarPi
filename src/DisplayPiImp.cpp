@@ -222,7 +222,7 @@ bool DisplayPiImp::InitInterrupt(CInterruptSystem* interrupt)
 {
    logger_->Write("DisplayPiImp", LogNotice, "InitInterrupt");
    // 3f : sync frame ??
-   interrupt->ConnectIRQ (142, &InterruptStub, this);
+   //interrupt->ConnectIRQ (142, &InterruptStub, this);
    return true;
 }
 
@@ -442,7 +442,7 @@ void DisplayPiImp::write_plane(unsigned short* offset, hvs_plane plane)
 void DisplayPiImp::write_display_list(hvs_plane planes[], unsigned char count)
 {
     unsigned short offset = dlist_offsets[next_dlist_buffer];
-    offset = 820;
+    offset = 0;
 
     /* Write out each plane. */
     //for (unsigned char p = 0; p < count; p++) {
@@ -453,7 +453,7 @@ void DisplayPiImp::write_display_list(hvs_plane planes[], unsigned char count)
     dlist_memory[offset] = SCALER_CTL0_END;
 
     /* Tell the HVS where the display list is by writing to the SCALER_DISPLIST1 register. */
-    /*put32(SCALER_DISPLIST0, start);
+    put32(SCALER_DISPLIST0, 0);/*
     put32(SCALER_DISPLIST1, 0);
     put32(SCALER_DISPLIST2, 0);*/
 
