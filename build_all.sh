@@ -12,8 +12,16 @@ cp circle/boot/start4.elf sdcard
 cp circle/boot/fixup.dat sdcard
 cp circle/boot/fixup4.dat sdcard
 cp circle/boot/bcm2711-rpi-4-b.dtb sdcard
+cp circle/boot/bcm2711-rpi-400.dtb sdcard
+cp circle/boot/bcm2711-rpi-cm4.dtb sdcard
+cp circle/boot/bcm2712-rpi-5-b.dtb sdcard
+cp circle/boot/bcm2710-rpi-zero-2-w.dtb sdcard
 cp circle/boot/LICENCE.broadcom	sdcard
 cp circle/boot/COPYING.linux sdcard
+cp circle/boot/start_cd.elf	sdcard
+cp circle/boot/start4cd.elf	sdcard
+cp circle/boot/fixup_cd.dat	sdcard
+cp circle/boot/fixup4cd.dat	sdcard
 cp circle/boot/config64.txt sdcard/config.txt
 
 echo "*** copy default CART sdcard ***"
