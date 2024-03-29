@@ -7,8 +7,12 @@
 #include <circle/bcmpropertytags.h>
 #include <circle/debug.h>
 
+#include "bcm_host.h"
+
+
 #include "res/button_1.h"
 #include "res/coolspot.h"
+
 
 #define WIDTH_SCREEN 640
 #define HEIGHT_SCREEN 480
@@ -16,100 +20,50 @@
 #define WIDTH_VIRTUAL_SCREEN 1024
 #define HEIGHT_VIRTUAL_SCREEN (288*2)
 
+typedef struct
+{
+    DISPMANX_DISPLAY_HANDLE_T   display;
+    DISPMANX_MODEINFO_T         info;
+    void                       *image;
+    DISPMANX_UPDATE_HANDLE_T    update;
+    DISPMANX_RESOURCE_HANDLE_T  resource;
+    DISPMANX_ELEMENT_HANDLE_T   element;
+    uint32_t                    vc_image_ptr;
+
+} RECT_VARS_T;
 
 DisplayPiImp::DisplayPiImp(CLogger* logger, CTimer* timer) :DisplayPi(logger),
    timer_(timer),
-   frame_buffer_(nullptr),
    mutex_(TASK_LEVEL)   
 {
 }
 
 DisplayPiImp::~DisplayPiImp()
 {
-   if ( frame_buffer_ != nullptr)
-   {
-      delete frame_buffer_;
-   }   
 }
 
 bool DisplayPiImp::Initialization()
 {
+   logger_->Write("Display", LogNotice, "Initialization...");
+
    ListEDID();
 
-   unsigned int screen_width = 640;
-   unsigned int screen_height = 480;
+   // TODO :Init dispmanx
+   RECT_VARS_T    *vars;   
+   static RECT_VARS_T gRectVars;
+   uint32_t        screen = 0;
+   vars = &gRectVars;
 
-   logger_->Write("Display", LogNotice, "Initialization...");
-   // Get display property, to compute best values
-   CBcmPropertyTags Tags;
-	TPropertyTagDisplayDimensions Dimensions;
-	if (Tags.GetTag (PROPTAG_GET_DISPLAY_DIMENSIONS, &Dimensions, sizeof Dimensions))
-	{
-      screen_width  = Dimensions.nWidth;
-      screen_height = Dimensions.nHeight;
-      logger_->Write("Display", LogNotice, "PROPTAG_GET_DISPLAY_DIMENSIONS : %i, %i.", screen_width, screen_height);
-   }
-   else
-   {
-      logger_->Write("Display", LogNotice, "PROPTAG_GET_DISPLAY_DIMENSIONS : ERROR !");
-   }
+    bcm_host_init();
 
-   // Now we have real width/height : compute best values for display, to have :
-   // - good pixel ratio (4x3)
-   float ratio = ((float)GetWidth())/((float)GetHeight());
-   int NbPixelWidth, NbPixelHeight;
-   if ( (screen_width / screen_height ) < ratio )
-   {
-      //
-      NbPixelWidth = static_cast<long>(screen_height * ratio);
-      NbPixelHeight = screen_height ;
-   }
-   else
-   {
-      //
-      NbPixelWidth = screen_width - 0;
-      NbPixelHeight = static_cast<long>(screen_width / ratio);
-   }   
+    printk("Open display[%i]...\n", screen );
+    vars->display = vc_dispmanx_display_open( screen );
 
-   // Compute height to have a complete screen, without problem with scanlines
-   int h = GetHeight();
-   if ( NbPixelHeight % h != 0)
-   {
-      logger_->Write("Display", LogNotice, "NbPixelHeight % h : %i, %i.", NbPixelHeight, h);
+    ret = vc_dispmanx_display_get_info( vars->display, &vars->info);
+    assert(ret == 0);
+    printk( "Display is %d x %d\n", vars->info.width, vars->info.height );
 
-      int NbPixelHeightComputed = (NbPixelHeight / h) * h;
-      if ( NbPixelHeight % h > (h/2) )
-      {
-         NbPixelHeightComputed += h;
-      }
-      NbPixelHeight = NbPixelHeightComputed;
-      NbPixelWidth = static_cast<long>(NbPixelHeight*ratio);
-   }
-
-   int fXmin, fXmax, fYmin, fYmax;
-   fXmin = (screen_width - NbPixelWidth) / 2;
-   fXmax = (screen_width - NbPixelWidth) / 2 + NbPixelWidth;
-   fYmin = ((long)screen_height - NbPixelHeight) / 2;
-   fYmax = ((long)screen_height - NbPixelHeight) / 2 + NbPixelHeight;
-
-   logger_->Write("Display", LogNotice, "Computed width/height : %i, %i.", NbPixelWidth, NbPixelHeight);
-   logger_->Write("Display", LogNotice, "fXmin = %i, fXmax = %i, fYmin = %i, fYmax  = %i.", fXmin, fXmax, fYmin, fYmax);
-   // - 
-
-
-   if ( frame_buffer_ != nullptr)
-   {
-      delete frame_buffer_;
-   }
-   frame_buffer_ = new CBcmFrameBuffer(WIDTH_SCREEN, HEIGHT_SCREEN, 32, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN * FRAME_BUFFER_SIZE);
-
-   if (!frame_buffer_ || !frame_buffer_->Initialize())
-   {
-      logger_->Write("Display", LogNotice, "Error creating framebuffer...");
-      return FALSE;
-   }
-      
-   frame_buffer_->SetVirtualOffset(143, 47);
+    vars->image = calloc( 1, pitch * height );
 
    DisplayPi::Initialization();
 
@@ -161,13 +115,13 @@ const char* DisplayPiImp::GetInformations()
 // Wait VBL
 void DisplayPiImp::WaitVbl()
 {
-   frame_buffer_->WaitForVerticalSync();
+   // todo
 }
 
 int DisplayPiImp::GetStride()
 {
    // TODO : stride is for int* !!!
-   return frame_buffer_->GetPitch() / sizeof(int);
+   return 1920 * 4;
 }
 
 int DisplayPiImp::GetWidth()
@@ -182,6 +136,7 @@ int DisplayPiImp::GetHeight()
 
 int* DisplayPiImp::GetVideoBuffer(int y)
 {
+   // TODO 
    if (!full_resolution_)
    {
       y = y * 2 + added_line_;
@@ -190,7 +145,7 @@ int* DisplayPiImp::GetVideoBuffer(int y)
    if ( y > HEIGHT_VIRTUAL_SCREEN) y = HEIGHT_VIRTUAL_SCREEN-1;
    y += buffer_used_ * HEIGHT_VIRTUAL_SCREEN;
 
-   return reinterpret_cast<int*>(frame_buffer_->GetBuffer() + y * frame_buffer_->GetPitch());
+   return 0;
 }
 
 void DisplayPiImp::SyncWithFrame (bool set)
@@ -207,24 +162,17 @@ void DisplayPiImp::SyncWithFrame (bool set)
 
 void DisplayPiImp::SetFrame(int frame_index)
 {
-   //logger_->Write("Display", LogNotice, "SetFrame : 143, %i", 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
-   frame_buffer_->SetVirtualOffset(143, 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
+   // todo
+   
 }
 
 void DisplayPiImp::Draw()
 {
-   //logger_->Write("Display", LogNotice, "Draw");
-   frame_buffer_->WaitForVerticalSync();
+   // todo
+   
 }
 
 void DisplayPiImp::ClearBuffer(int frame_index)
 {
-   //logger_->Write("Display", LogNotice, "ClearBuffer : frame_index = %i", frame_index);
-   unsigned char* line = reinterpret_cast<unsigned char*>(frame_buffer_->GetBuffer() + frame_index * HEIGHT_VIRTUAL_SCREEN * frame_buffer_->GetPitch());
-   for (unsigned int count = 0; count < HEIGHT_VIRTUAL_SCREEN; count++)
-   {
-      memset(line, 0x0, WIDTH_VIRTUAL_SCREEN * 4);
-      line += frame_buffer_->GetPitch();
-   }
-   //logger_->Write("Display", LogNotice, "End clear");
+   // todo
 }

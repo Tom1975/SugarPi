@@ -37,9 +37,6 @@ public:
    virtual bool CanInsertBlackFrame() { return false; }
    virtual void Activate(bool on) {};
 
-   CBcmFrameBuffer* GetFrameBuffer() {
-      return frame_buffer_;   }
-
    void Lock() { mutex_.Acquire(); }
    void Unlock() { mutex_.Release(); }
 
@@ -49,7 +46,6 @@ public:
 
 protected:
    CTimer* timer_;
-   CBcmFrameBuffer*  frame_buffer_;
 
    CSpinLock   mutex_;
 };
