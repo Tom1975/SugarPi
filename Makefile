@@ -91,7 +91,8 @@ LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
 			$(CIRCLEHOME)/addon/SDCard/libsdcard.a\
 			$(CIRCLEHOME)/addon/fatfs/libfatfs.a\
          $(CIRCLEHOME)/addon/vc4/sound/libvchiqsound.a\
-         $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a
+         $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a \
+		 $(CIRCLEHOME)/addon/vc4/interface/libbcm_host.a
 
 
 include circle/Rules.mk

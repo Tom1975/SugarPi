@@ -8,6 +8,7 @@
 #include <circle/debug.h>
 
 #include "bcm_host.h"
+#include <circle/addon/vc4/interface/vcinclude/common.h>
 
 
 #include "res/button_1.h"
@@ -59,11 +60,13 @@ bool DisplayPiImp::Initialization()
     printk("Open display[%i]...\n", screen );
     vars->display = vc_dispmanx_display_open( screen );
 
-    ret = vc_dispmanx_display_get_info( vars->display, &vars->info);
+    int ret = vc_dispmanx_display_get_info( vars->display, &vars->info);
     assert(ret == 0);
+
+    int pitch = ALIGN_UP(vars->info.width*4, 32);
     printk( "Display is %d x %d\n", vars->info.width, vars->info.height );
 
-    vars->image = calloc( 1, pitch * height );
+    vars->image = calloc( 1, vars->info.height * pitch);
 
    DisplayPi::Initialization();
 
