@@ -55,18 +55,24 @@ bool DisplayPiImp::Initialization()
    uint32_t        screen = 0;
    vars = &gRectVars;
 
-    bcm_host_init();
+   bcm_host_init();
 
-    printk("Open display[%i]...\n", screen );
-    vars->display = vc_dispmanx_display_open( screen );
+   printk("Open display[%i]...\n", screen );
+   vars->display = vc_dispmanx_display_open( screen );
 
-    int ret = vc_dispmanx_display_get_info( vars->display, &vars->info);
-    assert(ret == 0);
+   int ret = vc_dispmanx_display_get_info( vars->display, &vars->info);
+   assert(ret == 0);
 
-    int pitch = ALIGN_UP(vars->info.width*4, 32);
-    printk( "Display is %d x %d\n", vars->info.width, vars->info.height );
+   int pitch = ALIGN_UP(vars->info.width*4, 32);
+   printk( "Display is %d x %d\n", vars->info.width, vars->info.height );
 
-    vars->image = calloc( 1, vars->info.height * pitch);
+   vars->image = calloc( 1, vars->info.height * pitch);
+
+   // create various objects :
+   // Main display for emulation
+   main_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, 1024, 1024, &main_ptr_);
+   back_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, 1024, 1024, &back_ptr_);
+   menu_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, 1024, 1024, &menu_ptr_);
 
    DisplayPi::Initialization();
 

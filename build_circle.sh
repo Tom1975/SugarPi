@@ -22,6 +22,10 @@ cd ../vc4/sound
 make clean
 make
 
+cd ../vc4/interface/bcm_host
+make clean
+make
+
 cd ../vchiq
 make clean
 make

@@ -46,6 +46,16 @@ public:
 
 protected:
    CTimer* timer_;
-
    CSpinLock   mutex_;
+
+   DISPMANX_RESOURCE_HANDLE_T main_resource_;
+   unsigned int main_ptr_;
+
+   DISPMANX_RESOURCE_HANDLE_T back_resource_;
+   unsigned int back_ptr_;
+
+   DISPMANX_RESOURCE_HANDLE_T menu_resource_;
+   unsigned int menu_ptr_;
+   
+
 };
