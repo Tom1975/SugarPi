@@ -76,6 +76,54 @@ bool DisplayPiImp::Initialization()
 
    DisplayPi::Initialization();
 
+   // Add main layer
+   VC_RECT_T bmp_rect;
+   vc_dispmanx_rect_set(&(bmp_rect),
+                        0,
+                        0,
+                        1024,
+                        1024);
+
+   result = vc_dispmanx_resource_write_data(main_resource_,
+                                          s->image.type,
+                                          s->image.pitch,
+                                          s->image.buffer,
+                                          &(s->bmpRect));
+
+
+   // Create 
+   DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
+
+   VC_DISPMANX_ALPHA_T alpha =
+   {
+      DISPMANX_FLAGS_ALPHA_FROM_SOURCE, 
+      255,
+      0
+   };
+
+   //---------------------------------------------------------------------
+   VC_RECT_T src_rect;
+   vc_dispmanx_rect_set(&src_rect, 0, 0, 1, 1);
+
+   VC_RECT_T dst_rect;
+   vc_dispmanx_rect_set(&dst_rect, 0, 0, 0, 0);
+
+                                          
+   bg->element =
+      vc_dispmanx_element_add(update,
+                              var->display,
+                              0,
+                              &dst_rect,
+                              main_resource_,
+                              &src_rect,
+                              DISPMANX_PROTECTION_NONE,
+                              &alpha,
+                              NULL,
+                              DISPMANX_NO_ROTATE);
+
+
+   result = vc_dispmanx_update_submit_sync(update);
+
    return true;
 }
 
