@@ -37,6 +37,11 @@ DisplayPiImp::DisplayPiImp(CLogger* logger, CTimer* timer) :DisplayPi(logger),
    timer_(timer),
    mutex_(TASK_LEVEL)   
 {
+   for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
+   {
+      display_buffer_[i] = new int [1024*1024];
+   }
+   current_buffer_ = 0;
 }
 
 DisplayPiImp::~DisplayPiImp()
@@ -84,11 +89,11 @@ bool DisplayPiImp::Initialization()
                         1024,
                         1024);
 
-   result = vc_dispmanx_resource_write_data(main_resource_,
-                                          s->image.type,
-                                          s->image.pitch,
-                                          s->image.buffer,
-                                          &(s->bmpRect));
+   int result = vc_dispmanx_resource_write_data(main_resource_,
+                                          VC_IMAGE_ARGB8888,
+                                          1024*4,
+                                          display_buffer_[0],
+                                          &(bmp_rect));
 
 
    // Create 
@@ -109,9 +114,9 @@ bool DisplayPiImp::Initialization()
    vc_dispmanx_rect_set(&dst_rect, 0, 0, 0, 0);
 
                                           
-   bg->element =
+   DISPMANX_ELEMENT_HANDLE_T element =
       vc_dispmanx_element_add(update,
-                              var->display,
+                              vars->display,
                               0,
                               &dst_rect,
                               main_resource_,
@@ -193,16 +198,9 @@ int DisplayPiImp::GetHeight()
 
 int* DisplayPiImp::GetVideoBuffer(int y)
 {
-   // TODO 
-   if (!full_resolution_)
-   {
-      y = y * 2 + added_line_;
-   }
-
    if ( y > HEIGHT_VIRTUAL_SCREEN) y = HEIGHT_VIRTUAL_SCREEN-1;
-   y += buffer_used_ * HEIGHT_VIRTUAL_SCREEN;
 
-   return 0;
+   return &display_buffer_[current_buffer_][ y * 1024*4 ];
 }
 
 void DisplayPiImp::SyncWithFrame (bool set)
@@ -220,13 +218,30 @@ void DisplayPiImp::SyncWithFrame (bool set)
 void DisplayPiImp::SetFrame(int frame_index)
 {
    // todo
-   
+   current_buffer_ = frame_index;
 }
 
 void DisplayPiImp::Draw()
 {
-   // todo
-   
+   DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
+   assert(update != 0);
+
+   // Copy framebuffer
+   VC_RECT_T bmp_rect;
+   vc_dispmanx_rect_set(&(bmp_rect),
+                        0,
+                        0,
+                        1024,
+                        1024);
+
+   int result = vc_dispmanx_resource_write_data(main_resource_,
+                                          VC_IMAGE_ARGB8888,
+                                          1024*4,
+                                          display_buffer_[current_buffer_],
+                                          &(bmp_rect));
+
+
+   result = vc_dispmanx_update_submit_sync(update);
 }
 
 void DisplayPiImp::ClearBuffer(int frame_index)

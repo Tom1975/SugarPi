@@ -5,6 +5,8 @@
 #include <circle/logger.h>
 #include <circle/bcmframebuffer.h>
 
+#include <bcm_host.h>
+
 #include "DisplayPi.h"
 
 class DisplayPiImp : public DisplayPi
@@ -56,6 +58,9 @@ protected:
 
    DISPMANX_RESOURCE_HANDLE_T menu_resource_;
    unsigned int menu_ptr_;
-   
+
+   // Various display buffers
+   int * display_buffer_[FRAME_BUFFER_SIZE];
+   unsigned int current_buffer_;
 
 };
