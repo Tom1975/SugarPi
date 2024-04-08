@@ -2,14 +2,14 @@
 
 COULEUR		FT232H	JTAG	GPIO
 
-			ADBUS0	TCK	25
-			ADBUS1	TDI	26
-			ADBUS2	TDO	24
-			ADBUS3	TMS	27
-			ACBUS0	/TRST	22
+rouge		ADBUS0	TCK		25
+orange		ADBUS1	TDI		26
+jaune		ADBUS2	TDO		24
+vert		ADBUS3	TMS		27
+violet		ACBUS0	/TRST	22
 			ACBUS1	/SRST	not connected
 				RCLK	not connected
-			GND		GND
+noir		GND		GND
 	
 - Ajouter  enable_jtag_gpio=1 dans config.txt
 
