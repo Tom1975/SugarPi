@@ -1,5 +1,7 @@
 ./build_pi3.sh
-./build_pi4.sh
+# No longer used, as dispmanx need 32 bits application
+#./build_pi4.sh
+./build_pi4_32bits.sh
 
 echo "*** copy boot to sdcard ***"
 cd circle/boot
@@ -22,7 +24,12 @@ cp circle/boot/start_cd.elf	sdcard
 cp circle/boot/start4cd.elf	sdcard
 cp circle/boot/fixup_cd.dat	sdcard
 cp circle/boot/fixup4cd.dat	sdcard
-cp circle/boot/config64.txt sdcard/config.txt
+# No longer used, as dispmanx need 32 bits application
+#cp circle/boot/config64.txt sdcard/config.txt
+cp circle/boot/config.txt sdcard/config.txt
+cp circle/boot/armstub7-rpi4.bin sdcard
+# No longer used, as dispmanx need 32 bits application
+#cp circle/boot/armstub8-rpi4.bin sdcard
 
 echo "*** copy default CART sdcard ***"
 

@@ -88,13 +88,15 @@ LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
 		 $(CIRCLEHOME)/lib/sound/libsound.a \
          $(CIRCLEHOME)/lib/sched/libsched.a \
          $(CIRCLEHOME)/addon/linux/liblinuxemu.a \
-			$(CIRCLEHOME)/addon/SDCard/libsdcard.a\
-			$(CIRCLEHOME)/addon/fatfs/libfatfs.a\
+		 $(CIRCLEHOME)/addon/SDCard/libsdcard.a\
+		 $(CIRCLEHOME)/addon/fatfs/libfatfs.a\
          $(CIRCLEHOME)/addon/vc4/sound/libvchiqsound.a\
          $(CIRCLEHOME)/addon/vc4/vchiq/libvchiq.a \
-		 $(CIRCLEHOME)/addon/vc4/interface/libbcm_host.a
+		 $(CIRCLEHOME)/addon/vc4/interface/bcm_host/libbcm_host.a \
+		 $(CIRCLEHOME)/addon/vc4/interface/vmcs_host/libvmcs_host.a \
+		 $(CIRCLEHOME)/addon/vc4/interface/vcos/libvcos.a 
 
-
+ 
 include circle/Rules.mk
 
 CFLAGS	+= -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE
