@@ -2,6 +2,7 @@
 #include "DisplayPi.h"
 
 #include <memory.h>
+#include <circle/multicore.h>
 
 #include "res/button_1.h"
 #include "res/coolspot.h"
@@ -208,9 +209,9 @@ void DisplayPi::StopLoop()
 void DisplayPi::Loop()
 {
    loop_run = true;
-   logger_->Write("DIS", LogNotice, "Starting loop");
+   logger_->Write("DIS", LogNotice, "Starting loop on core : %i", CMultiCoreSupport::ThisCore ());
 
-   while (loop_run)
+   //while (loop_run)
    {
       // Display available frame
       int frame_index = -1;
@@ -219,13 +220,13 @@ void DisplayPi::Loop()
       {
          
          frame_index = frame_queue_[0];
-         //logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i; frame_index = %i", nb_frame_in_queue_, frame_index);
+         logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i; frame_index = %i", nb_frame_in_queue_, frame_index);
          nb_frame_in_queue_--;
 
          memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
 
          SetFrame(frame_index);
-         //logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
+         logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
          Draw();
          Unlock();
 
@@ -244,6 +245,7 @@ void DisplayPi::Loop()
 
 void DisplayPi::VSync(bool dbg)
 {
+   logger_->Write("DIS", LogNotice, "VSYNC...");
    bool clear_framebuffer = false;
    if (full_resolution_cached_ != full_resolution_)
    {
@@ -251,7 +253,7 @@ void DisplayPi::VSync(bool dbg)
       full_resolution_cached_ = full_resolution_;
    }
 
-   if (true/*sync_on_frame_*/) // To turn on : Use the display core !
+   /*if (sync_on_frame_) // To turn on : Use the display core !
    {
       Lock();
       nb_frame_in_queue_ = 0;
@@ -265,7 +267,7 @@ void DisplayPi::VSync(bool dbg)
       }
       Unlock();
    }
-   else
+   else*/
    {
       Lock();
 
@@ -295,6 +297,7 @@ void DisplayPi::VSync(bool dbg)
       Unlock();
    }
    added_line_ = 1;
+   logger_->Write("DIS", LogNotice, "VSYNC Done !");
 }
 
 void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)

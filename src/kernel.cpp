@@ -83,12 +83,6 @@ boolean CKernel::Initialize (void)
    
    if (bOK)
    {
-      bOK = display_->Initialization();
-      m_Logger.Write("Kernel", LogNotice, "display initialization done : %i", bOK);
-   }
-
-   if (bOK)
-   {
       bOK = m_Interrupt.Initialize();
       m_Logger.Write("Kernel", LogNotice, "Interrupt initialization done : %i", bOK);
    }
@@ -123,6 +117,12 @@ boolean CKernel::Initialize (void)
 #else
    sound_ = new SoundPi(&m_Logger, &m_Interrupt, &scheduler_);
 #endif
+
+   if (bOK)
+   {
+      bOK = display_->Initialization();
+      m_Logger.Write("Kernel", LogNotice, "display initialization done : %i", bOK);
+   }
 
    m_Logger.Write("Kernel", LogNotice, "Creating SoundPI");
    sound_->Initialize();

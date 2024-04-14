@@ -97,6 +97,7 @@ void Emulation::Run(unsigned nCore)
          sound_mixer_->PrepareBufferThread();
          keyboard_->UpdatePlugnPlay();
          scheduler_->Yield();
+         display_->Loop();
       }
       
       logger_->Write("Sound", LogNotice, "SoundMixer Ended");
@@ -126,9 +127,9 @@ void Emulation::Run(unsigned nCore)
       }
    case 2:
       // Display loop
-      logger_->Write("CORE", LogNotice, "Display Loop started");
+      /*logger_->Write("CORE", LogNotice, "Display Loop started");
       display_->Loop();
-      logger_->Write("CORE", LogNotice, "Display Loop Ended");
+      logger_->Write("CORE", LogNotice, "Display Loop Ended");*/
 
    default:
       break;
@@ -147,11 +148,13 @@ void Emulation::RunMainLoop()
    while (!finished )
    {
 #define TIME_SLOT  10000
+      logger_->Write("Kernel", LogNotice, "StartOptimizedPlus... !");
       motherboard_->StartOptimizedPlus<true, true, false>(4 * TIME_SLOT*10);
-            
+      logger_->Write("Kernel", LogNotice, "Done !");
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
+         logger_->Write("Kernel", LogNotice, "Select !");
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
          // todo : find a smart way to signal exit
          /*finished = */(menu.Handle()/* == IAction::Action_Shutdown*/);
