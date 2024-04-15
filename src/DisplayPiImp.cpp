@@ -108,10 +108,10 @@ bool DisplayPiImp::Initialization()
 
    //---------------------------------------------------------------------
    VC_RECT_T src_rect;
-   vc_dispmanx_rect_set(&src_rect, 0, 0, 1, 1);
+   vc_dispmanx_rect_set(&src_rect, 0, 0, 1024<<16, 1024<<16);
 
    VC_RECT_T dst_rect;
-   vc_dispmanx_rect_set(&dst_rect, 0, 0, 0, 0);
+   vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
 
                                           
    DISPMANX_ELEMENT_HANDLE_T element =
