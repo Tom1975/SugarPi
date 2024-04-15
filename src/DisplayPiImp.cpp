@@ -79,6 +79,12 @@ bool DisplayPiImp::Initialization()
    back_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, 1024, 1024, &back_ptr_);
    menu_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, 1024, 1024, &menu_ptr_);
 
+   if ( main_resource_ == 0)
+   {
+      logger_->Write("Display", LogNotice, "vc_dispmanx_resource_create result = 0...  ");
+   }
+
+
    DisplayPi::Initialization();
 
    // Add main layer
@@ -94,6 +100,10 @@ bool DisplayPiImp::Initialization()
                                           1024*4,
                                           display_buffer_[0],
                                           &(bmp_rect));
+   if ( result != 0)
+   {
+      logger_->Write("Display", LogNotice, "vc_dispmanx_resource_write_data result = %i ", result);
+   }
 
 
    // Create 
@@ -128,6 +138,11 @@ bool DisplayPiImp::Initialization()
 
 
    result = vc_dispmanx_update_submit_sync(update);
+   if ( result != 0)
+   {
+      logger_->Write("Display", LogNotice, "  vc_dispmanx_update_submit_sync => result = %i ", result);
+   }
+
 
    return true;
 }
@@ -240,8 +255,16 @@ void DisplayPiImp::Draw()
                                           display_buffer_[current_buffer_],
                                           &(bmp_rect));
 
+   if ( result != 0)
+   {
+      logger_->Write("Display", LogNotice, "vc_dispmanx_resource_write_data result = %i ", result);
+   }
 
    result = vc_dispmanx_update_submit_sync(update);
+   if ( result != 0)
+   {
+      logger_->Write("Display", LogNotice, "vc_dispmanx_update_submit_sync result = %i ", result);
+   }
 }
 
 void DisplayPiImp::ClearBuffer(int frame_index)

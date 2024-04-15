@@ -209,7 +209,7 @@ void DisplayPi::StopLoop()
 void DisplayPi::Loop()
 {
    loop_run = true;
-   logger_->Write("DIS", LogNotice, "Starting loop on core : %i", CMultiCoreSupport::ThisCore ());
+   //logger_->Write("DIS", LogNotice, "Starting loop on core : %i", CMultiCoreSupport::ThisCore ());
 
    //while (loop_run)
    {
@@ -245,7 +245,6 @@ void DisplayPi::Loop()
 
 void DisplayPi::VSync(bool dbg)
 {
-   logger_->Write("DIS", LogNotice, "VSYNC...");
    bool clear_framebuffer = false;
    if (full_resolution_cached_ != full_resolution_)
    {
@@ -297,7 +296,6 @@ void DisplayPi::VSync(bool dbg)
       Unlock();
    }
    added_line_ = 1;
-   logger_->Write("DIS", LogNotice, "VSYNC Done !");
 }
 
 void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
