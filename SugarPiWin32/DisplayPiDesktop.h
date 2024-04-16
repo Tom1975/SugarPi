@@ -27,21 +27,14 @@ public:
 
    virtual void Lock() { mutex_.lock(); }
    virtual void Unlock() { mutex_.unlock(); }
-   virtual int* GetVideoBuffer(int y);
-   virtual int GetStride();
    virtual void SetFrame(int frame_index);
    virtual void Draw();
-   virtual void ClearBuffer(int frame_index);
 
    virtual void WindowsToTexture(int& x, int& y);
    virtual const char* GetInformations() { return "GDI"; };
    virtual void ReleaseAll();
    virtual void Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface* pFSInt);
    virtual void WaitVbl();
-   virtual void Reset();
-
-   virtual int GetHeight();
-   virtual int GetWidth();
 
 protected:
    IFullScreenInterface* m_pFSInt;
@@ -51,6 +44,5 @@ protected:
    // DX
    HWND        m_hWnd;
    ID2D1HwndRenderTarget* pRT_;
-   unsigned int* frame_buffer_;
    ID2D1Bitmap* bitmap_;
 };

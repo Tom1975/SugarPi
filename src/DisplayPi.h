@@ -10,7 +10,7 @@
 
 
 class CoolspotFont;
-#define FRAME_BUFFER_SIZE 2
+#define FRAME_BUFFER_SIZE 3
 
 
 class DisplayPi : public IDisplay
@@ -31,8 +31,8 @@ public:
 
    virtual void Config();
    virtual const char* GetInformations();
-   virtual int GetWidth() = 0;
-   virtual int GetHeight() = 0;
+   virtual int GetWidth();
+   virtual int GetHeight();
    virtual void SetSize(SizeEnum size);
    virtual SizeEnum  GetSize();
    virtual void VSync(bool dbg = false);
@@ -80,12 +80,12 @@ public:
    virtual void Unlock() = 0;
 
 
-   virtual int* GetVideoBuffer(int y) = 0;
-   virtual int GetStride() = 0;
+   virtual int* GetVideoBuffer(int y);
+   virtual int GetStride();
+   virtual void ClearBuffer(int frame_index);
 
    virtual void SetFrame(int frame_index) = 0;
    virtual void Draw() = 0;
-   virtual void ClearBuffer(int frame_index) = 0;
 protected:
    //CScreenDevice*		screen_;
    CLogger* logger_;
@@ -102,13 +102,13 @@ protected:
       FR_USED,
       FR_READY
    } FrameState;
-   FrameState frame_used_[FRAME_BUFFER_SIZE];
-   unsigned int buffer_used_;
+   volatile FrameState frame_used_[FRAME_BUFFER_SIZE];
+   volatile unsigned int current_buffer_;
+   int* display_buffer_[FRAME_BUFFER_SIZE];
 
    unsigned int frame_queue_[FRAME_BUFFER_SIZE];
    unsigned int nb_frame_in_queue_;
 
    bool sync_on_frame_;
-   bool loop_run;
    CoolspotFont *font_;
 };

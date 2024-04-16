@@ -2,7 +2,6 @@
 #include "DisplayPi.h"
 
 #include <memory.h>
-#include <circle/multicore.h>
 
 #include "res/button_1.h"
 #include "res/coolspot.h"
@@ -16,21 +15,25 @@
 #define WAIT(x) std::this_thread::sleep_for(std::chrono::milliseconds(x));
 #endif
 
+#define REAL_DISP_X  1024 //832 //1024 // 768
+#define REAL_DISP_Y  624 //-16 //624 //576
 
 DisplayPi::DisplayPi(CLogger* logger) :
    logger_(logger),
    full_resolution_(false),
    full_resolution_cached_(false),
    added_line_(1),
-   buffer_used_(0),
+   current_buffer_(0),
    nb_frame_in_queue_(0),
    sync_on_frame_(false)
 {
+   // Create backbuffers
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
       frame_used_[i] = FR_FREE;
+      display_buffer_[i] = new int [REAL_DISP_X * REAL_DISP_Y];
    }
-   frame_used_[buffer_used_] = FR_USED;
+   frame_used_[current_buffer_] = FR_USED;
 
    
 }
@@ -38,6 +41,10 @@ DisplayPi::DisplayPi(CLogger* logger) :
 DisplayPi::~DisplayPi()
 {
    delete font_;
+   for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
+   {
+      delete []display_buffer_[i];
+   }
 }
 
 bool DisplayPi::Initialization()
@@ -94,11 +101,6 @@ void DisplayPi::StartSync()
 void DisplayPi::WaitVbl()
 {
    Draw();
-}
-
-void DisplayPi::Reset()
-{
-   logger_->Write("Display", LogNotice, "Reset - NOT IMPLEMENTED ");
 }
 
 void DisplayPi::FullScreenToggle()
@@ -203,44 +205,38 @@ int DisplayPi::GetDnDPart()
 
 void DisplayPi::StopLoop()
 {
-   loop_run = false;
 }
 
 void DisplayPi::Loop()
 {
-   loop_run = true;
-   //logger_->Write("DIS", LogNotice, "Starting loop on core : %i", CMultiCoreSupport::ThisCore ());
-
-   //while (loop_run)
+   // Display available frame
+   int frame_index = -1;
+   Lock();
+   if (nb_frame_in_queue_ > 0)
    {
-      // Display available frame
-      int frame_index = -1;
-      Lock();
-      if (!sync_on_frame_ && nb_frame_in_queue_ > 0)
-      {
          
-         frame_index = frame_queue_[0];
-         logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i; frame_index = %i", nb_frame_in_queue_, frame_index);
-         nb_frame_in_queue_--;
+      frame_index = frame_queue_[0];
+      logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i; frame_index = %i", nb_frame_in_queue_, frame_index);
+      nb_frame_in_queue_--;
 
-         memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
+      memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
+      Unlock();
+      SetFrame(frame_index);
 
-         SetFrame(frame_index);
-         logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
-         Draw();
-         Unlock();
-
-         // Set it as available
-         frame_used_[frame_index] = FR_FREE;
-      }
-      else
-      {
-         Unlock();
-         WAIT(1);
-      }
-      // sleep ?
-
+      logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
+      Draw();
+      // Set it as available
+      Lock();
+      frame_used_[frame_index] = FR_FREE;
+      Unlock();
    }
+   else
+   {
+      Unlock();
+      WAIT(1);
+   }
+   // sleep ?
+
 }
 
 void DisplayPi::VSync(bool dbg)
@@ -252,50 +248,44 @@ void DisplayPi::VSync(bool dbg)
       full_resolution_cached_ = full_resolution_;
    }
 
-   /*if (sync_on_frame_) // To turn on : Use the display core !
-   {
-      Lock();
-      nb_frame_in_queue_ = 0;
-      //logger_->Write("DIS", LogNotice, "A frame is present. sync_on_frame_; frame_index = %i", buffer_used_);
-      SetFrame(buffer_used_);
-      Draw();
+   Lock();
 
-      if (clear_framebuffer)
-      {
-         ClearBuffer(buffer_used_);
-      }
-      Unlock();
-   }
-   else*/
+   // The frame is ready : Add it to the queue
+   //logger_->Write("DIS", LogNotice, "VSync : nb_frame_in_queue_ = %i", nb_frame_in_queue_);
+   bool found = false;
+   for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
    {
-      Lock();
-
-      // The frame is ready : Add it to the queue
-      //logger_->Write("DIS", LogNotice, "VSync : nb_frame_in_queue_ = %i", nb_frame_in_queue_);
-      bool found = false;
-      for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
+      if (frame_used_[i] == FR_FREE)
       {
-         if (frame_used_[i] == FR_FREE)
+         frame_queue_[nb_frame_in_queue_++] = current_buffer_;
+         frame_used_[current_buffer_] = FR_READY;
+
+         // Wait for it to be free again !
+         if (sync_on_frame_)
          {
-            frame_queue_[nb_frame_in_queue_++] = buffer_used_;
-            frame_used_[buffer_used_] = FR_READY;
-            //logger_->Write("DIS", LogNotice, "VSync : a frame is free : %i", i);
-            frame_used_[i] = FR_USED;
-            buffer_used_ = i;
-            found = true;
-            break;
+            Unlock();
+            while (frame_used_[current_buffer_] != FR_FREE)
+            {
+               WAIT(1);
+            }
+            Lock();
          }
-      }
-      if (!found)
-      {
-         // No more buffer ready...so reuse the one currently added !
-         frame_used_[buffer_used_] = FR_USED;
-      }
-         
 
-      Unlock();
+         //logger_->Write("DIS", LogNotice, "VSync : a frame is free : %i", i);
+         frame_used_[i] = FR_USED;
+         current_buffer_ = current_buffer_ = i;
+         found = true;
+         break;
+      }
    }
-   added_line_ = 1;
+   if (!found)
+   {
+      // No more buffer ready...so reuse the one currently added !
+      frame_used_[current_buffer_] = FR_USED;
+   }
+         
+   Unlock();
+
 }
 
 void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
@@ -337,4 +327,45 @@ void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
       i++;
       
    }
+}
+
+int* DisplayPi::GetVideoBuffer(int y)
+{
+   return (int*)&display_buffer_[current_buffer_][(y)*REAL_DISP_X ];
+}
+
+int DisplayPi::GetStride()
+{
+   return REAL_DISP_X;
+}
+
+void DisplayPi::Reset()
+{
+   for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
+   {
+      frame_used_[i] = FR_FREE;
+      memset(&display_buffer_[i], 0, REAL_DISP_X * REAL_DISP_Y * FRAME_BUFFER_SIZE);
+   }
+   
+}
+
+int DisplayPi::GetHeight()
+{
+   return REAL_DISP_Y;
+}
+
+int DisplayPi::GetWidth()
+{
+   return REAL_DISP_X;
+}
+
+void DisplayPi::ClearBuffer(int frame_index)
+{
+   unsigned char* line = reinterpret_cast<unsigned char*>(&display_buffer_[frame_index][REAL_DISP_X * REAL_DISP_Y]);
+   for (unsigned int count = 0; count < REAL_DISP_X; count++)
+   {
+      memset(line, 0x0, REAL_DISP_X * 4);
+      line += REAL_DISP_Y * sizeof(int);
+   }
+
 }

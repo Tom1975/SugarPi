@@ -16,7 +16,6 @@ DisplayPiDesktop::DisplayPiDesktop(CLogger* logger) : DisplayPi(logger),
    m_pFSInt(NULL)
 {
    pRT_ = nullptr;
-   frame_buffer_ = nullptr;
 
    CoInitialize(NULL);
 }
@@ -24,7 +23,6 @@ DisplayPiDesktop::DisplayPiDesktop(CLogger* logger) : DisplayPi(logger),
 DisplayPiDesktop::~DisplayPiDesktop()
 {
    if (pRT_)pRT_->Release();
-   delete []frame_buffer_;
    CoUninitialize();
 }
 
@@ -35,31 +33,6 @@ void DisplayPiDesktop::ReleaseAll()
 void DisplayPiDesktop::WindowsToTexture(int& x, int& y)
 {
 
-}
-
-int* DisplayPiDesktop::GetVideoBuffer(int y) 
-{
-   return (int*) & frame_buffer_[(y) * REAL_DISP_X + buffer_used_*(REAL_DISP_X * REAL_DISP_Y)];
-}
-
-int DisplayPiDesktop::GetStride()
-{
-   return REAL_DISP_X;
-}
-
-void DisplayPiDesktop::Reset() 
-{
-   memset(&frame_buffer_[REAL_DISP_X * REAL_DISP_Y* FRAME_BUFFER_SIZE], 0, REAL_DISP_X * REAL_DISP_Y * FRAME_BUFFER_SIZE);
-}
-
-int DisplayPiDesktop::GetHeight()
-{
-   return REAL_DISP_Y;
-}
-
-int DisplayPiDesktop::GetWidth()
-{
-   return REAL_DISP_X;
 }
 
 void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface* pFSInt)
@@ -91,9 +64,6 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
    );
    pD2DFactory->Release();
 
-   frame_buffer_ = (unsigned int*)malloc(
-      REAL_DISP_X * REAL_DISP_Y*4*FRAME_BUFFER_SIZE);
-
    D2D1_SIZE_U size = { 0 };
    D2D1_BITMAP_PROPERTIES props;
    pRT_->GetDpi(&props.dpiX, &props.dpiY);
@@ -106,7 +76,7 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
    size.height = REAL_DISP_Y;
 
    hr = pRT_->CreateBitmap(size,
-      frame_buffer_,
+      display_buffer_[0],
       size.width * 4,
       props,
       &bitmap_);
@@ -127,7 +97,7 @@ void DisplayPiDesktop::SetFrame(int frame_index)
 {
    HRESULT hr;
    hr = bitmap_->CopyFromMemory(NULL,
-      &frame_buffer_[frame_index * REAL_DISP_X * REAL_DISP_Y], REAL_DISP_X * 4);
+      display_buffer_[frame_index], REAL_DISP_X * 4);
 
 }
 
@@ -142,13 +112,3 @@ void DisplayPiDesktop::Draw()
    hr = pRT_->EndDraw();
 }
 
-void DisplayPiDesktop::ClearBuffer(int frame_index)
-{
-   unsigned char* line = reinterpret_cast<unsigned char*>(&frame_buffer_ [REAL_DISP_X * REAL_DISP_Y*frame_index]);
-   for (unsigned int count = 0; count < REAL_DISP_X; count++)
-   {
-      memset(line, 0x0, REAL_DISP_X * 4);
-      line += REAL_DISP_Y * sizeof(int);
-   }
-
-}

@@ -59,8 +59,4 @@ protected:
    DISPMANX_RESOURCE_HANDLE_T menu_resource_;
    long unsigned int menu_ptr_;
 
-   // Various display buffers
-   int * display_buffer_[FRAME_BUFFER_SIZE];
-   unsigned int current_buffer_;
-
 };

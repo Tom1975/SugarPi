@@ -37,11 +37,6 @@ DisplayPiImp::DisplayPiImp(CLogger* logger, CTimer* timer) :DisplayPi(logger),
    timer_(timer),
    mutex_(TASK_LEVEL)   
 {
-   for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
-   {
-      display_buffer_[i] = new int [1024*1024];
-   }
-   current_buffer_ = 0;
 }
 
 DisplayPiImp::~DisplayPiImp()
