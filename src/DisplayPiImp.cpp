@@ -70,9 +70,9 @@ bool DisplayPiImp::Initialization()
 
    // create various objects :
    // Main display for emulation
-   main_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, 1024, 1024, &main_ptr_);
-   back_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, 1024, 1024, &back_ptr_);
-   menu_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, 1024, 1024, &menu_ptr_);
+   main_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &main_ptr_);
+   back_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &back_ptr_);
+   menu_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &menu_ptr_);
 
    if ( main_resource_ == 0)
    {
@@ -87,12 +87,12 @@ bool DisplayPiImp::Initialization()
    vc_dispmanx_rect_set(&(bmp_rect),
                         0,
                         0,
-                        1024,
-                        1024);
+                        WIDTH_VIRTUAL_SCREEN,
+                        HEIGHT_VIRTUAL_SCREEN);
 
    int result = vc_dispmanx_resource_write_data(main_resource_,
                                           VC_IMAGE_ARGB8888,
-                                          1024*4,
+                                          WIDTH_VIRTUAL_SCREEN*sizeof(int),
                                           display_buffer_[0],
                                           &(bmp_rect));
    if ( result != 0)
@@ -115,7 +115,7 @@ bool DisplayPiImp::Initialization()
    logger_->Write("Display", LogNotice, " ####SCREEN W : %i; H : %i ", vars->info.width, vars->info.height);
 
    VC_RECT_T src_rect;
-   vc_dispmanx_rect_set(&src_rect, 147, 47, 768 <<16, 277<<16);
+   vc_dispmanx_rect_set(&src_rect, 147, 47, (768-147) <<16, (277-47)<<16);
 
    VC_RECT_T dst_rect;
    vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
@@ -195,7 +195,7 @@ void DisplayPiImp::WaitVbl()
 int DisplayPiImp::GetStride()
 {
    // TODO : stride is for int* !!!
-   return 1920 * 4;
+   return WIDTH_VIRTUAL_SCREEN;
 }
 
 int DisplayPiImp::GetWidth()
