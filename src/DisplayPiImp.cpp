@@ -107,7 +107,7 @@ bool DisplayPiImp::Initialization()
    VC_DISPMANX_ALPHA_T alpha =
    {
       DISPMANX_FLAGS_ALPHA_FROM_SOURCE, 
-      255,
+      120,
       0
    };
 
@@ -115,16 +115,18 @@ bool DisplayPiImp::Initialization()
    logger_->Write("Display", LogNotice, " ####SCREEN W : %i; H : %i ", vars->info.width, vars->info.height);
 
    VC_RECT_T src_rect;
-   vc_dispmanx_rect_set(&src_rect, 147, 47, (768-147) <<16, (277-47)<<16);
+   //vc_dispmanx_rect_set(&src_rect, 147, 47, (768-147) <<16, (277-47)<<16);
+   vc_dispmanx_rect_set(&src_rect, 0,0 , WIDTH_VIRTUAL_SCREEN<<16, HEIGHT_VIRTUAL_SCREEN<<16);
 
    VC_RECT_T dst_rect;
-   vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
+   //vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
+   vc_dispmanx_rect_set(&dst_rect, 0, 0, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN);
 
                                           
    DISPMANX_ELEMENT_HANDLE_T element =
       vc_dispmanx_element_add(update,
                               vars->display,
-                              0,
+                              2000,
                               &dst_rect,
                               main_resource_,
                               &src_rect,
