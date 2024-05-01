@@ -141,7 +141,6 @@ void Emulation::Run(unsigned nCore)
 
 void Emulation::RunMainLoop()
 {
-   ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
    unsigned nCelsiusOldTmp = 0;
    int count = 0;
    bool finished = false;
@@ -154,6 +153,7 @@ void Emulation::RunMainLoop()
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
+         ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
          logger_->Write("Kernel", LogNotice, "Select !");
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
          // todo : find a smart way to signal exit

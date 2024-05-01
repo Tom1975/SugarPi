@@ -6,7 +6,7 @@
 #include <circle/types.h>
 #include <circle/bcmpropertytags.h>
 #include <circle/debug.h>
-
+#include <circle/multicore.h>
 #include "bcm_host.h"
 #include <circle/addon/vc4/interface/vcinclude/common.h>
 
@@ -142,6 +142,14 @@ bool DisplayPiImp::Initialization()
       logger_->Write("Display", LogNotice, "  vc_dispmanx_update_submit_sync => result = %i ", result);
    }
 
+   logger_->Write("Display", LogNotice, " End init.. Draw");
+   for (int i = 0; i < 10; i++)
+   {
+      logger_->Write("Display", LogNotice, " Init draw number : %i", i);
+      Draw();
+   }
+   
+   logger_->Write("Display", LogNotice, " End init.. Draw done.");
 
    return true;
 }
@@ -231,12 +239,13 @@ void DisplayPiImp::SyncWithFrame (bool set)
 
 void DisplayPiImp::SetFrame(int frame_index)
 {
-   // todo
+   logger_->Write("Draw", LogNotice, " SetFrame : %i", frame_index);
    current_buffer_ = frame_index;
 }
 
 void DisplayPiImp::Draw()
 {
+   logger_->Write("Draw", LogNotice, " vc_dispmanx_update_start - Core : %i", CMultiCoreSupport::ThisCore() );
    DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
    assert(update != 0);
 
@@ -245,8 +254,10 @@ void DisplayPiImp::Draw()
    vc_dispmanx_rect_set(&(bmp_rect),
                         0,
                         0,
-                        1024,
-                        1024);
+                        WIDTH_VIRTUAL_SCREEN,
+                        HEIGHT_VIRTUAL_SCREEN);
+
+   logger_->Write("Draw", LogNotice, " vc_dispmanx_resource_write_data, current_buffer_ = %i", current_buffer_);
 
    int result = vc_dispmanx_resource_write_data(main_resource_,
                                           VC_IMAGE_ARGB8888,
@@ -259,6 +270,7 @@ void DisplayPiImp::Draw()
       logger_->Write("Display", LogNotice, "vc_dispmanx_resource_write_data result = %i ", result);
    }
 
+   logger_->Write("Draw", LogNotice, " vc_dispmanx_update_submit_sync");
    result = vc_dispmanx_update_submit_sync(update);
    if ( result != 0)
    {

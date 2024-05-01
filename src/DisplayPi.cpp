@@ -16,7 +16,8 @@
 #endif
 
 #define REAL_DISP_X  1024 //832 //1024 // 768
-#define REAL_DISP_Y  624 //-16 //624 //576
+#define REAL_DISP_Y  (288*2) // 624 //-16 //624 //576
+//HEIGHT_VIRTUAL_SCREEN (288*2)
 
 DisplayPi::DisplayPi(CLogger* logger) :
    logger_(logger),
@@ -227,6 +228,7 @@ void DisplayPi::Loop()
       Draw();
       // Set it as available
       Lock();
+      logger_->Write("DIS", LogNotice, "Set current slot as free ! : %i", frame_index);
       frame_used_[frame_index] = FR_FREE;
       Unlock();
    }
@@ -257,11 +259,12 @@ void DisplayPi::VSync(bool dbg)
    {
       if (frame_used_[i] == FR_FREE)
       {
+         logger_->Write("VSync", LogNotice, "Add a frame in the buffer : %i", i);
          frame_queue_[nb_frame_in_queue_++] = current_buffer_;
          frame_used_[current_buffer_] = FR_READY;
 
          // Wait for it to be free again !
-         if (sync_on_frame_)
+         /*if (sync_on_frame_)
          {
             Unlock();
             while (frame_used_[current_buffer_] != FR_FREE)
@@ -269,7 +272,7 @@ void DisplayPi::VSync(bool dbg)
                WAIT(1);
             }
             Lock();
-         }
+         }*/
 
          //logger_->Write("DIS", LogNotice, "VSync : a frame is free : %i", i);
          frame_used_[i] = FR_USED;

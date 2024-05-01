@@ -132,6 +132,7 @@ boolean CKernel::Initialize (void)
    {
       bOK = keyboard_->Initialize();
    }
+
 #endif
    if (bOK)
    {
@@ -139,12 +140,10 @@ boolean CKernel::Initialize (void)
       bOK = emulation_.Initialize(display_, sound_, keyboard_, &scheduler_);	// must be initialized at last
       m_Logger.Write("Kernel", LogNotice, "Initialisation done done !");
    }
-
    m_Logger.Write("Kernel", LogNotice, "Initialisation done. Waiting for CPUThrottle %i", bOK ? 1 : 0);
 
    CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
 
-   
    m_Logger.Write("Kernel", LogNotice, "Initialisation done. Result = %i - CPU Speed max value : %i", bOK?1:0, CCPUThrottle::Get()->GetMaxClockRate());
    return bOK;
 }
