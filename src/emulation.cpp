@@ -153,8 +153,8 @@ void Emulation::RunMainLoop()
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
+         logger_->Write("Kernel", LogNotice, "Select...");
          ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
-         logger_->Write("Kernel", LogNotice, "Select !");
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
          // todo : find a smart way to signal exit
          /*finished = */(menu.Handle()/* == IAction::Action_Shutdown*/);
@@ -166,6 +166,7 @@ void Emulation::RunMainLoop()
          if (count == 10)
          {
             // Temperature
+            logger_->Write("Kernel", LogNotice, "GetTemperature...");
             unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
             if (nCelsiusOldTmp != nCelsius)
             {

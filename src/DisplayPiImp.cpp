@@ -64,8 +64,9 @@ bool DisplayPiImp::Initialization()
    assert(ret == 0);
 
    int pitch = ALIGN_UP(vars->info.width*4, 32);
-   printk( "Display is %d x %d\n", vars->info.width, vars->info.height );
+   printk( "Display is %d x %d - pitch : %i\n", vars->info.width, vars->info.height, pitch );
 
+   // Image : depending on the screen !
    vars->image = calloc( 1, vars->info.height * pitch);
 
    // create various objects :
@@ -261,7 +262,7 @@ void DisplayPiImp::Draw()
 
    int result = vc_dispmanx_resource_write_data(main_resource_,
                                           VC_IMAGE_ARGB8888,
-                                          1024*4,
+                                          WIDTH_VIRTUAL_SCREEN*sizeof(int),
                                           display_buffer_[current_buffer_],
                                           &(bmp_rect));
 
