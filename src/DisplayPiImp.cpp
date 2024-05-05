@@ -99,14 +99,15 @@ bool DisplayPiImp::Initialization()
 
    // create various objects :
    // Main display for emulation
-   main_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &main_ptr_);
-   //back_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &back_ptr_);
+   for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
+      main_resource_[i] = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &main_ptr_);
+   //main_resource_[1] = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &back_ptr_);
    //menu_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &menu_ptr_);
 
-   if ( main_resource_ == 0)
+   /*if ( main_resource_ == 0)
    {
       logger_->Write("Display", LogNotice, "vc_dispmanx_resource_create result = 0...  ");
-   }
+   }*/
 
 
    // Add main layer
@@ -117,7 +118,7 @@ bool DisplayPiImp::Initialization()
                         WIDTH_VIRTUAL_SCREEN,
                         HEIGHT_VIRTUAL_SCREEN);
 
-   int result = vc_dispmanx_resource_write_data(main_resource_,
+   int result = vc_dispmanx_resource_write_data(main_resource_[0],
                                           VC_IMAGE_ARGB8888,
                                           pitch,
                                           display_buffer_[0],
@@ -150,12 +151,12 @@ bool DisplayPiImp::Initialization()
    //vc_dispmanx_rect_set(&dst_rect, 0, 0, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN);
 
                                           
-   DISPMANX_ELEMENT_HANDLE_T element =
+   element_ =
       vc_dispmanx_element_add(update,
                               vars->display,
                               2000,
                               &dst_rect,
-                              main_resource_,
+                              main_resource_[0],
                               &src_rect,
                               DISPMANX_PROTECTION_NONE,
                               &alpha,
@@ -168,14 +169,7 @@ bool DisplayPiImp::Initialization()
    {
       logger_->Write("Display", LogNotice, "  vc_dispmanx_update_submit_sync => result = %i ", result);
    }
-   CTimer::Get ()->MsDelay(10000000);
-   logger_->Write("Display", LogNotice, " End init.. Draw");
-   for (int i = 0; i < 10; i++)
-   {
-      logger_->Write("Display", LogNotice, " Init draw number : %i", i);
-      Draw();
-   }
-   
+
    logger_->Write("Display", LogNotice, " End init.. Draw done.");
 
    DisplayPi::Initialization();
@@ -277,8 +271,6 @@ void DisplayPiImp::SetFrame(int frame_index)
 void DisplayPiImp::Draw()
 {
    logger_->Write("Draw", LogNotice, " vc_dispmanx_update_start - Core : %i", CMultiCoreSupport::ThisCore() );
-   DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
-   assert(update != 0);
 
    // Copy framebuffer
    VC_RECT_T bmp_rect;
@@ -290,9 +282,12 @@ void DisplayPiImp::Draw()
 
    logger_->Write("Draw", LogNotice, " vc_dispmanx_resource_write_data, current_buffer_ = %i", current_buffer_);
 
-   int result = vc_dispmanx_resource_write_data(main_resource_,
+   int pitch = ALIGN_UP(WIDTH_VIRTUAL_SCREEN*4, 32);
+
+
+   int result = vc_dispmanx_resource_write_data(main_resource_[current_buffer_],
                                           VC_IMAGE_ARGB8888,
-                                          WIDTH_VIRTUAL_SCREEN*sizeof(int),
+                                          pitch,
                                           display_buffer_[current_buffer_],
                                           &(bmp_rect));
 
@@ -301,6 +296,10 @@ void DisplayPiImp::Draw()
       logger_->Write("Display", LogNotice, "vc_dispmanx_resource_write_data result = %i ", result);
    }
 
+   DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
+
+   vc_dispmanx_element_change_source (update, element_, main_resource_[current_buffer_]);
+   
    logger_->Write("Draw", LogNotice, " vc_dispmanx_update_submit_sync");
    result = vc_dispmanx_update_submit_sync(update);
    if ( result != 0)

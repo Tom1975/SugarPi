@@ -50,7 +50,7 @@ protected:
    CTimer* timer_;
    CSpinLock   mutex_;
 
-   DISPMANX_RESOURCE_HANDLE_T main_resource_;
+   DISPMANX_RESOURCE_HANDLE_T main_resource_[FRAME_BUFFER_SIZE];
    long unsigned int main_ptr_;
 
    DISPMANX_RESOURCE_HANDLE_T back_resource_;
@@ -59,4 +59,5 @@ protected:
    DISPMANX_RESOURCE_HANDLE_T menu_resource_;
    long unsigned int menu_ptr_;
 
+   DISPMANX_ELEMENT_HANDLE_T element_;
 };
