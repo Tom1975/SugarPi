@@ -101,6 +101,7 @@ void DisplayPi::StartSync()
 // Wait VBL
 void DisplayPi::WaitVbl()
 {
+   logger_->Write("Display", LogNotice, "WaitVbl");
    Draw();
 }
 
@@ -221,13 +222,11 @@ void DisplayPi::Loop()
       nb_frame_in_queue_--;
 
       memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
-      Unlock();
       SetFrame(frame_index);
 
       logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
       Draw();
       // Set it as available
-      Lock();
       logger_->Write("DIS", LogNotice, "Set current slot as free ! : %i", frame_index);
       frame_used_[frame_index] = FR_FREE;
       Unlock();
@@ -255,6 +254,8 @@ void DisplayPi::VSync(bool dbg)
    // The frame is ready : Add it to the queue
    //logger_->Write("DIS", LogNotice, "VSync : nb_frame_in_queue_ = %i", nb_frame_in_queue_);
    bool found = false;
+
+#if 0
    for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
    {
       if (frame_used_[i] == FR_FREE)
@@ -286,8 +287,18 @@ void DisplayPi::VSync(bool dbg)
       // No more buffer ready...so reuse the one currently added !
       frame_used_[current_buffer_] = FR_USED;
    }
-         
    Unlock();
+   #else
+   nb_frame_in_queue_ = 1;
+   // wait until draw is done
+   Unlock();
+   while ( nb_frame_in_queue_ == 1)
+   {
+      WAIT(10);
+   }
+   #endif
+         
+   
 
 }
 

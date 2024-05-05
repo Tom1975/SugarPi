@@ -43,6 +43,27 @@ DisplayPiImp::~DisplayPiImp()
 {
 }
 
+static void FillRect( void *image, int pitch, int aligned_height, int x, int y, int w, int h, int val )
+{
+    int         row;
+    int         col;
+
+    uint32_t *line = (uint32_t *)image + y * (pitch>>1) + x;
+
+    for ( row = 0; row < h; row++ )
+    {
+        for ( col = 0; col < w; col++ )
+        {
+            line[col] = val;
+        }
+        line += (pitch>>1);
+    }
+}
+
+#ifndef ALIGN_UP
+#define ALIGN_UP(x,y)  ((x + (y)-1) & ~((y)-1))
+#endif
+
 bool DisplayPiImp::Initialization()
 {
    logger_->Write("Display", LogNotice, "Initialization...");
@@ -63,25 +84,30 @@ bool DisplayPiImp::Initialization()
    int ret = vc_dispmanx_display_get_info( vars->display, &vars->info);
    assert(ret == 0);
 
-   int pitch = ALIGN_UP(vars->info.width*4, 32);
+   //int pitch = ALIGN_UP(vars->info.width*4, 32);
+   int pitch = ALIGN_UP(WIDTH_VIRTUAL_SCREEN*4, 32);
+   int aligned_height = ALIGN_UP(HEIGHT_VIRTUAL_SCREEN, 16);
    printk( "Display is %d x %d - pitch : %i\n", vars->info.width, vars->info.height, pitch );
 
    // Image : depending on the screen !
    vars->image = calloc( 1, vars->info.height * pitch);
 
+    FillRect( display_buffer_[0], pitch, aligned_height,  0,  0, WIDTH_VIRTUAL_SCREEN,      HEIGHT_VIRTUAL_SCREEN,      0xFFFFFFFF );
+    FillRect( display_buffer_[0], pitch, aligned_height,  0,  0, WIDTH_VIRTUAL_SCREEN,      HEIGHT_VIRTUAL_SCREEN,      0x8000F800 );
+    FillRect( display_buffer_[0], pitch, aligned_height, 20, 20, WIDTH_VIRTUAL_SCREEN - 40, HEIGHT_VIRTUAL_SCREEN - 40, 0x800007E0 );
+    FillRect( display_buffer_[0], pitch, aligned_height, 40, 40, WIDTH_VIRTUAL_SCREEN - 80, HEIGHT_VIRTUAL_SCREEN - 80, 0x8000001F );
+
    // create various objects :
    // Main display for emulation
    main_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &main_ptr_);
-   back_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &back_ptr_);
-   menu_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &menu_ptr_);
+   //back_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &back_ptr_);
+   //menu_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &menu_ptr_);
 
    if ( main_resource_ == 0)
    {
       logger_->Write("Display", LogNotice, "vc_dispmanx_resource_create result = 0...  ");
    }
 
-
-   DisplayPi::Initialization();
 
    // Add main layer
    VC_RECT_T bmp_rect;
@@ -93,9 +119,9 @@ bool DisplayPiImp::Initialization()
 
    int result = vc_dispmanx_resource_write_data(main_resource_,
                                           VC_IMAGE_ARGB8888,
-                                          WIDTH_VIRTUAL_SCREEN*sizeof(int),
+                                          pitch,
                                           display_buffer_[0],
-                                          &(bmp_rect));
+                                          &bmp_rect);
    if ( result != 0)
    {
       logger_->Write("Display", LogNotice, "vc_dispmanx_resource_write_data result = %i ", result);
@@ -103,7 +129,7 @@ bool DisplayPiImp::Initialization()
 
 
    // Create 
-   DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
+   DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(10);
 
    VC_DISPMANX_ALPHA_T alpha =
    {
@@ -120,8 +146,8 @@ bool DisplayPiImp::Initialization()
    vc_dispmanx_rect_set(&src_rect, 0,0 , WIDTH_VIRTUAL_SCREEN<<16, HEIGHT_VIRTUAL_SCREEN<<16);
 
    VC_RECT_T dst_rect;
-   //vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
-   vc_dispmanx_rect_set(&dst_rect, 0, 0, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN);
+   vc_dispmanx_rect_set(&dst_rect, 20, 20, vars->info.width-10, vars->info.height-10);
+   //vc_dispmanx_rect_set(&dst_rect, 0, 0, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN);
 
                                           
    DISPMANX_ELEMENT_HANDLE_T element =
@@ -142,7 +168,7 @@ bool DisplayPiImp::Initialization()
    {
       logger_->Write("Display", LogNotice, "  vc_dispmanx_update_submit_sync => result = %i ", result);
    }
-
+   CTimer::Get ()->MsDelay(10000000);
    logger_->Write("Display", LogNotice, " End init.. Draw");
    for (int i = 0; i < 10; i++)
    {
@@ -151,6 +177,10 @@ bool DisplayPiImp::Initialization()
    }
    
    logger_->Write("Display", LogNotice, " End init.. Draw done.");
+
+   DisplayPi::Initialization();
+
+
 
    return true;
 }

@@ -89,9 +89,14 @@ void Emulation::Run(unsigned nCore)
    case 0:
       // Run sound loop
       //sound_mutex_.Acquire();
-      sound_is_ready = true;
       //sound_mutex_.Release();
       logger_->Write("Sound", LogNotice, "SoundMixer Started");
+
+      for (int i = 0; i < 10; i++)
+         display_->Draw();
+
+      sound_is_ready = true;
+
       while(sound_run_)
       {
          sound_mixer_->PrepareBufferThread();
