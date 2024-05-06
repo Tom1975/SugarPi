@@ -148,7 +148,9 @@ bool DisplayPiImp::Initialization()
    vc_dispmanx_rect_set(&src_rect, 0,0 , WIDTH_VIRTUAL_SCREEN<<16, HEIGHT_VIRTUAL_SCREEN<<16);
 
    VC_RECT_T dst_rect;
+   //vc_dispmanx_rect_set(&dst_rect, 147, 47, (768-147), (277-47));
    vc_dispmanx_rect_set(&dst_rect, 20, 20, vars->info.width-10, vars->info.height-10);
+   //vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
    //vc_dispmanx_rect_set(&dst_rect, 0, 0, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN);
 
                                           
@@ -248,7 +250,7 @@ int* DisplayPiImp::GetVideoBuffer(int y)
 {
    if ( y > HEIGHT_VIRTUAL_SCREEN) y = HEIGHT_VIRTUAL_SCREEN-1;
 
-   return &display_buffer_[current_buffer_][ y * 1024*4 ];
+   return &display_buffer_[current_buffer_][ y * 1024  ];
 }
 
 void DisplayPiImp::SyncWithFrame (bool set)
@@ -265,7 +267,7 @@ void DisplayPiImp::SyncWithFrame (bool set)
 
 void DisplayPiImp::SetFrame(int frame_index)
 {
-   logger_->Write("Draw", LogNotice, " SetFrame : %i", frame_index);
+   //logger_->Write("Draw", LogNotice, " SetFrame : %i", frame_index);
    current_buffer_ = frame_index;
 }
 

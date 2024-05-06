@@ -218,16 +218,16 @@ void DisplayPi::Loop()
    {
          
       frame_index = frame_queue_[0];
-      logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i; frame_index = %i", nb_frame_in_queue_, frame_index);
+      //logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i; frame_index = %i", nb_frame_in_queue_, frame_index);
       nb_frame_in_queue_--;
 
       memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
       SetFrame(frame_index);
 
-      logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
+      //logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
       Draw();
       // Set it as available
-      logger_->Write("DIS", LogNotice, "Set current slot as free ! : %i", frame_index);
+      //logger_->Write("DIS", LogNotice, "Set current slot as free ! : %i", frame_index);
       frame_used_[frame_index] = FR_FREE;
       Unlock();
    }
