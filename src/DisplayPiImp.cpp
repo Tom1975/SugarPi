@@ -271,8 +271,6 @@ void DisplayPiImp::SetFrame(int frame_index)
 
 void DisplayPiImp::Draw()
 {
-   logger_->Write("Draw", LogNotice, " vc_dispmanx_update_start - Core : %i", CMultiCoreSupport::ThisCore() );
-
    // Copy framebuffer
    VC_RECT_T bmp_rect;
    vc_dispmanx_rect_set(&(bmp_rect),
@@ -280,8 +278,6 @@ void DisplayPiImp::Draw()
                         0,
                         WIDTH_VIRTUAL_SCREEN,
                         HEIGHT_VIRTUAL_SCREEN);
-
-   logger_->Write("Draw", LogNotice, " vc_dispmanx_resource_write_data, current_buffer_ = %i", current_buffer_);
 
    int pitch = ALIGN_UP(WIDTH_VIRTUAL_SCREEN*4, 32);
 
@@ -301,7 +297,6 @@ void DisplayPiImp::Draw()
 
    vc_dispmanx_element_change_source (update, element_, main_resource_[current_buffer_]);
    
-   logger_->Write("Draw", LogNotice, " vc_dispmanx_update_submit_sync");
    result = vc_dispmanx_update_submit_sync(update);
    if ( result != 0)
    {
