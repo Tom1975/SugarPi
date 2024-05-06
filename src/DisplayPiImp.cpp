@@ -48,7 +48,8 @@ static void FillRect( void *image, int pitch, int aligned_height, int x, int y, 
     int         row;
     int         col;
 
-    uint32_t *line = (uint32_t *)image + y * (pitch>>1) + x;
+   // pitch /4 because ARGB 32 bits !
+    uint32_t *line = (uint32_t *)image + y * (pitch>>2) + x;
 
     for ( row = 0; row < h; row++ )
     {
@@ -56,7 +57,7 @@ static void FillRect( void *image, int pitch, int aligned_height, int x, int y, 
         {
             line[col] = val;
         }
-        line += (pitch>>1);
+        line += (pitch>>2);
     }
 }
 
@@ -92,10 +93,10 @@ bool DisplayPiImp::Initialization()
    // Image : depending on the screen !
    vars->image = calloc( 1, vars->info.height * pitch);
 
-    FillRect( display_buffer_[0], pitch, aligned_height,  0,  0, WIDTH_VIRTUAL_SCREEN,      HEIGHT_VIRTUAL_SCREEN,      0xFFFFFFFF );
-    FillRect( display_buffer_[0], pitch, aligned_height,  0,  0, WIDTH_VIRTUAL_SCREEN,      HEIGHT_VIRTUAL_SCREEN,      0x8000F800 );
-    FillRect( display_buffer_[0], pitch, aligned_height, 20, 20, WIDTH_VIRTUAL_SCREEN - 40, HEIGHT_VIRTUAL_SCREEN - 40, 0x800007E0 );
-    FillRect( display_buffer_[0], pitch, aligned_height, 40, 40, WIDTH_VIRTUAL_SCREEN - 80, HEIGHT_VIRTUAL_SCREEN - 80, 0x8000001F );
+    FillRect( display_buffer_[0], pitch, aligned_height,  0,  0, WIDTH_VIRTUAL_SCREEN,      HEIGHT_VIRTUAL_SCREEN,       0xFFFFFFFF );
+    FillRect( display_buffer_[0], pitch, aligned_height, 20, 20, WIDTH_VIRTUAL_SCREEN - 40, HEIGHT_VIRTUAL_SCREEN -40,   0xFF00F800 );
+    FillRect( display_buffer_[0], pitch, aligned_height, 40, 40, WIDTH_VIRTUAL_SCREEN - 80, HEIGHT_VIRTUAL_SCREEN - 800, 0xFF0007E0 );
+    FillRect( display_buffer_[0], pitch, aligned_height, 60, 60, WIDTH_VIRTUAL_SCREEN - 120,HEIGHT_VIRTUAL_SCREEN - 120, 0xFF00001F );
 
    // create various objects :
    // Main display for emulation
