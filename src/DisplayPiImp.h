@@ -59,5 +59,8 @@ protected:
    DISPMANX_RESOURCE_HANDLE_T menu_resource_;
    long unsigned int menu_ptr_;
 
+   DISPMANX_RESOURCE_HANDLE_T title_resource_;
+   long unsigned int title_ptr_;
+
    DISPMANX_ELEMENT_HANDLE_T element_;
 };

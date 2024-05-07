@@ -99,11 +99,18 @@ bool DisplayPiImp::Initialization()
     FillRect( display_buffer_[0], pitch, aligned_height, 60, 60, WIDTH_VIRTUAL_SCREEN - 120,HEIGHT_VIRTUAL_SCREEN - 120, 0xFF00001F );
 
    // create various objects :
+   // background
+   back_resource_ = vc_dispmanx_resource_create (VC_IMAGE_XRGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &menu_ptr_);
+
    // Main display for emulation
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
-      main_resource_[i] = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &main_ptr_);
-   //main_resource_[1] = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &back_ptr_);
-   //menu_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &menu_ptr_);
+      main_resource_[i] = vc_dispmanx_resource_create (VC_IMAGE_XRGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &main_ptr_);
+
+   // Title
+   title_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &title_ptr_);
+
+   // Menu
+   menu_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &menu_ptr_);
 
    /*if ( main_resource_ == 0)
    {
@@ -120,7 +127,7 @@ bool DisplayPiImp::Initialization()
                         HEIGHT_VIRTUAL_SCREEN);
 
    int result = vc_dispmanx_resource_write_data(main_resource_[0],
-                                          VC_IMAGE_ARGB8888,
+                                          VC_IMAGE_XRGB8888,
                                           pitch,
                                           display_buffer_[0],
                                           &bmp_rect);
@@ -285,7 +292,7 @@ void DisplayPiImp::Draw()
 
 
    int result = vc_dispmanx_resource_write_data(main_resource_[current_buffer_],
-                                          VC_IMAGE_ARGB8888,
+                                          VC_IMAGE_XRGB8888,
                                           pitch,
                                           display_buffer_[current_buffer_],
                                           &(bmp_rect));
