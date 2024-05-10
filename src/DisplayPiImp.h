@@ -63,4 +63,7 @@ protected:
    long unsigned int title_ptr_;
 
    DISPMANX_ELEMENT_HANDLE_T element_;
+   DISPMANX_ELEMENT_HANDLE_T back_element_;
+
+   int* background_buffer_;
 };

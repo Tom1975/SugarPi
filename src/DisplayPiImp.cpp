@@ -10,9 +10,11 @@
 #include "bcm_host.h"
 #include <circle/addon/vc4/interface/vcinclude/common.h>
 
+#include <math.h> 
 
 #include "res/button_1.h"
 #include "res/coolspot.h"
+#include "res/SugarboxLogo.h"
 
 
 #define WIDTH_SCREEN 640
@@ -20,6 +22,24 @@
 
 #define WIDTH_VIRTUAL_SCREEN 1024
 #define HEIGHT_VIRTUAL_SCREEN (288*2)
+
+
+typedef enum {
+   DISPMANX_ELEMENT_CHANGE_MIN         =  0x00,
+   DISPMANX_ELEMENT_CHANGE_SOURCE      =  0x01,
+   DISPMANX_ELEMENT_CHANGE_DEST_RECT   =  0x02,
+   DISPMANX_ELEMENT_CHANGE_SRC_RECT    =  0x04,
+   DISPMANX_ELEMENT_CHANGE_OPACITY     =  0x08,
+   DISPMANX_ELEMENT_CHANGE_MASK        =  0x10,
+   DISPMANX_ELEMENT_CHANGE_LAYER       =  0x20,
+   DISPMANX_ELEMENT_CHANGE_TRANSFORM   =  0x40,
+   DISPMANX_ELEMENT_INSERT_ABOVE       =  0x80,
+   DISPMANX_ELEMENT_CHANGE_FLAGS       =  0x100,
+   DISPMANX_ELEMENT_CHANGE_NOTHING     =  0x200,
+   DISPMANX_ELEMENT_CHANGE_ALPHA_FLAGS =  0x400,
+   DISPMANX_ELEMENT_CHANGE_PROTECTION  =  0x800,
+   DISPMANX_ELEMENT_CHANGE_MAX         =  0x1000
+} DISPMANX_ELEMENT_CHANGE_T;
 
 typedef struct
 {
@@ -43,27 +63,12 @@ DisplayPiImp::~DisplayPiImp()
 {
 }
 
-static void FillRect( void *image, int pitch, int aligned_height, int x, int y, int w, int h, int val )
-{
-    int         row;
-    int         col;
-
-   // pitch /4 because ARGB 32 bits !
-    uint32_t *line = (uint32_t *)image + y * (pitch>>2) + x;
-
-    for ( row = 0; row < h; row++ )
-    {
-        for ( col = 0; col < w; col++ )
-        {
-            line[col] = val;
-        }
-        line += (pitch>>2);
-    }
-}
-
 #ifndef ALIGN_UP
 #define ALIGN_UP(x,y)  ((x + (y)-1) & ~((y)-1))
 #endif
+
+   RECT_VARS_T    *vars;   
+   static RECT_VARS_T gRectVars;
 
 bool DisplayPiImp::Initialization()
 {
@@ -72,8 +77,6 @@ bool DisplayPiImp::Initialization()
    ListEDID();
 
    // TODO :Init dispmanx
-   RECT_VARS_T    *vars;   
-   static RECT_VARS_T gRectVars;
    uint32_t        screen = 0;
    vars = &gRectVars;
 
@@ -90,17 +93,9 @@ bool DisplayPiImp::Initialization()
    int aligned_height = ALIGN_UP(HEIGHT_VIRTUAL_SCREEN, 16);
    printk( "Display is %d x %d - pitch : %i\n", vars->info.width, vars->info.height, pitch );
 
-   // Image : depending on the screen !
-   vars->image = calloc( 1, vars->info.height * pitch);
-
-    FillRect( display_buffer_[0], pitch, aligned_height,  0,  0, WIDTH_VIRTUAL_SCREEN,      HEIGHT_VIRTUAL_SCREEN,       0xFFFFFFFF );
-    FillRect( display_buffer_[0], pitch, aligned_height, 20, 20, WIDTH_VIRTUAL_SCREEN - 40, HEIGHT_VIRTUAL_SCREEN -40,   0xFF00F800 );
-    FillRect( display_buffer_[0], pitch, aligned_height, 40, 40, WIDTH_VIRTUAL_SCREEN - 80, HEIGHT_VIRTUAL_SCREEN - 800, 0xFF0007E0 );
-    FillRect( display_buffer_[0], pitch, aligned_height, 60, 60, WIDTH_VIRTUAL_SCREEN - 120,HEIGHT_VIRTUAL_SCREEN - 120, 0xFF00001F );
-
    // create various objects :
    // background
-   back_resource_ = vc_dispmanx_resource_create (VC_IMAGE_XRGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &menu_ptr_);
+   back_resource_ = vc_dispmanx_resource_create (VC_IMAGE_XRGB8888, vars->info.width + 0x40, vars->info.height+ 0x40, &menu_ptr_);
 
    // Main display for emulation
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
@@ -111,12 +106,6 @@ bool DisplayPiImp::Initialization()
 
    // Menu
    menu_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &menu_ptr_);
-
-   /*if ( main_resource_ == 0)
-   {
-      logger_->Write("Display", LogNotice, "vc_dispmanx_resource_create result = 0...  ");
-   }*/
-
 
    // Add main layer
    VC_RECT_T bmp_rect;
@@ -131,6 +120,45 @@ bool DisplayPiImp::Initialization()
                                           pitch,
                                           display_buffer_[0],
                                           &bmp_rect);
+
+   // Write background
+   int width = vars->info.width+ 0x40;
+   int height = vars->info.height+ 0x40;
+   
+   VC_RECT_T back_rect;
+   vc_dispmanx_rect_set(&(back_rect),
+                        0,
+                        0,
+                        width,
+                        height);   
+
+   int back_pitch = ALIGN_UP(width*4, 32);
+
+   background_buffer_ = new int [back_pitch*height];
+   logger_->Write("Display", LogNotice, "background_buffer_ allocated - pitch = %i", back_pitch);
+   for (int i = 0; i < height; i++)
+   {
+      for (int j = 0; j < width; j++)
+      {
+         if ( (( (j & 0x3F) < 0x20) && ((i&0x3F) < 0x20)  )
+         ||(( (j & 0x3F) >= 0x20) && ((i&0x3F) >= 0x20)) )
+         {
+            background_buffer_[i*width + j] = 0xFFCCCCCC;
+         }
+         else
+         {
+            background_buffer_[i*width + j] = 0xFFDDDDDD;
+         }
+      }
+   }
+   logger_->Write("Display", LogNotice, "background_buffer_ generated");
+   result = vc_dispmanx_resource_write_data(back_resource_,
+                                          VC_IMAGE_XRGB8888,
+                                          back_pitch,
+                                          background_buffer_,
+                                          &back_rect);
+   logger_->Write("Display", LogNotice, "background_buffer_ written");
+
    if ( result != 0)
    {
       logger_->Write("Display", LogNotice, "vc_dispmanx_resource_write_data result = %i ", result);
@@ -140,29 +168,41 @@ bool DisplayPiImp::Initialization()
    // Create 
    DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(10);
 
-   VC_DISPMANX_ALPHA_T alpha =
+   VC_DISPMANX_ALPHA_T alpha = 
    {
-      DISPMANX_FLAGS_ALPHA_FROM_SOURCE, 
-      120,
-      0
+      flags: DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS,
+      opacity: 0x000000FF,
+      mask: 0
    };
-
    //---------------------------------------------------------------------
    logger_->Write("Display", LogNotice, " ####SCREEN W : %i; H : %i ", vars->info.width, vars->info.height);
 
+   VC_RECT_T src_back_rect;
+   vc_dispmanx_rect_set(&src_back_rect, 0,0 , (width) <<16, (height)<<16);
+
    VC_RECT_T src_rect;
    //vc_dispmanx_rect_set(&src_rect, 147, 47, (768-147) <<16, (277-47)<<16);
-   vc_dispmanx_rect_set(&src_rect, 0,0 , WIDTH_VIRTUAL_SCREEN<<16, HEIGHT_VIRTUAL_SCREEN<<16);
+   vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
+   //vc_dispmanx_rect_set(&src_rect, 0,0 , WIDTH_VIRTUAL_SCREEN<<16, HEIGHT_VIRTUAL_SCREEN<<16);
 
    VC_RECT_T dst_rect;
    //vc_dispmanx_rect_set(&dst_rect, 147, 47, (768-147), (277-47));
-   vc_dispmanx_rect_set(&dst_rect, 20, 20, vars->info.width-10, vars->info.height-10);
-   //vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
+   //vc_dispmanx_rect_set(&dst_rect, 20, 20, vars->info.width-10, vars->info.height-10);
+   vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
    //vc_dispmanx_rect_set(&dst_rect, 0, 0, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN);
 
+   back_element_ = vc_dispmanx_element_add(update,
+                              vars->display,
+                              1000,
+                              &dst_rect,
+                              back_resource_,
+                              &src_back_rect,
+                              DISPMANX_PROTECTION_NONE,
+                              &alpha,
+                              NULL,
+                              DISPMANX_NO_ROTATE);
                                           
-   element_ =
-      vc_dispmanx_element_add(update,
+   element_ = vc_dispmanx_element_add(update,
                               vars->display,
                               2000,
                               &dst_rect,
@@ -174,6 +214,8 @@ bool DisplayPiImp::Initialization()
                               DISPMANX_NO_ROTATE);
 
 
+   vc_dispmanx_element_change_attributes (update, element_, DISPMANX_ELEMENT_CHANGE_SRC_RECT, 0, 0, 0, &src_rect, 0, DISPMANX_NO_ROTATE);
+
    result = vc_dispmanx_update_submit_sync(update);
    if ( result != 0)
    {
@@ -183,8 +225,6 @@ bool DisplayPiImp::Initialization()
    logger_->Write("Display", LogNotice, " End init.. Draw done.");
 
    DisplayPi::Initialization();
-
-
 
    return true;
 }
@@ -290,6 +330,14 @@ void DisplayPiImp::Draw()
 
    int pitch = ALIGN_UP(WIDTH_VIRTUAL_SCREEN*4, 32);
 
+   static float value = 0;
+
+   VC_RECT_T src_rect, dst_rect, back_src_rect;
+   vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
+   vc_dispmanx_rect_set(&dst_rect, fabs(sinf(value)*200.f), fabs(sinf(value)*200.f), vars->info.width - 2*fabs(sinf(value)*200.f), vars->info.height-2*fabs(sinf(value)*200.f));
+   //vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
+   vc_dispmanx_rect_set(&back_src_rect, 0x10 + sinf(value)*16.f, 0x10 + cos(value)*16.f, vars->info.width, vars->info.height);
+   value += 0.01;
 
    int result = vc_dispmanx_resource_write_data(main_resource_[current_buffer_],
                                           VC_IMAGE_XRGB8888,
@@ -305,7 +353,10 @@ void DisplayPiImp::Draw()
    DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
 
    vc_dispmanx_element_change_source (update, element_, main_resource_[current_buffer_]);
-   
+   vc_dispmanx_element_change_attributes (update, element_, DISPMANX_ELEMENT_CHANGE_SRC_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
+
+   //vc_dispmanx_element_change_attributes (update, back_element_, DISPMANX_ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_src_rect, 0,0, DISPMANX_NO_ROTATE);
+
    result = vc_dispmanx_update_submit_sync(update);
    if ( result != 0)
    {
