@@ -176,10 +176,8 @@ bool DisplayPiImp::Initialization()
    //vc_dispmanx_rect_set(&src_rect, 0,0 , WIDTH_VIRTUAL_SCREEN<<16, HEIGHT_VIRTUAL_SCREEN<<16);
 
    VC_RECT_T dst_rect;
-   //vc_dispmanx_rect_set(&dst_rect, 147, 47, (768-147), (277-47));
-   //vc_dispmanx_rect_set(&dst_rect, 20, 20, vars->info.width-10, vars->info.height-10);
-   vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
-   //vc_dispmanx_rect_set(&dst_rect, 0, 0, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN);
+   //vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
+   vc_dispmanx_rect_set(&dst_rect, 100, 100, vars->info.width-200, vars->info.height-200);
 
    back_element_ = vc_dispmanx_element_add(update,
                               vars->display,
@@ -322,11 +320,17 @@ void DisplayPiImp::Draw()
 
    static float value = 0;
 
-   VC_RECT_T src_rect, dst_rect, back_src_rect;
+   VC_RECT_T src_rect, dst_rect, back_src_rect, back_dst_rect;
    vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
    vc_dispmanx_rect_set(&dst_rect, fabs(sinf(value)*200.f), fabs(sinf(value)*200.f), vars->info.width - 2*fabs(sinf(value)*200.f), vars->info.height-2*fabs(sinf(value)*200.f));
    //vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
-   vc_dispmanx_rect_set(&back_src_rect, 0x10 + sinf(value)*16.f, 0x10 + cos(value)*16.f, vars->info.width, vars->info.height);
+
+#define BACK_MOVE 0x10
+   int back_x = (BACK_MOVE + sinf(value*4)*BACK_MOVE);
+   int back_y = (BACK_MOVE + cos(value*4)*BACK_MOVE);
+   logger_->Write("Display", LogNotice, "sin back: x = %i; y = %i ", back_x, back_y);
+   vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, vars->info.width<<16, vars->info.height<<16);
+   vc_dispmanx_rect_set(&back_dst_rect, 0, 0, vars->info.width, vars->info.height);
    value += 0.01;
 
    int result = vc_dispmanx_resource_write_data(main_resource_[current_buffer_],
@@ -344,7 +348,8 @@ void DisplayPiImp::Draw()
 
    vc_dispmanx_element_change_source (update, element_, main_resource_[current_buffer_]);
    vc_dispmanx_element_change_attributes (update, element_, ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
-   vc_dispmanx_element_change_attributes (update, back_element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, 0, &back_src_rect, 0, DISPMANX_NO_ROTATE);
+   vc_dispmanx_element_change_attributes (update, back_element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
+   
 
    result = vc_dispmanx_update_submit_sync(update);
    if ( result != 0)
