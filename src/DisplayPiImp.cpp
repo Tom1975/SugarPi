@@ -24,22 +24,12 @@
 #define HEIGHT_VIRTUAL_SCREEN (288*2)
 
 
-typedef enum {
-   DISPMANX_ELEMENT_CHANGE_MIN         =  0x00,
-   DISPMANX_ELEMENT_CHANGE_SOURCE      =  0x01,
-   DISPMANX_ELEMENT_CHANGE_DEST_RECT   =  0x02,
-   DISPMANX_ELEMENT_CHANGE_SRC_RECT    =  0x04,
-   DISPMANX_ELEMENT_CHANGE_OPACITY     =  0x08,
-   DISPMANX_ELEMENT_CHANGE_MASK        =  0x10,
-   DISPMANX_ELEMENT_CHANGE_LAYER       =  0x20,
-   DISPMANX_ELEMENT_CHANGE_TRANSFORM   =  0x40,
-   DISPMANX_ELEMENT_INSERT_ABOVE       =  0x80,
-   DISPMANX_ELEMENT_CHANGE_FLAGS       =  0x100,
-   DISPMANX_ELEMENT_CHANGE_NOTHING     =  0x200,
-   DISPMANX_ELEMENT_CHANGE_ALPHA_FLAGS =  0x400,
-   DISPMANX_ELEMENT_CHANGE_PROTECTION  =  0x800,
-   DISPMANX_ELEMENT_CHANGE_MAX         =  0x1000
-} DISPMANX_ELEMENT_CHANGE_T;
+#define ELEMENT_CHANGE_LAYER          (1<<0)
+#define ELEMENT_CHANGE_OPACITY        (1<<1)
+#define ELEMENT_CHANGE_DEST_RECT      (1<<2)
+#define ELEMENT_CHANGE_SRC_RECT       (1<<3)
+#define ELEMENT_CHANGE_MASK_RESOURCE  (1<<4)
+#define ELEMENT_CHANGE_TRANSFORM      (1<<5)
 
 typedef struct
 {
@@ -214,7 +204,7 @@ bool DisplayPiImp::Initialization()
                               DISPMANX_NO_ROTATE);
 
 
-   vc_dispmanx_element_change_attributes (update, element_, DISPMANX_ELEMENT_CHANGE_SRC_RECT, 0, 0, 0, &src_rect, 0, DISPMANX_NO_ROTATE);
+   vc_dispmanx_element_change_attributes (update, element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, 0, &src_rect, 0, DISPMANX_NO_ROTATE);
 
    result = vc_dispmanx_update_submit_sync(update);
    if ( result != 0)
@@ -353,9 +343,8 @@ void DisplayPiImp::Draw()
    DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
 
    vc_dispmanx_element_change_source (update, element_, main_resource_[current_buffer_]);
-   vc_dispmanx_element_change_attributes (update, element_, DISPMANX_ELEMENT_CHANGE_SRC_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
-
-   //vc_dispmanx_element_change_attributes (update, back_element_, DISPMANX_ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_src_rect, 0,0, DISPMANX_NO_ROTATE);
+   vc_dispmanx_element_change_attributes (update, element_, ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
+   vc_dispmanx_element_change_attributes (update, back_element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, 0, &back_src_rect, 0, DISPMANX_NO_ROTATE);
 
    result = vc_dispmanx_update_submit_sync(update);
    if ( result != 0)
