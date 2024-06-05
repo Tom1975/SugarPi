@@ -6,6 +6,8 @@ CIRCLEHOME = ./circle
 
 OBJS	= src/main.o\
 		src/kernel.o\
+		src/BasicFrame.o \
+		src/BackFrame.o \
 		src/SugarPiSetup.o\
 		src/ConfigurationManager.o\
 		src/DisplayPi.o\
@@ -14,6 +16,7 @@ OBJS	= src/main.o\
 		src/KeyboardPi.o\
 		src/log.o\
 		src/MainMenuWindows.o\
+		src/Morphings.o \
 		src/SoundPi.o\
 		src/ScreenMenu.o\
 		src/Window.o\

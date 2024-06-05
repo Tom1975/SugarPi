@@ -311,6 +311,8 @@ void DisplayPiImp::SetFrame(int frame_index)
 
 void DisplayPiImp::Draw()
 {
+
+   back_wnd_.frame_->Refresh();
    // Copy framebuffer
    VC_RECT_T bmp_rect;
    vc_dispmanx_rect_set(&(bmp_rect),
@@ -327,11 +329,7 @@ void DisplayPiImp::Draw()
    vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
    vc_dispmanx_rect_set(&dst_rect, fabs(sinf(value)*200.f), fabs(sinf(value)*200.f), vars->info.width - 2*fabs(sinf(value)*200.f), vars->info.height-2*fabs(sinf(value)*200.f));
 
-#define BACK_MOVE 0x10
-   int back_x = (BACK_MOVE + sinf(value*4)*BACK_MOVE);
-   int back_y = (BACK_MOVE + cos(value*4)*BACK_MOVE);
-   logger_->Write("Display", LogNotice, "sin back: x = %i; y = %i ", back_x, back_y);
-   vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, vars->info.width<<16, vars->info.height<<16);
+   vc_dispmanx_rect_set(&back_src_rect, back_wnd_.frame_->GetDisplayX()<<16, back_wnd_.frame_->GetDisplayY()<<16, back_wnd_.frame_->GetDisplayWidth()<<16, back_wnd_.frame_->GetDisplayHeight()<<16);
    vc_dispmanx_rect_set(&back_dst_rect, 0, 0, vars->info.width, vars->info.height);
    value += 0.01;
 
