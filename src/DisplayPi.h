@@ -6,6 +6,7 @@
 #include "CLogger.h"
 #endif
 
+#include "BackFrame.h"
 #include "CPCCore/CPCCoreEmu/Screen.h"
 
 
@@ -111,4 +112,6 @@ protected:
 
    bool sync_on_frame_;
    CoolspotFont *font_;
+
+   BackFrame back_frame_;
 };

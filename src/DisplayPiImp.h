@@ -66,4 +66,17 @@ protected:
    DISPMANX_ELEMENT_HANDLE_T back_element_;
 
    int* background_buffer_;
+
+   class DispmanxWindow
+   {
+   public:
+         BasicFrame* frame_;
+         DISPMANX_RESOURCE_HANDLE_T resource_;
+         long unsigned int ptr_;
+         DISPMANX_ELEMENT_HANDLE_T element_;     
+         VC_IMAGE_TYPE_T type_of_image_; 
+         unsigned int priority_;
+         VC_DISPMANX_ALPHA_T alpha_;
+   };
+   DispmanxWindow back_wnd_;
 };

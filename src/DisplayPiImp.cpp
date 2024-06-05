@@ -85,7 +85,9 @@ bool DisplayPiImp::Initialization()
 
    // create various objects :
    // background
-   back_resource_ = vc_dispmanx_resource_create (VC_IMAGE_XRGB8888, vars->info.width + 0x40, vars->info.height+ 0x40, &menu_ptr_);
+   back_frame_.Init(vars->info.width, vars->info.height, 1);
+   back_wnd_.frame_ = &back_frame_;
+   back_wnd_.resource_ = vc_dispmanx_resource_create (VC_IMAGE_XRGB8888, vars->info.width + 0x40, vars->info.height+ 0x40, &menu_ptr_);
 
    // Main display for emulation
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
@@ -122,7 +124,7 @@ bool DisplayPiImp::Initialization()
                         width,
                         height);   
 
-   int back_pitch = ALIGN_UP(width*4, 32);
+   /*int back_pitch = ALIGN_UP(width*4, 32);
 
    background_buffer_ = new int [back_pitch*height];
    logger_->Write("Display", LogNotice, "background_buffer_ allocated - pitch = %i", back_pitch);
@@ -142,10 +144,11 @@ bool DisplayPiImp::Initialization()
       }
    }
    logger_->Write("Display", LogNotice, "background_buffer_ generated");
-   result = vc_dispmanx_resource_write_data(back_resource_,
+   */
+   result = vc_dispmanx_resource_write_data(back_wnd_.resource_,
                                           VC_IMAGE_XRGB8888,
-                                          back_pitch,
-                                          background_buffer_,
+                                          back_wnd_.frame_->GetPitch(),
+                                          back_wnd_.frame_->GetBuffer(),
                                           &back_rect);
    logger_->Write("Display", LogNotice, "background_buffer_ written");
 
@@ -183,7 +186,7 @@ bool DisplayPiImp::Initialization()
                               vars->display,
                               1000,
                               &dst_rect,
-                              back_resource_,
+                              back_wnd_.resource_,
                               &src_back_rect,
                               DISPMANX_PROTECTION_NONE,
                               &alpha,
@@ -323,7 +326,6 @@ void DisplayPiImp::Draw()
    VC_RECT_T src_rect, dst_rect, back_src_rect, back_dst_rect;
    vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
    vc_dispmanx_rect_set(&dst_rect, fabs(sinf(value)*200.f), fabs(sinf(value)*200.f), vars->info.width - 2*fabs(sinf(value)*200.f), vars->info.height-2*fabs(sinf(value)*200.f));
-   //vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
 
 #define BACK_MOVE 0x10
    int back_x = (BACK_MOVE + sinf(value*4)*BACK_MOVE);
@@ -348,7 +350,7 @@ void DisplayPiImp::Draw()
 
    vc_dispmanx_element_change_source (update, element_, main_resource_[current_buffer_]);
    vc_dispmanx_element_change_attributes (update, element_, ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
-   vc_dispmanx_element_change_attributes (update, back_element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
+   vc_dispmanx_element_change_attributes (update, back_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
    
 
    result = vc_dispmanx_update_submit_sync(update);
