@@ -87,7 +87,7 @@ bool DisplayPiImp::Initialization()
    // background
    back_frame_.Init(vars->info.width, vars->info.height, 1);
    back_wnd_.frame_ = &back_frame_;
-   back_wnd_.resource_ = vc_dispmanx_resource_create (VC_IMAGE_XRGB8888, vars->info.width + 0x40, vars->info.height+ 0x40, &menu_ptr_);
+   back_wnd_.resource_ = vc_dispmanx_resource_create (VC_IMAGE_XRGB8888, back_wnd_.frame_->GetFullWidth(), back_wnd_.frame_->GetFullHeight(), &menu_ptr_);
 
    // Main display for emulation
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
