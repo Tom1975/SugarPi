@@ -87,6 +87,8 @@ bool DisplayPiImp::Initialization()
    // background
    back_frame_.Init(vars->info.width, vars->info.height, 1);
    back_wnd_.frame_ = &back_frame_;
+
+   printk( "vc_dispmanx_resource_create is %d x %d \n",back_wnd_.frame_->GetFullWidth(), back_wnd_.frame_->GetFullHeight());
    back_wnd_.resource_ = vc_dispmanx_resource_create (VC_IMAGE_XRGB8888, back_wnd_.frame_->GetFullWidth(), back_wnd_.frame_->GetFullHeight(), &menu_ptr_);
 
    // Main display for emulation
@@ -99,6 +101,7 @@ bool DisplayPiImp::Initialization()
    // Menu
    menu_resource_ = vc_dispmanx_resource_create (VC_IMAGE_ARGB8888, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN, &menu_ptr_);
 
+   printk( "vc_dispmanx_resource_create end.\n");
    // Add main layer
    VC_RECT_T bmp_rect;
    vc_dispmanx_rect_set(&(bmp_rect),
@@ -107,22 +110,25 @@ bool DisplayPiImp::Initialization()
                         WIDTH_VIRTUAL_SCREEN,
                         HEIGHT_VIRTUAL_SCREEN);
 
+   printk( "vc_dispmanx_resource_write_data : pitch = %i.\n", pitch);
    int result = vc_dispmanx_resource_write_data(main_resource_[0],
                                           VC_IMAGE_XRGB8888,
                                           pitch,
                                           display_buffer_[0],
                                           &bmp_rect);
 
+   printk( "vc_dispmanx_resource_write_data end.\n");
    // Write background
-   int width = vars->info.width+ 0x40;
-   int height = vars->info.height+ 0x40;
+   int width = back_wnd_.frame_->GetFullWidth();
+   int height = back_wnd_.frame_->GetFullHeight();
    
    VC_RECT_T back_rect;
    vc_dispmanx_rect_set(&(back_rect),
                         0,
                         0,
-                        width,
-                        height);   
+                        back_wnd_.frame_->GetFullWidth(),
+                        back_wnd_.frame_->GetFullHeight()
+                        );   
 
    /*int back_pitch = ALIGN_UP(width*4, 32);
 
@@ -145,6 +151,11 @@ bool DisplayPiImp::Initialization()
    }
    logger_->Write("Display", LogNotice, "background_buffer_ generated");
    */
+   printk( "vc_dispmanx_resource_write_data back_wnd_ : Pitch = %i.w = %i, h = %i\n",
+    back_wnd_.frame_->GetPitch(),
+    back_rect.width,
+    back_rect.height);
+
    result = vc_dispmanx_resource_write_data(back_wnd_.resource_,
                                           VC_IMAGE_XRGB8888,
                                           back_wnd_.frame_->GetPitch(),
@@ -182,7 +193,7 @@ bool DisplayPiImp::Initialization()
    //vc_dispmanx_rect_set(&dst_rect, 0, 0, vars->info.width, vars->info.height);
    vc_dispmanx_rect_set(&dst_rect, 100, 100, vars->info.width-200, vars->info.height-200);
 
-   back_element_ = vc_dispmanx_element_add(update,
+   back_wnd_.element_ = vc_dispmanx_element_add(update,
                               vars->display,
                               1000,
                               &dst_rect,
@@ -325,11 +336,25 @@ void DisplayPiImp::Draw()
 
    static float value = 0;
 
-   VC_RECT_T src_rect, dst_rect, back_src_rect, back_dst_rect;
+
+
+#define BACK_MOVE 0x10
+   int back_x = (BACK_MOVE + sinf(value*4)*BACK_MOVE);
+   int back_y = (BACK_MOVE + cos(value*4)*BACK_MOVE);
+   logger_->Write("Display", LogNotice, "sin back: x = %i; y = %i ", back_x, back_y);
+   value += 0.01;
+   
+      VC_RECT_T src_rect, dst_rect, back_src_rect, back_dst_rect;
    vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
    vc_dispmanx_rect_set(&dst_rect, fabs(sinf(value)*200.f), fabs(sinf(value)*200.f), vars->info.width - 2*fabs(sinf(value)*200.f), vars->info.height-2*fabs(sinf(value)*200.f));
 
-   vc_dispmanx_rect_set(&back_src_rect, back_wnd_.frame_->GetDisplayX()<<16, back_wnd_.frame_->GetDisplayY()<<16, back_wnd_.frame_->GetDisplayWidth()<<16, back_wnd_.frame_->GetDisplayHeight()<<16);
+   //vc_dispmanx_rect_set(&back_src_rect, back_wnd_.frame_->GetDisplayX()<<16, back_wnd_.frame_->GetDisplayY()<<16, back_wnd_.frame_->GetDisplayWidth()<<16, back_wnd_.frame_->GetDisplayHeight()<<16);
+   back_x = back_wnd_.frame_->GetOffsetX();
+   back_y = back_wnd_.frame_->GetOffsetY();
+   logger_->Write("Display", LogNotice, "sin back - 2: x = %i; y = %i ", back_x, back_y);
+   vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, vars->info.width<<16, vars->info.height<<16);
+
+
    vc_dispmanx_rect_set(&back_dst_rect, 0, 0, vars->info.width, vars->info.height);
    value += 0.01;
 

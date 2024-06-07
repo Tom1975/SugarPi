@@ -52,6 +52,8 @@ void BackFrame::Refresh ()
    x_ = (BACK_MOVE + sinf(value_)*BACK_MOVE);
    y_ = (BACK_MOVE + cos(value_*2)*BACK_MOVE);
 
+   CLogger::Get ()->Write("BasicFrame", LogNotice, "BackFrame::Refresh x=%i; y=%i", x_, y_);
+
    value_ += 0.04;
 
    current_change_ = CHANGED_SRC_RECT;
