@@ -13,6 +13,8 @@ OBJS	= src/main.o\
 		src/DisplayPi.o\
 		src/DisplayPiImp.o\
 		src/emulation.o\
+		src/EmulationFrame.o\
+		src/MenuFrame.o\
 		src/KeyboardPi.o\
 		src/log.o\
 		src/MainMenuWindows.o\
