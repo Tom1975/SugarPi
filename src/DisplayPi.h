@@ -7,6 +7,9 @@
 #endif
 
 #include "BackFrame.h"
+#include "EmulationFrame.h"
+#include "MenuFrame.h"
+
 #include "CPCCore/CPCCoreEmu/Screen.h"
 
 
@@ -114,4 +117,6 @@ protected:
    CoolspotFont *font_;
 
    BackFrame back_frame_;
+   EmulationFrame emu_frame_;
+   MenuFrame menu_frame_;
 };
