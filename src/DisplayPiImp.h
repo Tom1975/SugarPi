@@ -50,23 +50,6 @@ protected:
    CTimer* timer_;
    CSpinLock   mutex_;
 
-   /*DISPMANX_RESOURCE_HANDLE_T main_resource_[FRAME_BUFFER_SIZE];
-   long unsigned int main_ptr_;
-
-   DISPMANX_RESOURCE_HANDLE_T back_resource_;
-   long unsigned int back_ptr_;
-
-   DISPMANX_RESOURCE_HANDLE_T menu_resource_;
-   long unsigned int menu_ptr_;
-
-   DISPMANX_RESOURCE_HANDLE_T title_resource_;
-   long unsigned int title_ptr_;
-
-   DISPMANX_ELEMENT_HANDLE_T element_;
-   DISPMANX_ELEMENT_HANDLE_T back_element_;
-
-   int* background_buffer_;
-*/
    class DispmanxWindow
    {
    public:
@@ -78,7 +61,24 @@ protected:
          unsigned int priority_;
          VC_DISPMANX_ALPHA_T alpha_;
    };
+
    DispmanxWindow emu_wnd_;
    DispmanxWindow menu_wnd_;
    DispmanxWindow back_wnd_;
+
+   // Display informations
+
+typedef struct
+{
+    DISPMANX_DISPLAY_HANDLE_T   display;
+    DISPMANX_MODEINFO_T         info;
+    void                       *image;
+    DISPMANX_UPDATE_HANDLE_T    update;
+    DISPMANX_RESOURCE_HANDLE_T  resource;
+    DISPMANX_ELEMENT_HANDLE_T   element;
+    uint32_t                    vc_image_ptr;
+
+} RECT_VARS_T;
+
+   RECT_VARS_T    vars_;
 };
