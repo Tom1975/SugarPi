@@ -68,24 +68,57 @@ bool DisplayPiImp::Initialization()
    printk( "Display is %d x %d - pitch : %i\n", vars_.info.width, vars_.info.height, pitch );
 
    // create various objects :
+   //----------------------
    // background
    back_frame_.Init(vars_.info.width, vars_.info.height, 1);
    back_wnd_.frame_ = &back_frame_;
    back_wnd_.type_of_image_ = VC_IMAGE_XRGB8888;
    back_wnd_.resource_ = vc_dispmanx_resource_create (back_wnd_.type_of_image_, back_wnd_.frame_->GetFullWidth(), back_wnd_.frame_->GetFullHeight(), &back_wnd_.ptr_);
+   back_wnd_.element_ = 0;
+   back_wnd_.priority_ = 10;
+   back_wnd_.alpha_ = {     flags: DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS,
+                              opacity: 0x000000FF,
+                              mask: 0
+                           };
+   back_wnd_.frame_->SetDisplay(  0, 0 );
+   back_wnd_.frame_->SetDisplaySize(  vars_.info.width, vars_.info.height );   
    windows_list_.push_back(back_wnd_);
 
+   //----------------------
+   // Main display for emulation
    emu_frame_.Init(vars_.info.width, vars_.info.height, 3);
    emu_wnd_.frame_ = &emu_frame_;
    emu_wnd_.type_of_image_ = VC_IMAGE_XRGB8888;
    emu_wnd_.resource_ =  vc_dispmanx_resource_create (emu_wnd_.type_of_image_, emu_wnd_.frame_->GetFullWidth(), emu_wnd_.frame_->GetFullHeight(), &emu_wnd_.ptr_);
+   emu_wnd_.element_ = 0;
+   emu_wnd_.priority_ = 50;
+   emu_wnd_.frame_->SetDisplay(  50, 50 );
+   emu_wnd_.frame_->SetDisplaySize(  vars_.info.width-100, vars_.info.height-100 );
+
+   emu_wnd_.alpha_ = {   flags: DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS,
+                          opacity: 0x000000FF,
+                          mask: 0
+                       };
+
    windows_list_.push_back(emu_wnd_);
 
+   //----------------------
    // Menu
    menu_frame_.Init (vars_.info.width, vars_.info.height, 1);
    menu_wnd_.frame_ = &menu_frame_;
+   menu_wnd_.element_ = 0;
+   menu_wnd_.priority_ = 20;   
    menu_wnd_.type_of_image_ = VC_IMAGE_ARGB8888;
    menu_wnd_.element_ = vc_dispmanx_resource_create (menu_wnd_.type_of_image_, menu_wnd_.frame_->GetFullWidth(), menu_wnd_.frame_->GetFullHeight(), &menu_wnd_.ptr_);
+   menu_wnd_.element_ = 0;
+   menu_wnd_.priority_ = 20;
+   menu_wnd_.frame_->SetDisplay(  25, 25 );
+   menu_wnd_.frame_->SetDisplaySize(  vars_.info.width-50, vars_.info.height-50 );
+
+   menu_wnd_.alpha_ = {     flags: DISPMANX_FLAGS_ALPHA_FROM_SOURCE,
+                              opacity: 0x000000FF,
+                              mask: 0
+                       };      
    windows_list_.push_back(menu_wnd_);
 
    // Write background
@@ -292,8 +325,12 @@ void DisplayPiImp::SetFrame(int frame_index)
 
 void DisplayPiImp::Draw()
 {
-
+   int result;
+   
    back_wnd_.frame_->Refresh();
+
+   //CopyMemoryToRessources();
+
    // Copy framebuffer
    VC_RECT_T bmp_rect;
    vc_dispmanx_rect_set(&(bmp_rect),
@@ -328,7 +365,7 @@ void DisplayPiImp::Draw()
    vc_dispmanx_rect_set(&back_dst_rect, 0, 0, vars_.info.width, vars_.info.height);
    value += 0.01;
 
-   int result = vc_dispmanx_resource_write_data(emu_wnd_.resource_,
+   result = vc_dispmanx_resource_write_data(emu_wnd_.resource_,
                                           VC_IMAGE_XRGB8888,
                                           emu_wnd_.frame_->GetPitch(),
                                           emu_wnd_.frame_->GetBuffer(),
@@ -338,6 +375,7 @@ void DisplayPiImp::Draw()
    {
       logger_->Write("Display", LogNotice, "vc_dispmanx_resource_write_data result = %i ", result);
    }
+   
 
    DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
 
