@@ -7,6 +7,7 @@
 
 #include <bcm_host.h>
 
+#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
 #include "DisplayPi.h"
 
 class DisplayPiImp : public DisplayPi
@@ -47,6 +48,8 @@ public:
    virtual void ClearBuffer(int frame_index);
 
 protected:
+   void CopyMemoryToRessources();
+
    CTimer* timer_;
    CSpinLock   mutex_;
 
@@ -62,23 +65,24 @@ protected:
          VC_DISPMANX_ALPHA_T alpha_;
    };
 
+   std::vector<DispmanxWindow> windows_list_;
+   
    DispmanxWindow emu_wnd_;
    DispmanxWindow menu_wnd_;
    DispmanxWindow back_wnd_;
 
    // Display informations
+   typedef struct
+   {
+      DISPMANX_DISPLAY_HANDLE_T   display;
+      DISPMANX_MODEINFO_T         info;
+      void                       *image;
+      DISPMANX_UPDATE_HANDLE_T    update;
+      DISPMANX_RESOURCE_HANDLE_T  resource;
+      DISPMANX_ELEMENT_HANDLE_T   element;
+      uint32_t                    vc_image_ptr;
 
-typedef struct
-{
-    DISPMANX_DISPLAY_HANDLE_T   display;
-    DISPMANX_MODEINFO_T         info;
-    void                       *image;
-    DISPMANX_UPDATE_HANDLE_T    update;
-    DISPMANX_RESOURCE_HANDLE_T  resource;
-    DISPMANX_ELEMENT_HANDLE_T   element;
-    uint32_t                    vc_image_ptr;
-
-} RECT_VARS_T;
+   } RECT_VARS_T;
 
    RECT_VARS_T    vars_;
 };

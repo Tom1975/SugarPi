@@ -73,17 +73,20 @@ bool DisplayPiImp::Initialization()
    back_wnd_.frame_ = &back_frame_;
    back_wnd_.type_of_image_ = VC_IMAGE_XRGB8888;
    back_wnd_.resource_ = vc_dispmanx_resource_create (back_wnd_.type_of_image_, back_wnd_.frame_->GetFullWidth(), back_wnd_.frame_->GetFullHeight(), &back_wnd_.ptr_);
+   windows_list_.push_back(back_wnd_);
 
    emu_frame_.Init(vars_.info.width, vars_.info.height, 3);
    emu_wnd_.frame_ = &emu_frame_;
    emu_wnd_.type_of_image_ = VC_IMAGE_XRGB8888;
    emu_wnd_.resource_ =  vc_dispmanx_resource_create (emu_wnd_.type_of_image_, emu_wnd_.frame_->GetFullWidth(), emu_wnd_.frame_->GetFullHeight(), &emu_wnd_.ptr_);
+   windows_list_.push_back(emu_wnd_);
 
    // Menu
    menu_frame_.Init (vars_.info.width, vars_.info.height, 1);
    menu_wnd_.frame_ = &menu_frame_;
    menu_wnd_.type_of_image_ = VC_IMAGE_ARGB8888;
    menu_wnd_.element_ = vc_dispmanx_resource_create (menu_wnd_.type_of_image_, menu_wnd_.frame_->GetFullWidth(), menu_wnd_.frame_->GetFullHeight(), &menu_wnd_.ptr_);
+   windows_list_.push_back(menu_wnd_);
 
    // Write background
    int width = back_wnd_.frame_->GetFullWidth();
