@@ -126,7 +126,7 @@ bool DisplayPiImp::Initialization()
     back_rect.width,
     back_rect.height);
 
-   result = vc_dispmanx_resource_write_data(back_wnd_.resource_,
+   int result = vc_dispmanx_resource_write_data(back_wnd_.resource_,
                                           VC_IMAGE_XRGB8888,
                                           back_wnd_.frame_->GetPitch(),
                                           back_wnd_.frame_->GetBuffer(),
@@ -356,4 +356,26 @@ void DisplayPiImp::Draw()
 void DisplayPiImp::ClearBuffer(int frame_index)
 {
    // todo
+}
+
+void DisplayPiImp::CopyMemoryToRessources()
+{
+   for (auto it : windows_list_)
+   {
+      if ( it.frame_->HasFrameChanged())
+      {
+         VC_RECT_T bmp_rect;
+         vc_dispmanx_rect_set(&(bmp_rect),
+                              0,
+                              0,
+                              it.frame_->GetFullWidth(),
+                              it.frame_->GetFullHeight());
+
+         vc_dispmanx_resource_write_data(it.resource_,
+                                                it.type_of_image_,
+                                                it.frame_->GetPitch(),
+                                                it.frame_->GetBuffer(),
+                                                &bmp_rect);
+      }
+   }
 }
