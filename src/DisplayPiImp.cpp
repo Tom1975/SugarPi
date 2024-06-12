@@ -133,27 +133,7 @@ bool DisplayPiImp::Initialization()
                         back_wnd_.frame_->GetFullHeight()
                         );   
 
-   /*int back_pitch = ALIGN_UP(width*4, 32);
 
-   background_buffer_ = new int [back_pitch*height];
-   logger_->Write("Display", LogNotice, "background_buffer_ allocated - pitch = %i", back_pitch);
-   for (int i = 0; i < height; i++)
-   {
-      for (int j = 0; j < width; j++)
-      {
-         if ( (( (j & 0x3F) < 0x20) && ((i&0x3F) < 0x20)  )
-         ||(( (j & 0x3F) >= 0x20) && ((i&0x3F) >= 0x20)) )
-         {
-            background_buffer_[i*width + j] = 0xFFCCCCCC;
-         }
-         else
-         {
-            background_buffer_[i*width + j] = 0xFFDDDDDD;
-         }
-      }
-   }
-   logger_->Write("Display", LogNotice, "background_buffer_ generated");
-   */
    printk( "vc_dispmanx_resource_write_data back_wnd_ : Pitch = %i.w = %i, h = %i\n",
     back_wnd_.frame_->GetPitch(),
     back_rect.width,
@@ -188,12 +168,9 @@ bool DisplayPiImp::Initialization()
    vc_dispmanx_rect_set(&src_back_rect, 0,0 , (width) <<16, (height)<<16);
 
    VC_RECT_T src_rect;
-   //vc_dispmanx_rect_set(&src_rect, 147, 47, (768-147) <<16, (277-47)<<16);
    vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
-   //vc_dispmanx_rect_set(&src_rect, 0,0 , WIDTH_VIRTUAL_SCREEN<<16, HEIGHT_VIRTUAL_SCREEN<<16);
 
    VC_RECT_T dst_rect;
-   //vc_dispmanx_rect_set(&dst_rect, 0, 0, vars_.info.width, vars_.info.height);
    vc_dispmanx_rect_set(&dst_rect, 100, 100, vars_.info.width-200, vars_.info.height-200);
 
    back_wnd_.element_ = vc_dispmanx_element_add(update,
@@ -343,21 +320,12 @@ void DisplayPiImp::Draw()
 
    static float value = 0;
 
-
-
-#define BACK_MOVE 0x10
-   int back_x = (BACK_MOVE + sinf(value*4)*BACK_MOVE);
-   int back_y = (BACK_MOVE + cos(value*4)*BACK_MOVE);
-   logger_->Write("Display", LogNotice, "sin back: x = %i; y = %i ", back_x, back_y);
-   value += 0.01;
-   
-      VC_RECT_T src_rect, dst_rect, back_src_rect, back_dst_rect;
+   VC_RECT_T src_rect, dst_rect, back_src_rect, back_dst_rect;
    vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
    vc_dispmanx_rect_set(&dst_rect, fabs(sinf(value)*200.f), fabs(sinf(value)*200.f), vars_.info.width - 2*fabs(sinf(value)*200.f), vars_.info.height-2*fabs(sinf(value)*200.f));
 
-   //vc_dispmanx_rect_set(&back_src_rect, back_wnd_.frame_->GetDisplayX()<<16, back_wnd_.frame_->GetDisplayY()<<16, back_wnd_.frame_->GetDisplayWidth()<<16, back_wnd_.frame_->GetDisplayHeight()<<16);
-   back_x = back_wnd_.frame_->GetOffsetX();
-   back_y = back_wnd_.frame_->GetOffsetY();
+   int back_x = back_wnd_.frame_->GetOffsetX();
+   int back_y = back_wnd_.frame_->GetOffsetY();
    logger_->Write("Display", LogNotice, "sin back - 2: x = %i; y = %i ", back_x, back_y);
    vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, vars_.info.width<<16, vars_.info.height<<16);
 
