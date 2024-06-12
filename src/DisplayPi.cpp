@@ -211,8 +211,9 @@ void DisplayPi::StopLoop()
 
 void DisplayPi::Loop()
 {
+   Draw();
    // Display available frame
-   int frame_index = -1;
+   /*int frame_index = -1;
    Lock();
    if (nb_frame_in_queue_ > 0)
    {
@@ -235,72 +236,28 @@ void DisplayPi::Loop()
    {
       Unlock();
       WAIT(1);
-   }
+   }*/
    // sleep ?
 
 }
 
 void DisplayPi::VSync(bool dbg)
 {
-   bool clear_framebuffer = false;
-   if (full_resolution_cached_ != full_resolution_)
-   {
-      clear_framebuffer = true;
-      full_resolution_cached_ = full_resolution_;
-   }
-
    Lock();
 
-   // The frame is ready : Add it to the queue
-   //logger_->Write("DIS", LogNotice, "VSync : nb_frame_in_queue_ = %i", nb_frame_in_queue_);
-   bool found = false;
-   emu_frame_.FrameIsReady();
-   
-#if 0
-   for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
+   // Wait to sync ?
+   if (true)
    {
-      if (frame_used_[i] == FR_FREE)
+      while (!emu_frame_.CanDrawNewFrame())
       {
-         logger_->Write("VSync", LogNotice, "Add a frame in the buffer : %i", i);
-         frame_queue_[nb_frame_in_queue_++] = current_buffer_;
-         frame_used_[current_buffer_] = FR_READY;
-
-         // Wait for it to be free again !
-         /*if (sync_on_frame_)
-         {
-            Unlock();
-            while (frame_used_[current_buffer_] != FR_FREE)
-            {
-               WAIT(1);
-            }
-            Lock();
-         }*/
-
-         //logger_->Write("DIS", LogNotice, "VSync : a frame is free : %i", i);
-         frame_used_[i] = FR_USED;
-         current_buffer_ = current_buffer_ = i;
-         found = true;
-         break;
+         Unlock();
+         WAIT(1);
+         Lock();
       }
    }
-   if (!found)
-   {
-      // No more buffer ready...so reuse the one currently added !
-      frame_used_[current_buffer_] = FR_USED;
-   }
-   Unlock();
-   #else
-   nb_frame_in_queue_ = 1;
-   // wait until draw is done
-   Unlock();
-   while ( nb_frame_in_queue_ == 1)
-   {
-      WAIT(10);
-   }
-   #endif
-         
-   
+   emu_frame_.FrameIsReady();
 
+   Unlock();
 }
 
 void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)

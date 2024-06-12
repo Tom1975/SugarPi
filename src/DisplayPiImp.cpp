@@ -308,6 +308,10 @@ void DisplayPiImp::Draw()
 
    CopyMemoryToRessources();
 
+   Lock();
+   emu_frame_.FrameIsDisplayed();
+   Unlock();
+
    // Copy framebuffer
    /*VC_RECT_T bmp_rect;
    vc_dispmanx_rect_set(&(bmp_rect),
