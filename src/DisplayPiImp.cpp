@@ -304,20 +304,21 @@ void DisplayPiImp::Draw()
 {
    int result;
    
-   back_wnd_.frame_->Refresh();
+   //back_wnd_.frame_->Refresh();
 
-   //CopyMemoryToRessources();
+   CopyMemoryToRessources();
 
    // Copy framebuffer
-   VC_RECT_T bmp_rect;
+   /*VC_RECT_T bmp_rect;
    vc_dispmanx_rect_set(&(bmp_rect),
                         0,
                         0,
-                        WIDTH_VIRTUAL_SCREEN,
-                        HEIGHT_VIRTUAL_SCREEN);
+                        emu_wnd_.frame_->GetFullWidth(), //WIDTH_VIRTUAL_SCREEN,
+                        emu_wnd_.frame_->GetFullHeight() //HEIGHT_VIRTUAL_SCREEN);
+                        );
 
    int pitch = ALIGN_UP(WIDTH_VIRTUAL_SCREEN*4, 32);
-
+*/
    static float value = 0;
 
    VC_RECT_T src_rect, dst_rect, back_src_rect, back_dst_rect;
@@ -333,12 +334,12 @@ void DisplayPiImp::Draw()
    vc_dispmanx_rect_set(&back_dst_rect, 0, 0, vars_.info.width, vars_.info.height);
    value += 0.01;
 
-   result = vc_dispmanx_resource_write_data(emu_wnd_.resource_,
+  /* result = vc_dispmanx_resource_write_data(emu_wnd_.resource_,
                                           VC_IMAGE_XRGB8888,
                                           emu_wnd_.frame_->GetPitch(),
                                           emu_wnd_.frame_->GetBuffer(),
                                           &(bmp_rect));
-
+*/
    if ( result != 0)
    {
       logger_->Write("Display", LogNotice, "vc_dispmanx_resource_write_data result = %i ", result);
@@ -367,10 +368,14 @@ void DisplayPiImp::ClearBuffer(int frame_index)
 void DisplayPiImp::CopyMemoryToRessources()
 {
    for (auto it : windows_list_)
+   //auto it = windows_list_[1];
    {
+      it.frame_->Refresh();
       if ( it.frame_->HasFrameChanged())
       {
+         //logger_->Write("Display", LogNotice, "HasFrameChanged - ", );
          VC_RECT_T bmp_rect;
+
          vc_dispmanx_rect_set(&(bmp_rect),
                               0,
                               0,

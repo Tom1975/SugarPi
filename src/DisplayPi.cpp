@@ -254,7 +254,8 @@ void DisplayPi::VSync(bool dbg)
    // The frame is ready : Add it to the queue
    //logger_->Write("DIS", LogNotice, "VSync : nb_frame_in_queue_ = %i", nb_frame_in_queue_);
    bool found = false;
-
+   emu_frame_.FrameIsReady();
+   
 #if 0
    for (int i = 0; i < FRAME_BUFFER_SIZE && !found; i++)
    {
