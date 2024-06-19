@@ -302,27 +302,14 @@ void DisplayPiImp::SetFrame(int frame_index)
 
 void DisplayPiImp::Draw()
 {
-   int result;
+   int result = 0;
    
-   //back_wnd_.frame_->Refresh();
-
    CopyMemoryToRessources();
 
    Lock();
    emu_frame_.FrameIsDisplayed();
    Unlock();
 
-   // Copy framebuffer
-   /*VC_RECT_T bmp_rect;
-   vc_dispmanx_rect_set(&(bmp_rect),
-                        0,
-                        0,
-                        emu_wnd_.frame_->GetFullWidth(), //WIDTH_VIRTUAL_SCREEN,
-                        emu_wnd_.frame_->GetFullHeight() //HEIGHT_VIRTUAL_SCREEN);
-                        );
-
-   int pitch = ALIGN_UP(WIDTH_VIRTUAL_SCREEN*4, 32);
-*/
    static float value = 0;
 
    VC_RECT_T src_rect, dst_rect, back_src_rect, back_dst_rect;
@@ -333,31 +320,37 @@ void DisplayPiImp::Draw()
    int back_y = back_wnd_.frame_->GetOffsetY();
    logger_->Write("Display", LogNotice, "sin back - 2: x = %i; y = %i ", back_x, back_y);
    vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, vars_.info.width<<16, vars_.info.height<<16);
-
-
    vc_dispmanx_rect_set(&back_dst_rect, 0, 0, vars_.info.width, vars_.info.height);
    value += 0.01;
+   
+   DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
+   
+   // keep for testing
+   vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
 
-  /* result = vc_dispmanx_resource_write_data(emu_wnd_.resource_,
-                                          VC_IMAGE_XRGB8888,
-                                          emu_wnd_.frame_->GetPitch(),
-                                          emu_wnd_.frame_->GetBuffer(),
-                                          &(bmp_rect));
-*/
-   if ( result != 0)
+   //vc_dispmanx_element_change_attributes (update, back_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
+   
+   for (auto it : windows_list_)
    {
-      logger_->Write("Display", LogNotice, "vc_dispmanx_resource_write_data result = %i ", result);
+      if ( it.frame_->AttributesHasChanged() )
+      {
+         int back_x = it.frame_->GetOffsetX();
+         int back_y = it.frame_->GetOffsetY();
+
+         vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, vars_.info.width<<16, vars_.info.height<<16);
+         vc_dispmanx_rect_set(&back_dst_rect, 0, 0, vars_.info.width, vars_.info.height);
+
+         vc_dispmanx_element_change_attributes (update, 
+            it.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0,
+             &back_dst_rect, &back_src_rect,
+              0, DISPMANX_NO_ROTATE);
+      }
+
    }
    
 
-   DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
-
-   //vc_dispmanx_element_change_source (update, emu_wnd_.element_, main_resource_[current_buffer_]);
-   vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
-   vc_dispmanx_element_change_attributes (update, back_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
-   
-
    result = vc_dispmanx_update_submit_sync(update);
+
    if ( result != 0)
    {
       logger_->Write("Display", LogNotice, "vc_dispmanx_update_submit_sync result = %i ", result);
@@ -372,12 +365,10 @@ void DisplayPiImp::ClearBuffer(int frame_index)
 void DisplayPiImp::CopyMemoryToRessources()
 {
    for (auto it : windows_list_)
-   //auto it = windows_list_[1];
    {
       it.frame_->Refresh();
       if ( it.frame_->HasFrameChanged())
       {
-         //logger_->Write("Display", LogNotice, "HasFrameChanged - ", );
          VC_RECT_T bmp_rect;
 
          vc_dispmanx_rect_set(&(bmp_rect),
