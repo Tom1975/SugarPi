@@ -326,11 +326,12 @@ void DisplayPiImp::Draw()
    DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
    
    // keep for testing
-   vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
+   vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_SRC_RECT|ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
 
-   //vc_dispmanx_element_change_attributes (update, back_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
+   vc_dispmanx_element_change_attributes (update, back_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
    
    for (auto it : windows_list_)
+   //auto it = windows_list_[0];
    {
       if ( it.frame_->AttributesHasChanged() )
       {
@@ -341,7 +342,7 @@ void DisplayPiImp::Draw()
          vc_dispmanx_rect_set(&back_dst_rect, 0, 0, vars_.info.width, vars_.info.height);
 
          vc_dispmanx_element_change_attributes (update, 
-            it.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0,
+            it.element_, ELEMENT_CHANGE_SRC_RECT|ELEMENT_CHANGE_DEST_RECT, 0, 0,
              &back_dst_rect, &back_src_rect,
               0, DISPMANX_NO_ROTATE);
       }
@@ -371,6 +372,7 @@ void DisplayPiImp::CopyMemoryToRessources()
       {
          VC_RECT_T bmp_rect;
 
+   
          vc_dispmanx_rect_set(&(bmp_rect),
                               0,
                               0,
