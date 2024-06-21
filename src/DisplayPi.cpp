@@ -4,7 +4,6 @@
 #include <memory.h>
 
 #include "res/button_1.h"
-#include "res/coolspot.h"
 
 #ifdef  __circle__
 #define WAIT(x) CTimer::Get ()->MsDelay(x)
@@ -26,14 +25,19 @@ DisplayPi::DisplayPi(CLogger* logger) :
    added_line_(1),
    current_buffer_(0),
    nb_frame_in_queue_(0),
-   sync_on_frame_(false)
+   sync_on_frame_(false),
+   display_menu_buffer_(nullptr),
+   display_title_buffer_(nullptr)
+
 {
    // Create backbuffers
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
+      frame_queue_[i] = 0;
       frame_used_[i] = FR_FREE;
-      display_buffer_[i] = new int [REAL_DISP_X * REAL_DISP_Y];
+      //display_buffer_[i] = new int [REAL_DISP_X * REAL_DISP_Y];
    }
+
    frame_used_[current_buffer_] = FR_USED;
 
    
@@ -41,16 +45,20 @@ DisplayPi::DisplayPi(CLogger* logger) :
 
 DisplayPi::~DisplayPi()
 {
-   delete font_;
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
-      delete []display_buffer_[i];
+      //delete []display_buffer_[i];
    }
+   delete []display_menu_buffer_;
+   delete []display_title_buffer_;
 }
 
 bool DisplayPi::Initialization()
 {
-   font_ = new CoolspotFont(GetStride());
+   back_frame_.Init(GetWidth(), GetHeight(), 1);
+   menu_frame_.Init(GetWidth(), GetHeight(), 1);
+   emu_frame_.Init(REAL_DISP_X, REAL_DISP_Y, FRAME_BUFFER_SIZE);
+
    return true;
 }
 
@@ -212,33 +220,6 @@ void DisplayPi::StopLoop()
 void DisplayPi::Loop()
 {
    Draw();
-   // Display available frame
-   /*int frame_index = -1;
-   Lock();
-   if (nb_frame_in_queue_ > 0)
-   {
-         
-      frame_index = frame_queue_[0];
-      //logger_->Write("DIS", LogNotice, "A frame is present. nb_frame_in_queue_ = %i; frame_index = %i", nb_frame_in_queue_, frame_index);
-      nb_frame_in_queue_--;
-
-      memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
-      SetFrame(frame_index);
-
-      //logger_->Write("DIS", LogNotice, "frame_index : %i", frame_index);
-      Draw();
-      // Set it as available
-      //logger_->Write("DIS", LogNotice, "Set current slot as free ! : %i", frame_index);
-      frame_used_[frame_index] = FR_FREE;
-      Unlock();
-   }
-   else
-   {
-      Unlock();
-      WAIT(1);
-   }*/
-   // sleep ?
-
 }
 
 void DisplayPi::VSync(bool dbg)
@@ -260,51 +241,28 @@ void DisplayPi::VSync(bool dbg)
    Unlock();
 }
 
-void DisplayPi::DisplayText(const char* txt, int x, int y, bool selected)
+int* DisplayPi::GetVideoBuffer(int y)
 {
-   // Display text
-   int i = 0;
-
-   char buff[16];
-   memset(buff, 0, sizeof buff);
-   strncpy(buff, txt, 15);
-   
-   unsigned int x_offset_output = 0;
-   //logger_->Write("DisplayText", LogNotice, "DisplayText : %s - Font = %X", txt, font_);
-   while (txt[i] != '\0' )
+   if ( y < emu_frame_.GetFullHeight())
    {
-
-      // Display character
-      unsigned char c = txt[i];
-
-      if ( c == ' ' || c >= 0x80)
-      {
-         x_offset_output += 10;
-      }
-      else
-      {
-         
-         int* line = GetVideoBuffer(y);
-         //font_->Write(c, line + x + x_offset_output);
-         font_->CopyLetter(c, &line[x + x_offset_output], GetStride());
-
-         // Look for proper bitmap position (on first line only)
-         /*for (int display_y = 0; display_y < font_->GetLetterHeight(c) && GetHeight()>display_y + y; display_y++)
-         {
-            int* line = GetVideoBuffer(display_y + y);
-            font_->CopyLetter(c, display_y, &line[x + x_offset_output]);
-         }*/
-         x_offset_output += font_->GetLetterLength(c);
-      }
-      i++;
+      return  (int*)&(emu_frame_.GetBuffer()[y * emu_frame_.GetPitch()]);
+   }
+   else
+   {
       
+      return  (int*)&(emu_frame_.GetBuffer()[y * emu_frame_.GetPitch()]);
    }
 }
 
-int* DisplayPi::GetVideoBuffer(int y)
-{
-   return (int*)&display_buffer_[current_buffer_][(y)*REAL_DISP_X ];
-}
+ int* DisplayPi::GetVideoBuffer(ScreenType screen, int y)
+ {
+   switch (screen)
+   {
+      case EmulationWindow: //return (int*)&display_buffer_[current_buffer_][(y)*REAL_DISP_X ];
+      return (int*)&(emu_frame_.GetBuffer()[y * emu_frame_.GetPitch()]);break;
+      case OptionMenu: return (int*)&(menu_frame_.GetBuffer()[y * emu_frame_.GetPitch()]);break;
+   }
+ }
 
 int DisplayPi::GetStride()
 {
@@ -313,12 +271,11 @@ int DisplayPi::GetStride()
 
 void DisplayPi::Reset()
 {
+   emu_frame_.Reset();
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
       frame_used_[i] = FR_FREE;
-      memset(&display_buffer_[i], 0, REAL_DISP_X * REAL_DISP_Y * FRAME_BUFFER_SIZE);
    }
-   
 }
 
 int DisplayPi::GetHeight()
@@ -333,11 +290,5 @@ int DisplayPi::GetWidth()
 
 void DisplayPi::ClearBuffer(int frame_index)
 {
-   unsigned char* line = reinterpret_cast<unsigned char*>(&display_buffer_[frame_index][REAL_DISP_X * REAL_DISP_Y]);
-   for (unsigned int count = 0; count < REAL_DISP_X; count++)
-   {
-      memset(line, 0x0, REAL_DISP_X * 4);
-      line += REAL_DISP_Y * sizeof(int);
-   }
-
+   emu_frame_.Reset(frame_index);   
 }

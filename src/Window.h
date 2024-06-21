@@ -15,11 +15,12 @@
 #define WAIT(x) std::this_thread::sleep_for(std::chrono::milliseconds(x));
 #endif
 
-#include "PiBitmap.h"
 #include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include "BasicFrame.h"
+#include "PiBitmap.h"
 
+#include "res/coolspot.h"
 
-class DisplayPi;
 
 class IAction
 {
@@ -55,7 +56,7 @@ public:
 class Window
 {
 public:
-   Window(DisplayPi* display);
+   Window(BasicFrame* display);
    virtual ~Window();
 
    virtual IAction::ActionReturn DoScreen (IEvent* event_handler);
@@ -69,6 +70,8 @@ public:
    virtual void Redraw (bool clear = true);
    virtual void RedrawWindow ();
    virtual void RedrawChildren ();
+
+   virtual void DisplayText(const char* txt, int x, int y, bool selected = false);
 
    virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
 
@@ -87,7 +90,7 @@ public:
 protected:
 
    // Display
-   DisplayPi* display_;
+   BasicFrame* display_;
    static bool stop_;
 
    // Coordinate
@@ -108,12 +111,15 @@ protected:
       WindowsQueue* next_;
    };
    WindowsQueue* windows_children_;
+
+   CoolspotFont* font_;
+
 };
 
 class MenuItemWindows : public Window
 {
 public:
-   MenuItemWindows (DisplayPi* display);
+   MenuItemWindows (BasicFrame* display);
    virtual ~MenuItemWindows ();
 
    virtual void Create(const char* label, Window* parent, int x, int y, unsigned int width, unsigned int height);
@@ -129,7 +135,7 @@ protected:
 class ScrollWindows : public Window
 {
 public:
-   ScrollWindows (DisplayPi* display);
+   ScrollWindows (BasicFrame* display);
    virtual ~ScrollWindows ();
 
    virtual void RedrawChildren ();
@@ -145,7 +151,7 @@ protected:
 class MenuWindows : public Window
 {
 public:
-   MenuWindows (DisplayPi* display);
+   MenuWindows (BasicFrame* display);
    virtual ~MenuWindows ();
 
    virtual void Create( Window* parent, int x, int y, unsigned int width, unsigned int height);
@@ -167,7 +173,7 @@ protected:
 class CheckMenuItemWindows : public MenuItemWindows
 {
 public:
-   CheckMenuItemWindows (DisplayPi* display);
+   CheckMenuItemWindows (BasicFrame* display);
    virtual ~CheckMenuItemWindows ();
 
    virtual void Create(const char* label, bool* value, Window* parent, int x, int y, unsigned int width, unsigned int height);
@@ -182,7 +188,7 @@ protected:
 class BitmapWindows : public Window
 {
 public:
-   BitmapWindows(DisplayPi* display);
+   BitmapWindows(BasicFrame* display);
    virtual ~BitmapWindows();
 
    virtual void Create(Window* parent, int x, int y, PiBitmap* bmp);

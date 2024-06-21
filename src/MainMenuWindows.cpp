@@ -3,7 +3,7 @@
 #include <memory.h>
 #include <math.h> 
 
-MainMenuWindows::MainMenuWindows(DisplayPi* display) :
+MainMenuWindows::MainMenuWindows(BasicFrame* display) :
    Window(display),
    full_line_(nullptr)
 {
@@ -61,11 +61,12 @@ void MainMenuWindows::ResetMenu()
 
 void MainMenuWindows::Clear()
 {
-   int h = display_->GetHeight();
+   Window::Clear();
+   /*int h = display_->GetHeight();
    int bottom_border = (h < y_ + height_) ? h : (y_ + height_);
 
-   int* line = display_->GetVideoBuffer(y_);
-   int s = display_->GetStride();
+   int* line = display_->GetBuffer(y_);
+   int s = display_->GetPitch();
    for (int i = y_; i < bottom_border; i++)
    {
       bool bcolor = ((offset_grid_y + i) & 0x10);
@@ -83,5 +84,6 @@ void MainMenuWindows::Clear()
    offset_grid &= 0x1F;
    offset_grid_y = 120 * sinf(var_y);
    offset_grid_y &= 0x1F;
+   */
 
 }

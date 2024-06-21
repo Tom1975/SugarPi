@@ -7,19 +7,27 @@
 #endif
 
 #include "BackFrame.h"
-#include "EmulationFrame.h"
 #include "MenuFrame.h"
+#include "EmulationFrame.h"
 
 #include "CPCCore/CPCCoreEmu/Screen.h"
 
 
-class CoolspotFont;
 #define FRAME_BUFFER_SIZE 3
 
 
 class DisplayPi : public IDisplay
 {
 public:
+
+   enum ScreenType
+   {
+      EmulationWindow,
+      BackWindow,
+      TitleScreen,
+      OptionMenu
+   };
+
    DisplayPi(CLogger* logger);
    virtual ~DisplayPi();
 
@@ -47,8 +55,6 @@ public:
    virtual void WaitVbl();
 
    // Services
-   virtual void DisplayText(const char* txt, int x, int y, bool selected = false);
-
    virtual void Reset();
    virtual void FullScreenToggle();
    virtual void ForceFullScreen(bool fullscreen);
@@ -85,11 +91,18 @@ public:
 
 
    virtual int* GetVideoBuffer(int y);
+   virtual int* GetVideoBuffer(ScreenType screen, int y);
+
+
    virtual int GetStride();
    virtual void ClearBuffer(int frame_index);
 
-   virtual void SetFrame(int frame_index) = 0;
    virtual void Draw() = 0;
+
+   BasicFrame *GetBackgroundFrame() { return &back_frame_; }
+   BasicFrame *GetMenuFrame() { return &menu_frame_; }
+   BasicFrame *GetEmulationFrame() { return &emu_frame_; }
+
 protected:
    //CScreenDevice*		screen_;
    CLogger* logger_;
@@ -108,15 +121,15 @@ protected:
    } FrameState;
    volatile FrameState frame_used_[FRAME_BUFFER_SIZE];
    volatile unsigned int current_buffer_;
-   int* display_buffer_[FRAME_BUFFER_SIZE];
-
    unsigned int frame_queue_[FRAME_BUFFER_SIZE];
    unsigned int nb_frame_in_queue_;
 
-   bool sync_on_frame_;
-   CoolspotFont *font_;
-
    BackFrame back_frame_;
-   EmulationFrame emu_frame_;
    MenuFrame menu_frame_;
+   EmulationFrame emu_frame_;
+
+   int* display_menu_buffer_;
+   int* display_title_buffer_;
+
+   bool sync_on_frame_;
 };

@@ -8,7 +8,7 @@
 #include "CString.h"
 #endif
 
-#include "DisplayPi.h"
+#include "BasicFrame.h"
 #include "Window.h"
 
 #include "res/SugarboxLogo.h"
@@ -17,7 +17,7 @@
 class MainMenuWindows : public Window
 {
 public:
-   MainMenuWindows(DisplayPi* display);
+   MainMenuWindows(BasicFrame* display);
    virtual ~MainMenuWindows();
 
    void ResetMenu();

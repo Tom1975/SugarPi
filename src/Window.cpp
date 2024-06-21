@@ -1,10 +1,11 @@
 //
 #include <memory.h>
+#include <math.h>
 
 #include "Window.h"
 
 #ifdef RASPPI
-#include "DisplayPi.h"
+#include "BasicFrame.h"
 #else
 #include "DisplayPiDesktop.h"
 
@@ -20,13 +21,12 @@ static char s[1024];
 
 #endif
 
-#include <math.h>
 
 Window* Window::focus_ = nullptr;
 bool Window::stop_ = false;
 
 ////////////////////////////////////////////////////////////////////////////////////
-Window::Window(DisplayPi* display) : 
+Window::Window(BasicFrame* display) :
    display_(display), 
    x_(0), y_(0), 
    width_(0), height_(0), 
@@ -34,10 +34,13 @@ Window::Window(DisplayPi* display) :
    windows_children_(nullptr)
    
 {
+   font_ = new CoolspotFont(display_->GetPitch());
+
 }
 
 Window::~Window()
 {
+   delete font_;
 }
 
 void Window::Create (Window* parent, int x, int y, unsigned int width, unsigned int height)
@@ -59,7 +62,7 @@ void Window::ClearAll()
    // Background
    for (int i = 0; i < display_->GetHeight() ; i++)
    {
-      int* line = display_->GetVideoBuffer(i);
+      int* line = display_->GetBuffer(i);
       memset(line, 0x0, sizeof(int) * display_->GetWidth());
    }
 }
@@ -67,14 +70,14 @@ void Window::ClearAll()
 void Window::Clear()
 {
    // Background
-   for (int i = x_; i < display_->GetHeight() && i < y_ + height_; i++)
+   for (int i = y_; i < display_->GetHeight() && i < y_ + height_; i++)
    {
-      int* line = display_->GetVideoBuffer(i);
-      int size_to_clear = width_ + y_;
+      int* line = display_->GetBuffer(i);
+      int size_to_clear = width_ + x_;
       if (size_to_clear > width_)
          size_to_clear = width_;
 
-      memset(&line[y_], 0x0, sizeof(int) * size_to_clear);
+      memset(&line[x_], 0x0, sizeof(int) * size_to_clear);
    }
 
 }
@@ -160,7 +163,7 @@ void Window::Redraw (bool clear)
 
    //CLogger::Get()->Write("Window", LogNotice, "Redraw - 4");
    // Sync
-   display_->VSync();
+   display_->FrameIsReady();
    //CLogger::Get()->Write("Window", LogNotice, "Redraw - VSync done");
 
 #ifdef PROFILE
@@ -169,7 +172,7 @@ void Window::Redraw (bool clear)
    DWORD elapsed = (DWORD)(((s2 - s3) * 1000000) / freq);
    if (elapsed > 1000000)
    {
-      sprintf(s, "FPS : %f", nb_frame / (elapsed /1000000.0));
+      sprintf(s, "FPS : %f\n", nb_frame / (elapsed /1000000.0));
       OutputDebugString(s);
       s3 = s2;
       nb_frame = 0;
@@ -187,6 +190,7 @@ void Window::ForceStop()
 IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
 {
    // Redraw the window
+   CLogger::Get()->Write("DoScreen", LogNotice, "First redraw");
    Redraw (true);
     
    // Wait for an event
@@ -195,9 +199,8 @@ IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
    {
       IEvent::Event event = event_handler->GetEvent();
       if (event == IEvent::NONE)
-      {
-          // Wait a bit
-         Redraw(true);
+      { 
+         WAIT(1);
       }
       else
       {
@@ -261,8 +264,54 @@ void Window::RemoveFocus ()
 {
 }
 
+void Window::DisplayText(const char* txt, int x, int y, bool selected)
+{
+   // Display text
+   int i = 0;
+
+   char buff[16];
+   memset(buff, 0, sizeof buff);
+   strncpy(buff, txt, 15);
+
+   unsigned int x_offset_output = 0;
+   
+   CLogger::Get()->Write("DisplayText", LogNotice, "DisplayText : %s - Font = %X", txt, font_);
+   while (txt[i] != '\0' && x + x_offset_output < display_->GetWidth() )
+   {
+
+      // Display character
+      unsigned char c = txt[i];
+
+      if (c == ' ' || c >= 0x80)
+      {
+         x_offset_output += 10;
+      }
+      else
+      {
+         if (y + font_->GetLetterHeight(txt[i]) >= display_->GetHeight())
+         {
+            break;
+         }
+         int* line = display_->GetBuffer(y);
+         //font_->Write(c, line + x + x_offset_output);
+         font_->CopyLetter(c, &line[x + x_offset_output], display_->GetPitch());
+
+         // Look for proper bitmap position (on first line only)
+         /*for (int display_y = 0; display_y < font_->GetLetterHeight(c) && GetHeight()>display_y + y; display_y++)
+         {
+            int* line = GetVideoBuffer(display_y + y);
+            font_->CopyLetter(c, display_y, &line[x + x_offset_output]);
+         }*/
+         x_offset_output += font_->GetLetterLength(c);
+      }
+      i++;
+
+   }
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////
-MenuItemWindows::MenuItemWindows (DisplayPi* display) : Window(display), action_(nullptr)
+MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action_(nullptr)
 {
 
 }
@@ -284,7 +333,7 @@ void MenuItemWindows::SetAction (IAction* action)
 
 void MenuItemWindows::RedrawWindow ( )
 {
-   //CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow");
+   CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow");
    int x = 15;
    int y = 0;
    WindowsToDisplay(x, y);   
@@ -293,10 +342,10 @@ void MenuItemWindows::RedrawWindow ( )
    if (focus_==this)
    {
       // draw it 
-      display_->DisplayText ("*", x-15, y, focus_==this);
+      DisplayText ("*", x-15, y, focus_==this);
    }
-   display_->DisplayText (label_, x, y, focus_==this);
-   //CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow end");
+   DisplayText (label_, x, y, focus_==this);
+   CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow end");
 }
 
 IAction::ActionReturn MenuItemWindows::HandleEvent( IEvent::Event event)
@@ -321,7 +370,7 @@ IAction::ActionReturn MenuItemWindows::HandleEvent( IEvent::Event event)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-CheckMenuItemWindows::CheckMenuItemWindows (DisplayPi* display) : MenuItemWindows(display), value_(nullptr)
+CheckMenuItemWindows::CheckMenuItemWindows (BasicFrame* display) : MenuItemWindows(display), value_(nullptr)
 {
 
 }
@@ -346,11 +395,11 @@ void CheckMenuItemWindows::RedrawWindow ( )
    if (focus_==this)
    {
       // draw it 
-      display_->DisplayText ("*", x-15, y, focus_==this);
+      DisplayText ("*", x-15, y, focus_==this);
    }
    // Draw the check box
-   display_->DisplayText ((*value_)?"[X]":"[ ]", x, y);
-   display_->DisplayText(label_, x + 30, y, focus_ == this);
+   DisplayText ((*value_)?"[X]":"[ ]", x, y);
+   DisplayText(label_, x + 30, y, focus_ == this);
 }
 
 IAction::ActionReturn CheckMenuItemWindows::HandleEvent( IEvent::Event event)
@@ -375,7 +424,7 @@ IAction::ActionReturn CheckMenuItemWindows::HandleEvent( IEvent::Event event)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-ScrollWindows::ScrollWindows (DisplayPi* display) : Window (display), scroll_offset_x_(0), scroll_offset_y_(0)
+ScrollWindows::ScrollWindows (BasicFrame* display) : Window (display), scroll_offset_x_(0), scroll_offset_y_(0)
 {
 
 }
@@ -420,7 +469,7 @@ void ScrollWindows::Scroll ( int offset_x, int offset_y)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-MenuWindows::MenuWindows (DisplayPi* display) : Window (display), current_focus_(-1), scroll_window_(display)
+MenuWindows::MenuWindows (BasicFrame* display) : Window (display), current_focus_(-1), scroll_window_(display)
 {
 
 }
@@ -446,7 +495,7 @@ void MenuWindows::Create( Window* parent, int x, int y, unsigned int width, unsi
 
 void MenuWindows::AddMenuItem (const char* label, IAction* action)
 {
-   //CLogger::Get ()->Write("Menu", LogNotice, "add menu : %s ", label);
+   CLogger::Get ()->Write("Menu", LogNotice, "add menu : %s ", label);
 
    // Add item to menu
    MenuItemWindows* item = new MenuItemWindows (display_);
@@ -464,7 +513,7 @@ void MenuWindows::AddMenuItem (const char* label, IAction* action)
 void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* action)
 {
    // Add item to menu
-   //CLogger::Get ()->Write("Menu", LogNotice, "add menucheck : %s ", label);
+   CLogger::Get ()->Write("Menu", LogNotice, "add menucheck : %s ", label);
    CheckMenuItemWindows* item = new CheckMenuItemWindows (display_);
    item->Create( label, value, &scroll_window_, 10, list_item_.size()*20, 800, 19);
    item->SetAction(action);
@@ -488,7 +537,7 @@ void MenuWindows::RedrawWindow ()
 
 void MenuWindows::ComputeScroller()
 {
-   //CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller");
+   CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller");
    // check current focus, depending on windows size
    int distant_to_top = current_focus_ * 20;
    int distant_to_bottom = (static_cast<int>(list_item_.size()) - (current_focus_+1)) *20;
@@ -506,7 +555,7 @@ void MenuWindows::ComputeScroller()
       scroll_y = win_h;
    }
    scroll_window_.Scroll ( 0, scroll_y);
-   //CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller Done; y = %i", scroll_y);
+   CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller Done; y = %i", scroll_y);
 }
 
 IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
@@ -554,7 +603,7 @@ void MenuWindows::SetFocus (unsigned int index)
    
 }
 
-BitmapWindows::BitmapWindows(DisplayPi* display): Window(display)
+BitmapWindows::BitmapWindows(BasicFrame* display): Window(display)
 {
 
 }
@@ -573,11 +622,11 @@ void BitmapWindows::Create(Window* parent, int x, int y, PiBitmap* bmp)
 
 void BitmapWindows::RedrawWindow()
 {
-   //CLogger::Get()->Write("BitmapWindows", LogNotice, "RedrawWindow");
+   CLogger::Get()->Write("BitmapWindows", LogNotice, "RedrawWindow");
    static float offset;
    for (int i = 0; i < height_; i++)
    {
-      int* line = display_->GetVideoBuffer(i + y_);
+      int* line = display_->GetBuffer(i + y_);
       bmp_->DrawLogo(i, &line[x_ + (int) (sinf(offset)*10)]);
       offset += 0.002f;
    }
