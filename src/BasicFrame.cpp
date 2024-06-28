@@ -52,7 +52,7 @@ void BasicFrame::Init(int width, int height, int nb_buffers)
 
    for (int i = 0; i < nb_buffers_; i++)
    {
-      display_frame_buffer_[i] = new unsigned char [back_pitch_ * internal_height_];
+      display_frame_buffer_[i] = new unsigned char [back_pitch_ * internal_height_ * 4];
       frame_used_[i] = FR_FREE;
       frame_queue_[i] = 0;
    }

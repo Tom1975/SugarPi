@@ -171,7 +171,7 @@ void SugarboxLogo::DrawLogo(int line, int* buffer)
    for (; begin<end; ++begin)
    {
       if (*begin != 0)
-         *buffer =*begin;
+         *buffer =*begin|0xFF000000;
       buffer++;
    }
 }

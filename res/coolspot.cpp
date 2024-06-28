@@ -357,13 +357,14 @@ void CoolspotFont::CopyLetter(unsigned char c, int* buffer, int stride)
       const unsigned int* end = &coolspot_font.pixel_data[endoffset];
       for (int y = 0; y < coolspot_font.height; y++)
       {
+         int* col_buffer = (int*)(&((unsigned char*)buffer)[y * stride]);
          const unsigned int* begin = &coolspot_font.pixel_data[offset] + y * coolspot_font.width;
-         unsigned int* col_buffer = (unsigned int*)buffer + y * stride;
+         
          for (;begin < end; begin++)
          {
             if (*begin != 0)
             {
-               *col_buffer = *begin;
+               *col_buffer = *begin | 0xFF000000;
             }
             col_buffer++;
          }
