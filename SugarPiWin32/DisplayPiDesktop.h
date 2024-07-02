@@ -2,8 +2,10 @@
 
 #include <windows.h>
 #include <gdiplus.h>
-#include <d2d1.h>
+#include <d2d1_1.h>
+
 #include <mutex>
+#include <vector>
 using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")
 
@@ -27,7 +29,6 @@ public:
 
    virtual void Lock() { mutex_.lock(); }
    virtual void Unlock() { mutex_.unlock(); }
-   virtual void SetFrame(int frame_index);
    virtual void Draw();
 
    virtual void WindowsToTexture(int& x, int& y);
@@ -35,14 +36,35 @@ public:
    virtual void ReleaseAll();
    virtual void Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface* pFSInt);
    virtual void WaitVbl();
+   virtual void CopyMemoryToRessources(ID2D1Bitmap* bitmap, BasicFrame* frame);
 
 protected:
+
+   HWND CreateWindowFrame(BasicFrame* frame, int priority);
+
    IFullScreenInterface* m_pFSInt;
 
    std::mutex mutex_;
 
    // DX
    HWND        m_hWnd;
+   HWND        m_hEmuWnd;
+   HWND        m_hBackWnd;
+   HWND        m_hMenuWnd;
+
+   BasicFrame* frame_;
+   HWND wnd_;
    ID2D1HwndRenderTarget* pRT_;
    ID2D1Bitmap* bitmap_;
+
+   class Win32Frame
+   {
+   public:
+      BasicFrame* basic_;
+      ID2D1Layer* pLayer_;
+   };
+
+   std::vector<Win32Frame> windows_list_;
+
+   HINSTANCE hInstance_;
 };

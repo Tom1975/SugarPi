@@ -21,7 +21,7 @@ public:
 
 
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProcFrame(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 
    EmualtionWin32* emu = reinterpret_cast<EmualtionWin32*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
@@ -70,7 +70,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
    wcex.cbSize = sizeof(WNDCLASSEX);
 
    wcex.style = CS_HREDRAW | CS_VREDRAW;
-   wcex.lpfnWndProc = WndProc;
+   wcex.lpfnWndProc = WndProcFrame;
    wcex.cbClsExtra = 0;
    wcex.cbWndExtra = 0;
    wcex.hInstance = hInstance;

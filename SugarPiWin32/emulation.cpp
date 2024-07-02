@@ -89,7 +89,7 @@ void Emulation::Run(unsigned nCore)
 
       while(sound_run_)
       {
-         sound_mixer_->Loop();
+         sound_mixer_->Tick();
          keyboard_->UpdatePlugnPlay();
          // scheduler call
          display_->Loop();
