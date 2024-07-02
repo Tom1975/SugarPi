@@ -53,6 +53,10 @@ protected:
    CTimer* timer_;
    CSpinLock   mutex_;
 
+   // Dispmanx elements
+   DISPMANX_DISPLAY_HANDLE_T  display_;
+   DISPMANX_MODEINFO_T        info_;
+
    class DispmanxWindow
    {
    public:
@@ -84,5 +88,4 @@ protected:
 
    } RECT_VARS_T;
 
-   RECT_VARS_T    vars_;
 };

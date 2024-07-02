@@ -25,9 +25,9 @@ DisplayPi::DisplayPi(CLogger* logger) :
    added_line_(1),
    current_buffer_(0),
    nb_frame_in_queue_(0),
-   sync_on_frame_(false),
    display_menu_buffer_(nullptr),
-   display_title_buffer_(nullptr)
+   display_title_buffer_(nullptr),
+   sync_on_frame_(false)
 
 {
    // Create backbuffers
