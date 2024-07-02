@@ -67,10 +67,12 @@ bool DisplayPiImp::Initialization()
    int aligned_height = ALIGN_UP(HEIGHT_VIRTUAL_SCREEN, 16);
    printk( "Display is %d x %d - pitch : %i\n", vars_.info.width, vars_.info.height, pitch );
 
+   DisplayPi::Initialization();
+
    // create various objects :
    //----------------------
    // background
-   back_frame_.Init(vars_.info.width, vars_.info.height, 1);
+   //back_frame_.Init(vars_.info.width, vars_.info.height, 1);
    back_wnd_.frame_ = &back_frame_;
    back_wnd_.type_of_image_ = VC_IMAGE_XRGB8888;
    back_wnd_.resource_ = vc_dispmanx_resource_create (back_wnd_.type_of_image_, back_wnd_.frame_->GetFullWidth(), back_wnd_.frame_->GetFullHeight(), &back_wnd_.ptr_);
@@ -86,7 +88,7 @@ bool DisplayPiImp::Initialization()
 
    //----------------------
    // Main display for emulation
-   emu_frame_.Init(vars_.info.width, vars_.info.height, 3);
+   //emu_frame_.Init(vars_.info.width, vars_.info.height, 3);
    emu_wnd_.frame_ = &emu_frame_;
    emu_wnd_.type_of_image_ = VC_IMAGE_XRGB8888;
    emu_wnd_.resource_ =  vc_dispmanx_resource_create (emu_wnd_.type_of_image_, emu_wnd_.frame_->GetFullWidth(), emu_wnd_.frame_->GetFullHeight(), &emu_wnd_.ptr_);
@@ -104,7 +106,7 @@ bool DisplayPiImp::Initialization()
 
    //----------------------
    // Menu
-   menu_frame_.Init (vars_.info.width, vars_.info.height, 1);
+   //menu_frame_.Init (vars_.info.width, vars_.info.height, 1);
    menu_wnd_.frame_ = &menu_frame_;
    menu_wnd_.element_ = 0;
    menu_wnd_.priority_ = 20;   
@@ -206,8 +208,6 @@ bool DisplayPiImp::Initialization()
 
    logger_->Write("Display", LogNotice, " End init.. Draw done.");
 
-   DisplayPi::Initialization();
-
    return true;
 }
 
@@ -262,17 +262,20 @@ void DisplayPiImp::WaitVbl()
 int DisplayPiImp::GetStride()
 {
    // TODO : stride is for int* !!!
-   return WIDTH_VIRTUAL_SCREEN;
+   //return WIDTH_VIRTUAL_SCREEN;
+   return vars_.info.width;
 }
 
 int DisplayPiImp::GetWidth()
 {
-   return WIDTH_VIRTUAL_SCREEN;
+   //return WIDTH_VIRTUAL_SCREEN;
+   return vars_.info.width;// REAL_DISP_X;
 }
 
 int DisplayPiImp::GetHeight()
 {
-   return HEIGHT_VIRTUAL_SCREEN;
+   //return HEIGHT_VIRTUAL_SCREEN;
+   return vars_.info.height;// REAL_DISP_X;
 }
 
 int* DisplayPiImp::GetVideoBuffer(int y)
