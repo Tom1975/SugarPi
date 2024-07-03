@@ -181,7 +181,6 @@ void BasicFrame::Minimize()
 
 void BasicFrame::Refresh()
 {
-   CLogger::Get ()->Write("BasicFrame", LogNotice, "BasicFrame::Refresh");
    // Any moving function is to be updated ?
    if (current_morph != nullptr)
    {

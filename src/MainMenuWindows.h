@@ -27,7 +27,7 @@ public:
 protected:
    BitmapWindows* logo_;
    MenuWindows* menu_;
-   SugarboxLogo* bitmap_;  
+   SugarboxLogo* bitmap_;
 
    // Checkboard
    int* full_line_;

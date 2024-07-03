@@ -218,7 +218,7 @@ void DisplayPiDesktop::Draw()
          layerParameters.maskTransform = D2D1::IdentityMatrix();
          layerParameters.opacity = 1.0;
          layerParameters.opacityBrush = NULL;
-         layerParameters.layerOptions = D2D1_LAYER_OPTIONS1_IGNORE_ALPHA;
+         layerParameters.layerOptions = D2D1_LAYER_OPTIONS1_NONE;
 
          D2D1_LAYER_PARAMETERS* toto = (D2D1_LAYER_PARAMETERS*) & layerParameters;
 

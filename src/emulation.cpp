@@ -159,6 +159,7 @@ void Emulation::RunMainLoop()
       if (keyboard_->IsSelect())
       {
          logger_->Write("Kernel", LogNotice, "Select...");
+         
          ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
          // todo : find a smart way to signal exit
