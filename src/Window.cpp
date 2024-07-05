@@ -570,6 +570,7 @@ IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
             current_focus_++;
             list_item_.at(current_focus_)->SetFocus ();
             ComputeScroller();
+            Redraw();
          }
          break;
       case IEvent::Event::UP:
@@ -579,6 +580,7 @@ IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
             current_focus_--;
             list_item_.at(current_focus_)->SetFocus ();
             ComputeScroller();
+            Redraw();
          }
          break;
       case IEvent::Event::BACK:

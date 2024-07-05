@@ -29,12 +29,4 @@ protected:
    MenuWindows* menu_;
    SugarboxLogo* bitmap_;
 
-   // Checkboard
-   int* full_line_;
-   int offset_grid;
-   int offset_grid_y;
-
-   int max_w_;
-
-
 };

@@ -5,9 +5,10 @@
 #include <circle/logger.h>
 #include <circle/bcmframebuffer.h>
 
+#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+
 #include <bcm_host.h>
 
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
 #include "DisplayPi.h"
 
 class DisplayPiImp : public DisplayPi

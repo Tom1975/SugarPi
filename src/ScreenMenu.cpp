@@ -211,7 +211,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    DIR Directory;
    FILINFO *FileInfo = new FILINFO;
    FRESULT Result = f_findfirst(&Directory, FileInfo, path, "*");
-   std::vector<FILINFO*> config_list(20);
+   std::vector<FILINFO*> config_list;
    
    int limit = 0;
    // Create menu
@@ -223,6 +223,10 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
       if ((FileInfo->fattrib & (AM_HID | AM_SYS | AM_DIR)) == 0)
       {
          config_list.push_back(FileInfo);
+      }
+      else
+      {
+         delete FileInfo;
       }
       FileInfo = new FILINFO;
       Result = f_findnext(&Directory, FileInfo);
