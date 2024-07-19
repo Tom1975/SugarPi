@@ -1,8 +1,9 @@
 //
 #include <memory.h>
 #include <math.h>
-
+#include <stdlib.h>
 #include "Window.h"
+#include "utf8_to_utf32.h"
 
 #ifdef RASPPI
 #include "BasicFrame.h"
@@ -34,13 +35,12 @@ Window::Window(BasicFrame* display) :
    windows_children_(nullptr)
    
 {
-   font_ = new CoolspotFont(display_->GetPitch());
-
+   //font_ = new CoolspotFont(display_->GetPitch());
 }
 
 Window::~Window()
 {
-   delete font_;
+   //delete font_;
 }
 
 void Window::Create (Window* parent, int x, int y, unsigned int width, unsigned int height)
@@ -264,60 +264,35 @@ void Window::RemoveFocus ()
 {
 }
 
+
 void Window::DisplayText(const char* txt, int x, int y, bool selected)
 {
-   // Display text
-   int i = 0;
-
-   char buff[16];
-   memset(buff, 0, sizeof buff);
-   strncpy(buff, txt, 15);
-
-   unsigned int x_offset_output = 0;
-   
-   CLogger::Get()->Write("DisplayText", LogNotice, "DisplayText : %s - Font = %X", txt, font_);
-   while (txt[i] != '\0' && x + x_offset_output < display_->GetWidth() )
-   {
-
-      // Display character
-      unsigned char c = txt[i];
-
-      if (c == ' ' || c >= 0x80)
-      {
-         x_offset_output += 10;
-      }
-      else
-      {
-         if (y + font_->GetLetterHeight(txt[i]) >= display_->GetHeight())
-         {
-            break;
-         }
-         int* line = display_->GetBuffer(y);
-         //font_->Write(c, line + x + x_offset_output);
-         font_->CopyLetter(c, &line[x + x_offset_output], display_->GetPitch());
-
-         // Look for proper bitmap position (on first line only)
-         /*for (int display_y = 0; display_y < font_->GetLetterHeight(c) && GetHeight()>display_y + y; display_y++)
-         {
-            int* line = GetVideoBuffer(display_y + y);
-            font_->CopyLetter(c, display_y, &line[x + x_offset_output]);
-         }*/
-         x_offset_output += font_->GetLetterLength(c);
-      }
-      i++;
-
-   }
+   display_->WriteText(txt, x, y);
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////
 MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action_(nullptr)
 {
+   fnt_italic_.xOffset = 0;
+   fnt_italic_.xScale = 18;
+   fnt_italic_.yOffset = 0;
+   fnt_italic_.yScale = 18;
+   fnt_italic_.flags = SFT_DOWNWARD_Y;
+   fnt_italic_.font = sft_loadfile("ariali.ttf");
+
+   fnt_normal_.xOffset = 0;
+   fnt_normal_.xScale = 16;
+   fnt_normal_.yOffset = 0;
+   fnt_normal_.yScale = 16;
+   fnt_normal_.flags = SFT_DOWNWARD_Y;
+   fnt_normal_.font = sft_loadfile("arial.ttf");
 
 }
 MenuItemWindows::~MenuItemWindows ()
 {
-
+   sft_freefont(fnt_italic_.font);
+   sft_freefont(fnt_normal_.font);
 }
 
 void MenuItemWindows::Create (const char* label, Window* parent, int x, int y, unsigned int width, unsigned int height)
@@ -342,9 +317,16 @@ void MenuItemWindows::RedrawWindow ( )
    if (focus_==this)
    {
       // draw it 
-      DisplayText ("*", x-15, y, focus_==this);
+      display_->SelectFont(&fnt_italic_);
+      display_->SelectColor(0x303030);
+      display_->WriteText("*", x-15, y);
    }
-   DisplayText (label_, x, y, focus_==this);
+   else
+   {
+      display_->SelectFont(&fnt_normal_);
+      display_->SelectColor(0x000000);
+   }
+   display_->WriteText(label_, x, y);
    CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow end");
 }
 
@@ -395,11 +377,11 @@ void CheckMenuItemWindows::RedrawWindow ( )
    if (focus_==this)
    {
       // draw it 
-      DisplayText ("*", x-15, y, focus_==this);
+      display_->WriteText("*", x-15, y);
    }
    // Draw the check box
-   DisplayText ((*value_)?"[X]":"[ ]", x, y);
-   DisplayText(label_, x + 30, y, focus_ == this);
+   display_->WriteText((*value_)?"[X]":"[ ]", x, y);
+   display_->WriteText(label_, x + 30, y);
 }
 
 IAction::ActionReturn CheckMenuItemWindows::HandleEvent( IEvent::Event event)

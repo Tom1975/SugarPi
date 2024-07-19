@@ -74,6 +74,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Morphing.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Morphings.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Morphings.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/schrift.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/schrift.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScreenMenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScreenMenu.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.cpp
@@ -82,6 +84,7 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/SugarboxLogo.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/SugarboxLogo.h
+
 
 )
 

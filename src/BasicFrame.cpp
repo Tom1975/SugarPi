@@ -1,8 +1,12 @@
 //
 #include <math.h> 
 #include <memory.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "BasicFrame.h"
+
+#include "utf8_to_utf32.h"
 #include "Morphings.h"
 
 #ifndef ALIGN_UP
@@ -25,7 +29,9 @@ BasicFrame::BasicFrame() :
    nb_frame_in_queue_(0),
    current_change_(0),
    buffer_has_changed_(false),
-   current_morph(nullptr)
+   current_morph(nullptr),
+   sft_(nullptr),
+   text_color_(0xFFFFFF)
 {
 
 }
@@ -194,4 +200,88 @@ void BasicFrame::Refresh()
    {
       current_change_ = 0;
    }
+}
+
+SFT* BasicFrame::SelectFont(SFT* fnt)
+{
+   SFT * old_fnt = sft_;
+   sft_ = fnt;
+   return old_fnt;
+}
+
+int BasicFrame::SelectColor(int color)
+{
+   int old_color = text_color_;
+   text_color_ = color;
+   return old_color;
+}
+
+void BasicFrame::WriteText(const char* text, int x, int y)
+{
+   if (sft_ == nullptr) return;
+
+   // Display text
+   int i = 0;
+
+   SFT_LMetrics lmtx;
+   sft_lmetrics(sft_, &lmtx);
+
+   char buff[16];
+   memset(buff, 0, sizeof buff);
+   strncpy(buff, text, 15);
+
+   int n = strlen(text) + 1;
+
+   unsigned int* codepoints = new unsigned int[n];
+   memset(codepoints, 0, sizeof(unsigned int) * (n));
+
+   n = utf8_to_utf32((unsigned char*)text, codepoints, n);  // (const uint8_t *)
+
+
+   unsigned int x_offset_output = 0;
+
+   //CLogger::Get()->Write("DisplayText", LogNotice, "DisplayText : %s - Font = %X", txt, font_);
+
+   while (codepoints[i] != '\0' && x + x_offset_output < GetWidth())
+   {
+
+      unsigned int cp = codepoints[i];
+      SFT_Glyph gid;  //  unsigned long gid;
+      if (sft_lookup(sft_, cp, &gid) < 0)
+         continue;
+
+      SFT_GMetrics mtx;
+      if (sft_gmetrics(sft_, gid, &mtx) < 0)
+         continue;
+
+      SFT_Image img;
+      img.width = (mtx.minWidth + 3) & ~3;
+      img.height = mtx.minHeight;
+
+      char* pixels = new char[img.width * img.height];
+      img.pixels = pixels;
+      if (sft_render(sft_, gid, img) < 0)
+      {
+      }
+      else
+      {
+         // Copy to framebuffer
+         for (int dy = 0; dy < img.height; dy++)
+         {
+            int* line = GetBuffer(y + dy + mtx.yOffset);
+            for (int dx = 0; dx < img.width; dx++)
+            {
+               line[x + x_offset_output + dx + (short)mtx.leftSideBearing] = text_color_ | ((pixels[dx + dy * img.width]) << 24);
+            }
+
+         }
+
+         x_offset_output += mtx.advanceWidth;
+      }
+      delete[]pixels;
+
+      i++;
+
+   }
+   delete[]codepoints;
 }

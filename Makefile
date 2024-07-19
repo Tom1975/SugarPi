@@ -21,6 +21,7 @@ OBJS	= src/main.o\
 		src/Morphings.o \
 		src/SoundPi.o\
 		src/ScreenMenu.o\
+		src/schrift.o \
 		src/Window.o\
 		res/SugarboxLogo.o\
 		res/coolspot.o\

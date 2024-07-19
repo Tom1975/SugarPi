@@ -19,8 +19,8 @@
 #include "BasicFrame.h"
 #include "PiBitmap.h"
 
-#include "res/coolspot.h"
-
+//#include "res/coolspot.h"
+#include "schrift.h"
 
 class IAction
 {
@@ -112,7 +112,8 @@ protected:
    };
    WindowsQueue* windows_children_;
 
-   CoolspotFont* font_;
+   //CoolspotFont* font_;
+   
 
 };
 
@@ -130,6 +131,8 @@ public:
 protected:
    CString label_;
    IAction* action_;
+   SFT fnt_italic_;
+   SFT fnt_normal_;
 };
 
 class ScrollWindows : public Window

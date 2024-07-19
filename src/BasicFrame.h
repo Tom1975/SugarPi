@@ -7,6 +7,7 @@
 #endif
 
 #include "Morphing.h"
+#include "schrift.h"
 
 #define CHANGED_NONE      0
 #define CHANGED_LAYER     0x01
@@ -47,6 +48,14 @@ public:
    virtual int GetDisplayY(){return display_y_;}
    virtual int GetDisplayWidth(){return display_width_;}
    virtual int GetDisplayHeight(){return display_height_;}
+
+   ////////////////////////////////
+   // Text functions
+   SFT* SelectFont(SFT* fnt);
+   int SelectColor(int color);
+   void WriteText(const char* text, int x, int y);
+
+
 
    virtual void Draw () = 0;
    virtual void Refresh ();
@@ -117,4 +126,7 @@ protected:
    // Update function
    Morphing* current_morph;
 
+   // Text context
+   SFT * sft_;
+   int text_color_;
 };

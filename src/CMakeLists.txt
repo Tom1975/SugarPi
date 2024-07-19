@@ -31,6 +31,8 @@ set(Source_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/log.h
 		${CMAKE_CURRENT_SOURCE_DIR}/MainMenuWindows.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/MainMenuWindows.h
+		${CMAKE_CURRENT_SOURCE_DIR}/schrift.c
+		${CMAKE_CURRENT_SOURCE_DIR}/schrift.h		
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPi.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPi.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ScreenMenu.cpp

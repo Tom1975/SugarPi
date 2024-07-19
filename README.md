@@ -49,3 +49,4 @@ In the future, I'll try to stick to the gamecontrollerdb.txt repository.
 - [Circle++ library](https://github.com/rsta2/circle) for bare-metal projects on Raspberry Pi 
 - [Gamecontrollerdb.txt](https://github.com/gabomdq/SDL_GameControllerDB) for gamepad mapping support
 - [Sugarbox Core library](https://github.com/Tom1975/CPCCore) for Amstrad CPC core emulation
+- [libschrift](https://github.com/tomolt/libschrift) for True Type font display
