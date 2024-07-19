@@ -232,7 +232,7 @@ void BasicFrame::WriteText(const char* text, int x, int y)
 
    int n = strlen(text) + 1;
 
-   unsigned int* codepoints = new unsigned int[n];
+   long unsigned int* codepoints = new unsigned int[n];
    memset(codepoints, 0, sizeof(unsigned int) * (n));
 
    n = utf8_to_utf32((unsigned char*)text, codepoints, n);  // (const uint8_t *)
