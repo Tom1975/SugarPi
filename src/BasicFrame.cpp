@@ -218,7 +218,7 @@ int BasicFrame::SelectColor(int color)
 
 void BasicFrame::WriteText(const char* text, int x, int y)
 {
-   if (sft_ == nullptr) return;
+   if (sft_ == nullptr || sft_->font == nullptr) return;
 
    // Display text
    int i = 0;
@@ -232,7 +232,7 @@ void BasicFrame::WriteText(const char* text, int x, int y)
 
    int n = strlen(text) + 1;
 
-   long unsigned int* codepoints = new unsigned int[n];
+   uint32_t* codepoints = new uint32_t[n];
    memset(codepoints, 0, sizeof(unsigned int) * (n));
 
    n = utf8_to_utf32((unsigned char*)text, codepoints, n);  // (const uint8_t *)

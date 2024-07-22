@@ -10,6 +10,8 @@
 #else
 #include "DisplayPiDesktop.h"
 
+#define PROFILE
+
 #ifdef PROFILE
 #include <profileapi.h>
 #define START_CHRONO  QueryPerformanceFrequency((LARGE_INTEGER*)&freq);;QueryPerformanceCounter ((LARGE_INTEGER*)&s1);
@@ -70,14 +72,16 @@ void Window::ClearAll()
 void Window::Clear()
 {
    // Background
-   for (int i = y_; i < display_->GetHeight() && i < y_ + height_; i++)
+   int x = 0, y = 0;
+   WindowsToDisplay(x, y);
+   for (int i = y; i < display_->GetHeight() && i < y + height_; i++)
    {
       int* line = display_->GetBuffer(i);
-      int size_to_clear = width_ + x_;
+      int size_to_clear = width_ + x;
       if (size_to_clear > width_)
          size_to_clear = width_;
 
-      memset(&line[x_], 0x0, sizeof(int) * size_to_clear);
+      memset(&line[x], 0x0, sizeof(int) * size_to_clear);
    }
 
 }
@@ -104,13 +108,7 @@ void Window::WindowsToDisplay(int& x, int& y)
    {
       parent_->WindowsToDisplay ( x, y);
    }
-   /*Windows* wnd = this;
-   while ( wnd->parent_ != nullptr)
-   {
-      wnd = wnd->parent_;
-      x += wnd->x_;
-      y += wnd->y_;
-   }*/
+
 }
 
 void Window::RedrawWindow ()
@@ -122,14 +120,9 @@ void Window::RedrawChildren ()
    WindowsQueue** current_queue = &windows_children_;
    while ( *current_queue != nullptr)
    {  
-      // If a part of the windows can be displayed : do it !
-      /*if ( (*current_queue)->wnd_->x_ + (*current_queue)->wnd_->width_>= 0 && (*current_queue)->wnd_->y_ + (*current_queue)->wnd_->height_ >= 0 
-      && (*current_queue)->wnd_->x_ <= width_ 
-      && (*current_queue)->wnd_->y_ <= height_ )*/
-      {
-         (*current_queue)->wnd_->RedrawWindow();
-         (*current_queue)->wnd_->RedrawChildren();
-      }
+      (*current_queue)->wnd_->Clear();
+      (*current_queue)->wnd_->RedrawWindow();
+      (*current_queue)->wnd_->RedrawChildren();
 
       current_queue = &((*current_queue)->next_);
    }
@@ -149,22 +142,10 @@ void Window::Redraw (bool clear)
    static __int64 s3 = s1;
 #endif
 
-   //CLogger::Get()->Write("Window", LogNotice, "Redraw - 1");
-   if (clear)
-      Clear();
-
-   //CLogger::Get()->Write("Window", LogNotice, "Redraw - 2");
-   // Redraw window
+   Clear();
    RedrawWindow ();
-
-   //CLogger::Get()->Write("Window", LogNotice, "Redraw - 3");
-   // Redraw children
    RedrawChildren ();
-
-   //CLogger::Get()->Write("Window", LogNotice, "Redraw - 4");
-   // Sync
    display_->FrameIsReady();
-   //CLogger::Get()->Write("Window", LogNotice, "Redraw - VSync done");
 
 #ifdef PROFILE
    STOP_CHRONO
@@ -279,14 +260,14 @@ MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action
    fnt_italic_.yOffset = 0;
    fnt_italic_.yScale = 18;
    fnt_italic_.flags = SFT_DOWNWARD_Y;
-   fnt_italic_.font = sft_loadfile("ariali.ttf");
+   fnt_italic_.font = sft_loadfile("Facile Sans.ttf");
 
    fnt_normal_.xOffset = 0;
    fnt_normal_.xScale = 16;
    fnt_normal_.yOffset = 0;
    fnt_normal_.yScale = 16;
    fnt_normal_.flags = SFT_DOWNWARD_Y;
-   fnt_normal_.font = sft_loadfile("arial.ttf");
+   fnt_normal_.font = sft_loadfile("Facile Sans.ttf");
 
 }
 MenuItemWindows::~MenuItemWindows ()

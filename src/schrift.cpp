@@ -147,6 +147,8 @@ static int  grow_curves (Outline *outl);
 static int  grow_lines  (Outline *outl);
 /* TTF parsing utilities */
 static inline int is_safe_offset(SFT_Font *font, uint_fast32_t offset, uint_fast32_t margin);
+static void *my_bsearch(const void *key, const void *base,	size_t nmemb, size_t size,	int (*compar)(const void *, const void *));
+
 static void *csearch(const void *key, const void *base,
 	size_t nmemb, size_t size, int (*compar)(const void *, const void *));
 static int  cmpu16(const void *a, const void *b);
@@ -336,7 +338,7 @@ sft_kerning(const SFT *sft, SFT_Glyph leftGlyph, SFT_Glyph rightGlyph,
 			key[1] =  leftGlyph  & 0xFF;
 			key[2] = (rightGlyph >> 8) & 0xFF;
 			key[3] =  rightGlyph & 0xFF;
-			if ((match = bsearch(key, sft->font->memory + offset,
+			if ((match = my_bsearch(key, sft->font->memory + offset,
 				numPairs, 6, cmpu32)) != NULL) {
 				
 				value = geti16(sft->font, (uint_fast32_t) ((uint8_t *) match - sft->font->memory + 4));
@@ -722,6 +724,30 @@ is_safe_offset(SFT_Font *font, uint_fast32_t offset, uint_fast32_t margin)
 	return 1;
 }
 
+static void *
+my_bsearch(const void *key, const void *base,
+	size_t nmemb, size_t size,
+	int (*compar)(const void *, const void *))
+{
+	const uint8_t *bytes = (uint8_t*)base, *sample;
+	size_t low = 0, high = nmemb - 1, mid;
+	if (!nmemb) return NULL;
+	while (low != high) {
+		mid = low + (high - low) / 2;
+		sample = bytes + mid * size;
+		int outcome  = compar(key, sample);
+		if ( outcome> 0) {
+			low = mid + 1;
+		} else if ( outcome< 0){
+			high = mid;
+		} else
+		{
+			return (uint8_t *) bytes + mid * size;
+		}
+	}
+	return (uint8_t *) NULL;
+}
+
 /* Like bsearch(), but returns the next highest element if key could not be found. */
 static void *
 csearch(const void *key, const void *base,
@@ -803,7 +829,7 @@ gettable(SFT_Font *font, char tag[4], uint_fast32_t *offset)
 	numTables = getu16(font, 4);
 	if (!is_safe_offset(font, 12, (uint_fast32_t) numTables * 16))
 		return -1;
-	if (!(match = bsearch(tag, font->memory + 12, numTables, 16, cmpu32)))
+	if (!(match = my_bsearch(tag, font->memory + 12, numTables, 16, cmpu32)))
 		return -1;
 	*offset = getu32(font, (uint_fast32_t) ((uint8_t *) match - font->memory + 8));
 	return 0;
