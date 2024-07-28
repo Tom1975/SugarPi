@@ -1,0 +1,1856 @@
+IHEX-F
+logger: Circle 0.0.1 started on Raspberry Pi 400 4GB
+logger: Revision code is c03130, compiler has been GCC 10.3.1
+Kernel: Initialisation done for log.
+Kernel: Interrupt initialization done : 1
+00:00:00.66 timer: SpeedFactor is 1.51
+00:00:00.66 Kernel: Timer initialization done : 1
+00:00:01.20 emmc: Found a valid version 3.0x SD card
+00:00:01.21 Kernel: EMMC initialization done : 1
+00:00:01.21 Kernel: Initialisation of VCHIQ.....
+00:00:01.21 printk: vchiq: vchiq_init_state: slot_zero = 0x00480000, is_master = 0
+00:00:01.22 Kernel: Initialisationfoe Done : 1
+00:00:01.23 Display: Initialization...
+00:00:01.23 Display: EDID message :
+00:00:01.23 Display: EDID version : 1.3
+00:00:01.24 EDID: Dumping 0x80 bytes starting at 0x224930
+00:00:01.24 EDID: 4930: 00 FF FF FF FF FF FF 00-4C 2D 74 02 39 31 45 4D
+00:00:01.25 EDID: 4940: 02 11 01 03 80 29 1A 87-2A DE 95 A3 54 4C 99 26
+00:00:01.25 EDID: 4950: 0F 50 54 BF EF 80 95 00-95 0F 81 80 81 40 71 4F
+00:00:01.26 EDID: 4960: 01 01 01 01 01 01 9A 29-A0 D0 51 84 22 30 50 98
+00:00:01.27 EDID: 4970: 36 00 9A 01 11 00 00 1C-00 00 00 FD 00 38 4B 1E
+00:00:01.27 EDID: 4980: 51 0E 00 0A 20 20 20 20-20 20 00 00 00 FC 00 53
+00:00:01.28 EDID: 4990: 79 6E 63 4D 61 73 74 65-72 0A 20 20 00 00 00 FF
+00:00:01.29 EDID: 49A0: 00 48 53 41 50 31 30 34-31 38 31 0A 20 20 00 7F
+00:00:01.29 printk: Open display[0]...
+00:00:01.30 DIS: BackFrame
+00:00:01.30 BasicFrame: Init width : 1472, height : 932; nb_buffers : 1
+00:00:01.30 DIS: Draw BackFrame
+00:00:01.32 DIS: Draw : nb_buffers_ = 1 - back_pitch_ = 5888 - height_ = 932, internal_width_= 1472, internal_height_ = 932
+00:00:01.33 DIS: MenuFrame
+00:00:01.33 BasicFrame: Init width : 1440, height : 900; nb_buffers : 1
+00:00:01.33 DIS: Draw MenuFrame
+00:00:01.34 DIS: EmulationFrame
+00:00:01.34 BasicFrame: Init width : 1024, height : 576; nb_buffers : 3
+00:00:01.35 DIS: Draw EmulationFrame
+00:00:01.36 printk: vc_dispmanx_resource_write_data back_wnd_ : Pitch = 5888.w = 1472, h = 932
+00:00:01.37 Display: background_buffer_ written
+00:00:01.37 Display:  ####SCREEN W : 1440; H : 900
+00:00:01.39 Display:  End init.. Draw done.
+00:00:01.39 Kernel: display initialization done : 1
+00:00:01.40 Kernel: Creating SoundPI
+00:00:01.40 Kernel: SoundPI Initialized !
+00:00:01.40 KeyboardPi: Loading game controller db...
+00:00:02.39 KeyboardPi: Loading game controller db... Done !
+00:00:02.50 pcie: Link up, 5.0 Gbps x1
+00:00:03.01 usbdev1: Device ven2109-3431, dev9-0-1 found (HS)
+00:00:03.01 usbdev1: Product: USB2.0 Hub
+00:00:03.06 usbdev1: Interface int9-0-0 found
+00:00:03.07 usbdev1: Using device/interface int9-0-0
+00:00:03.74 usbdev1-1: Device ven79-6 found (LS)
+00:00:03.75 usbdev1-1: Product: DragonRise Inc.   Generic   USB  Joystick
+00:00:03.81 usbdev1-1: Interface int3-0-0 found
+00:00:03.81 usbdev1-1: Using device/interface int3-0-0
+00:00:04.00 usbdev1-4: Device ven4d9-7 found (LS)
+00:00:04.03 usbdev1-4: Product:   Raspberry Pi Internal Keyboard
+00:00:04.09 usbdev1-4: Interface int3-1-1 found
+00:00:04.09 usbdev1-4: Using device/interface int3-1-1
+00:00:04.09 usbdev1-4: Interface int3-0-0 found
+00:00:04.11 usbdev1-4: Using device/interface int3-0-0
+00:00:04.12 usbhub: Port 1: Device configured
+00:00:04.14 usbhub: Port 4: Device configured
+00:00:04.14 xhciroot: Port 1: Device configured
+00:00:04.15 Keyboard: Initialize done.
+00:00:04.15 Keyboard: Gamepad : ven79-6 - VID=79; PID=6; bcdDevice = 107
+00:00:04.16 Keyboard: Gamepad 1: 12 Button(s) 1 Hat(s)
+00:00:04.16 KeyboardPi: Gamepad found in database !
+00:00:04.17 Keyboard: Use your gamepad controls!
+00:00:04.17 Keyboard: Just type something!
+00:00:04.17 Kernel: Initialisation emulation.....
+00:00:04.18 Kernel: Emulation::Initialize
+00:00:04.18 Kernel: Creating Motherboard
+00:00:04.21 ConfigurationManager: OpenFile : SD:/Config/config
+00:00:04.22 ConfigurationManager: Read Config : [SETUP]
+sync=frame
+cart=SD:/CART/crtc3_projo.cpr
+▒▒▒▒▒▒▒▒▒▒▒▒CMLB@
+00:00:04.22 ConfigurationManager: READ section SETUP
+00:00:04.23 ConfigurationManager: READ key/value sync=frame
+00:00:04.23 ConfigurationManager: end == std::string::npos
+00:00:04.24 ConfigurationManager: READ key : sync
+00:00:04.24 ConfigurationManager: READ value: frame
+00:00:04.25 ConfigurationManager: READ key/value cart=SD:/CART/crtc3_projo.cpr
+00:00:04.25 ConfigurationManager: end == std::string::npos
+00:00:04.26 ConfigurationManager: READ key : cart
+00:00:04.26 ConfigurationManager: READ value: SD:/CART/crtc3_projo.cpr
+00:00:04.33 Kernel: CMultiCoreSupport is going to initialize
+00:00:04.33 mcore: CPU core 1 started
+00:00:04.33 mcore: CPU core 3 started
+00:00:04.33 Kernel: Initialisation done done !
+00:00:04.33 mcore: CPU core 2 started
+00:00:04.33 mcore: CPU core 3 will halt now
+00:00:04.34 Kernel: Initialisation done. Waiting for CPUThrottle 1
+00:00:04.34 mcore: CPU core 2 will halt now
+00:00:04.36 Kernel: Initialisation done. Result = 1 - CPU Speed max value : 1800000000
+00:00:04.37 Kernel: Entering running mode...
+00:00:04.37 Sound: SoundMixer Started
+00:00:04.38 Display: sin back - 2: x = 32; y = 64
+00:00:04.38 CORE: Waiting to start....
+00:00:04.40 Display: sin back - 2: x = 33; y = 63
+00:00:04.42 Display: sin back - 2: x = 34; y = 63
+00:00:04.43 CORE: Waiting to start....
+00:00:04.44 Display: sin back - 2: x = 35; y = 63
+00:00:04.46 Display: sin back - 2: x = 37; y = 62
+00:00:04.47 Display: sin back - 2: x = 38; y = 61
+00:00:04.48 CORE: Waiting to start....
+00:00:04.49 Display: sin back - 2: x = 39; y = 60
+00:00:04.51 Display: sin back - 2: x = 40; y = 59
+00:00:04.52 Display: sin back - 2: x = 42; y = 57
+00:00:04.54 CORE: Waiting to start....
+00:00:04.54 Display: sin back - 2: x = 43; y = 56
+00:00:04.56 Display: sin back - 2: x = 44; y = 54
+00:00:04.57 Display: sin back - 2: x = 45; y = 52
+00:00:04.59 CORE: Waiting to start....
+00:00:04.59 Display: sin back - 2: x = 46; y = 50
+00:00:04.61 Display: sin back - 2: x = 47; y = 48
+00:00:04.63 Display: sin back - 2: x = 48; y = 45
+00:00:04.64 CORE: Waiting to start....
+00:00:04.64 CORE: Main loop
+00:00:04.64 Display: sin back - 2: x = 50; y = 43
+00:00:04.66 Display: sin back - 2: x = 51; y = 41
+00:00:04.68 Display: sin back - 2: x = 52; y = 38
+00:00:04.71 Display: sin back - 2: x = 53; y = 36
+00:00:04.73 Display: sin back - 2: x = 54; y = 33
+00:00:04.76 Display: sin back - 2: x = 54; y = 31
+00:00:04.80 Display: sin back - 2: x = 55; y = 28
+00:00:04.83 Display: sin back - 2: x = 56; y = 25
+00:00:04.86 Display: sin back - 2: x = 57; y = 23
+00:00:04.90 Display: sin back - 2: x = 58; y = 21
+00:00:04.93 Display: sin back - 2: x = 58; y = 18
+00:00:04.96 Display: sin back - 2: x = 59; y = 16
+00:00:04.97 LOG: [ASIC ] : Unlocked
+00:00:04.97 LOG:
+
+00:00:05.00 Display: sin back - 2: x = 60; y = 14
+00:00:05.03 Display: sin back - 2: x = 60; y = 12
+00:00:05.06 Display: sin back - 2: x = 61; y = 10
+00:00:05.10 Display: sin back - 2: x = 61; y = 8
+00:00:05.13 Display: sin back - 2: x = 62; y = 6
+00:00:05.16 Display: sin back - 2: x = 62; y = 5
+00:00:05.20 Display: sin back - 2: x = 62; y = 3
+00:00:05.23 Display: sin back - 2: x = 63; y = 2
+00:00:05.26 Display: sin back - 2: x = 63; y = 1
+00:00:05.30 Display: sin back - 2: x = 63; y = 1
+00:00:05.33 Display: sin back - 2: x = 63; y = 0
+00:00:05.36 Display: sin back - 2: x = 63; y = 0
+00:00:05.37 Kernel: Select...
+00:00:05.37 Menu: add menu : Resume
+00:00:05.39 Menu: ComputeScroller
+00:00:05.39 Menu: ComputeScroller Done; y = 0
+00:00:05.40 Display: sin back - 2: x = 63; y = 0
+00:00:05.40 Menu: add menu : Select Amstrad
+00:00:05.43 Display: sin back - 2: x = 63; y = 0
+00:00:05.43 Menu: ComputeScroller
+00:00:05.43 Menu: ComputeScroller Done; y = 0
+00:00:05.43 Menu: add menu : Insert Cartridge
+00:00:05.44 Display: sin back - 2: x = 63; y = 0
+00:00:05.46 Menu: ComputeScroller
+00:00:05.46 Menu: ComputeScroller Done; y = 0
+00:00:05.46 Display: sin back - 2: x = 63; y = 0
+00:00:05.46 Menu: add menu : Insert Disk
+00:00:05.49 Menu: ComputeScroller
+00:00:05.49 Menu: ComputeScroller Done; y = 0
+00:00:05.49 Display: sin back - 2: x = 63; y = 1
+00:00:05.49 Menu: add menu : Insert Tape
+00:00:05.53 Display: sin back - 2: x = 63; y = 2
+00:00:05.53 Menu: ComputeScroller
+00:00:05.53 Menu: ComputeScroller Done; y = 0
+00:00:05.53 Menu: add menu : SugarPi Setup
+00:00:05.54 Display: sin back - 2: x = 63; y = 3
+00:00:05.56 Display: sin back - 2: x = 62; y = 4
+00:00:05.56 Menu: ComputeScroller
+00:00:05.56 Menu: ComputeScroller Done; y = 0
+00:00:05.57 Menu: add menu : Reset
+00:00:05.58 Display: sin back - 2: x = 62; y = 5
+00:00:05.59 Menu: ComputeScroller
+00:00:05.59 Menu: ComputeScroller Done; y = 0
+00:00:05.59 Display: sin back - 2: x = 62; y = 7
+00:00:05.59 Menu: add menu : Info
+00:00:05.62 Menu: ComputeScroller
+00:00:05.62 Menu: ComputeScroller Done; y = 0
+00:00:05.63 Display: sin back - 2: x = 61; y = 9
+00:00:05.63 Menu: add menu : Shutdown
+00:00:05.66 Menu: ComputeScroller
+00:00:05.66 Menu: ComputeScroller Done; y = 0
+00:00:05.66 Display: sin back - 2: x = 61; y = 11
+00:00:05.66 Menu: MENU ENTER
+00:00:05.67 Menu: Reset menu...
+00:00:05.67 Menu: ComputeScroller
+00:00:05.68 Menu: ComputeScroller Done; y = 0
+00:00:05.68 Menu: Do screen...
+00:00:05.68 DoScreen: First redraw
+00:00:05.69 BitmapWindows: RedrawWindow
+00:00:05.69 Morphings: Refresh - x:50 y:50 w:1340 h:800
+00:00:05.69 MenuItemWindows: RedrawWindow
+00:00:05.70 Display: sin back - 2: x = 60; y = 13
+00:00:05.70 MenuItemWindows: RedrawWindow end
+00:00:05.71 MenuItemWindows: RedrawWindow
+00:00:05.71 MenuItemWindows: RedrawWindow end
+00:00:05.72 MenuItemWindows: RedrawWindow
+00:00:05.72 MenuItemWindows: RedrawWindow end
+00:00:05.72 MenuItemWindows: RedrawWindow
+00:00:05.73 Morphings: Refresh - x:105 y:82 w:1272 h:759
+00:00:05.73 MenuItemWindows: RedrawWindow end
+00:00:05.73 Display: sin back - 2: x = 59; y = 15
+00:00:05.73 MenuItemWindows: RedrawWindow
+00:00:05.75 MenuItemWindows: RedrawWindow end
+00:00:05.75 MenuItemWindows: RedrawWindow
+00:00:05.75 MenuItemWindows: RedrawWindow end
+00:00:05.76 MenuItemWindows: RedrawWindow
+00:00:05.76 Morphings: Refresh - x:161 y:113 w:1205 h:719
+00:00:05.76 MenuItemWindows: RedrawWindow end
+00:00:05.77 Display: sin back - 2: x = 59; y = 17
+00:00:05.77 MenuItemWindows: RedrawWindow
+00:00:05.78 MenuItemWindows: RedrawWindow end
+00:00:05.78 MenuItemWindows: RedrawWindow
+00:00:05.79 MenuItemWindows: RedrawWindow end
+00:00:05.79 Morphings: Refresh - x:216 y:145 w:1139 h:680
+IHEX-F
+logger: Circle 0.0.1 started on Raspberry Pi 400 4GB
+logger: Revision code is c03130, compiler has been GCC 10.3.1
+Kernel: Initialisation done for log.
+Kernel: Interrupt initialization done : 1
+00:00:00.66 timer: SpeedFactor is 1.51
+00:00:00.66 Kernel: Timer initialization done : 1
+00:00:01.20 emmc: Found a valid version 3.0x SD card
+00:00:01.20 Kernel: EMMC initialization done : 1
+00:00:01.21 Kernel: Initialisation of VCHIQ.....
+00:00:01.21 printk: vchiq: vchiq_init_state: slot_zero = 0x00480000, is_master = 0
+00:00:01.22 Kernel: Initialisationfoe Done : 1
+00:00:01.22 Display: Initialization...
+00:00:01.23 Display: EDID message :
+00:00:01.23 Display: EDID version : 1.3
+00:00:01.23 EDID: Dumping 0x80 bytes starting at 0x224930
+00:00:01.24 EDID: 4930: 00 FF FF FF FF FF FF 00-4C 2D 74 02 39 31 45 4D
+00:00:01.24 EDID: 4940: 02 11 01 03 80 29 1A 87-2A DE 95 A3 54 4C 99 26
+00:00:01.25 EDID: 4950: 0F 50 54 BF EF 80 95 00-95 0F 81 80 81 40 71 4F
+00:00:01.26 EDID: 4960: 01 01 01 01 01 01 9A 29-A0 D0 51 84 22 30 50 98
+00:00:01.26 EDID: 4970: 36 00 9A 01 11 00 00 1C-00 00 00 FD 00 38 4B 1E
+00:00:01.27 EDID: 4980: 51 0E 00 0A 20 20 20 20-20 20 00 00 00 FC 00 53
+00:00:01.28 EDID: 4990: 79 6E 63 4D 61 73 74 65-72 0A 20 20 00 00 00 FF
+00:00:01.28 EDID: 49A0: 00 48 53 41 50 31 30 34-31 38 31 0A 20 20 00 7F
+00:00:01.29 printk: Open display[0]...
+00:00:01.29 DIS: BackFrame
+00:00:01.29 BasicFrame: Init width : 1472, height : 932; nb_buffers : 1
+00:00:01.30 DIS: Draw BackFrame
+00:00:01.32 DIS: Draw : nb_buffers_ = 1 - back_pitch_ = 5888 - height_ = 932, internal_width_= 1472, internal_height_ = 932
+00:00:01.32 DIS: MenuFrame
+00:00:01.33 BasicFrame: Init width : 1440, height : 900; nb_buffers : 1
+00:00:01.33 DIS: Draw MenuFrame
+00:00:01.34 DIS: EmulationFrame
+00:00:01.34 BasicFrame: Init width : 1024, height : 576; nb_buffers : 3
+00:00:01.35 DIS: Draw EmulationFrame
+00:00:01.36 printk: vc_dispmanx_resource_write_data back_wnd_ : Pitch = 5888.w = 1472, h = 932
+00:00:01.37 Display: background_buffer_ written
+00:00:01.37 Display:  ####SCREEN W : 1440; H : 900
+00:00:01.39 Display:  End init.. Draw done.
+00:00:01.39 Kernel: display initialization done : 1
+00:00:01.39 Kernel: Creating SoundPI
+00:00:01.40 Kernel: SoundPI Initialized !
+00:00:01.40 KeyboardPi: Loading game controller db...
+00:00:02.38 KeyboardPi: Loading game controller db... Done !
+00:00:02.48 pcie: Link up, 5.0 Gbps x1
+00:00:03.00 usbdev1: Device ven2109-3431, dev9-0-1 found (HS)
+00:00:03.00 usbdev1: Product: USB2.0 Hub
+00:00:03.05 usbdev1: Interface int9-0-0 found
+00:00:03.05 usbdev1: Using device/interface int9-0-0
+00:00:03.73 usbdev1-1: Device ven79-6 found (LS)
+00:00:03.74 usbdev1-1: Product: DragonRise Inc.   Generic   USB  Joystick
+00:00:03.80 usbdev1-1: Interface int3-0-0 found
+00:00:03.80 usbdev1-1: Using device/interface int3-0-0
+00:00:03.99 usbdev1-4: Device ven4d9-7 found (LS)
+00:00:04.02 usbdev1-4: Product:   Raspberry Pi Internal Keyboard
+00:00:04.07 usbdev1-4: Interface int3-1-1 found
+00:00:04.07 usbdev1-4: Using device/interface int3-1-1
+00:00:04.08 usbdev1-4: Interface int3-0-0 found
+00:00:04.10 usbdev1-4: Using device/interface int3-0-0
+00:00:04.11 usbhub: Port 1: Device configured
+00:00:04.13 usbhub: Port 4: Device configured
+00:00:04.13 xhciroot: Port 1: Device configured
+00:00:04.14 Keyboard: Initialize done.
+00:00:04.14 Keyboard: Gamepad : ven79-6 - VID=79; PID=6; bcdDevice = 107
+00:00:04.15 Keyboard: Gamepad 1: 12 Button(s) 1 Hat(s)
+00:00:04.15 KeyboardPi: Gamepad found in database !
+00:00:04.15 Keyboard: Use your gamepad controls!
+00:00:04.16 Keyboard: Just type something!
+00:00:04.16 Kernel: Initialisation emulation.....
+00:00:04.17 Kernel: Emulation::Initialize
+00:00:04.17 Kernel: Creating Motherboard
+00:00:04.19 ConfigurationManager: OpenFile : SD:/Config/config
+00:00:04.20 ConfigurationManager: Read Config : [SETUP]
+sync=frame
+cart=SD:/CART/crtc3_projo.cpr
+▒▒▒▒▒▒▒▒▒▒▒▒CMLB@
+00:00:04.21 ConfigurationManager: READ section SETUP
+00:00:04.22 ConfigurationManager: READ key/value sync=frame
+00:00:04.22 ConfigurationManager: end == std::string::npos
+00:00:04.23 ConfigurationManager: READ key : sync
+00:00:04.23 ConfigurationManager: READ value: frame
+00:00:04.24 ConfigurationManager: READ key/value cart=SD:/CART/crtc3_projo.cpr
+00:00:04.24 ConfigurationManager: end == std::string::npos
+00:00:04.25 ConfigurationManager: READ key : cart
+00:00:04.25 ConfigurationManager: READ value: SD:/CART/crtc3_projo.cpr
+00:00:04.32 Kernel: CMultiCoreSupport is going to initialize
+00:00:04.32 mcore: CPU core 1 started
+00:00:04.32 mcore: CPU core 3 started
+00:00:04.32 Kernel: Initialisation done done !
+00:00:04.32 mcore: CPU core 2 started
+00:00:04.32 mcore: CPU core 3 will halt now
+00:00:04.33 Kernel: Initialisation done. Waiting for CPUThrottle 1
+00:00:04.33 mcore: CPU core 2 will halt now
+00:00:04.35 Kernel: Initialisation done. Result = 1 - CPU Speed max value : 1800000000
+00:00:04.35 Kernel: Entering running mode...
+00:00:04.36 Sound: SoundMixer Started
+00:00:04.37 Display: CopyMemoryToRessources end
+00:00:04.37 Display: Lock...
+00:00:04.37 Display: FrameIsDisplayed
+00:00:04.37 CORE: Waiting to start....
+00:00:04.37 Display: Lock end
+00:00:04.38 Display: sin back - 2: x = 32; y = 64
+00:00:04.40 Display: CopyMemoryToRessources end
+00:00:04.40 Display: Lock...
+00:00:04.40 Display: FrameIsDisplayed
+00:00:04.41 Display: Lock end
+00:00:04.41 Display: sin back - 2: x = 33; y = 63
+00:00:04.43 CORE: Waiting to start....
+00:00:04.43 Display: CopyMemoryToRessources end
+00:00:04.44 Display: Lock...
+00:00:04.44 Display: FrameIsDisplayed
+00:00:04.44 Display: Lock end
+00:00:04.44 Display: sin back - 2: x = 34; y = 63
+00:00:04.47 Display: CopyMemoryToRessources end
+00:00:04.47 Display: Lock...
+00:00:04.47 Display: FrameIsDisplayed
+00:00:04.48 Display: Lock end
+00:00:04.48 CORE: Waiting to start....
+00:00:04.48 Display: sin back - 2: x = 35; y = 63
+00:00:04.50 Display: CopyMemoryToRessources end
+00:00:04.50 Display: Lock...
+00:00:04.51 Display: FrameIsDisplayed
+00:00:04.51 Display: Lock end
+00:00:04.51 Display: sin back - 2: x = 37; y = 62
+00:00:04.53 CORE: Waiting to start....
+00:00:04.53 Display: CopyMemoryToRessources end
+00:00:04.54 Display: Lock...
+00:00:04.54 Display: FrameIsDisplayed
+00:00:04.54 Display: Lock end
+00:00:04.55 Display: sin back - 2: x = 38; y = 61
+00:00:04.57 Display: CopyMemoryToRessources end
+00:00:04.57 Display: Lock...
+00:00:04.57 Display: FrameIsDisplayed
+00:00:04.58 Display: Lock end
+00:00:04.58 Display: sin back - 2: x = 39; y = 60
+00:00:04.58 CORE: Waiting to start....
+00:00:04.60 Display: CopyMemoryToRessources end
+00:00:04.60 Display: Lock...
+00:00:04.61 Display: FrameIsDisplayed
+00:00:04.61 Display: Lock end
+00:00:04.61 Display: sin back - 2: x = 40; y = 59
+00:00:04.63 Display: CopyMemoryToRessources end
+00:00:04.63 CORE: Waiting to start....
+00:00:04.64 Display: Lock...
+00:00:04.64 Display: FrameIsDisplayed
+00:00:04.65 Display: Lock end
+00:00:04.65 Display: sin back - 2: x = 42; y = 57
+00:00:04.67 Display: CopyMemoryToRessources end
+00:00:04.67 Display: Lock...
+00:00:04.67 Display: FrameIsDisplayed
+00:00:04.68 Display: Lock end
+00:00:04.68 Display: sin back - 2: x = 43; y = 56
+00:00:04.69 CORE: Waiting to start....
+00:00:04.70 Display: CopyMemoryToRessources end
+00:00:04.70 Display: Lock...
+00:00:04.71 Display: FrameIsDisplayed
+00:00:04.71 Display: Lock end
+00:00:04.71 Display: sin back - 2: x = 44; y = 54
+00:00:04.74 Display: CopyMemoryToRessources end
+00:00:04.74 Display: Lock...
+00:00:04.74 Display: FrameIsDisplayed
+00:00:04.74 CORE: Waiting to start....
+00:00:04.74 Display: Lock end
+00:00:04.75 Display: sin back - 2: x = 45; y = 52
+00:00:04.77 Display: CopyMemoryToRessources end
+00:00:04.77 Display: Lock...
+00:00:04.77 Display: FrameIsDisplayed
+00:00:04.78 Display: Lock end
+00:00:04.78 Display: sin back - 2: x = 46; y = 50
+00:00:04.80 CORE: Waiting to start....
+00:00:04.80 CORE: Main loop
+00:00:04.80 Display: CopyMemoryToRessources end
+00:00:04.80 Display: Lock...
+00:00:04.81 Display: FrameIsDisplayed
+00:00:04.81 Display: Lock end
+00:00:04.81 Display: sin back - 2: x = 47; y = 48
+00:00:04.84 Display: CopyMemoryToRessources end
+00:00:04.85 Display: Lock...
+00:00:04.85 Display: FrameIsDisplayed
+00:00:04.85 Display: Lock end
+00:00:04.85 Display: sin back - 2: x = 48; y = 45
+00:00:04.89 Display: CopyMemoryToRessources end
+00:00:04.89 Display: Lock...
+00:00:04.90 Display: FrameIsDisplayed
+00:00:04.90 Display: Lock end
+00:00:04.90 Display: sin back - 2: x = 50; y = 43
+00:00:04.93 Display: CopyMemoryToRessources end
+00:00:04.93 Display: Lock...
+00:00:04.93 Display: FrameIsDisplayed
+00:00:04.93 Display: Lock end
+00:00:04.94 Display: sin back - 2: x = 51; y = 41
+00:00:04.96 Display: CopyMemoryToRessources end
+00:00:04.96 Display: Lock...
+00:00:04.96 Display: FrameIsDisplayed
+00:00:04.97 Display: Lock end
+00:00:04.97 Display: sin back - 2: x = 52; y = 38
+00:00:04.99 Display: CopyMemoryToRessources end
+00:00:04.99 Display: Lock...
+00:00:04.99 Display: FrameIsDisplayed
+00:00:05.00 Display: Lock end
+00:00:05.00 Display: sin back - 2: x = 53; y = 36
+00:00:05.02 Display: CopyMemoryToRessources end
+00:00:05.03 Display: Lock...
+00:00:05.03 Display: FrameIsDisplayed
+00:00:05.03 Display: Lock end
+00:00:05.03 Display: sin back - 2: x = 54; y = 33
+00:00:05.06 Display: CopyMemoryToRessources end
+00:00:05.06 Display: Lock...
+00:00:05.06 Display: FrameIsDisplayed
+00:00:05.06 Display: Lock end
+00:00:05.07 Display: sin back - 2: x = 54; y = 31
+00:00:05.09 Display: CopyMemoryToRessources end
+00:00:05.09 Display: Lock...
+00:00:05.10 Display: FrameIsDisplayed
+00:00:05.10 Display: Lock end
+00:00:05.10 Display: sin back - 2: x = 55; y = 28
+00:00:05.13 Display: CopyMemoryToRessources end
+00:00:05.13 Display: Lock...
+00:00:05.13 Display: FrameIsDisplayed
+00:00:05.13 Display: Lock end
+00:00:05.14 Display: sin back - 2: x = 56; y = 25
+00:00:05.16 Display: CopyMemoryToRessources end
+00:00:05.16 Display: Lock...
+00:00:05.16 Display: FrameIsDisplayed
+00:00:05.16 Display: Lock end
+00:00:05.17 Display: sin back - 2: x = 57; y = 23
+00:00:05.19 Display: CopyMemoryToRessources end
+00:00:05.19 Display: Lock...
+00:00:05.19 Display: FrameIsDisplayed
+00:00:05.20 Display: Lock end
+00:00:05.20 Display: sin back - 2: x = 58; y = 21
+00:00:05.21 LOG: [ASIC ] : Unlocked
+00:00:05.21 LOG:
+
+00:00:05.22 Display: CopyMemoryToRessources end
+00:00:05.23 Display: Lock...
+00:00:05.23 Display: FrameIsDisplayed
+00:00:05.23 Display: Lock end
+00:00:05.23 Display: sin back - 2: x = 58; y = 18
+00:00:05.26 Display: CopyMemoryToRessources end
+00:00:05.26 Display: Lock...
+00:00:05.26 Display: FrameIsDisplayed
+00:00:05.27 Display: Lock end
+00:00:05.27 Display: sin back - 2: x = 59; y = 16
+00:00:05.29 Display: CopyMemoryToRessources end
+00:00:05.29 Display: Lock...
+00:00:05.30 Display: FrameIsDisplayed
+00:00:05.30 Display: Lock end
+00:00:05.30 Display: sin back - 2: x = 60; y = 14
+00:00:05.33 Display: CopyMemoryToRessources end
+00:00:05.33 Display: Lock...
+00:00:05.33 Display: FrameIsDisplayed
+00:00:05.33 Display: Lock end
+00:00:05.34 Display: sin back - 2: x = 60; y = 12
+00:00:05.36 Display: CopyMemoryToRessources end
+00:00:05.36 Display: Lock...
+00:00:05.36 Display: FrameIsDisplayed
+00:00:05.37 Display: Lock end
+00:00:05.37 Display: sin back - 2: x = 61; y = 10
+00:00:05.41 Display: CopyMemoryToRessources end
+00:00:05.41 Display: Lock...
+00:00:05.41 Display: FrameIsDisplayed
+00:00:05.42 Display: Lock end
+00:00:05.42 Display: sin back - 2: x = 61; y = 8
+00:00:05.44 Display: CopyMemoryToRessources end
+00:00:05.44 Display: Lock...
+00:00:05.45 Display: FrameIsDisplayed
+00:00:05.45 Display: Lock end
+00:00:05.45 Display: sin back - 2: x = 62; y = 6
+00:00:05.47 Display: CopyMemoryToRessources end
+00:00:05.48 Display: Lock...
+00:00:05.48 Display: FrameIsDisplayed
+00:00:05.48 Display: Lock end
+00:00:05.48 Display: sin back - 2: x = 62; y = 5
+00:00:05.51 Display: CopyMemoryToRessources end
+00:00:05.51 Display: Lock...
+00:00:05.51 Display: FrameIsDisplayed
+00:00:05.52 Display: Lock end
+00:00:05.52 Display: sin back - 2: x = 62; y = 3
+00:00:05.54 Display: CopyMemoryToRessources end
+00:00:05.54 Display: Lock...
+00:00:05.55 Display: FrameIsDisplayed
+00:00:05.55 Display: Lock end
+00:00:05.55 Display: sin back - 2: x = 63; y = 2
+00:00:05.58 Display: CopyMemoryToRessources end
+00:00:05.58 Display: Lock...
+00:00:05.58 Display: FrameIsDisplayed
+00:00:05.58 Display: Lock end
+00:00:05.59 Display: sin back - 2: x = 63; y = 1
+00:00:05.61 Display: CopyMemoryToRessources end
+00:00:05.61 Display: Lock...
+00:00:05.61 Display: FrameIsDisplayed
+00:00:05.62 Display: Lock end
+00:00:05.62 Display: sin back - 2: x = 63; y = 1
+00:00:05.64 Display: CopyMemoryToRessources end
+00:00:05.64 Display: Lock...
+00:00:05.65 Display: FrameIsDisplayed
+00:00:05.65 Display: Lock end
+00:00:05.65 Display: sin back - 2: x = 63; y = 0
+00:00:05.67 Display: CopyMemoryToRessources end
+00:00:05.68 Display: Lock...
+00:00:05.68 Display: FrameIsDisplayed
+00:00:05.68 Display: Lock end
+00:00:05.68 Display: sin back - 2: x = 63; y = 0
+00:00:05.71 Display: CopyMemoryToRessources end
+00:00:05.71 Display: Lock...
+00:00:05.71 Display: FrameIsDisplayed
+00:00:05.72 Display: Lock end
+00:00:05.72 Display: sin back - 2: x = 63; y = 0
+00:00:05.74 Display: CopyMemoryToRessources end
+00:00:05.74 Display: Lock...
+00:00:05.75 Display: FrameIsDisplayed
+00:00:05.75 Display: Lock end
+00:00:05.75 Display: sin back - 2: x = 63; y = 0
+00:00:05.78 Display: CopyMemoryToRessources end
+00:00:05.78 Display: Lock...
+00:00:05.78 Display: FrameIsDisplayed
+00:00:05.78 Display: Lock end
+00:00:05.79 Display: sin back - 2: x = 63; y = 0
+00:00:05.81 Display: CopyMemoryToRessources end
+00:00:05.81 Display: Lock...
+00:00:05.81 Display: FrameIsDisplayed
+00:00:05.82 Display: Lock end
+00:00:05.82 Display: sin back - 2: x = 63; y = 0
+00:00:05.84 Display: CopyMemoryToRessources end
+00:00:05.84 Display: Lock...
+00:00:05.85 Display: FrameIsDisplayed
+00:00:05.85 Display: Lock end
+00:00:05.85 Display: sin back - 2: x = 63; y = 1
+00:00:05.88 Display: CopyMemoryToRessources end
+00:00:05.88 Display: Lock...
+00:00:05.88 Display: FrameIsDisplayed
+00:00:05.88 Display: Lock end
+00:00:05.89 Display: sin back - 2: x = 63; y = 2
+00:00:05.91 Display: CopyMemoryToRessources end
+00:00:05.91 Display: Lock...
+00:00:05.91 Display: FrameIsDisplayed
+00:00:05.92 Display: Lock end
+00:00:05.92 Display: sin back - 2: x = 63; y = 3
+00:00:05.94 Display: CopyMemoryToRessources end
+00:00:05.94 Display: Lock...
+00:00:05.95 Display: FrameIsDisplayed
+00:00:05.95 Display: Lock end
+00:00:05.95 Display: sin back - 2: x = 62; y = 4
+00:00:05.98 Display: CopyMemoryToRessources end
+00:00:05.98 Display: Lock...
+00:00:05.98 Display: FrameIsDisplayed
+00:00:05.98 Display: Lock end
+00:00:05.99 Display: sin back - 2: x = 62; y = 5
+00:00:06.01 Display: CopyMemoryToRessources end
+00:00:06.01 Display: Lock...
+00:00:06.01 Display: FrameIsDisplayed
+00:00:06.02 Display: Lock end
+00:00:06.02 Display: sin back - 2: x = 62; y = 7
+00:00:06.04 Display: CopyMemoryToRessources end
+00:00:06.04 Display: Lock...
+00:00:06.05 Display: FrameIsDisplayed
+00:00:06.05 Display: Lock end
+00:00:06.05 Display: sin back - 2: x = 61; y = 9
+00:00:06.08 Display: CopyMemoryToRessources end
+00:00:06.08 Display: Lock...
+00:00:06.08 Display: FrameIsDisplayed
+00:00:06.08 Display: Lock end
+00:00:06.09 Display: sin back - 2: x = 61; y = 11
+00:00:06.11 Display: CopyMemoryToRessources end
+00:00:06.11 Display: Lock...
+00:00:06.11 Display: FrameIsDisplayed
+00:00:06.12 Display: Lock end
+00:00:06.12 Display: sin back - 2: x = 60; y = 13
+00:00:06.14 Display: CopyMemoryToRessources end
+00:00:06.15 Display: Lock...
+00:00:06.15 Display: FrameIsDisplayed
+00:00:06.15 Display: Lock end
+00:00:06.15 Display: sin back - 2: x = 59; y = 15
+00:00:06.19 Display: CopyMemoryToRessources end
+00:00:06.19 Display: Lock...
+00:00:06.20 Display: FrameIsDisplayed
+00:00:06.20 Display: Lock end
+00:00:06.20 Display: sin back - 2: x = 59; y = 17
+00:00:06.23 Display: CopyMemoryToRessources end
+00:00:06.23 Display: Lock...
+00:00:06.23 Display: FrameIsDisplayed
+00:00:06.23 Display: Lock end
+00:00:06.24 Display: sin back - 2: x = 58; y = 19
+00:00:06.26 Display: CopyMemoryToRessources end
+00:00:06.26 Display: Lock...
+00:00:06.26 Display: FrameIsDisplayed
+00:00:06.27 Display: Lock end
+00:00:06.27 Display: sin back - 2: x = 57; y = 22
+00:00:06.29 Display: CopyMemoryToRessources end
+00:00:06.29 Display: Lock...
+00:00:06.30 Display: FrameIsDisplayed
+00:00:06.30 Display: Lock end
+00:00:06.30 Kernel: Select...
+00:00:06.30 Display: sin back - 2: x = 57; y = 24
+00:00:06.30 Menu: add menu : Resume
+00:00:06.33 Display: CopyMemoryToRessources end
+00:00:06.33 Display: Lock...
+00:00:06.33 Display: FrameIsDisplayed
+00:00:06.33 Display: Lock end
+00:00:06.33 Menu: ComputeScroller
+00:00:06.34 Display: sin back - 2: x = 56; y = 27
+00:00:06.34 Menu: ComputeScroller Done; y = 0
+00:00:06.35 Menu: add menu : Select Amstrad
+00:00:06.37 Menu: ComputeScroller
+00:00:06.37 Display: CopyMemoryToRessources end
+00:00:06.37 Menu: ComputeScroller Done; y = 0
+00:00:06.38 Display: Lock...
+00:00:06.38 Menu: add menu : Insert Cartridge
+00:00:06.38 Display: FrameIsDisplayed
+00:00:06.39 Display: Lock end
+00:00:06.39 Display: sin back - 2: x = 55; y = 29
+00:00:06.41 Menu: ComputeScroller
+00:00:06.41 Menu: ComputeScroller Done; y = 0
+00:00:06.41 Menu: add menu : Insert Disk
+00:00:06.42 Display: CopyMemoryToRessources end
+00:00:06.42 Display: Lock...
+00:00:06.43 Display: FrameIsDisplayed
+00:00:06.43 Display: Lock end
+00:00:06.43 Display: sin back - 2: x = 54; y = 32
+00:00:06.43 Menu: ComputeScroller
+00:00:06.44 Menu: ComputeScroller Done; y = 0
+00:00:06.45 Menu: add menu : Insert Tape
+00:00:06.46 Display: CopyMemoryToRessources end
+00:00:06.46 Display: Lock...
+00:00:06.46 Display: FrameIsDisplayed
+00:00:06.46 Display: Lock end
+00:00:06.47 Display: sin back - 2: x = 53; y = 34
+00:00:06.47 Menu: ComputeScroller
+00:00:06.47 Menu: ComputeScroller Done; y = 0
+00:00:06.48 Menu: add menu : SugarPi Setup
+00:00:06.49 Display: CopyMemoryToRessources end
+00:00:06.49 Display: Lock...
+00:00:06.49 Display: FrameIsDisplayed
+00:00:06.50 Display: Lock end
+00:00:06.50 Display: sin back - 2: x = 52; y = 37
+00:00:06.50 Menu: ComputeScroller
+00:00:06.51 Menu: ComputeScroller Done; y = 0
+00:00:06.51 Menu: add menu : Reset
+00:00:06.52 Display: CopyMemoryToRessources end
+00:00:06.52 Display: Lock...
+00:00:06.53 Display: FrameIsDisplayed
+00:00:06.53 Display: Lock end
+00:00:06.53 Display: sin back - 2: x = 51; y = 39
+00:00:06.53 Menu: ComputeScroller
+00:00:06.54 Menu: ComputeScroller Done; y = 0
+00:00:06.54 Menu: add menu : Info
+00:00:06.56 Display: CopyMemoryToRessources end
+00:00:06.56 Display: Lock...
+00:00:06.56 Display: FrameIsDisplayed
+00:00:06.56 Display: Lock end
+00:00:06.57 Display: sin back - 2: x = 50; y = 42
+00:00:06.57 Menu: ComputeScroller
+00:00:06.57 Menu: ComputeScroller Done; y = 0
+00:00:06.58 Menu: add menu : Shutdown
+00:00:06.59 Display: CopyMemoryToRessources end
+00:00:06.59 Display: Lock...
+00:00:06.59 Display: FrameIsDisplayed
+00:00:06.60 Display: Lock end
+00:00:06.60 Display: sin back - 2: x = 49; y = 44
+00:00:06.60 Menu: ComputeScroller
+00:00:06.61 Menu: ComputeScroller Done; y = 0
+00:00:06.62 Menu: MENU ENTER
+00:00:06.62 Menu: Reset menu...
+00:00:06.62 Menu: ComputeScroller
+00:00:06.63 Menu: ComputeScroller Done; y = 0
+00:00:06.63 Morphings: Refresh - x:50 y:50 w:1340 h:800
+00:00:06.63 Menu: Do screen...
+00:00:06.63 Display: CopyMemoryToRessources end
+00:00:06.63 DoScreen: First redraw
+00:00:06.64 Display: Lock...
+00:00:06.64 BitmapWindows: RedrawWindow
+00:00:06.65 Display: FrameIsDisplayed
+00:00:06.65 Display: Lock end
+00:00:06.65 MenuItemWindows: RedrawWindow
+00:00:06.66 Display: sin back - 2: x = 48; y = 46
+00:00:06.66 MenuItemWindows: RedrawWindow end
+00:00:06.67 MenuItemWindows: RedrawWindow
+00:00:06.67 MenuItemWindows: RedrawWindow end
+00:00:06.68 MenuItemWindows: RedrawWindow
+00:00:06.68 MenuItemWindows: RedrawWindow end
+00:00:06.68 MenuItemWindows: RedrawWindow
+00:00:06.69 MenuItemWindows: RedrawWindow end
+00:00:06.69 Morphings: Refresh - x:105 y:82 w:1272 h:759
+00:00:06.69 MenuItemWindows: RedrawWindow
+00:00:06.70 Display: CopyMemoryToRessources end
+00:00:06.70 MenuItemWindows: RedrawWindow end
+00:00:06.71 Display: Lock...
+00:00:06.71 MenuItemWindows: RedrawWindow
+00:00:06.71 Display: FrameIsDisplayed
+00:00:06.71 MenuItemWindows: RedrawWindow end
+00:00:06.72 Display: Lock end
+00:00:06.72 MenuItemWindows: RedrawWindow
+00:00:06.73 Display: sin back - 2: x = 47; y = 49
+00:00:06.73 MenuItemWindows: RedrawWindow end
+00:00:06.74 MenuItemWindows: RedrawWindow
+00:00:06.74 MenuItemWindows: RedrawWindow end
+00:00:06.75 MenuItemWindows: RedrawWindow
+00:00:06.75 MenuItemWindows: RedrawWindow end
+00:00:06.76 Morphings: Refresh - x:161 y:113 w:1205 h:719
+IHEX-F
+logger: Circle 0.0.1 started on Raspberry Pi 400 4GB
+logger: Revision code is c03130, compiler has been GCC 10.3.1
+Kernel: Initialisation done for log.
+Kernel: Interrupt initialization done : 1
+00:00:00.66 timer: SpeedFactor is 1.51
+00:00:00.66 Kernel: Timer initialization done : 1
+00:00:01.20 emmc: Found a valid version 3.0x SD card
+00:00:01.20 Kernel: EMMC initialization done : 1
+00:00:01.21 Kernel: Initialisation of VCHIQ.....
+00:00:01.21 printk: vchiq: vchiq_init_state: slot_zero = 0x00480000, is_master = 0
+00:00:01.22 Kernel: Initialisationfoe Done : 1
+00:00:01.22 Display: Initialization...
+00:00:01.23 Display: EDID message :
+00:00:01.23 Display: EDID version : 1.3
+00:00:01.23 EDID: Dumping 0x80 bytes starting at 0x224930
+00:00:01.24 EDID: 4930: 00 FF FF FF FF FF FF 00-4C 2D 74 02 39 31 45 4D
+00:00:01.24 EDID: 4940: 02 11 01 03 80 29 1A 87-2A DE 95 A3 54 4C 99 26
+00:00:01.25 EDID: 4950: 0F 50 54 BF EF 80 95 00-95 0F 81 80 81 40 71 4F
+00:00:01.26 EDID: 4960: 01 01 01 01 01 01 9A 29-A0 D0 51 84 22 30 50 98
+00:00:01.26 EDID: 4970: 36 00 9A 01 11 00 00 1C-00 00 00 FD 00 38 4B 1E
+00:00:01.27 EDID: 4980: 51 0E 00 0A 20 20 20 20-20 20 00 00 00 FC 00 53
+00:00:01.28 EDID: 4990: 79 6E 63 4D 61 73 74 65-72 0A 20 20 00 00 00 FF
+00:00:01.28 EDID: 49A0: 00 48 53 41 50 31 30 34-31 38 31 0A 20 20 00 7F
+00:00:01.29 printk: Open display[0]...
+00:00:01.29 DIS: BackFrame
+00:00:01.29 BasicFrame: Init width : 1472, height : 932; nb_buffers : 1
+00:00:01.30 DIS: Draw BackFrame
+00:00:01.32 DIS: Draw : nb_buffers_ = 1 - back_pitch_ = 5888 - height_ = 932, internal_width_= 1472, internal_height_ = 932
+00:00:01.32 DIS: MenuFrame
+00:00:01.33 BasicFrame: Init width : 1440, height : 900; nb_buffers : 1
+00:00:01.33 DIS: Draw MenuFrame
+00:00:01.34 DIS: EmulationFrame
+00:00:01.34 BasicFrame: Init width : 1024, height : 576; nb_buffers : 3
+00:00:01.35 DIS: Draw EmulationFrame
+00:00:01.36 printk: vc_dispmanx_resource_write_data back_wnd_ : Pitch = 5888.w = 1472, h = 932
+00:00:01.37 Display: background_buffer_ written
+00:00:01.37 Display:  ####SCREEN W : 1440; H : 900
+00:00:01.38 Display:  End init.. Draw done.
+00:00:01.38 Kernel: display initialization done : 1
+00:00:01.38 Kernel: Creating SoundPI
+00:00:01.39 Kernel: SoundPI Initialized !
+00:00:01.39 KeyboardPi: Loading game controller db...
+00:00:02.39 KeyboardPi: Loading game controller db... Done !
+00:00:02.49 pcie: Link up, 5.0 Gbps x1
+00:00:03.00 usbdev1: Device ven2109-3431, dev9-0-1 found (HS)
+00:00:03.01 usbdev1: Product: USB2.0 Hub
+00:00:03.06 usbdev1: Interface int9-0-0 found
+00:00:03.06 usbdev1: Using device/interface int9-0-0
+00:00:03.74 usbdev1-1: Device ven79-6 found (LS)
+00:00:03.75 usbdev1-1: Product: DragonRise Inc.   Generic   USB  Joystick
+00:00:03.80 usbdev1-1: Interface int3-0-0 found
+00:00:03.81 usbdev1-1: Using device/interface int3-0-0
+00:00:04.00 usbdev1-4: Device ven4d9-7 found (LS)
+00:00:04.03 usbdev1-4: Product:   Raspberry Pi Internal Keyboard
+00:00:04.08 usbdev1-4: Interface int3-1-1 found
+00:00:04.08 usbdev1-4: Using device/interface int3-1-1
+00:00:04.09 usbdev1-4: Interface int3-0-0 found
+00:00:04.11 usbdev1-4: Using device/interface int3-0-0
+00:00:04.12 usbhub: Port 1: Device configured
+00:00:04.14 usbhub: Port 4: Device configured
+00:00:04.14 xhciroot: Port 1: Device configured
+00:00:04.14 Keyboard: Initialize done.
+00:00:04.15 Keyboard: Gamepad : ven79-6 - VID=79; PID=6; bcdDevice = 107
+00:00:04.15 Keyboard: Gamepad 1: 12 Button(s) 1 Hat(s)
+00:00:04.16 KeyboardPi: Gamepad found in database !
+00:00:04.16 Keyboard: Use your gamepad controls!
+00:00:04.17 Keyboard: Just type something!
+00:00:04.17 Kernel: Initialisation emulation.....
+00:00:04.18 Kernel: Emulation::Initialize
+00:00:04.18 Kernel: Creating Motherboard
+00:00:04.20 ConfigurationManager: OpenFile : SD:/Config/config
+00:00:04.21 ConfigurationManager: Read Config : [SETUP]
+sync=frame
+cart=SD:/CART/crtc3_projo.cpr
+▒▒▒▒▒▒▒▒▒▒▒▒CMLB@
+00:00:04.22 ConfigurationManager: READ section SETUP
+00:00:04.22 ConfigurationManager: READ key/value sync=frame
+00:00:04.23 ConfigurationManager: end == std::string::npos
+00:00:04.23 ConfigurationManager: READ key : sync
+00:00:04.24 ConfigurationManager: READ value: frame
+00:00:04.24 ConfigurationManager: READ key/value cart=SD:/CART/crtc3_projo.cpr
+00:00:04.25 ConfigurationManager: end == std::string::npos
+00:00:04.26 ConfigurationManager: READ key : cart
+00:00:04.26 ConfigurationManager: READ value: SD:/CART/crtc3_projo.cpr
+00:00:04.32 Kernel: CMultiCoreSupport is going to initialize
+00:00:04.33 mcore: CPU core 1 started
+00:00:04.33 mcore: CPU core 2 started
+00:00:04.33 mcore: CPU core 3 started
+00:00:04.33 Kernel: Initialisation done done !
+00:00:04.33 mcore: CPU core 2 will halt now
+00:00:04.33 mcore: CPU core 3 will halt now
+00:00:04.34 Kernel: Initialisation done. Waiting for CPUThrottle 1
+00:00:04.36 Kernel: Initialisation done. Result = 1 - CPU Speed max value : 1800000000
+00:00:04.36 Kernel: Entering running mode...
+00:00:04.37 Sound: SoundMixer Started
+00:00:04.37 CopyMemoryToRessources: Start
+00:00:04.37 CopyMemoryToRessources: Refresh done
+00:00:04.38 CopyMemoryToRessources: HasFrameChanged
+00:00:04.38 CORE: Waiting to start....
+00:00:04.38 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:04.40 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:04.40 CopyMemoryToRessources: Start
+00:00:04.41 CopyMemoryToRessources: Refresh done
+00:00:04.41 CopyMemoryToRessources: Start
+00:00:04.42 CopyMemoryToRessources: Refresh done
+00:00:04.42 Display: CopyMemoryToRessources end
+00:00:04.42 Display: Lock...
+00:00:04.43 Display: FrameIsDisplayed
+00:00:04.43 Display: Lock end
+00:00:04.43 Display: sin back - 2: x = 32; y = 64
+00:00:04.43 CORE: Waiting to start....
+00:00:04.45 CopyMemoryToRessources: Start
+00:00:04.45 CopyMemoryToRessources: Refresh done
+00:00:04.46 CopyMemoryToRessources: HasFrameChanged
+00:00:04.46 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:04.47 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:04.48 CopyMemoryToRessources: Start
+00:00:04.48 CopyMemoryToRessources: Refresh done
+00:00:04.49 CopyMemoryToRessources: Start
+00:00:04.49 CopyMemoryToRessources: Refresh done
+00:00:04.49 CORE: Waiting to start....
+00:00:04.49 Display: CopyMemoryToRessources end
+00:00:04.50 Display: Lock...
+00:00:04.50 Display: FrameIsDisplayed
+00:00:04.51 Display: Lock end
+00:00:04.51 Display: sin back - 2: x = 33; y = 63
+00:00:04.52 CopyMemoryToRessources: Start
+00:00:04.52 CopyMemoryToRessources: Refresh done
+00:00:04.52 CopyMemoryToRessources: HasFrameChanged
+00:00:04.53 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:04.54 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:04.55 CopyMemoryToRessources: Start
+00:00:04.55 CORE: Waiting to start....
+00:00:04.55 CopyMemoryToRessources: Refresh done
+00:00:04.56 CopyMemoryToRessources: Start
+00:00:04.56 CopyMemoryToRessources: Refresh done
+00:00:04.57 Display: CopyMemoryToRessources end
+00:00:04.57 Display: Lock...
+00:00:04.57 Display: FrameIsDisplayed
+00:00:04.58 Display: Lock end
+00:00:04.58 Display: sin back - 2: x = 34; y = 63
+00:00:04.60 CopyMemoryToRessources: Start
+00:00:04.60 CopyMemoryToRessources: Refresh done
+00:00:04.60 CORE: Waiting to start....
+00:00:04.61 CopyMemoryToRessources: HasFrameChanged
+00:00:04.61 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:04.63 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:04.63 CopyMemoryToRessources: Start
+00:00:04.64 CopyMemoryToRessources: Refresh done
+00:00:04.64 CopyMemoryToRessources: Start
+00:00:04.64 CopyMemoryToRessources: Refresh done
+00:00:04.65 Display: CopyMemoryToRessources end
+00:00:04.65 Display: Lock...
+00:00:04.65 Display: FrameIsDisplayed
+00:00:04.66 Display: Lock end
+00:00:04.66 CORE: Waiting to start....
+00:00:04.66 Display: sin back - 2: x = 35; y = 63
+00:00:04.68 CopyMemoryToRessources: Start
+00:00:04.69 CopyMemoryToRessources: Refresh done
+00:00:04.69 CopyMemoryToRessources: HasFrameChanged
+00:00:04.69 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:04.71 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:04.71 CopyMemoryToRessources: Start
+00:00:04.71 CORE: Waiting to start....
+00:00:04.72 CopyMemoryToRessources: Refresh done
+00:00:04.72 CopyMemoryToRessources: Start
+00:00:04.73 CopyMemoryToRessources: Refresh done
+00:00:04.73 Display: CopyMemoryToRessources end
+00:00:04.74 Display: Lock...
+00:00:04.74 Display: FrameIsDisplayed
+00:00:04.74 Display: Lock end
+00:00:04.74 Display: sin back - 2: x = 37; y = 62
+00:00:04.75 CopyMemoryToRessources: Start
+00:00:04.75 CopyMemoryToRessources: Refresh done
+00:00:04.76 CopyMemoryToRessources: HasFrameChanged
+00:00:04.76 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:04.76 CORE: Waiting to start....
+00:00:04.78 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:04.78 CopyMemoryToRessources: Start
+00:00:04.78 CopyMemoryToRessources: Refresh done
+00:00:04.79 CopyMemoryToRessources: Start
+00:00:04.79 CopyMemoryToRessources: Refresh done
+00:00:04.80 Display: CopyMemoryToRessources end
+00:00:04.80 Display: Lock...
+00:00:04.80 Display: FrameIsDisplayed
+00:00:04.81 Display: Lock end
+00:00:04.81 Display: sin back - 2: x = 38; y = 61
+00:00:04.82 CopyMemoryToRessources: Start
+00:00:04.82 CopyMemoryToRessources: Refresh done
+00:00:04.82 CopyMemoryToRessources: HasFrameChanged
+00:00:04.82 CORE: Waiting to start....
+00:00:04.83 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:04.85 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:04.85 CopyMemoryToRessources: Start
+00:00:04.85 CopyMemoryToRessources: Refresh done
+00:00:04.86 CopyMemoryToRessources: Start
+00:00:04.86 CopyMemoryToRessources: Refresh done
+00:00:04.86 Display: CopyMemoryToRessources end
+00:00:04.87 Display: Lock...
+00:00:04.87 Display: FrameIsDisplayed
+00:00:04.88 Display: Lock end
+00:00:04.88 Display: sin back - 2: x = 39; y = 60
+00:00:04.88 CORE: Waiting to start....
+00:00:04.88 CopyMemoryToRessources: Start
+00:00:04.89 CopyMemoryToRessources: Refresh done
+00:00:04.89 CopyMemoryToRessources: HasFrameChanged
+00:00:04.90 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:04.91 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:04.92 CopyMemoryToRessources: Start
+00:00:04.92 CopyMemoryToRessources: Refresh done
+00:00:04.92 CopyMemoryToRessources: Start
+00:00:04.93 CopyMemoryToRessources: Refresh done
+00:00:04.93 Display: CopyMemoryToRessources end
+00:00:04.93 CORE: Waiting to start....
+00:00:04.94 Display: Lock...
+00:00:04.94 Display: FrameIsDisplayed
+00:00:04.95 Display: Lock end
+00:00:04.95 Display: sin back - 2: x = 40; y = 59
+00:00:04.97 CopyMemoryToRessources: Start
+00:00:04.97 CopyMemoryToRessources: Refresh done
+00:00:04.97 CopyMemoryToRessources: HasFrameChanged
+00:00:04.98 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:04.99 CORE: Waiting to start....
+00:00:04.99 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.00 CopyMemoryToRessources: Start
+00:00:05.00 CopyMemoryToRessources: Refresh done
+00:00:05.01 CopyMemoryToRessources: Start
+00:00:05.01 CopyMemoryToRessources: Refresh done
+00:00:05.01 Display: CopyMemoryToRessources end
+00:00:05.02 Display: Lock...
+00:00:05.02 Display: FrameIsDisplayed
+00:00:05.02 Display: Lock end
+00:00:05.03 Display: sin back - 2: x = 42; y = 57
+00:00:05.03 CopyMemoryToRessources: Start
+00:00:05.04 CopyMemoryToRessources: Refresh done
+00:00:05.04 CopyMemoryToRessources: HasFrameChanged
+00:00:05.04 CORE: Waiting to start....
+00:00:05.04 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:05.06 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.07 CopyMemoryToRessources: Start
+00:00:05.07 CopyMemoryToRessources: Refresh done
+00:00:05.07 CopyMemoryToRessources: Start
+00:00:05.08 CopyMemoryToRessources: Refresh done
+00:00:05.08 Display: CopyMemoryToRessources end
+00:00:05.09 Display: Lock...
+00:00:05.09 Display: FrameIsDisplayed
+00:00:05.09 Display: Lock end
+00:00:05.09 Display: sin back - 2: x = 43; y = 56
+00:00:05.09 CORE: Waiting to start....
+00:00:05.10 CopyMemoryToRessources: Start
+00:00:05.11 CopyMemoryToRessources: Refresh done
+00:00:05.11 CopyMemoryToRessources: HasFrameChanged
+00:00:05.12 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:05.13 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.13 CopyMemoryToRessources: Start
+00:00:05.14 CopyMemoryToRessources: Refresh done
+00:00:05.14 CopyMemoryToRessources: Start
+00:00:05.15 CopyMemoryToRessources: Refresh done
+00:00:05.15 Display: CopyMemoryToRessources end
+00:00:05.15 CORE: Waiting to start....
+00:00:05.15 Display: Lock...
+00:00:05.15 CORE: Main loop
+00:00:05.16 Display: FrameIsDisplayed
+00:00:05.17 Display: Lock end
+00:00:05.17 Display: sin back - 2: x = 44; y = 54
+00:00:05.19 CopyMemoryToRessources: Start
+00:00:05.19 CopyMemoryToRessources: Refresh done
+00:00:05.19 CopyMemoryToRessources: HasFrameChanged
+00:00:05.20 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:05.21 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.21 CopyMemoryToRessources: Start
+00:00:05.22 CopyMemoryToRessources: Refresh done
+00:00:05.22 CopyMemoryToRessources: HasFrameChanged
+00:00:05.23 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:05.24 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.24 CopyMemoryToRessources: Start
+00:00:05.24 CopyMemoryToRessources: Refresh done
+00:00:05.25 Display: CopyMemoryToRessources end
+00:00:05.25 Display: Lock...
+00:00:05.26 Display: FrameIsDisplayed
+00:00:05.26 Display: Lock end
+00:00:05.26 Display: sin back - 2: x = 45; y = 52
+00:00:05.29 CopyMemoryToRessources: Start
+00:00:05.29 CopyMemoryToRessources: Refresh done
+00:00:05.29 CopyMemoryToRessources: HasFrameChanged
+00:00:05.30 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:05.31 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.31 CopyMemoryToRessources: Start
+00:00:05.32 CopyMemoryToRessources: Refresh done
+00:00:05.32 CopyMemoryToRessources: HasFrameChanged
+00:00:05.33 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:05.34 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.34 CopyMemoryToRessources: Start
+00:00:05.34 CopyMemoryToRessources: Refresh done
+00:00:05.35 Display: CopyMemoryToRessources end
+00:00:05.35 Display: Lock...
+00:00:05.36 Display: FrameIsDisplayed
+00:00:05.36 Display: Lock end
+00:00:05.36 Display: sin back - 2: x = 46; y = 50
+00:00:05.37 CopyMemoryToRessources: Start
+00:00:05.37 CopyMemoryToRessources: Refresh done
+00:00:05.37 CopyMemoryToRessources: HasFrameChanged
+00:00:05.38 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:05.39 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.40 CopyMemoryToRessources: Start
+00:00:05.40 CopyMemoryToRessources: Refresh done
+00:00:05.41 CopyMemoryToRessources: HasFrameChanged
+00:00:05.41 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:05.42 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.43 CopyMemoryToRessources: Start
+00:00:05.43 CopyMemoryToRessources: Refresh done
+00:00:05.43 Display: CopyMemoryToRessources end
+00:00:05.44 Display: Lock...
+00:00:05.44 Display: FrameIsDisplayed
+00:00:05.44 Display: Lock end
+00:00:05.45 Display: sin back - 2: x = 47; y = 48
+00:00:05.47 CopyMemoryToRessources: Start
+00:00:05.47 CopyMemoryToRessources: Refresh done
+00:00:05.47 CopyMemoryToRessources: HasFrameChanged
+00:00:05.48 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:05.49 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.50 CopyMemoryToRessources: Start
+00:00:05.50 CopyMemoryToRessources: Refresh done
+00:00:05.50 CopyMemoryToRessources: HasFrameChanged
+00:00:05.51 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:05.52 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.52 CopyMemoryToRessources: Start
+00:00:05.53 CopyMemoryToRessources: Refresh done
+00:00:05.53 Display: CopyMemoryToRessources end
+00:00:05.54 Display: Lock...
+00:00:05.54 Display: FrameIsDisplayed
+00:00:05.54 Display: Lock end
+00:00:05.55 Display: sin back - 2: x = 48; y = 45
+00:00:05.55 CopyMemoryToRessources: Start
+00:00:05.55 CopyMemoryToRessources: Refresh done
+00:00:05.56 CopyMemoryToRessources: HasFrameChanged
+00:00:05.56 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:05.58 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.58 CopyMemoryToRessources: Start
+00:00:05.58 CopyMemoryToRessources: Refresh done
+00:00:05.59 CopyMemoryToRessources: HasFrameChanged
+00:00:05.59 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:05.60 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.61 CopyMemoryToRessources: Start
+00:00:05.61 CopyMemoryToRessources: Refresh done
+00:00:05.62 Display: CopyMemoryToRessources end
+00:00:05.62 Display: Lock...
+00:00:05.62 Display: FrameIsDisplayed
+00:00:05.63 Display: Lock end
+00:00:05.63 Display: sin back - 2: x = 50; y = 43
+00:00:05.65 CopyMemoryToRessources: Start
+00:00:05.65 CopyMemoryToRessources: Refresh done
+00:00:05.66 CopyMemoryToRessources: HasFrameChanged
+00:00:05.66 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:05.68 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.68 CopyMemoryToRessources: Start
+00:00:05.68 CopyMemoryToRessources: Refresh done
+00:00:05.69 CopyMemoryToRessources: HasFrameChanged
+00:00:05.69 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:05.71 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.71 CopyMemoryToRessources: Start
+00:00:05.71 CopyMemoryToRessources: Refresh done
+00:00:05.72 Display: CopyMemoryToRessources end
+00:00:05.72 Display: Lock...
+00:00:05.72 Display: FrameIsDisplayed
+00:00:05.73 Display: Lock end
+00:00:05.73 Display: sin back - 2: x = 51; y = 41
+00:00:05.74 CopyMemoryToRessources: Start
+00:00:05.74 CopyMemoryToRessources: Refresh done
+00:00:05.74 CopyMemoryToRessources: HasFrameChanged
+00:00:05.75 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:05.76 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.77 CopyMemoryToRessources: Start
+00:00:05.77 CopyMemoryToRessources: Refresh done
+00:00:05.77 CopyMemoryToRessources: HasFrameChanged
+00:00:05.78 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:05.79 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.79 CopyMemoryToRessources: Start
+00:00:05.80 CopyMemoryToRessources: Refresh done
+00:00:05.80 Display: CopyMemoryToRessources end
+00:00:05.81 Display: Lock...
+00:00:05.81 Display: FrameIsDisplayed
+00:00:05.81 Display: Lock end
+00:00:05.81 Display: sin back - 2: x = 52; y = 38
+00:00:05.84 CopyMemoryToRessources: Start
+00:00:05.84 CopyMemoryToRessources: Refresh done
+00:00:05.84 CopyMemoryToRessources: HasFrameChanged
+00:00:05.85 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:05.86 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.86 CopyMemoryToRessources: Start
+00:00:05.87 CopyMemoryToRessources: Refresh done
+00:00:05.87 CopyMemoryToRessources: HasFrameChanged
+00:00:05.88 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:05.89 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.89 CopyMemoryToRessources: Start
+00:00:05.90 CopyMemoryToRessources: Refresh done
+00:00:05.90 Display: CopyMemoryToRessources end
+00:00:05.90 Display: Lock...
+00:00:05.91 Display: FrameIsDisplayed
+00:00:05.91 Display: Lock end
+00:00:05.91 Display: sin back - 2: x = 53; y = 36
+00:00:05.92 CopyMemoryToRessources: Start
+00:00:05.92 CopyMemoryToRessources: Refresh done
+00:00:05.93 CopyMemoryToRessources: HasFrameChanged
+00:00:05.93 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:05.94 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.95 CopyMemoryToRessources: Start
+00:00:05.95 CopyMemoryToRessources: Refresh done
+00:00:05.96 CopyMemoryToRessources: HasFrameChanged
+00:00:05.96 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:05.97 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:05.98 CopyMemoryToRessources: Start
+00:00:05.98 CopyMemoryToRessources: Refresh done
+00:00:05.98 Display: CopyMemoryToRessources end
+00:00:05.99 Display: Lock...
+00:00:05.99 Display: FrameIsDisplayed
+00:00:05.99 Display: Lock end
+00:00:06.00 Display: sin back - 2: x = 54; y = 33
+00:00:06.00 CopyMemoryToRessources: Start
+00:00:06.01 CopyMemoryToRessources: Refresh done
+00:00:06.01 CopyMemoryToRessources: HasFrameChanged
+00:00:06.01 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:06.03 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.03 CopyMemoryToRessources: Start
+00:00:06.04 CopyMemoryToRessources: Refresh done
+00:00:06.04 CopyMemoryToRessources: HasFrameChanged
+00:00:06.04 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:06.06 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.06 CopyMemoryToRessources: Start
+00:00:06.06 CopyMemoryToRessources: Refresh done
+00:00:06.07 Display: CopyMemoryToRessources end
+00:00:06.07 Display: Lock...
+00:00:06.08 Display: FrameIsDisplayed
+00:00:06.08 Display: Lock end
+00:00:06.08 Display: sin back - 2: x = 54; y = 31
+00:00:06.10 CopyMemoryToRessources: Start
+00:00:06.10 CopyMemoryToRessources: Refresh done
+00:00:06.11 CopyMemoryToRessources: HasFrameChanged
+00:00:06.11 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:06.13 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.13 CopyMemoryToRessources: Start
+00:00:06.14 CopyMemoryToRessources: Refresh done
+00:00:06.14 CopyMemoryToRessources: HasFrameChanged
+00:00:06.14 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:06.16 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.16 CopyMemoryToRessources: Start
+00:00:06.16 CopyMemoryToRessources: Refresh done
+00:00:06.17 Display: CopyMemoryToRessources end
+00:00:06.17 Display: Lock...
+00:00:06.17 Display: FrameIsDisplayed
+00:00:06.18 Display: Lock end
+00:00:06.18 Display: sin back - 2: x = 55; y = 28
+00:00:06.18 LOG: [ASIC ] : Unlocked
+00:00:06.19 CopyMemoryToRessources: Start
+00:00:06.19 LOG:
+
+00:00:06.19 CopyMemoryToRessources: Refresh done
+00:00:06.20 CopyMemoryToRessources: HasFrameChanged
+00:00:06.20 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:06.22 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.22 CopyMemoryToRessources: Start
+00:00:06.22 CopyMemoryToRessources: Refresh done
+00:00:06.23 CopyMemoryToRessources: HasFrameChanged
+00:00:06.23 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:06.24 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.25 CopyMemoryToRessources: Start
+00:00:06.25 CopyMemoryToRessources: Refresh done
+00:00:06.26 Display: CopyMemoryToRessources end
+00:00:06.26 Display: Lock...
+00:00:06.26 Display: FrameIsDisplayed
+00:00:06.27 Display: Lock end
+00:00:06.27 Display: sin back - 2: x = 56; y = 25
+00:00:06.29 CopyMemoryToRessources: Start
+00:00:06.29 CopyMemoryToRessources: Refresh done
+00:00:06.29 CopyMemoryToRessources: HasFrameChanged
+00:00:06.30 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:06.31 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.32 CopyMemoryToRessources: Start
+00:00:06.32 CopyMemoryToRessources: Refresh done
+00:00:06.32 CopyMemoryToRessources: HasFrameChanged
+00:00:06.33 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:06.34 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.34 CopyMemoryToRessources: Start
+00:00:06.35 CopyMemoryToRessources: Refresh done
+00:00:06.35 Display: CopyMemoryToRessources end
+00:00:06.36 Display: Lock...
+00:00:06.36 Display: FrameIsDisplayed
+00:00:06.36 Display: Lock end
+00:00:06.36 Display: sin back - 2: x = 57; y = 23
+00:00:06.37 CopyMemoryToRessources: Start
+00:00:06.37 CopyMemoryToRessources: Refresh done
+00:00:06.38 CopyMemoryToRessources: HasFrameChanged
+00:00:06.38 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:06.40 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.40 CopyMemoryToRessources: Start
+00:00:06.40 CopyMemoryToRessources: Refresh done
+00:00:06.41 CopyMemoryToRessources: HasFrameChanged
+00:00:06.41 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:06.42 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.43 CopyMemoryToRessources: Start
+00:00:06.43 CopyMemoryToRessources: Refresh done
+00:00:06.44 Display: CopyMemoryToRessources end
+00:00:06.44 Display: Lock...
+00:00:06.44 Display: FrameIsDisplayed
+00:00:06.45 Display: Lock end
+00:00:06.45 Display: sin back - 2: x = 58; y = 21
+00:00:06.45 CopyMemoryToRessources: Start
+00:00:06.46 CopyMemoryToRessources: Refresh done
+00:00:06.46 CopyMemoryToRessources: HasFrameChanged
+00:00:06.47 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:06.48 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.48 CopyMemoryToRessources: Start
+00:00:06.49 CopyMemoryToRessources: Refresh done
+00:00:06.49 CopyMemoryToRessources: HasFrameChanged
+00:00:06.50 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:06.51 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.51 CopyMemoryToRessources: Start
+00:00:06.51 CopyMemoryToRessources: Refresh done
+00:00:06.52 Display: CopyMemoryToRessources end
+00:00:06.52 Display: Lock...
+00:00:06.53 Display: FrameIsDisplayed
+00:00:06.53 Display: Lock end
+00:00:06.53 Display: sin back - 2: x = 58; y = 18
+00:00:06.55 CopyMemoryToRessources: Start
+00:00:06.56 CopyMemoryToRessources: Refresh done
+00:00:06.56 CopyMemoryToRessources: HasFrameChanged
+00:00:06.56 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:06.58 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.58 CopyMemoryToRessources: Start
+00:00:06.59 CopyMemoryToRessources: Refresh done
+00:00:06.59 CopyMemoryToRessources: HasFrameChanged
+00:00:06.60 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:06.61 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.61 CopyMemoryToRessources: Start
+00:00:06.61 CopyMemoryToRessources: Refresh done
+00:00:06.62 Display: CopyMemoryToRessources end
+00:00:06.62 Display: Lock...
+00:00:06.63 Display: FrameIsDisplayed
+00:00:06.63 Display: Lock end
+00:00:06.63 Display: sin back - 2: x = 59; y = 16
+00:00:06.65 CopyMemoryToRessources: Start
+00:00:06.66 CopyMemoryToRessources: Refresh done
+00:00:06.66 CopyMemoryToRessources: HasFrameChanged
+00:00:06.66 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:06.68 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.68 CopyMemoryToRessources: Start
+00:00:06.69 CopyMemoryToRessources: Refresh done
+00:00:06.69 CopyMemoryToRessources: HasFrameChanged
+00:00:06.70 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:06.71 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.71 CopyMemoryToRessources: Start
+00:00:06.71 CopyMemoryToRessources: Refresh done
+00:00:06.72 Display: CopyMemoryToRessources end
+00:00:06.72 Display: Lock...
+00:00:06.73 Display: FrameIsDisplayed
+00:00:06.73 Display: Lock end
+00:00:06.73 Display: sin back - 2: x = 60; y = 14
+00:00:06.74 CopyMemoryToRessources: Start
+00:00:06.74 CopyMemoryToRessources: Refresh done
+00:00:06.74 CopyMemoryToRessources: HasFrameChanged
+00:00:06.75 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:06.76 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.77 CopyMemoryToRessources: Start
+00:00:06.77 CopyMemoryToRessources: Refresh done
+00:00:06.77 CopyMemoryToRessources: HasFrameChanged
+00:00:06.78 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:06.79 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.79 CopyMemoryToRessources: Start
+00:00:06.80 CopyMemoryToRessources: Refresh done
+00:00:06.80 Display: CopyMemoryToRessources end
+00:00:06.81 Display: Lock...
+00:00:06.81 Display: FrameIsDisplayed
+00:00:06.81 Display: Lock end
+00:00:06.82 Display: sin back - 2: x = 60; y = 12
+00:00:06.82 CopyMemoryToRessources: Start
+00:00:06.82 CopyMemoryToRessources: Refresh done
+00:00:06.83 CopyMemoryToRessources: HasFrameChanged
+00:00:06.83 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:06.85 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.85 CopyMemoryToRessources: Start
+00:00:06.85 CopyMemoryToRessources: Refresh done
+00:00:06.86 CopyMemoryToRessources: HasFrameChanged
+00:00:06.86 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:06.87 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.88 CopyMemoryToRessources: Start
+00:00:06.88 CopyMemoryToRessources: Refresh done
+00:00:06.89 Display: CopyMemoryToRessources end
+00:00:06.89 Display: Lock...
+00:00:06.89 Display: FrameIsDisplayed
+00:00:06.90 Display: Lock end
+00:00:06.90 Display: sin back - 2: x = 61; y = 10
+00:00:06.92 CopyMemoryToRessources: Start
+00:00:06.92 CopyMemoryToRessources: Refresh done
+00:00:06.93 CopyMemoryToRessources: HasFrameChanged
+00:00:06.93 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:06.95 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.95 CopyMemoryToRessources: Start
+00:00:06.95 CopyMemoryToRessources: Refresh done
+00:00:06.96 CopyMemoryToRessources: HasFrameChanged
+00:00:06.96 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:06.97 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:06.98 CopyMemoryToRessources: Start
+00:00:06.98 CopyMemoryToRessources: Refresh done
+00:00:06.99 Display: CopyMemoryToRessources end
+00:00:06.99 Display: Lock...
+00:00:06.99 Display: FrameIsDisplayed
+00:00:07.00 Display: Lock end
+00:00:07.00 Display: sin back - 2: x = 61; y = 8
+00:00:07.01 CopyMemoryToRessources: Start
+00:00:07.01 CopyMemoryToRessources: Refresh done
+00:00:07.01 CopyMemoryToRessources: HasFrameChanged
+00:00:07.02 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:07.03 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.03 CopyMemoryToRessources: Start
+00:00:07.04 CopyMemoryToRessources: Refresh done
+00:00:07.04 CopyMemoryToRessources: HasFrameChanged
+00:00:07.05 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:07.06 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.06 CopyMemoryToRessources: Start
+00:00:07.07 CopyMemoryToRessources: Refresh done
+00:00:07.07 Display: CopyMemoryToRessources end
+00:00:07.07 Display: Lock...
+00:00:07.08 Display: FrameIsDisplayed
+00:00:07.08 Display: Lock end
+00:00:07.08 Display: sin back - 2: x = 62; y = 6
+00:00:07.11 CopyMemoryToRessources: Start
+00:00:07.11 CopyMemoryToRessources: Refresh done
+00:00:07.11 CopyMemoryToRessources: HasFrameChanged
+00:00:07.12 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:07.13 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.13 CopyMemoryToRessources: Start
+00:00:07.14 CopyMemoryToRessources: Refresh done
+00:00:07.14 CopyMemoryToRessources: HasFrameChanged
+00:00:07.15 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:07.16 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.16 CopyMemoryToRessources: Start
+00:00:07.16 CopyMemoryToRessources: Refresh done
+00:00:07.17 Display: CopyMemoryToRessources end
+00:00:07.17 Display: Lock...
+00:00:07.18 Display: FrameIsDisplayed
+00:00:07.18 Display: Lock end
+00:00:07.18 Display: sin back - 2: x = 62; y = 5
+00:00:07.19 CopyMemoryToRessources: Start
+00:00:07.19 CopyMemoryToRessources: Refresh done
+00:00:07.19 CopyMemoryToRessources: HasFrameChanged
+00:00:07.20 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:07.21 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.22 CopyMemoryToRessources: Start
+00:00:07.22 CopyMemoryToRessources: Refresh done
+00:00:07.23 CopyMemoryToRessources: HasFrameChanged
+00:00:07.23 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:07.24 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.25 CopyMemoryToRessources: Start
+00:00:07.25 CopyMemoryToRessources: Refresh done
+00:00:07.25 Display: CopyMemoryToRessources end
+00:00:07.26 Display: Lock...
+00:00:07.26 Display: FrameIsDisplayed
+00:00:07.26 Display: Lock end
+00:00:07.27 Display: sin back - 2: x = 62; y = 3
+00:00:07.27 CopyMemoryToRessources: Start
+00:00:07.28 CopyMemoryToRessources: Refresh done
+00:00:07.28 CopyMemoryToRessources: HasFrameChanged
+00:00:07.28 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:07.30 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.30 CopyMemoryToRessources: Start
+00:00:07.31 CopyMemoryToRessources: Refresh done
+00:00:07.31 CopyMemoryToRessources: HasFrameChanged
+00:00:07.32 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:07.33 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.33 CopyMemoryToRessources: Start
+00:00:07.33 CopyMemoryToRessources: Refresh done
+00:00:07.34 Display: CopyMemoryToRessources end
+00:00:07.34 Display: Lock...
+00:00:07.35 Display: FrameIsDisplayed
+00:00:07.35 Display: Lock end
+00:00:07.35 Display: sin back - 2: x = 63; y = 2
+00:00:07.37 CopyMemoryToRessources: Start
+00:00:07.37 CopyMemoryToRessources: Refresh done
+00:00:07.38 CopyMemoryToRessources: HasFrameChanged
+00:00:07.38 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:07.40 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.40 CopyMemoryToRessources: Start
+00:00:07.40 CopyMemoryToRessources: Refresh done
+00:00:07.41 CopyMemoryToRessources: HasFrameChanged
+00:00:07.41 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:07.42 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.43 CopyMemoryToRessources: Start
+00:00:07.43 CopyMemoryToRessources: Refresh done
+00:00:07.44 Display: CopyMemoryToRessources end
+00:00:07.44 Display: Lock...
+00:00:07.44 Display: FrameIsDisplayed
+00:00:07.45 Display: Lock end
+00:00:07.45 Display: sin back - 2: x = 63; y = 1
+00:00:07.46 CopyMemoryToRessources: Start
+00:00:07.46 CopyMemoryToRessources: Refresh done
+00:00:07.46 CopyMemoryToRessources: HasFrameChanged
+00:00:07.47 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:07.48 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.48 CopyMemoryToRessources: Start
+00:00:07.49 CopyMemoryToRessources: Refresh done
+00:00:07.49 CopyMemoryToRessources: HasFrameChanged
+00:00:07.50 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:07.51 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.51 CopyMemoryToRessources: Start
+00:00:07.52 CopyMemoryToRessources: Refresh done
+00:00:07.52 Display: CopyMemoryToRessources end
+00:00:07.52 Display: Lock...
+00:00:07.53 Display: FrameIsDisplayed
+00:00:07.53 Display: Lock end
+00:00:07.53 Display: sin back - 2: x = 63; y = 1
+00:00:07.54 CopyMemoryToRessources: Start
+00:00:07.54 CopyMemoryToRessources: Refresh done
+00:00:07.55 CopyMemoryToRessources: HasFrameChanged
+00:00:07.55 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:07.56 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.57 CopyMemoryToRessources: Start
+00:00:07.57 CopyMemoryToRessources: Refresh done
+00:00:07.58 CopyMemoryToRessources: HasFrameChanged
+00:00:07.58 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:07.59 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.60 CopyMemoryToRessources: Start
+00:00:07.60 CopyMemoryToRessources: Refresh done
+00:00:07.60 Display: CopyMemoryToRessources end
+00:00:07.61 Display: Lock...
+00:00:07.61 Display: FrameIsDisplayed
+00:00:07.61 Display: Lock end
+00:00:07.62 Display: sin back - 2: x = 63; y = 0
+00:00:07.64 CopyMemoryToRessources: Start
+00:00:07.64 CopyMemoryToRessources: Refresh done
+00:00:07.65 CopyMemoryToRessources: HasFrameChanged
+00:00:07.65 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:07.66 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.67 CopyMemoryToRessources: Start
+00:00:07.67 CopyMemoryToRessources: Refresh done
+00:00:07.68 CopyMemoryToRessources: HasFrameChanged
+00:00:07.68 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:07.69 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.70 CopyMemoryToRessources: Start
+00:00:07.70 CopyMemoryToRessources: Refresh done
+00:00:07.70 Display: CopyMemoryToRessources end
+00:00:07.71 Display: Lock...
+00:00:07.71 Display: FrameIsDisplayed
+00:00:07.71 Display: Lock end
+00:00:07.72 Display: sin back - 2: x = 63; y = 0
+00:00:07.72 CopyMemoryToRessources: Start
+00:00:07.72 CopyMemoryToRessources: Refresh done
+00:00:07.73 CopyMemoryToRessources: HasFrameChanged
+00:00:07.73 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:07.75 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.75 CopyMemoryToRessources: Start
+00:00:07.76 CopyMemoryToRessources: Refresh done
+00:00:07.76 CopyMemoryToRessources: HasFrameChanged
+00:00:07.76 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:07.78 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.78 CopyMemoryToRessources: Start
+00:00:07.78 CopyMemoryToRessources: Refresh done
+00:00:07.79 Display: CopyMemoryToRessources end
+00:00:07.79 Display: Lock...
+00:00:07.79 Display: FrameIsDisplayed
+00:00:07.80 Display: Lock end
+00:00:07.80 Display: sin back - 2: x = 63; y = 0
+00:00:07.82 CopyMemoryToRessources: Start
+00:00:07.82 CopyMemoryToRessources: Refresh done
+00:00:07.83 CopyMemoryToRessources: HasFrameChanged
+00:00:07.83 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:07.85 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.85 CopyMemoryToRessources: Start
+00:00:07.85 CopyMemoryToRessources: Refresh done
+00:00:07.86 CopyMemoryToRessources: HasFrameChanged
+00:00:07.86 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:07.88 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.88 CopyMemoryToRessources: Start
+00:00:07.88 CopyMemoryToRessources: Refresh done
+00:00:07.89 Display: CopyMemoryToRessources end
+00:00:07.89 Display: Lock...
+00:00:07.89 Display: FrameIsDisplayed
+00:00:07.90 Display: Lock end
+00:00:07.90 Display: sin back - 2: x = 63; y = 0
+00:00:07.91 CopyMemoryToRessources: Start
+00:00:07.91 CopyMemoryToRessources: Refresh done
+00:00:07.91 CopyMemoryToRessources: HasFrameChanged
+00:00:07.92 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:07.93 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.94 CopyMemoryToRessources: Start
+00:00:07.94 CopyMemoryToRessources: Refresh done
+00:00:07.94 CopyMemoryToRessources: HasFrameChanged
+00:00:07.95 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:07.96 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:07.96 CopyMemoryToRessources: Start
+00:00:07.97 CopyMemoryToRessources: Refresh done
+00:00:07.97 Display: CopyMemoryToRessources end
+00:00:07.98 Display: Lock...
+00:00:07.98 Display: FrameIsDisplayed
+00:00:07.98 Display: Lock end
+00:00:07.98 Display: sin back - 2: x = 63; y = 0
+00:00:08.01 CopyMemoryToRessources: Start
+00:00:08.01 CopyMemoryToRessources: Refresh done
+00:00:08.01 CopyMemoryToRessources: HasFrameChanged
+00:00:08.02 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:08.03 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.04 CopyMemoryToRessources: Start
+00:00:08.04 CopyMemoryToRessources: Refresh done
+00:00:08.04 CopyMemoryToRessources: HasFrameChanged
+00:00:08.05 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:08.06 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.06 CopyMemoryToRessources: Start
+00:00:08.07 CopyMemoryToRessources: Refresh done
+00:00:08.07 Display: CopyMemoryToRessources end
+00:00:08.08 Display: Lock...
+00:00:08.08 Display: FrameIsDisplayed
+00:00:08.08 Display: Lock end
+00:00:08.08 Display: sin back - 2: x = 63; y = 0
+00:00:08.11 CopyMemoryToRessources: Start
+00:00:08.11 CopyMemoryToRessources: Refresh done
+00:00:08.11 CopyMemoryToRessources: HasFrameChanged
+00:00:08.12 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:08.13 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.14 CopyMemoryToRessources: Start
+00:00:08.14 CopyMemoryToRessources: Refresh done
+00:00:08.14 CopyMemoryToRessources: HasFrameChanged
+00:00:08.15 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:08.16 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.16 CopyMemoryToRessources: Start
+00:00:08.17 CopyMemoryToRessources: Refresh done
+00:00:08.17 Display: CopyMemoryToRessources end
+00:00:08.18 Display: Lock...
+00:00:08.18 Display: FrameIsDisplayed
+00:00:08.18 Display: Lock end
+00:00:08.18 Display: sin back - 2: x = 63; y = 1
+00:00:08.19 CopyMemoryToRessources: Start
+00:00:08.19 CopyMemoryToRessources: Refresh done
+00:00:08.20 CopyMemoryToRessources: HasFrameChanged
+00:00:08.20 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:08.22 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.22 CopyMemoryToRessources: Start
+00:00:08.22 CopyMemoryToRessources: Refresh done
+00:00:08.23 CopyMemoryToRessources: HasFrameChanged
+00:00:08.23 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:08.24 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.25 CopyMemoryToRessources: Start
+00:00:08.25 CopyMemoryToRessources: Refresh done
+00:00:08.26 Display: CopyMemoryToRessources end
+00:00:08.26 Display: Lock...
+00:00:08.26 Display: FrameIsDisplayed
+00:00:08.27 Display: Lock end
+00:00:08.27 Display: sin back - 2: x = 63; y = 2
+00:00:08.27 CopyMemoryToRessources: Start
+00:00:08.28 CopyMemoryToRessources: Refresh done
+00:00:08.28 CopyMemoryToRessources: HasFrameChanged
+00:00:08.29 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:08.30 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.30 CopyMemoryToRessources: Start
+00:00:08.31 CopyMemoryToRessources: Refresh done
+00:00:08.31 CopyMemoryToRessources: HasFrameChanged
+00:00:08.32 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:08.33 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.33 CopyMemoryToRessources: Start
+00:00:08.33 CopyMemoryToRessources: Refresh done
+00:00:08.34 Display: CopyMemoryToRessources end
+00:00:08.34 Display: Lock...
+00:00:08.35 Display: FrameIsDisplayed
+00:00:08.35 Display: Lock end
+00:00:08.35 Display: sin back - 2: x = 63; y = 3
+00:00:08.37 CopyMemoryToRessources: Start
+00:00:08.38 CopyMemoryToRessources: Refresh done
+00:00:08.38 CopyMemoryToRessources: HasFrameChanged
+00:00:08.38 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:08.40 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.40 CopyMemoryToRessources: Start
+00:00:08.41 CopyMemoryToRessources: Refresh done
+00:00:08.41 CopyMemoryToRessources: HasFrameChanged
+00:00:08.42 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:08.43 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.43 CopyMemoryToRessources: Start
+00:00:08.43 CopyMemoryToRessources: Refresh done
+00:00:08.44 Display: CopyMemoryToRessources end
+00:00:08.44 Display: Lock...
+00:00:08.45 Display: FrameIsDisplayed
+00:00:08.45 Display: Lock end
+00:00:08.45 Display: sin back - 2: x = 62; y = 4
+00:00:08.46 CopyMemoryToRessources: Start
+00:00:08.46 CopyMemoryToRessources: Refresh done
+00:00:08.46 CopyMemoryToRessources: HasFrameChanged
+00:00:08.47 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:08.48 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.49 CopyMemoryToRessources: Start
+00:00:08.49 CopyMemoryToRessources: Refresh done
+00:00:08.49 CopyMemoryToRessources: HasFrameChanged
+00:00:08.50 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:08.51 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.51 CopyMemoryToRessources: Start
+00:00:08.52 CopyMemoryToRessources: Refresh done
+00:00:08.52 Display: CopyMemoryToRessources end
+00:00:08.53 Display: Lock...
+00:00:08.53 Display: FrameIsDisplayed
+00:00:08.53 Display: Lock end
+00:00:08.54 Display: sin back - 2: x = 62; y = 5
+00:00:08.56 CopyMemoryToRessources: Start
+00:00:08.56 CopyMemoryToRessources: Refresh done
+00:00:08.56 CopyMemoryToRessources: HasFrameChanged
+00:00:08.57 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:08.58 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.59 CopyMemoryToRessources: Start
+00:00:08.59 CopyMemoryToRessources: Refresh done
+00:00:08.59 CopyMemoryToRessources: HasFrameChanged
+00:00:08.60 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:08.61 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.61 CopyMemoryToRessources: Start
+00:00:08.62 CopyMemoryToRessources: Refresh done
+00:00:08.62 Display: CopyMemoryToRessources end
+00:00:08.63 Display: Lock...
+00:00:08.63 Display: FrameIsDisplayed
+00:00:08.63 Display: Lock end
+00:00:08.64 Display: sin back - 2: x = 62; y = 7
+00:00:08.64 CopyMemoryToRessources: Start
+00:00:08.64 CopyMemoryToRessources: Refresh done
+00:00:08.65 CopyMemoryToRessources: HasFrameChanged
+00:00:08.65 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:08.67 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.67 CopyMemoryToRessources: Start
+00:00:08.67 CopyMemoryToRessources: Refresh done
+00:00:08.68 CopyMemoryToRessources: HasFrameChanged
+00:00:08.68 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:08.69 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.70 CopyMemoryToRessources: Start
+00:00:08.70 CopyMemoryToRessources: Refresh done
+00:00:08.71 Display: CopyMemoryToRessources end
+00:00:08.71 Display: Lock...
+00:00:08.71 Display: FrameIsDisplayed
+00:00:08.72 Display: Lock end
+00:00:08.72 Display: sin back - 2: x = 61; y = 9
+00:00:08.73 CopyMemoryToRessources: Start
+00:00:08.73 CopyMemoryToRessources: Refresh done
+00:00:08.73 CopyMemoryToRessources: HasFrameChanged
+00:00:08.74 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:08.75 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.75 CopyMemoryToRessources: Start
+00:00:08.76 CopyMemoryToRessources: Refresh done
+00:00:08.76 CopyMemoryToRessources: HasFrameChanged
+00:00:08.77 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:08.78 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.78 CopyMemoryToRessources: Start
+00:00:08.79 CopyMemoryToRessources: Refresh done
+00:00:08.79 Display: CopyMemoryToRessources end
+00:00:08.79 Display: Lock...
+00:00:08.80 Display: FrameIsDisplayed
+00:00:08.80 Display: Lock end
+00:00:08.80 Display: sin back - 2: x = 61; y = 11
+00:00:08.83 CopyMemoryToRessources: Start
+00:00:08.83 CopyMemoryToRessources: Refresh done
+00:00:08.83 CopyMemoryToRessources: HasFrameChanged
+00:00:08.84 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:08.85 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.85 CopyMemoryToRessources: Start
+00:00:08.86 CopyMemoryToRessources: Refresh done
+00:00:08.86 CopyMemoryToRessources: HasFrameChanged
+00:00:08.87 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:08.88 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.88 CopyMemoryToRessources: Start
+00:00:08.88 CopyMemoryToRessources: Refresh done
+00:00:08.89 Display: CopyMemoryToRessources end
+00:00:08.89 Display: Lock...
+00:00:08.90 Display: FrameIsDisplayed
+00:00:08.90 Display: Lock end
+00:00:08.90 Display: sin back - 2: x = 60; y = 13
+00:00:08.93 CopyMemoryToRessources: Start
+00:00:08.93 CopyMemoryToRessources: Refresh done
+00:00:08.93 CopyMemoryToRessources: HasFrameChanged
+00:00:08.94 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:08.95 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.95 CopyMemoryToRessources: Start
+00:00:08.96 CopyMemoryToRessources: Refresh done
+00:00:08.96 CopyMemoryToRessources: HasFrameChanged
+00:00:08.97 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:08.98 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:08.98 CopyMemoryToRessources: Start
+00:00:08.99 CopyMemoryToRessources: Refresh done
+00:00:08.99 Display: CopyMemoryToRessources end
+00:00:08.99 Display: Lock...
+00:00:09.00 Display: FrameIsDisplayed
+00:00:09.00 Display: Lock end
+00:00:09.00 Display: sin back - 2: x = 59; y = 15
+00:00:09.01 CopyMemoryToRessources: Start
+00:00:09.01 CopyMemoryToRessources: Refresh done
+00:00:09.02 CopyMemoryToRessources: HasFrameChanged
+00:00:09.02 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:09.04 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:09.04 CopyMemoryToRessources: Start
+00:00:09.04 CopyMemoryToRessources: Refresh done
+00:00:09.05 CopyMemoryToRessources: HasFrameChanged
+00:00:09.05 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 3bbc800
+00:00:09.06 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:09.07 CopyMemoryToRessources: Start
+00:00:09.07 CopyMemoryToRessources: Refresh done
+00:00:09.08 Display: CopyMemoryToRessources end
+00:00:09.08 Display: Lock...
+00:00:09.08 Display: FrameIsDisplayed
+00:00:09.09 Display: Lock end
+00:00:09.09 Kernel: Select...
+00:00:09.09 Display: sin back - 2: x = 59; y = 17
+00:00:09.09 Menu: add menu : Resume
+00:00:09.11 CopyMemoryToRessources: Start
+00:00:09.11 CopyMemoryToRessources: Refresh done
+00:00:09.11 CopyMemoryToRessources: HasFrameChanged
+00:00:09.11 Menu: ComputeScroller
+00:00:09.12 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:09.12 Menu: ComputeScroller Done; y = 0
+00:00:09.14 Menu: add menu : Select Amstrad
+00:00:09.14 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:09.15 CopyMemoryToRessources: Start
+00:00:09.15 CopyMemoryToRessources: Refresh done
+00:00:09.15 CopyMemoryToRessources: HasFrameChanged
+00:00:09.15 Menu: ComputeScroller
+00:00:09.16 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1000, Buffer = 32bc7c0
+00:00:09.16 Menu: ComputeScroller Done; y = 0
+00:00:09.17 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:09.17 Menu: add menu : Insert Cartridge
+00:00:09.18 CopyMemoryToRessources: Start
+00:00:09.19 CopyMemoryToRessources: Refresh done
+00:00:09.19 Display: CopyMemoryToRessources end
+00:00:09.20 Display: Lock...
+00:00:09.20 Display: FrameIsDisplayed
+00:00:09.20 Menu: ComputeScroller
+00:00:09.20 Display: Lock end
+00:00:09.20 Menu: ComputeScroller Done; y = 0
+00:00:09.21 Display: sin back - 2: x = 58; y = 19
+00:00:09.21 Menu: add menu : Insert Disk
+00:00:09.23 CopyMemoryToRessources: Start
+00:00:09.23 CopyMemoryToRessources: Refresh done
+00:00:09.23 CopyMemoryToRessources: HasFrameChanged
+00:00:09.24 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:09.24 Menu: ComputeScroller
+00:00:09.25 Menu: ComputeScroller Done; y = 0
+00:00:09.25 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:09.25 Menu: add menu : Insert Tape
+00:00:09.26 CopyMemoryToRessources: Start
+00:00:09.27 CopyMemoryToRessources: Refresh done
+00:00:09.27 CopyMemoryToRessources: Start
+00:00:09.27 CopyMemoryToRessources: Refresh done
+00:00:09.28 Display: CopyMemoryToRessources end
+00:00:09.28 Menu: ComputeScroller
+00:00:09.28 Display: Lock...
+00:00:09.28 Menu: ComputeScroller Done; y = 0
+00:00:09.29 Display: FrameIsDisplayed
+00:00:09.29 Menu: add menu : SugarPi Setup
+00:00:09.30 Display: Lock end
+00:00:09.30 Display: sin back - 2: x = 57; y = 22
+00:00:09.31 CopyMemoryToRessources: Start
+00:00:09.31 CopyMemoryToRessources: Refresh done
+00:00:09.31 CopyMemoryToRessources: HasFrameChanged
+00:00:09.31 Menu: ComputeScroller
+00:00:09.32 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:09.32 Menu: ComputeScroller Done; y = 0
+00:00:09.34 Menu: add menu : Reset
+00:00:09.34 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:09.34 CopyMemoryToRessources: Start
+00:00:09.35 CopyMemoryToRessources: Refresh done
+00:00:09.35 CopyMemoryToRessources: Start
+00:00:09.35 Menu: ComputeScroller
+00:00:09.36 CopyMemoryToRessources: Refresh done
+00:00:09.36 Menu: ComputeScroller Done; y = 0
+00:00:09.36 Display: CopyMemoryToRessources end
+00:00:09.36 Menu: add menu : Info
+00:00:09.37 Display: Lock...
+00:00:09.38 Display: FrameIsDisplayed
+00:00:09.38 Display: Lock end
+00:00:09.38 Display: sin back - 2: x = 57; y = 24
+00:00:09.39 CopyMemoryToRessources: Start
+00:00:09.39 Menu: ComputeScroller
+00:00:09.39 CopyMemoryToRessources: Refresh done
+00:00:09.39 Menu: ComputeScroller Done; y = 0
+00:00:09.40 CopyMemoryToRessources: HasFrameChanged
+00:00:09.40 Menu: add menu : Shutdown
+00:00:09.41 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:09.43 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:09.43 Menu: ComputeScroller
+00:00:09.43 CopyMemoryToRessources: Start
+00:00:09.43 Menu: ComputeScroller Done; y = 0
+00:00:09.44 CopyMemoryToRessources: Refresh done
+00:00:09.44 Menu: MENU ENTER
+00:00:09.45 CopyMemoryToRessources: Start
+00:00:09.45 CopyMemoryToRessources: Refresh done
+00:00:09.45 Menu: Reset menu...
+00:00:09.46 Display: CopyMemoryToRessources end
+00:00:09.46 Menu: ComputeScroller
+00:00:09.46 Display: Lock...
+00:00:09.46 Menu: ComputeScroller Done; y = 0
+00:00:09.47 Display: FrameIsDisplayed
+00:00:09.47 Menu: Do screen...
+00:00:09.48 Display: Lock end
+00:00:09.48 DoScreen: First redraw
+00:00:09.48 Display: sin back - 2: x = 56; y = 27
+00:00:09.48 BitmapWindows: RedrawWindow
+00:00:09.49 CopyMemoryToRessources: Start
+00:00:09.50 CopyMemoryToRessources: Refresh done
+00:00:09.50 MenuItemWindows: RedrawWindow
+00:00:09.50 CopyMemoryToRessources: HasFrameChanged
+00:00:09.50 MenuItemWindows: RedrawWindow end
+00:00:09.51 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:09.51 MenuItemWindows: RedrawWindow
+00:00:09.53 MenuItemWindows: RedrawWindow end
+00:00:09.53 MenuItemWindows: RedrawWindow
+00:00:09.53 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:09.53 MenuItemWindows: RedrawWindow end
+00:00:09.54 CopyMemoryToRessources: Start
+00:00:09.54 MenuItemWindows: RedrawWindow
+00:00:09.55 Morphings: Refresh - x:50 y:50 w:1340 h:800
+00:00:09.55 MenuItemWindows: RedrawWindow end
+00:00:09.56 CopyMemoryToRessources: Refresh done
+00:00:09.56 MenuItemWindows: RedrawWindow
+00:00:09.57 CopyMemoryToRessources: Start
+00:00:09.57 MenuItemWindows: RedrawWindow end
+00:00:09.57 CopyMemoryToRessources: Refresh done
+00:00:09.57 MenuItemWindows: RedrawWindow
+00:00:09.58 Display: CopyMemoryToRessources end
+00:00:09.58 MenuItemWindows: RedrawWindow end
+00:00:09.59 Display: Lock...
+00:00:09.59 MenuItemWindows: RedrawWindow
+00:00:09.60 Display: FrameIsDisplayed
+00:00:09.60 MenuItemWindows: RedrawWindow end
+00:00:09.60 Display: Lock end
+00:00:09.60 MenuItemWindows: RedrawWindow
+00:00:09.61 Display: sin back - 2: x = 55; y = 29
+00:00:09.61 MenuItemWindows: RedrawWindow end
+00:00:09.62 MenuItemWindows: RedrawWindow
+00:00:09.63 MenuItemWindows: RedrawWindow end
+00:00:09.63 CopyMemoryToRessources: Start
+00:00:09.63 CopyMemoryToRessources: Refresh done
+00:00:09.64 CopyMemoryToRessources: HasFrameChanged
+00:00:09.64 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1700, Buffer = a04f00
+00:00:09.66 CopyMemoryToRessources: vc_dispmanx_resource_write_data done
+00:00:09.66 CopyMemoryToRessources: Start
+00:00:09.67 Morphings: Refresh - x:105 y:82 w:1272 h:759
+00:00:09.67 CopyMemoryToRessources: Refresh done
+00:00:09.68 CopyMemoryToRessources: Start
+00:00:09.68 CopyMemoryToRessources: Refresh done
+00:00:09.69 CopyMemoryToRessources: HasFrameChanged
+00:00:09.69 CopyMemoryToRessources: vc_dispmanx_resource_write_data : Pitch = 1680, Buffer = 1ef5140

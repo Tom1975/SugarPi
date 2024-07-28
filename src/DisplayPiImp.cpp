@@ -294,9 +294,13 @@ void DisplayPiImp::Draw()
    
    CopyMemoryToRessources();
 
+   logger_->Write("Display", LogNotice, "CopyMemoryToRessources end");
    Lock();
+   logger_->Write("Display", LogNotice, "Lock...");
    emu_frame_.FrameIsDisplayed();
+   logger_->Write("Display", LogNotice, "FrameIsDisplayed");
    Unlock();
+   logger_->Write("Display", LogNotice, "Lock end");
 
    static float value = 0;
 
@@ -355,9 +359,12 @@ void DisplayPiImp::CopyMemoryToRessources()
 {
    for (auto it : windows_list_)
    {
+      logger_->Write("CopyMemoryToRessources", LogNotice, "Start");
       it.frame_->Refresh();
+      logger_->Write("CopyMemoryToRessources", LogNotice, "Refresh done");
       if ( it.frame_->HasFrameChanged())
       {
+         logger_->Write("CopyMemoryToRessources", LogNotice, "HasFrameChanged");
          VC_RECT_T bmp_rect;
 
    
@@ -366,12 +373,16 @@ void DisplayPiImp::CopyMemoryToRessources()
                               0,
                               it.frame_->GetFullWidth(),
                               it.frame_->GetFullHeight());
-
+         
+         logger_->Write("CopyMemoryToRessources", LogNotice, "vc_dispmanx_resource_write_data : Pitch = %x, Buffer = %x", 
+                                                it.frame_->GetPitch(),
+                                                it.frame_->GetBuffer());
          vc_dispmanx_resource_write_data(it.resource_,
                                                 it.type_of_image_,
                                                 it.frame_->GetPitch(),
                                                 it.frame_->GetBuffer(),
                                                 &bmp_rect);
+         logger_->Write("CopyMemoryToRessources", LogNotice, "vc_dispmanx_resource_write_data done");
       }
    }
 }
