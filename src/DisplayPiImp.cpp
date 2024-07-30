@@ -311,13 +311,9 @@ void DisplayPiImp::Draw()
    
    CopyMemoryToRessources();
 
-   logger_->Write("Display", LogNotice, "CopyMemoryToRessources end");
    Lock();
-   logger_->Write("Display", LogNotice, "Lock...");
    emu_frame_.FrameIsDisplayed();
-   logger_->Write("Display", LogNotice, "FrameIsDisplayed");
    Unlock();
-   logger_->Write("Display", LogNotice, "Lock end");
 
    static float value = 0;
 
@@ -327,7 +323,7 @@ void DisplayPiImp::Draw()
 
    int back_x = back_wnd_.frame_->GetOffsetX();
    int back_y = back_wnd_.frame_->GetOffsetY();
-   logger_->Write("Display", LogNotice, "sin back - 2: x = %i; y = %i ", back_x, back_y);
+
    vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, info_.width<<16, info_.height<<16);
    vc_dispmanx_rect_set(&back_dst_rect, 0, 0, info_.width, info_.height);
    value += 0.01;
@@ -336,7 +332,6 @@ void DisplayPiImp::Draw()
    
    // keep for testing
    vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_SRC_RECT|ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
-
    vc_dispmanx_element_change_attributes (update, back_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
    
    for (auto it : windows_list_)
@@ -349,6 +344,9 @@ void DisplayPiImp::Draw()
 
          vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, info_.width<<16, info_.height<<16);
          vc_dispmanx_rect_set(&back_dst_rect, 0, 0, info_.width, info_.height);
+
+         logger_->Write("Display", LogNotice, "vc_dispmanx_element_change_attributes result = %X : %i %i %i %i ", 
+         &it, back_x, back_y, info_.width, info_.height);
 
          vc_dispmanx_element_change_attributes (update, 
             it.element_, ELEMENT_CHANGE_SRC_RECT|ELEMENT_CHANGE_DEST_RECT, 0, 0,
@@ -376,12 +374,9 @@ void DisplayPiImp::CopyMemoryToRessources()
 {
    for (auto it : windows_list_)
    {
-      logger_->Write("CopyMemoryToRessources", LogNotice, "Start");
       it.frame_->Refresh();
-      logger_->Write("CopyMemoryToRessources", LogNotice, "Refresh done");
       if ( it.frame_->HasFrameChanged())
       {
-         logger_->Write("CopyMemoryToRessources", LogNotice, "HasFrameChanged");
          VC_RECT_T bmp_rect;
 
    
@@ -391,15 +386,11 @@ void DisplayPiImp::CopyMemoryToRessources()
                               it.frame_->GetFullWidth(),
                               it.frame_->GetFullHeight());
          
-         logger_->Write("CopyMemoryToRessources", LogNotice, "vc_dispmanx_resource_write_data : Pitch = %x, Buffer = %x", 
-                                                it.frame_->GetPitch(),
-                                                it.frame_->GetBuffer());
          vc_dispmanx_resource_write_data(it.resource_,
                                                 it.type_of_image_,
                                                 it.frame_->GetPitch(),
                                                 it.frame_->GetBuffer(),
                                                 &bmp_rect);
-         logger_->Write("CopyMemoryToRessources", LogNotice, "vc_dispmanx_resource_write_data done");
       }
    }
 }
