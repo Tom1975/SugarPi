@@ -239,9 +239,6 @@ void BasicFrame::WriteText(const char* text, int x, int y)
 
 
    unsigned int x_offset_output = 0;
-
-   //CLogger::Get()->Write("DisplayText", LogNotice, "DisplayText : %s - Font = %X", txt, font_);
-
    while (codepoints[i] != '\0' && x + x_offset_output < GetWidth())
    {
 
@@ -268,12 +265,14 @@ void BasicFrame::WriteText(const char* text, int x, int y)
          // Copy to framebuffer
          for (int dy = 0; dy < img.height; dy++)
          {
-            int* line = GetBuffer(y + dy + mtx.yOffset);
-            for (int dx = 0; dx < img.width; dx++)
+            if (y + dy + mtx.yOffset < GetHeight())
             {
-               line[x + x_offset_output + dx + (short)mtx.leftSideBearing] = text_color_ | ((pixels[dx + dy * img.width]) << 24);
+               int* line = GetBuffer(y + dy + mtx.yOffset);
+               for (int dx = 0; dx < img.width; dx++)
+               {
+                  line[x + x_offset_output + dx + (short)mtx.leftSideBearing] = text_color_ | ((pixels[dx + dy * img.width]) << 24);
+               }
             }
-
          }
 
          x_offset_output += mtx.advanceWidth;

@@ -404,8 +404,8 @@ void ScrollWindows::RedrawChildren ()
    while ( *current_queue != nullptr)
    {  
       if ( (*current_queue)->wnd_->GetX() + scroll_offset_x_>= 0 && (*current_queue)->wnd_->GetY() +scroll_offset_y_>= 0 
-      && (*current_queue)->wnd_->GetWidth() + (*current_queue)->wnd_->GetX() + scroll_offset_x_< width_ 
-      && (*current_queue)->wnd_->GetHeight() + (*current_queue)->wnd_->GetY() + scroll_offset_y_< height_ )
+      && (*current_queue)->wnd_->GetWidth() + (*current_queue)->wnd_->GetX() + scroll_offset_x_<= width_ 
+      && (*current_queue)->wnd_->GetHeight() + (*current_queue)->wnd_->GetY() + scroll_offset_y_<= height_ )
       {
          (*current_queue)->wnd_->RedrawWindow();
          (*current_queue)->wnd_->RedrawChildren();
@@ -462,7 +462,7 @@ void MenuWindows::AddMenuItem (const char* label, IAction* action)
 
    // Add item to menu
    MenuItemWindows* item = new MenuItemWindows (display_);
-   item->Create( label, &scroll_window_, 10, list_item_.size()*20, 800, 19);
+   item->Create( label, &scroll_window_, 10, list_item_.size()*20, width_ - 10, 19);
    item->SetAction(action);
 
    list_item_.push_back(item);
@@ -478,7 +478,7 @@ void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* act
    // Add item to menu
    CLogger::Get ()->Write("Menu", LogNotice, "add menucheck : %s ", label);
    CheckMenuItemWindows* item = new CheckMenuItemWindows (display_);
-   item->Create( label, value, &scroll_window_, 10, list_item_.size()*20, 800, 19);
+   item->Create( label, value, &scroll_window_, 10, list_item_.size()*20, width_, 19);
    item->SetAction(action);
 
    list_item_.push_back(item);
@@ -592,7 +592,7 @@ void BitmapWindows::RedrawWindow()
    for (int i = 0; i < height_; i++)
    {
       int* line = display_->GetBuffer(i + y_);
-      bmp_->DrawLogo(i, &line[x_ + (int) (sinf(offset)*10)]);
+      bmp_->DrawLogo(i, &line[x_ /* + (int)(sinf(offset) * 10)*/]);
       offset += 0.002f;
    }
    //CLogger::Get()->Write("Window", LogNotice, "RedrawWindow end");
