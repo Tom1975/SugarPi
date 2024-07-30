@@ -55,6 +55,10 @@ bool DisplayPiImp::Initialization()
    int ret = vc_dispmanx_display_get_info( display_, &info_);
    assert(ret == 0);
 
+   uint32_t supported_formats = 0;
+   ret = vc_dispmanx_query_image_formats(&supported_formats);
+   logger_->Write("Display", LogNotice, "vc_dispmanx_query_image_formats : %X", supported_formats);
+
    DisplayPi::Initialization();
 
    // create various objects :
@@ -96,10 +100,8 @@ bool DisplayPiImp::Initialization()
    // Menu
    //menu_frame_.Init (info_.width, info_.height, 1);
    menu_wnd_.frame_ = &menu_frame_;
-   menu_wnd_.element_ = 0;
-   menu_wnd_.priority_ = 20;   
    menu_wnd_.type_of_image_ = VC_IMAGE_ARGB8888;
-   menu_wnd_.element_ = vc_dispmanx_resource_create (menu_wnd_.type_of_image_, menu_wnd_.frame_->GetFullWidth(), menu_wnd_.frame_->GetFullHeight(), &menu_wnd_.ptr_);
+   menu_wnd_.resource_ = vc_dispmanx_resource_create (menu_wnd_.type_of_image_, menu_wnd_.frame_->GetFullWidth(), menu_wnd_.frame_->GetFullHeight(), &menu_wnd_.ptr_);
    menu_wnd_.element_ = 0;
    menu_wnd_.priority_ = 20;
    menu_wnd_.frame_->SetDisplay(  25, 25 );
@@ -163,6 +165,7 @@ bool DisplayPiImp::Initialization()
    VC_RECT_T dst_rect;
    vc_dispmanx_rect_set(&dst_rect, 100, 100, info_.width-200, info_.height-200);
 
+   logger_->Write("Display", LogNotice, " vc_dispmanx_element_add");
    back_wnd_.element_ = vc_dispmanx_element_add(update,
                               display_,
                               1000,
@@ -174,6 +177,7 @@ bool DisplayPiImp::Initialization()
                               NULL,
                               DISPMANX_NO_ROTATE);
                                           
+   logger_->Write("Display", LogNotice, " vc_dispmanx_element_add - back is done ");
    emu_wnd_.element_ = vc_dispmanx_element_add(update,
                               display_,
                               2000,
@@ -184,7 +188,20 @@ bool DisplayPiImp::Initialization()
                               &alpha,
                               NULL,
                               DISPMANX_NO_ROTATE);
+   logger_->Write("Display", LogNotice, " vc_dispmanx_element_add - emu is done ");                              
 
+   menu_wnd_.element_ = vc_dispmanx_element_add(update,
+                              display_,
+                              1500,
+                              &dst_rect,
+                              menu_wnd_.resource_,
+                              &src_rect,
+                              DISPMANX_PROTECTION_NONE,
+                              &menu_wnd_.alpha_,
+                              NULL,
+                              DISPMANX_NO_ROTATE);
+
+   logger_->Write("Display", LogNotice, " vc_dispmanx_element_add - menu is done ");
 
    vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, 0, &src_rect, 0, DISPMANX_NO_ROTATE);
 
