@@ -315,38 +315,44 @@ void DisplayPiImp::Draw()
    emu_frame_.FrameIsDisplayed();
    Unlock();
 
-   static float value = 0;
+   //static float value = 0;
 
-   VC_RECT_T src_rect, dst_rect, back_src_rect, back_dst_rect;
-   vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
-   vc_dispmanx_rect_set(&dst_rect, fabs(sinf(value)*200.f), fabs(sinf(value)*200.f), info_.width - 2*fabs(sinf(value)*200.f), info_.height-2*fabs(sinf(value)*200.f));
+   //VC_RECT_T src_rect, dst_rect, back_src_rect, back_dst_rect;
+   //vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
+   //vc_dispmanx_rect_set(&dst_rect, fabs(sinf(value)*200.f), fabs(sinf(value)*200.f), info_.width - 2*fabs(sinf(value)*200.f), info_.height-2*fabs(sinf(value)*200.f));
 
-   int back_x = back_wnd_.frame_->GetOffsetX();
-   int back_y = back_wnd_.frame_->GetOffsetY();
+   //int back_x = back_wnd_.frame_->GetOffsetX();
+   //int back_y = back_wnd_.frame_->GetOffsetY();
 
-   vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, info_.width<<16, info_.height<<16);
-   vc_dispmanx_rect_set(&back_dst_rect, 0, 0, info_.width, info_.height);
-   value += 0.01;
+   //vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, info_.width<<16, info_.height<<16);
+   //vc_dispmanx_rect_set(&back_dst_rect, 0, 0, info_.width, info_.height);
+   //value += 0.01;
    
    DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
    
    // keep for testing
-   vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_SRC_RECT|ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
-   vc_dispmanx_element_change_attributes (update, back_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
+   //vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_SRC_RECT|ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
+   //vc_dispmanx_element_change_attributes (update, back_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
    
    for (auto it : windows_list_)
    //auto it = windows_list_[0];
    {
       if ( it.frame_->AttributesHasChanged() )
       {
+         VC_RECT_T back_src_rect, back_dst_rect;
          int back_x = it.frame_->GetOffsetX();
          int back_y = it.frame_->GetOffsetY();
+         int w = it.frame_->GetWidth();
+         int h = it.frame_->GetHeight();
 
-         vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, info_.width<<16, info_.height<<16);
-         vc_dispmanx_rect_set(&back_dst_rect, 0, 0, info_.width, info_.height);
+         vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, w<<16, h<<16);
+         vc_dispmanx_rect_set(&back_dst_rect, it.frame_->GetDisplayX(), it.frame_->GetDisplayY(), 
+                              it.frame_->GetDisplayWidth(), it.frame_->GetDisplayHeight());
 
-         logger_->Write("Display", LogNotice, "vc_dispmanx_element_change_attributes result = %X : %i %i %i %i ", 
-         &it, back_x, back_y, info_.width, info_.height);
+         logger_->Write("Display", LogNotice, "vc_dispmanx_element_change_attributes result = %X : %i %i %i %i => %i %i %i %i", 
+         &it, back_x, back_y, h, w,
+         it.frame_->GetDisplayX(), it.frame_->GetDisplayY(), 
+                              it.frame_->GetDisplayWidth(), it.frame_->GetDisplayHeight());
 
          vc_dispmanx_element_change_attributes (update, 
             it.element_, ELEMENT_CHANGE_SRC_RECT|ELEMENT_CHANGE_DEST_RECT, 0, 0,
