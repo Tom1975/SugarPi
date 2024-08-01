@@ -6,6 +6,8 @@
 #include "CLogger.h"
 #endif
 
+#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+
 #include "BackFrame.h"
 #include "MenuFrame.h"
 #include "EmulationFrame.h"
@@ -97,13 +99,28 @@ public:
    virtual int GetStride();
    virtual void ClearBuffer(int frame_index);
 
-   virtual void Draw() = 0;
+   virtual void Draw();
+   //virtual void CopyMemoryToRessources();
+
+   virtual void BeginDraw() = 0;
+   virtual void EndDraw() = 0;
+   virtual bool ChangeNeeded(int change) = 0;
 
    BasicFrame *GetBackgroundFrame() { return &back_frame_; }
    BasicFrame *GetMenuFrame() { return &menu_frame_; }
    BasicFrame *GetEmulationFrame() { return &emu_frame_; }
 
 protected:
+   class Frame
+   {
+   public:
+      BasicFrame* frame_;
+   };
+
+   virtual void CopyMemoryToRessources(DisplayPi::Frame* frame_) = 0;
+   virtual void ChangeAttribute(Frame*, int src_x, int src_y, int src_w, int src_h,
+      int dest_x, int dest_y, int dest_w, int dest_h) = 0;
+
    //CScreenDevice*		screen_;
    CLogger* logger_;
    bool full_resolution_;
@@ -127,6 +144,9 @@ protected:
    BackFrame back_frame_;
    MenuFrame menu_frame_;
    EmulationFrame emu_frame_;
+
+
+   std::vector<DisplayPi::Frame*> windows_list_;
 
    int* display_menu_buffer_;
    int* display_title_buffer_;

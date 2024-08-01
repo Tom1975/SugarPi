@@ -29,16 +29,25 @@ public:
 
    virtual void Lock() { mutex_.lock(); }
    virtual void Unlock() { mutex_.unlock(); }
-   virtual void Draw();
+   //virtual void Draw();
+
+   virtual void BeginDraw();
+   virtual void EndDraw();
+   virtual bool ChangeNeeded(int change);
+   //virtual void Draw();
 
    virtual void WindowsToTexture(int& x, int& y);
    virtual const char* GetInformations() { return "GDI"; };
    virtual void ReleaseAll();
    virtual void Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface* pFSInt);
    virtual void WaitVbl();
-   virtual void CopyMemoryToRessources(ID2D1Bitmap* bitmap, BasicFrame* frame);
 
 protected:
+   virtual void CopyMemoryToRessources(DisplayPi::Frame* frame_);
+   virtual void ChangeAttribute(Frame*, int src_x, int src_y, int src_w, int src_h,
+      int dest_x, int dest_y, int dest_w, int dest_h);
+
+   virtual void CopyMemoryToRessources(ID2D1Bitmap* bitmap, BasicFrame* frame);
 
    HWND CreateWindowFrame(BasicFrame* frame, int priority);
 
@@ -57,14 +66,13 @@ protected:
    ID2D1HwndRenderTarget* pRT_;
    ID2D1Bitmap* bitmap_;
 
-   class Win32Frame
+   class Win32Frame : public Frame
    {
    public:
-      BasicFrame* basic_;
       ID2D1Layer* pLayer_;
    };
 
-   std::vector<Win32Frame> windows_list_;
+   //std::vector<Win32Frame> windows_list_;
 
    HINSTANCE hInstance_;
 };

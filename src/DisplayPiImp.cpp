@@ -16,6 +16,55 @@
 #include "res/coolspot.h"
 #include "res/SugarboxLogo.h"
 
+///////////////////////////////////////////////////////////////////////
+// Define for memory handle
+#define TAG_GET_DISPMANX_MEM_HANDLE 0x30014
+struct TPropertyTagMemoryHandle
+{
+	TPropertyTag	Tag;
+   u32      handle;
+	u32		result;
+	u32		mem_handle;
+}
+PACKED;
+
+unsigned get_dispmanx_resource_mem(unsigned handle)
+{
+   /*
+	int i = 0;
+	unsigned p[32];
+	p[i++] = 0;			 // buffer size in bytes (including header values, end tag and padding)
+	p[i++] = 0x00000000; // process request
+	p[i++] = 0x30014;	 // (the tag id = get dispmanx resource mem handle)
+	p[i++] = 4;			 // (size of the value buffer)
+	p[i++] = 4; // (size of the data)
+	p[i++] = handle;
+
+	p[i++] = 0x00000000; // end tag
+	p[0] = i * sizeof *p; // actual size
+
+
+	mbox_property(file_desc, p);
+	return p[6];*/
+   
+   
+   CBcmPropertyTags Tags;
+   TPropertyTagMemoryHandle tag;
+   tag.handle = handle;
+   if (Tags.GetTag (TAG_GET_DISPMANX_MEM_HANDLE, &tag, sizeof tag, 4))
+   {
+      // Yay, memory handle received
+      CLogger::Get ()->Write("DIS", LogNotice, "get_dispmanx_resource_mem Ok Result = %i; Mem handle = %X!", tag.result, tag.mem_handle);
+   }
+   else
+   {
+      CLogger::Get ()->Write("DIS", LogNotice, "get_dispmanx_resource_mem error... ");
+   }
+
+}
+
+///////////////////////////////////////////////////////////////////////
+
 
 #define ELEMENT_CHANGE_LAYER          (1<<0)
 #define ELEMENT_CHANGE_OPACITY        (1<<1)
@@ -76,7 +125,7 @@ bool DisplayPiImp::Initialization()
                            };
    back_wnd_.frame_->SetDisplay(  0, 0 );
    back_wnd_.frame_->SetDisplaySize(  info_.width, info_.height );   
-   windows_list_.push_back(back_wnd_);
+   windows_list_.push_back(&back_wnd_);
 
    //----------------------
    // Main display for emulation
@@ -94,7 +143,7 @@ bool DisplayPiImp::Initialization()
                           mask: 0
                        };
 
-   windows_list_.push_back(emu_wnd_);
+   windows_list_.push_back(&emu_wnd_);
 
    //----------------------
    // Menu
@@ -111,7 +160,7 @@ bool DisplayPiImp::Initialization()
                               opacity: 0x000000FF,
                               mask: 0
                        };      
-   windows_list_.push_back(menu_wnd_);
+   windows_list_.push_back(&menu_wnd_);
 
    // Write background
    int width = back_wnd_.frame_->GetFullWidth();
@@ -213,6 +262,10 @@ bool DisplayPiImp::Initialization()
 
    logger_->Write("Display", LogNotice, " End init.. Draw done.");
 
+   // Get mem handle:
+   get_dispmanx_resource_mem (emu_wnd_.resource_);
+
+
    return true;
 }
 
@@ -305,6 +358,7 @@ void DisplayPiImp::SetFrame(int frame_index)
    current_buffer_ = frame_index;
 }
 
+/*
 void DisplayPiImp::Draw()
 {
    int result = 0;
@@ -331,6 +385,7 @@ void DisplayPiImp::Draw()
    DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
    
    // keep for testing
+   // Bouncing emulation screen
    vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_SRC_RECT|ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
    logger_->Write("Display", LogNotice, "AUTOMOVE result = %X : %i %i %i %i => %i %i %i %i", 
    &emu_wnd_.element_, back_x, back_y, info_.width,info_.height,0, 0, info_.width, info_.height);
@@ -338,7 +393,6 @@ void DisplayPiImp::Draw()
    //vc_dispmanx_element_change_attributes (update, back_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
    
    for (auto it : windows_list_)
-   //auto it = windows_list_[0];
    {
       if ( it.frame_->AttributesHasChanged() )
       {
@@ -373,6 +427,7 @@ void DisplayPiImp::Draw()
       logger_->Write("Display", LogNotice, "vc_dispmanx_update_submit_sync result = %i ", result);
    }
 }
+*/
 
 void DisplayPiImp::ClearBuffer(int frame_index)
 {
@@ -381,10 +436,11 @@ void DisplayPiImp::ClearBuffer(int frame_index)
 
 void DisplayPiImp::CopyMemoryToRessources()
 {
-   for (auto it : windows_list_)
+   for (auto win_it : windows_list_)
    {
-      it.frame_->Refresh();
-      if ( it.frame_->HasFrameChanged())
+      DispmanxWindow* it = (DispmanxWindow*)win_it;
+      it->frame_->Refresh();
+      if ( it->frame_->HasFrameChanged())
       {
          VC_RECT_T bmp_rect;
 
@@ -392,14 +448,90 @@ void DisplayPiImp::CopyMemoryToRessources()
          vc_dispmanx_rect_set(&(bmp_rect),
                               0,
                               0,
-                              it.frame_->GetFullWidth(),
-                              it.frame_->GetFullHeight());
+                              it->frame_->GetFullWidth(),
+                              it->frame_->GetFullHeight());
          
-         vc_dispmanx_resource_write_data(it.resource_,
-                                                it.type_of_image_,
-                                                it.frame_->GetPitch(),
-                                                it.frame_->GetBuffer(),
+         vc_dispmanx_resource_write_data(it->resource_,
+                                                it->type_of_image_,
+                                                it->frame_->GetPitch(),
+                                                it->frame_->GetBuffer(),
                                                 &bmp_rect);
       }
    }
 }
+
+void DisplayPiImp::BeginDraw()
+{
+   // Copy mem to resouurces
+   CopyMemoryToRessources();
+
+   // Last frame is displayed and can be reused
+   Lock();
+   emu_frame_.FrameIsDisplayed();
+   Unlock();
+
+   int result = current_update_ = vc_dispmanx_update_start(0);
+   if ( result != 0)
+   {
+      logger_->Write("Display", LogNotice, "vc_dispmanx_update_start result = %i ", result);
+   }
+}
+
+void DisplayPiImp::EndDraw()
+{
+   int result = vc_dispmanx_update_submit_sync(current_update_);
+   if ( result != 0)
+   {
+      logger_->Write("Display", LogNotice, "vc_dispmanx_update_submit_sync result = %i ", result);
+   }   
+}
+
+ bool DisplayPiImp::ChangeNeeded(int change)
+ {
+   return change != 0;
+ }
+
+void DisplayPiImp::CopyMemoryToRessources(DisplayPi::Frame* frame_)
+{
+   // All copy is done before starting the refresh*
+
+   /*frame_->frame_->Refresh();
+   if ( frame_->frame_->HasFrameChanged())
+   {
+      VC_RECT_T bmp_rect;
+      DispmanxWindow* disp_frame = (DispmanxWindow*)frame_;
+
+      vc_dispmanx_rect_set(&(bmp_rect),
+                           0,
+                           0,
+                           frame_->frame_->GetFullWidth(),
+                           frame_->frame_->GetFullHeight());
+      
+      vc_dispmanx_resource_write_data(disp_frame->resource_,
+                                             disp_frame->type_of_image_,
+                                             frame_->frame_->GetPitch(),
+                                             frame_->frame_->GetBuffer(),
+                                             &bmp_rect);
+   }
+   */
+}
+
+void DisplayPiImp::ChangeAttribute(Frame* it, int src_x, int src_y, int src_w, int src_h,
+   int dest_x, int dest_y, int dest_w, int dest_h)
+{
+   DispmanxWindow* disp_frame = (DispmanxWindow*)it;
+   VC_RECT_T back_src_rect, back_dst_rect;
+
+   vc_dispmanx_rect_set(&back_src_rect, src_x<<16, src_y<<16, src_w<<16, src_h<<16);
+   vc_dispmanx_rect_set(&back_dst_rect,  dest_x, dest_y, dest_w, dest_h);
+
+   logger_->Write("Display", LogNotice, "vc_dispmanx_element_change_attributes result = %X : %i %i %i %i => %i %i %i %i", 
+   it->frame_, src_x, src_y, src_h, src_w, dest_x, dest_y, dest_w, dest_h);
+
+   vc_dispmanx_element_change_attributes (current_update_, 
+      disp_frame->element_, ELEMENT_CHANGE_SRC_RECT, 0, 0,
+         &back_dst_rect, &back_src_rect,
+         0, DISPMANX_NO_ROTATE);
+   
+}
+

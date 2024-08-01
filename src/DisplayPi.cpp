@@ -292,3 +292,25 @@ void DisplayPi::ClearBuffer(int frame_index)
 {
    emu_frame_.Reset(frame_index);   
 }
+
+void DisplayPi::Draw()
+{
+   // Start Drawing
+   BeginDraw();
+
+   for (auto it : windows_list_)
+   {
+      // Copy memory to ressource
+      CopyMemoryToRessources(it);
+
+      // To be use if problems occurs 
+      int changed = it->frame_->AttributesHasChanged();
+      if (ChangeNeeded(changed ))
+      {
+         ChangeAttribute(it, it->frame_->GetOffsetX(), it->frame_->GetOffsetY(), it->frame_->GetWidth(), it->frame_->GetHeight(),
+            it->frame_->GetDisplayX(), it->frame_->GetDisplayY(), it->frame_->GetDisplayWidth(), it->frame_->GetDisplayHeight() );
+
+      }
+   }
+   EndDraw();
+}

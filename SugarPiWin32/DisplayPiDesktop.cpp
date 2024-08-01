@@ -143,34 +143,34 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
 
    ///////////////////////////////////
    // Background
-   Win32Frame frame_back;
+   Win32Frame *frame_back = new Win32Frame;
    back_frame_.SetDisplay(0, 0);
    back_frame_.SetDisplaySize(640, 480);
 
-   frame_back.basic_ = &back_frame_;
-   hr = pRT_->CreateLayer(NULL, &frame_back.pLayer_);
+   frame_back->frame_= &back_frame_;
+   hr = pRT_->CreateLayer(NULL, &frame_back->pLayer_);
 
    windows_list_.push_back(frame_back);
 
    ///////////////////////////////////
    // Menu
-   Win32Frame frame_menu;
+   Win32Frame *frame_menu = new Win32Frame;
    menu_frame_.SetDisplay(0, 0);
    menu_frame_.SetDisplaySize(640, 480);
 
-   frame_menu.basic_ = &menu_frame_;
-   hr = pRT_->CreateLayer(NULL, &frame_menu.pLayer_);
+   frame_menu->frame_ = &menu_frame_;
+   hr = pRT_->CreateLayer(NULL, &frame_menu->pLayer_);
 
    windows_list_.push_back(frame_menu);
 
    ///////////////////////////////////
    // Emulator screen
-   Win32Frame frame_emu;
+   Win32Frame *frame_emu = new Win32Frame;;
    emu_frame_.SetDisplay(0, 0);
    emu_frame_.SetDisplaySize(640, 480);
 
-   frame_emu.basic_ = &emu_frame_;
-   hr = pRT_->CreateLayer(NULL, &frame_emu.pLayer_);
+   frame_emu->frame_ = &emu_frame_;
+   hr = pRT_->CreateLayer(NULL, &frame_emu->pLayer_);
 
    windows_list_.push_back(frame_emu);
 
@@ -186,6 +186,15 @@ void DisplayPiDesktop::WaitVbl()
    int dbg = 1;
 }
 
+void DisplayPiDesktop::CopyMemoryToRessources(DisplayPi::Frame* frame)
+{
+   frame->frame_->Refresh();
+
+   CopyMemoryToRessources(bitmap_, frame->frame_);
+
+   frame->frame_->FrameIsDisplayed();
+}
+
 void DisplayPiDesktop::CopyMemoryToRessources(ID2D1Bitmap* bitmap, BasicFrame* frame)
 {
    HRESULT hr;
@@ -194,21 +203,50 @@ void DisplayPiDesktop::CopyMemoryToRessources(ID2D1Bitmap* bitmap, BasicFrame* f
       frame->GetBuffer(), frame->GetPitch());
 }
 
+void DisplayPiDesktop::ChangeAttribute(Frame* frame, int src_x, int src_y, int src_w, int src_h,
+   int dest_x, int dest_y, int dest_w, int dest_h)
+{
+   D2D1_RECT_F src_rect = { src_x, src_y, src_x + src_w, src_y + src_h };
+   D2D1_RECT_F dest_rect = { dest_x, dest_y, dest_x + dest_w, dest_y + dest_h };
+   // Push the layer with the content bounds.
+   D2D1_LAYER_PARAMETERS1 layerParameters = { 0 };
+
+   layerParameters.contentBounds = D2D1::InfiniteRect();
+   layerParameters.geometricMask = NULL;
+   layerParameters.maskAntialiasMode = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
+   layerParameters.maskTransform = D2D1::IdentityMatrix();
+   layerParameters.opacity = 1.0;
+   layerParameters.opacityBrush = NULL;
+   layerParameters.layerOptions = D2D1_LAYER_OPTIONS1_INITIALIZE_FROM_BACKGROUND;
+
+   D2D1_LAYER_PARAMETERS* toto = (D2D1_LAYER_PARAMETERS*)&layerParameters;
+
+   Win32Frame* win_frame = (Win32Frame*)frame;
+
+   pRT_->PushLayer(
+      toto,
+      win_frame->pLayer_
+   );
+
+   pRT_->DrawBitmap(bitmap_, &dest_rect, 1,
+      D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &src_rect);
+
+   pRT_->PopLayer();
+}
+/*
 void DisplayPiDesktop::Draw()
 {
    pRT_->BeginDraw();
    for (auto it : windows_list_)
    {
-      it.basic_->Refresh();
-      CopyMemoryToRessources(bitmap_, it.basic_);
-      it.basic_->FrameIsDisplayed();
+      CopyMemoryToRessources(bitmap_, it->frame_);
 
       // To be use if problems occurs 
-      int changed = it.basic_->AttributesHasChanged();
+      int changed = it->frame_->AttributesHasChanged();
       //if (changed != 0)
       {
-         D2D1_RECT_F src_rect = { it.basic_->GetOffsetX(), it.basic_->GetOffsetY(), it.basic_->GetWidth() + it.basic_->GetOffsetX(), it.basic_->GetHeight() + it.basic_->GetOffsetY() };
-         D2D1_RECT_F dest_rect = { it.basic_->GetDisplayX(), it.basic_->GetDisplayY(), it.basic_->GetDisplayX() + it.basic_->GetDisplayWidth(), it.basic_->GetDisplayY() + it.basic_->GetDisplayHeight() };
+         D2D1_RECT_F src_rect = { it->frame_->GetOffsetX(), it->frame_->GetOffsetY(), it->frame_->GetWidth() + it->frame_->GetOffsetX(), it->frame_->GetHeight() + it->frame_->GetOffsetY() };
+         D2D1_RECT_F dest_rect = { it->frame_->GetDisplayX(), it->frame_->GetDisplayY(), it->frame_->GetDisplayX() + it->frame_->GetDisplayWidth(), it->frame_->GetDisplayY() + it->frame_->GetDisplayHeight() };
          // Push the layer with the content bounds.
          D2D1_LAYER_PARAMETERS1 layerParameters = { 0 };
 
@@ -224,7 +262,7 @@ void DisplayPiDesktop::Draw()
 
          pRT_->PushLayer (
             toto,
-            it.pLayer_
+            ((Win32Frame*)it)->pLayer_
          );
 
          pRT_->DrawBitmap(bitmap_, &dest_rect, 1,
@@ -235,5 +273,20 @@ void DisplayPiDesktop::Draw()
 
    }
    pRT_->EndDraw();
+}*/
+
+void DisplayPiDesktop::BeginDraw()
+{
+   pRT_->BeginDraw();
 }
 
+void DisplayPiDesktop::EndDraw()
+{
+   pRT_->EndDraw();
+}
+
+bool DisplayPiDesktop::ChangeNeeded(int change)
+{
+   // ALWAYS redraw !
+   return true;
+}
