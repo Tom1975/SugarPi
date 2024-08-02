@@ -1,4 +1,4 @@
-./build_pi3.sh
+#./build_pi3.sh
 # No longer used, as dispmanx need 32 bits application
 #./build_pi4.sh
 ./build_pi4_32bits.sh
@@ -37,6 +37,11 @@ if [ ! -d "sdcard/CART" ]; then
   mkdir sdcard/CART
 fi
  
+echo "*** FONT creation ***"
+if [ ! -d "sdcard/FONTS" ]; then
+  mkdir sdcard/FONTS
+fi
+
  echo "*** base config creation ***"
 if [ ! -d "sdcard/Config" ]; then
   mkdir sdcard/Config
@@ -55,3 +60,5 @@ cp res/101_keyboard sdcard/LAYOUT
 cp config sdcard/Config
 cp CART/* sdcard/CART
 cp gamecontrollerdb.txt sdcard/Config/gamecontrollerdb.txt
+cp "res/Facile Sans.ttf" "sdcard/FONTS/Facile Sans.ttf"
+

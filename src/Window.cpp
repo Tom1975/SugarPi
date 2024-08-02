@@ -24,6 +24,12 @@ static char s[1024];
 
 #endif
 
+#ifdef  __circle__
+   #define PATH_FONT "SD:/FONTS/Facile Sans.ttf"
+#else
+   #define PATH_FONT ".\\FONTS\\Facile Sans.ttf" 
+#endif
+
 
 Window* Window::focus_ = nullptr;
 bool Window::stop_ = false;
@@ -78,8 +84,8 @@ void Window::Clear()
    {
       int* line = display_->GetBuffer(i);
       int size_to_clear = width_ + x;
-      if (size_to_clear > width_)
-         size_to_clear = width_;
+      if (size_to_clear + x > display_->GetWidth())
+         size_to_clear = display_->GetWidth() - x;
 
       memset(&line[x], 0x0, sizeof(int) * size_to_clear);
    }
@@ -260,14 +266,14 @@ MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action
    fnt_italic_.yOffset = 0;
    fnt_italic_.yScale = 18;
    fnt_italic_.flags = SFT_DOWNWARD_Y;
-   fnt_italic_.font = sft_loadfile("Facile Sans.ttf");
+   fnt_italic_.font = sft_loadfile( PATH_FONT );
 
    fnt_normal_.xOffset = 0;
    fnt_normal_.xScale = 16;
    fnt_normal_.yOffset = 0;
    fnt_normal_.yScale = 16;
    fnt_normal_.flags = SFT_DOWNWARD_Y;
-   fnt_normal_.font = sft_loadfile("Facile Sans.ttf");
+   fnt_normal_.font = sft_loadfile(PATH_FONT);
 
 }
 MenuItemWindows::~MenuItemWindows ()
@@ -290,8 +296,9 @@ void MenuItemWindows::SetAction (IAction* action)
 void MenuItemWindows::RedrawWindow ( )
 {
    CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow");
-   int x = 15;
-   int y = 0;
+   int x = 30;
+   // Set an offset for the text to be displayed
+   int y = 15;
    WindowsToDisplay(x, y);   
 
    // Focus ?

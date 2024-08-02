@@ -35,7 +35,6 @@ DisplayPi::DisplayPi(CLogger* logger) :
    {
       frame_queue_[i] = 0;
       frame_used_[i] = FR_FREE;
-      //display_buffer_[i] = new int [REAL_DISP_X * REAL_DISP_Y];
    }
 
    frame_used_[current_buffer_] = FR_USED;
@@ -47,7 +46,6 @@ DisplayPi::~DisplayPi()
 {
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
-      //delete []display_buffer_[i];
    }
    delete []display_menu_buffer_;
    delete []display_title_buffer_;
@@ -314,3 +312,4 @@ void DisplayPi::Draw()
    }
    EndDraw();
 }
+

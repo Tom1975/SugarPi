@@ -358,77 +358,6 @@ void DisplayPiImp::SetFrame(int frame_index)
    current_buffer_ = frame_index;
 }
 
-/*
-void DisplayPiImp::Draw()
-{
-   int result = 0;
-   
-   CopyMemoryToRessources();
-
-   Lock();
-   emu_frame_.FrameIsDisplayed();
-   Unlock();
-
-   static float value = 0;
-
-   VC_RECT_T src_rect, dst_rect, back_src_rect, back_dst_rect;
-   vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
-   vc_dispmanx_rect_set(&dst_rect, fabs(sinf(value)*200.f), fabs(sinf(value)*200.f), info_.width - 2*fabs(sinf(value)*200.f), info_.height-2*fabs(sinf(value)*200.f));
-
-   int back_x = back_wnd_.frame_->GetOffsetX();
-   int back_y = back_wnd_.frame_->GetOffsetY();
-
-   vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, info_.width<<16, info_.height<<16);
-   vc_dispmanx_rect_set(&back_dst_rect, 0, 0, info_.width, info_.height);
-   value += 0.01;
-   
-   DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(0);
-   
-   // keep for testing
-   // Bouncing emulation screen
-   vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_SRC_RECT|ELEMENT_CHANGE_DEST_RECT, 0, 0, &dst_rect, &src_rect, 0, DISPMANX_NO_ROTATE);
-   logger_->Write("Display", LogNotice, "AUTOMOVE result = %X : %i %i %i %i => %i %i %i %i", 
-   &emu_wnd_.element_, back_x, back_y, info_.width,info_.height,0, 0, info_.width, info_.height);
-
-   //vc_dispmanx_element_change_attributes (update, back_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, &back_dst_rect, &back_src_rect, 0, DISPMANX_NO_ROTATE);
-   
-   for (auto it : windows_list_)
-   {
-      if ( it.frame_->AttributesHasChanged() )
-      {
-         VC_RECT_T back_src_rect, back_dst_rect;
-         int back_x = it.frame_->GetOffsetX();
-         int back_y = it.frame_->GetOffsetY();
-         int w = it.frame_->GetWidth();
-         int h = it.frame_->GetHeight();
-
-         vc_dispmanx_rect_set(&back_src_rect, back_x<<16, back_y<<16, w<<16, h<<16);
-         vc_dispmanx_rect_set(&back_dst_rect, it.frame_->GetDisplayX(), it.frame_->GetDisplayY(), 
-                              it.frame_->GetDisplayWidth(), it.frame_->GetDisplayHeight());
-
-         logger_->Write("Display", LogNotice, "vc_dispmanx_element_change_attributes result = %X : %i %i %i %i => %i %i %i %i", 
-         it.frame_, back_x, back_y, h, w,
-         it.frame_->GetDisplayX(), it.frame_->GetDisplayY(), 
-                              it.frame_->GetDisplayWidth(), it.frame_->GetDisplayHeight());
-
-         vc_dispmanx_element_change_attributes (update, 
-            it.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0,
-             &back_dst_rect, &back_src_rect,
-              0, DISPMANX_NO_ROTATE);
-      }
-
-   }
-   
-
-   result = vc_dispmanx_update_submit_sync(update);
-
-   if ( result != 0)
-   {
-      logger_->Write("Display", LogNotice, "vc_dispmanx_update_submit_sync result = %i ", result);
-   }
-}
-*/
-
 void DisplayPiImp::ClearBuffer(int frame_index)
 {
    // todo
@@ -493,27 +422,7 @@ void DisplayPiImp::EndDraw()
 
 void DisplayPiImp::CopyMemoryToRessources(DisplayPi::Frame* frame_)
 {
-   // All copy is done before starting the refresh*
-
-   /*frame_->frame_->Refresh();
-   if ( frame_->frame_->HasFrameChanged())
-   {
-      VC_RECT_T bmp_rect;
-      DispmanxWindow* disp_frame = (DispmanxWindow*)frame_;
-
-      vc_dispmanx_rect_set(&(bmp_rect),
-                           0,
-                           0,
-                           frame_->frame_->GetFullWidth(),
-                           frame_->frame_->GetFullHeight());
-      
-      vc_dispmanx_resource_write_data(disp_frame->resource_,
-                                             disp_frame->type_of_image_,
-                                             frame_->frame_->GetPitch(),
-                                             frame_->frame_->GetBuffer(),
-                                             &bmp_rect);
-   }
-   */
+  
 }
 
 void DisplayPiImp::ChangeAttribute(Frame* it, int src_x, int src_y, int src_w, int src_h,
@@ -524,9 +433,6 @@ void DisplayPiImp::ChangeAttribute(Frame* it, int src_x, int src_y, int src_w, i
 
    vc_dispmanx_rect_set(&back_src_rect, src_x<<16, src_y<<16, src_w<<16, src_h<<16);
    vc_dispmanx_rect_set(&back_dst_rect,  dest_x, dest_y, dest_w, dest_h);
-
-   logger_->Write("Display", LogNotice, "vc_dispmanx_element_change_attributes result = %X : %i %i %i %i => %i %i %i %i", 
-   it->frame_, src_x, src_y, src_h, src_w, dest_x, dest_y, dest_w, dest_h);
 
    vc_dispmanx_element_change_attributes (current_update_, 
       disp_frame->element_, ELEMENT_CHANGE_SRC_RECT, 0, 0,
