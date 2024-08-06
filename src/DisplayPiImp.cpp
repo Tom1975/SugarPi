@@ -383,7 +383,7 @@ void DisplayPiImp::CopyMemoryToRessources()
          vc_dispmanx_resource_write_data(it->resource_,
                                                 it->type_of_image_,
                                                 it->frame_->GetPitch(),
-                                                it->frame_->GetBuffer(),
+                                                it->frame_->GetReadyBuffer(),
                                                 &bmp_rect);
       }
    }
