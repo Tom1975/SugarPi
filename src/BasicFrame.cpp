@@ -23,6 +23,7 @@ BasicFrame::BasicFrame() :
    height_(0),
    nb_buffers_(0),
    current_buffer_(0),
+   display_buffer_(0),
    display_frame_buffer_(nullptr),
    frame_used_(nullptr),
    frame_queue_(nullptr),
@@ -64,6 +65,7 @@ void BasicFrame::Init(int width, int height, int nb_buffers)
    }
    // Set current buffer
    current_buffer_ = 0;
+   display_buffer_ = 0;
    nb_frame_in_queue_ = 0;
    frame_used_[current_buffer_] = FR_USED;
    
@@ -109,7 +111,9 @@ void BasicFrame::FrameIsReady()
    frame_used_[current_buffer_] = FR_READY;
    frame_queue_[nb_frame_in_queue_++] = current_buffer_;
 
-   //CLogger::Get ()->Write("BasicFrame", LogNotice, "FrameIsReady - current_buffer_ : %i, nb_frame_in_queue_ = %i", current_buffer_, nb_frame_in_queue_);
+   display_buffer_ = frame_queue_[0];
+
+   CLogger::Get ()->Write("BasicFrame", LogNotice, "FrameIsReady - current_buffer_ : %i, nb_frame_in_queue_ = %i", current_buffer_, nb_frame_in_queue_);
    // Set a new buffer to be displayed
    bool found = false;
    for (int i = 0; i < nb_buffers_ && !found; i++)
@@ -127,6 +131,8 @@ void BasicFrame::FrameIsReady()
 
 unsigned char * BasicFrame::GetReadyBuffer()
 {
+   return display_frame_buffer_[display_buffer_];
+
    if (nb_frame_in_queue_ > 0)
    {
       // A frame is ready ? return it.
@@ -152,7 +158,8 @@ void BasicFrame::FrameIsDisplayed()
       nb_frame_in_queue_--;
 
       memmove(frame_queue_, &frame_queue_[1], nb_frame_in_queue_ * sizeof(unsigned int));
-      
+      display_buffer_ = frame_queue_[0];
+
       frame_used_[frame_index] = FR_FREE;
    }
    else

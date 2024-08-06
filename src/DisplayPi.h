@@ -148,8 +148,5 @@ protected:
 
    std::vector<DisplayPi::Frame*> windows_list_;
 
-   int* display_menu_buffer_;
-   int* display_title_buffer_;
-
    bool sync_on_frame_;
 };

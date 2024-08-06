@@ -25,8 +25,6 @@ DisplayPi::DisplayPi(CLogger* logger) :
    added_line_(1),
    current_buffer_(0),
    nb_frame_in_queue_(0),
-   display_menu_buffer_(nullptr),
-   display_title_buffer_(nullptr),
    sync_on_frame_(false)
 
 {
@@ -47,14 +45,12 @@ DisplayPi::~DisplayPi()
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
    }
-   delete []display_menu_buffer_;
-   delete []display_title_buffer_;
 }
 
 bool DisplayPi::Initialization()
 {
-   back_frame_.Init(GetWidth(), GetHeight(), 1);
-   menu_frame_.Init(GetWidth(), GetHeight(), 1);
+   back_frame_.Init(GetWidth(), GetHeight(), FRAME_BUFFER_SIZE);
+   menu_frame_.Init(GetWidth(), GetHeight(), FRAME_BUFFER_SIZE);
    emu_frame_.Init(REAL_DISP_X, REAL_DISP_Y, FRAME_BUFFER_SIZE);
 
    return true;

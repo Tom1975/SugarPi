@@ -137,7 +137,14 @@ void Window::RedrawChildren ()
 void Window::Invalidate ()
 {
    // Clear from top windows
-   Redraw ( true);
+   if (parent_ != nullptr)
+   {
+      parent_->Invalidate();
+   }
+   else
+   {
+      Redraw(true);
+   }
 }
 
 void Window::Redraw (bool clear)
@@ -148,7 +155,7 @@ void Window::Redraw (bool clear)
    static __int64 s3 = s1;
 #endif
 
-   Clear();
+   ClearAll();
    RedrawWindow ();
    RedrawChildren ();
    display_->FrameIsReady();
@@ -208,7 +215,8 @@ IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
                exit_function = retval;
                break;
             case IAction::Action_Update:
-               Redraw (true);
+               //Redraw (true);
+               Invalidate();
                break;
             default:
                break;
@@ -540,7 +548,8 @@ IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
             current_focus_++;
             list_item_.at(current_focus_)->SetFocus ();
             ComputeScroller();
-            Redraw();
+            //Redraw();
+            Invalidate();
          }
          break;
       case IEvent::Event::UP:
@@ -550,7 +559,8 @@ IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
             current_focus_--;
             list_item_.at(current_focus_)->SetFocus ();
             ComputeScroller();
-            Redraw();
+            //Redraw();
+            Invalidate();
          }
          break;
       case IEvent::Event::BACK:

@@ -108,6 +108,7 @@ protected:
    // buffer handling   
    int nb_buffers_;
    int current_buffer_;
+   int display_buffer_;
    unsigned char** display_frame_buffer_;
    
    typedef enum

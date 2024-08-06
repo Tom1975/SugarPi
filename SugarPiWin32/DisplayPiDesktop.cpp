@@ -200,7 +200,7 @@ void DisplayPiDesktop::CopyMemoryToRessources(ID2D1Bitmap* bitmap, BasicFrame* f
    HRESULT hr;
 
    hr = bitmap->CopyFromMemory(NULL,
-      frame->GetBuffer(), frame->GetPitch());
+      frame->GetReadyBuffer(), frame->GetPitch());
 }
 
 void DisplayPiDesktop::ChangeAttribute(Frame* frame, int src_x, int src_y, int src_w, int src_h,
