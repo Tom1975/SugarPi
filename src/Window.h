@@ -71,8 +71,6 @@ public:
    virtual void RedrawWindow ();
    virtual void RedrawChildren ();
 
-   virtual void DisplayText(const char* txt, int x, int y, bool selected = false);
-
    virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
 
    virtual void SetFocus ();

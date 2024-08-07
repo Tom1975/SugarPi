@@ -233,47 +233,6 @@ void DisplayPiDesktop::ChangeAttribute(Frame* frame, int src_x, int src_y, int s
 
    pRT_->PopLayer();
 }
-/*
-void DisplayPiDesktop::Draw()
-{
-   pRT_->BeginDraw();
-   for (auto it : windows_list_)
-   {
-      CopyMemoryToRessources(bitmap_, it->frame_);
-
-      // To be use if problems occurs 
-      int changed = it->frame_->AttributesHasChanged();
-      //if (changed != 0)
-      {
-         D2D1_RECT_F src_rect = { it->frame_->GetOffsetX(), it->frame_->GetOffsetY(), it->frame_->GetWidth() + it->frame_->GetOffsetX(), it->frame_->GetHeight() + it->frame_->GetOffsetY() };
-         D2D1_RECT_F dest_rect = { it->frame_->GetDisplayX(), it->frame_->GetDisplayY(), it->frame_->GetDisplayX() + it->frame_->GetDisplayWidth(), it->frame_->GetDisplayY() + it->frame_->GetDisplayHeight() };
-         // Push the layer with the content bounds.
-         D2D1_LAYER_PARAMETERS1 layerParameters = { 0 };
-
-         layerParameters.contentBounds = D2D1::InfiniteRect();
-         layerParameters.geometricMask = NULL;
-         layerParameters.maskAntialiasMode = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
-         layerParameters.maskTransform = D2D1::IdentityMatrix();
-         layerParameters.opacity = 1.0;
-         layerParameters.opacityBrush = NULL;
-         layerParameters.layerOptions = D2D1_LAYER_OPTIONS1_INITIALIZE_FROM_BACKGROUND;
-
-         D2D1_LAYER_PARAMETERS* toto = (D2D1_LAYER_PARAMETERS*) & layerParameters;
-
-         pRT_->PushLayer (
-            toto,
-            ((Win32Frame*)it)->pLayer_
-         );
-
-         pRT_->DrawBitmap(bitmap_, &dest_rect, 1,
-            D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &src_rect);
-
-         pRT_->PopLayer();
-      }
-
-   }
-   pRT_->EndDraw();
-}*/
 
 void DisplayPiDesktop::BeginDraw()
 {

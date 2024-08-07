@@ -259,20 +259,13 @@ void Window::RemoveFocus ()
 {
 }
 
-
-void Window::DisplayText(const char* txt, int x, int y, bool selected)
-{
-   display_->WriteText(txt, x, y);
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////////
 MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action_(nullptr)
 {
    fnt_italic_.xOffset = 0;
-   fnt_italic_.xScale = 18;
+   fnt_italic_.xScale = 20;
    fnt_italic_.yOffset = 0;
-   fnt_italic_.yScale = 18;
+   fnt_italic_.yScale = 20;
    fnt_italic_.flags = SFT_DOWNWARD_Y;
    fnt_italic_.font = sft_loadfile( PATH_FONT );
 
@@ -314,15 +307,17 @@ void MenuItemWindows::RedrawWindow ( )
    {
       // draw it 
       display_->SelectFont(&fnt_italic_);
-      display_->SelectColor(0x303030);
-      display_->WriteText("*", x-15, y);
+      display_->SelectColor(0xFF0000);
+      display_->WriteText(">", x-15, y);
+      display_->WriteText(label_, x, y);
    }
    else
    {
       display_->SelectFont(&fnt_normal_);
       display_->SelectColor(0x000000);
+      display_->WriteText(label_, x, y);
    }
-   display_->WriteText(label_, x, y);
+   
    CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow end");
 }
 

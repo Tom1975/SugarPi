@@ -228,8 +228,6 @@ void BasicFrame::WriteText(const char* text, int x, int y)
    if (sft_ == nullptr || sft_->font == nullptr) return;
 
    // Display text
-   int i = 0;
-
    SFT_LMetrics lmtx;
    sft_lmetrics(sft_, &lmtx);
 
@@ -240,13 +238,14 @@ void BasicFrame::WriteText(const char* text, int x, int y)
    int n = strlen(text) + 1;
 
    uint32_t* codepoints = new uint32_t[n];
-   memset(codepoints, 0, sizeof(unsigned int) * (n));
+   memset(codepoints, 0, sizeof(uint32_t) * (n));
 
    n = utf8_to_utf32((unsigned char*)text, codepoints, n);  // (const uint8_t *)
 
 
-   unsigned int x_offset_output = 0;
-   while (codepoints[i] != '\0' && x + x_offset_output < GetWidth())
+   int x_offset_output = 0;
+   int i = 0;
+   while (i < n && codepoints[i] != '\0' && x + x_offset_output < GetWidth())
    {
 
       unsigned int cp = codepoints[i];
@@ -277,7 +276,11 @@ void BasicFrame::WriteText(const char* text, int x, int y)
                int* line = GetBuffer(y + dy + mtx.yOffset);
                for (int dx = 0; dx < img.width; dx++)
                {
-                  line[x + x_offset_output + dx + (short)mtx.leftSideBearing] = text_color_ | ((pixels[dx + dy * img.width]) << 24);
+                  if (pixels[dx + dy * img.width] != 0)
+                  {
+                     line[x + x_offset_output + dx + (short)mtx.leftSideBearing] = text_color_ | ((pixels[dx + dy * img.width]) << 24);
+                  }
+                  
                }
             }
          }
