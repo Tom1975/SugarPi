@@ -60,7 +60,7 @@ unsigned get_dispmanx_resource_mem(unsigned handle)
    {
       CLogger::Get ()->Write("DIS", LogNotice, "get_dispmanx_resource_mem error... ");
    }
-
+   return tag.mem_handle;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -135,8 +135,8 @@ bool DisplayPiImp::Initialization()
    emu_wnd_.resource_ =  vc_dispmanx_resource_create (emu_wnd_.type_of_image_, emu_wnd_.frame_->GetFullWidth(), emu_wnd_.frame_->GetFullHeight(), &emu_wnd_.ptr_);
    emu_wnd_.element_ = 0;
    emu_wnd_.priority_ = 50;
-   emu_wnd_.frame_->SetDisplay(  50, 50 );
-   emu_wnd_.frame_->SetDisplaySize(  info_.width-100, info_.height-100 );
+   emu_wnd_.frame_->SetDisplay(  0, 0 );
+   emu_wnd_.frame_->SetDisplaySize(  info_.width, info_.height );
 
    emu_wnd_.alpha_ = {   flags: DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS,
                           opacity: 0x000000FF,
@@ -153,8 +153,8 @@ bool DisplayPiImp::Initialization()
    menu_wnd_.resource_ = vc_dispmanx_resource_create (menu_wnd_.type_of_image_, menu_wnd_.frame_->GetFullWidth(), menu_wnd_.frame_->GetFullHeight(), &menu_wnd_.ptr_);
    menu_wnd_.element_ = 0;
    menu_wnd_.priority_ = 20;
-   menu_wnd_.frame_->SetDisplay(  25, 25 );
-   menu_wnd_.frame_->SetDisplaySize(  info_.width-50, info_.height-50 );
+   menu_wnd_.frame_->SetDisplay(  0, 0 );
+   menu_wnd_.frame_->SetDisplaySize(  info_.width, info_.height );
 
    menu_wnd_.alpha_ = {     flags: DISPMANX_FLAGS_ALPHA_FROM_SOURCE,
                               opacity: 0x000000FF,
@@ -205,22 +205,22 @@ bool DisplayPiImp::Initialization()
    //---------------------------------------------------------------------
    logger_->Write("Display", LogNotice, " ####SCREEN W : %i; H : %i ", info_.width, info_.height);
 
-   VC_RECT_T src_back_rect;
-   vc_dispmanx_rect_set(&src_back_rect, 0,0 , (width) <<16, (height)<<16);
+   VC_RECT_T src_rect_full;
+   vc_dispmanx_rect_set(&src_rect_full, 0,0 , (width) <<16, (height)<<16);
 
    VC_RECT_T src_rect;
    vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
 
-   VC_RECT_T dst_rect;
-   vc_dispmanx_rect_set(&dst_rect, 100, 100, info_.width-200, info_.height-200);
+   VC_RECT_T dst_rect_full;
+   vc_dispmanx_rect_set(&dst_rect_full, 0, 0, info_.width, info_.height);
 
    logger_->Write("Display", LogNotice, " vc_dispmanx_element_add");
    back_wnd_.element_ = vc_dispmanx_element_add(update,
                               display_,
                               1000,
-                              &dst_rect,
+                              &dst_rect_full,
                               back_wnd_.resource_,
-                              &src_back_rect,
+                              &src_rect_full,
                               DISPMANX_PROTECTION_NONE,
                               &alpha,
                               NULL,
@@ -230,7 +230,7 @@ bool DisplayPiImp::Initialization()
    emu_wnd_.element_ = vc_dispmanx_element_add(update,
                               display_,
                               2000,
-                              &dst_rect,
+                              &dst_rect_full,
                               emu_wnd_.resource_,
                               &src_rect,
                               DISPMANX_PROTECTION_NONE,
@@ -242,9 +242,9 @@ bool DisplayPiImp::Initialization()
    menu_wnd_.element_ = vc_dispmanx_element_add(update,
                               display_,
                               1500,
-                              &dst_rect,
+                              &dst_rect_full,
                               menu_wnd_.resource_,
-                              &src_rect,
+                              &src_rect_full,
                               DISPMANX_PROTECTION_NONE,
                               &menu_wnd_.alpha_,
                               NULL,
@@ -252,7 +252,7 @@ bool DisplayPiImp::Initialization()
 
    logger_->Write("Display", LogNotice, " vc_dispmanx_element_add - menu is done ");
 
-   vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, 0, &src_rect, 0, DISPMANX_NO_ROTATE);
+   //vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, 0, &src_rect, 0, DISPMANX_NO_ROTATE);
 
    result = vc_dispmanx_update_submit_sync(update);
    if ( result != 0)

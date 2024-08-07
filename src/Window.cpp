@@ -3,7 +3,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include "Window.h"
-#include "utf8_to_utf32.h"
 
 #ifdef RASPPI
 #include "BasicFrame.h"
