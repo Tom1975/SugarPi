@@ -454,6 +454,8 @@ MenuWindows::~MenuWindows ()
       delete it;
    }
    list_item_.clear();
+   if ( focus_ == this)
+      focus_ = nullptr;
 }
 
 void MenuWindows::Create( Window* parent, int x, int y, unsigned int width, unsigned int height)
