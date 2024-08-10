@@ -113,7 +113,7 @@ void BasicFrame::FrameIsReady()
 
    display_buffer_ = frame_queue_[0];
 
-   CLogger::Get ()->Write("BasicFrame", LogNotice, "FrameIsReady - current_buffer_ : %i, nb_frame_in_queue_ = %i", current_buffer_, nb_frame_in_queue_);
+   CLogger::Get ()->Write("BasicFrame", LogNotice, "FrameIsReady - current_buffer_ : %i, nb_frame_in_queue_ = %i, display_buffer_ = %i", current_buffer_, nb_frame_in_queue_, display_buffer_);
    // Set a new buffer to be displayed
    bool found = false;
    for (int i = 0; i < nb_buffers_ && !found; i++)
@@ -152,8 +152,10 @@ void BasicFrame::FrameIsDisplayed()
    buffer_has_changed_ = false;
    int frame_index = -1;
 
+   CLogger::Get ()->Write("BasicFrame", LogNotice, "FrameIsDisplayed - frame_queue_[0] : %i, nb_frame_in_queue_ = %i, display_buffer_ = %i", frame_queue_[0], nb_frame_in_queue_, display_buffer_);
    if (nb_frame_in_queue_ > 0)
    {
+
       frame_index = frame_queue_[0];
       nb_frame_in_queue_--;
 
@@ -164,7 +166,6 @@ void BasicFrame::FrameIsDisplayed()
    }
    else
    {
-       // we displayed a random frame, dont change anything
    }
 }
 

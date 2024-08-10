@@ -24,7 +24,6 @@ DisplayPi::DisplayPi(CLogger* logger) :
    full_resolution_cached_(false),
    added_line_(1),
    current_buffer_(0),
-   nb_frame_in_queue_(0),
    sync_on_frame_(false)
 
 {

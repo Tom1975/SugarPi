@@ -209,7 +209,8 @@ bool DisplayPiImp::Initialization()
    vc_dispmanx_rect_set(&src_rect_full, 0,0 , (width) <<16, (height)<<16);
 
    VC_RECT_T src_rect;
-   vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
+   //vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
+   vc_dispmanx_rect_set(&src_rect, 143<<16, 47<<16, (768-143) <<16, (277-47/2)<<16);
 
    VC_RECT_T dst_rect_full;
    vc_dispmanx_rect_set(&dst_rect_full, 0, 0, info_.width, info_.height);
@@ -385,6 +386,11 @@ void DisplayPiImp::CopyMemoryToRessources()
                                                 it->frame_->GetPitch(),
                                                 it->frame_->GetReadyBuffer(),
                                                 &bmp_rect);
+                                                   
+         Lock();
+         it->frame_->FrameIsDisplayed();
+         Unlock();
+
       }
    }
 }
@@ -396,7 +402,7 @@ void DisplayPiImp::BeginDraw()
 
    // Last frame is displayed and can be reused
    Lock();
-   emu_frame_.FrameIsDisplayed();
+   //emu_frame_.FrameIsDisplayed();
    Unlock();
 
    int result = current_update_ = vc_dispmanx_update_start(0);

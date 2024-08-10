@@ -119,10 +119,10 @@ protected:
    } FrameState;
    volatile FrameState* frame_used_;
    unsigned int *frame_queue_;
-   unsigned int nb_frame_in_queue_;
+   volatile unsigned int nb_frame_in_queue_;
 
-   unsigned int current_change_;
-   bool buffer_has_changed_;
+   volatile unsigned int current_change_;
+   volatile bool buffer_has_changed_;
 
    // Update function
    Morphing* current_morph;
