@@ -400,10 +400,6 @@ void DisplayPiImp::BeginDraw()
    Unlock();
 
    int result = current_update_ = vc_dispmanx_update_start(0);
-   if ( result != 0)
-   {
-      logger_->Write("Display", LogNotice, "vc_dispmanx_update_start result = %i ", result);
-   }
 }
 
 void DisplayPiImp::EndDraw()

@@ -24,9 +24,9 @@ static char s[1024];
 #endif
 
 #ifdef  __circle__
-   #define PATH_FONT "SD:/FONTS/Facile Sans.ttf"
+   #define PATH_FONT "SD:/FONTS/Facile_Sans.ttf"
 #else
-   #define PATH_FONT ".\\FONTS\\Facile Sans.ttf" 
+   #define PATH_FONT ".\\FONTS\\Facile_Sans.ttf" 
 #endif
 
 
@@ -47,7 +47,8 @@ Window::Window(BasicFrame* display) :
 
 Window::~Window()
 {
-   //delete font_;
+   if ( focus_ == this)
+      focus_ = nullptr;
 }
 
 void Window::Create (Window* parent, int x, int y, unsigned int width, unsigned int height)
@@ -454,8 +455,6 @@ MenuWindows::~MenuWindows ()
       delete it;
    }
    list_item_.clear();
-   if ( focus_ == this)
-      focus_ = nullptr;
 }
 
 void MenuWindows::Create( Window* parent, int x, int y, unsigned int width, unsigned int height)

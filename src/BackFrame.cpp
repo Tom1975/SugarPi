@@ -49,8 +49,8 @@ void BackFrame::Draw ()
 
 void BackFrame::Refresh ()
 {
-   x_ = (BACK_MOVE + sinf(value_)*BACK_MOVE);
-   y_ = (BACK_MOVE + cos(value_*2)*BACK_MOVE);
+   x_ = (BACK_MOVE/2 + sinf(value_)*BACK_MOVE/2);
+   y_ = (BACK_MOVE/2 + cos(value_*2)*BACK_MOVE/2);
 
    value_ += 0.04;
 

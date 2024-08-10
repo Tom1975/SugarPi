@@ -225,7 +225,12 @@ int BasicFrame::SelectColor(int color)
 
 void BasicFrame::WriteText(const char* text, int x, int y)
 {
-   if (sft_ == nullptr || sft_->font == nullptr) return;
+
+   if (sft_ == nullptr || sft_->font == nullptr)
+   {
+      CLogger::Get ()->Write("WriteText", LogNotice, "No font loaded !");
+      return;
+   }
 
    // Display text
    SFT_LMetrics lmtx;
@@ -245,17 +250,28 @@ void BasicFrame::WriteText(const char* text, int x, int y)
 
    int x_offset_output = 0;
    int i = 0;
+
+   CLogger::Get ()->Write("WriteText", LogNotice, "text : %s; x = %i; y =%i", text, x, y);
+   
    while (i < n && codepoints[i] != '\0' && x + x_offset_output < GetWidth())
    {
 
       unsigned int cp = codepoints[i];
       SFT_Glyph gid;  //  unsigned long gid;
       if (sft_lookup(sft_, cp, &gid) < 0)
+      {
+         CLogger::Get ()->Write("WriteText", LogNotice, "sft_lookup error : %i", sft_lookup(sft_, cp, &gid));
          continue;
+      }
+         
 
       SFT_GMetrics mtx;
       if (sft_gmetrics(sft_, gid, &mtx) < 0)
+      {
+         CLogger::Get ()->Write("WriteText", LogNotice, "sft_gmetrics error : %i", sft_gmetrics(sft_, gid, &mtx));
          continue;
+      }
+         
 
       SFT_Image img;
       img.width = (mtx.minWidth + 3) & ~3;
@@ -265,6 +281,7 @@ void BasicFrame::WriteText(const char* text, int x, int y)
       img.pixels = pixels;
       if (sft_render(sft_, gid, img) < 0)
       {
+         CLogger::Get ()->Write("WriteText", LogNotice, "sft_render ERROR");
       }
       else
       {
