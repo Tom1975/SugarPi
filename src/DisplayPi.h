@@ -6,16 +6,30 @@
 #include "CLogger.h"
 #endif
 
+#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+
+#include "BackFrame.h"
+#include "MenuFrame.h"
+#include "EmulationFrame.h"
+
 #include "CPCCore/CPCCoreEmu/Screen.h"
 
 
-class CoolspotFont;
-#define FRAME_BUFFER_SIZE 2
+#define FRAME_BUFFER_SIZE 3
 
 
 class DisplayPi : public IDisplay
 {
 public:
+
+   enum ScreenType
+   {
+      EmulationWindow,
+      BackWindow,
+      TitleScreen,
+      OptionMenu
+   };
+
    DisplayPi(CLogger* logger);
    virtual ~DisplayPi();
 
@@ -31,8 +45,8 @@ public:
 
    virtual void Config();
    virtual const char* GetInformations();
-   virtual int GetWidth() = 0;
-   virtual int GetHeight() = 0;
+   virtual int GetWidth();
+   virtual int GetHeight();
    virtual void SetSize(SizeEnum size);
    virtual SizeEnum  GetSize();
    virtual void VSync(bool dbg = false);
@@ -43,8 +57,6 @@ public:
    virtual void WaitVbl();
 
    // Services
-   virtual void DisplayText(const char* txt, int x, int y, bool selected = false);
-
    virtual void Reset();
    virtual void FullScreenToggle();
    virtual void ForceFullScreen(bool fullscreen);
@@ -80,13 +92,35 @@ public:
    virtual void Unlock() = 0;
 
 
-   virtual int* GetVideoBuffer(int y) = 0;
-   virtual int GetStride() = 0;
+   virtual int* GetVideoBuffer(int y);
+   virtual int* GetVideoBuffer(ScreenType screen, int y);
 
-   virtual void SetFrame(int frame_index) = 0;
-   virtual void Draw() = 0;
-   virtual void ClearBuffer(int frame_index) = 0;
+
+   virtual int GetStride();
+   virtual void ClearBuffer(int frame_index);
+
+   virtual void Draw();
+   //virtual void CopyMemoryToRessources();
+
+   virtual void BeginDraw() = 0;
+   virtual void EndDraw() = 0;
+   virtual bool ChangeNeeded(int change) = 0;
+
+   BasicFrame *GetBackgroundFrame() { return &back_frame_; }
+   BasicFrame *GetMenuFrame() { return &menu_frame_; }
+   BasicFrame *GetEmulationFrame() { return &emu_frame_; }
+
 protected:
+   class Frame
+   {
+   public:
+      BasicFrame* frame_;
+   };
+
+   virtual void CopyMemoryToRessources(DisplayPi::Frame* frame_) = 0;
+   virtual void ChangeAttribute(Frame*, int src_x, int src_y, int src_w, int src_h,
+      int dest_x, int dest_y, int dest_w, int dest_h) = 0;
+
    //CScreenDevice*		screen_;
    CLogger* logger_;
    bool full_resolution_;
@@ -102,13 +136,17 @@ protected:
       FR_USED,
       FR_READY
    } FrameState;
-   FrameState frame_used_[FRAME_BUFFER_SIZE];
-   unsigned int buffer_used_;
-
+   volatile FrameState frame_used_[FRAME_BUFFER_SIZE];
+   volatile unsigned int current_buffer_;
    unsigned int frame_queue_[FRAME_BUFFER_SIZE];
    unsigned int nb_frame_in_queue_;
 
+   BackFrame back_frame_;
+   MenuFrame menu_frame_;
+   EmulationFrame emu_frame_;
+
+
+   std::vector<DisplayPi::Frame*> windows_list_;
+
    bool sync_on_frame_;
-   bool loop_run;
-   CoolspotFont *font_;
 };

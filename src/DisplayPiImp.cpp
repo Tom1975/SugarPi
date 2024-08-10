@@ -6,112 +6,266 @@
 #include <circle/types.h>
 #include <circle/bcmpropertytags.h>
 #include <circle/debug.h>
+#include <circle/multicore.h>
+#include "bcm_host.h"
+#include <circle/addon/vc4/interface/vcinclude/common.h>
+
+#include <math.h> 
 
 #include "res/button_1.h"
 #include "res/coolspot.h"
+#include "res/SugarboxLogo.h"
 
-#define WIDTH_SCREEN 640
-#define HEIGHT_SCREEN 480
+///////////////////////////////////////////////////////////////////////
+// Define for memory handle
+#define TAG_GET_DISPMANX_MEM_HANDLE 0x30014
+struct TPropertyTagMemoryHandle
+{
+	TPropertyTag	Tag;
+   u32      handle;
+	u32		result;
+	u32		mem_handle;
+}
+PACKED;
 
-#define WIDTH_VIRTUAL_SCREEN 1024
-#define HEIGHT_VIRTUAL_SCREEN (288*2)
+unsigned get_dispmanx_resource_mem(unsigned handle)
+{
+   /*
+	int i = 0;
+	unsigned p[32];
+	p[i++] = 0;			 // buffer size in bytes (including header values, end tag and padding)
+	p[i++] = 0x00000000; // process request
+	p[i++] = 0x30014;	 // (the tag id = get dispmanx resource mem handle)
+	p[i++] = 4;			 // (size of the value buffer)
+	p[i++] = 4; // (size of the data)
+	p[i++] = handle;
 
+	p[i++] = 0x00000000; // end tag
+	p[0] = i * sizeof *p; // actual size
+
+
+	mbox_property(file_desc, p);
+	return p[6];*/
+   
+   
+   CBcmPropertyTags Tags;
+   TPropertyTagMemoryHandle tag;
+   tag.handle = handle;
+   if (Tags.GetTag (TAG_GET_DISPMANX_MEM_HANDLE, &tag, sizeof tag, 4))
+   {
+      // Yay, memory handle received
+      CLogger::Get ()->Write("DIS", LogNotice, "get_dispmanx_resource_mem Ok Result = %i; Mem handle = %X!", tag.result, tag.mem_handle);
+   }
+   else
+   {
+      CLogger::Get ()->Write("DIS", LogNotice, "get_dispmanx_resource_mem error... ");
+   }
+   return tag.mem_handle;
+}
+
+///////////////////////////////////////////////////////////////////////
+
+
+#define ELEMENT_CHANGE_LAYER          (1<<0)
+#define ELEMENT_CHANGE_OPACITY        (1<<1)
+#define ELEMENT_CHANGE_DEST_RECT      (1<<2)
+#define ELEMENT_CHANGE_SRC_RECT       (1<<3)
+#define ELEMENT_CHANGE_MASK_RESOURCE  (1<<4)
+#define ELEMENT_CHANGE_TRANSFORM      (1<<5)
 
 DisplayPiImp::DisplayPiImp(CLogger* logger, CTimer* timer) :DisplayPi(logger),
    timer_(timer),
-   frame_buffer_(nullptr),
    mutex_(TASK_LEVEL)   
 {
 }
 
 DisplayPiImp::~DisplayPiImp()
 {
-   if ( frame_buffer_ != nullptr)
-   {
-      delete frame_buffer_;
-   }   
 }
+
+#ifndef ALIGN_UP
+#define ALIGN_UP(x,y)  ((x + (y)-1) & ~((y)-1))
+#endif
 
 bool DisplayPiImp::Initialization()
 {
+   logger_->Write("Display", LogNotice, "Initialization...");
+
    ListEDID();
 
-   unsigned int screen_width = 640;
-   unsigned int screen_height = 480;
+   // TODO :Init dispmanx
+   uint32_t        screen = 0;
 
-   logger_->Write("Display", LogNotice, "Initialization...");
-   // Get display property, to compute best values
-   CBcmPropertyTags Tags;
-	TPropertyTagDisplayDimensions Dimensions;
-	if (Tags.GetTag (PROPTAG_GET_DISPLAY_DIMENSIONS, &Dimensions, sizeof Dimensions))
-	{
-      screen_width  = Dimensions.nWidth;
-      screen_height = Dimensions.nHeight;
-      logger_->Write("Display", LogNotice, "PROPTAG_GET_DISPLAY_DIMENSIONS : %i, %i.", screen_width, screen_height);
-   }
-   else
-   {
-      logger_->Write("Display", LogNotice, "PROPTAG_GET_DISPLAY_DIMENSIONS : ERROR !");
-   }
+   bcm_host_init();
 
-   // Now we have real width/height : compute best values for display, to have :
-   // - good pixel ratio (4x3)
-   float ratio = ((float)GetWidth())/((float)GetHeight());
-   int NbPixelWidth, NbPixelHeight;
-   if ( (screen_width / screen_height ) < ratio )
-   {
-      //
-      NbPixelWidth = static_cast<long>(screen_height * ratio);
-      NbPixelHeight = screen_height ;
-   }
-   else
-   {
-      //
-      NbPixelWidth = screen_width - 0;
-      NbPixelHeight = static_cast<long>(screen_width / ratio);
-   }   
+   printk("Open display[%i]...\n", screen );
+   display_ = vc_dispmanx_display_open( screen );
 
-   // Compute height to have a complete screen, without problem with scanlines
-   int h = GetHeight();
-   if ( NbPixelHeight % h != 0)
-   {
-      logger_->Write("Display", LogNotice, "NbPixelHeight % h : %i, %i.", NbPixelHeight, h);
+   int ret = vc_dispmanx_display_get_info( display_, &info_);
+   assert(ret == 0);
 
-      int NbPixelHeightComputed = (NbPixelHeight / h) * h;
-      if ( NbPixelHeight % h > (h/2) )
-      {
-         NbPixelHeightComputed += h;
-      }
-      NbPixelHeight = NbPixelHeightComputed;
-      NbPixelWidth = static_cast<long>(NbPixelHeight*ratio);
-   }
-
-   int fXmin, fXmax, fYmin, fYmax;
-   fXmin = (screen_width - NbPixelWidth) / 2;
-   fXmax = (screen_width - NbPixelWidth) / 2 + NbPixelWidth;
-   fYmin = ((long)screen_height - NbPixelHeight) / 2;
-   fYmax = ((long)screen_height - NbPixelHeight) / 2 + NbPixelHeight;
-
-   logger_->Write("Display", LogNotice, "Computed width/height : %i, %i.", NbPixelWidth, NbPixelHeight);
-   logger_->Write("Display", LogNotice, "fXmin = %i, fXmax = %i, fYmin = %i, fYmax  = %i.", fXmin, fXmax, fYmin, fYmax);
-   // - 
-
-
-   if ( frame_buffer_ != nullptr)
-   {
-      delete frame_buffer_;
-   }
-   frame_buffer_ = new CBcmFrameBuffer(WIDTH_SCREEN, HEIGHT_SCREEN, 32, WIDTH_VIRTUAL_SCREEN, HEIGHT_VIRTUAL_SCREEN * FRAME_BUFFER_SIZE);
-
-   if (!frame_buffer_ || !frame_buffer_->Initialize())
-   {
-      logger_->Write("Display", LogNotice, "Error creating framebuffer...");
-      return FALSE;
-   }
-      
-   frame_buffer_->SetVirtualOffset(143, 47);
+   uint32_t supported_formats = 0;
+   ret = vc_dispmanx_query_image_formats(&supported_formats);
+   logger_->Write("Display", LogNotice, "vc_dispmanx_query_image_formats : %X", supported_formats);
 
    DisplayPi::Initialization();
+
+   // create various objects :
+   //----------------------
+   // background
+   //back_frame_.Init(info_.width, info_.height, 1);
+   back_wnd_.frame_ = &back_frame_;
+   back_wnd_.type_of_image_ = VC_IMAGE_XRGB8888;
+   back_wnd_.resource_ = vc_dispmanx_resource_create (back_wnd_.type_of_image_, back_wnd_.frame_->GetFullWidth(), back_wnd_.frame_->GetFullHeight(), &back_wnd_.ptr_);
+   back_wnd_.element_ = 0;
+   back_wnd_.priority_ = 10;
+   back_wnd_.alpha_ = {     flags: DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS,
+                              opacity: 0x000000FF,
+                              mask: 0
+                           };
+   back_wnd_.frame_->SetDisplay(  0, 0 );
+   back_wnd_.frame_->SetDisplaySize(  info_.width, info_.height );   
+   windows_list_.push_back(&back_wnd_);
+
+   //----------------------
+   // Main display for emulation
+   //emu_frame_.Init(info_.width, info_.height, 3);
+   emu_wnd_.frame_ = &emu_frame_;
+   emu_wnd_.type_of_image_ = VC_IMAGE_XRGB8888;
+   emu_wnd_.resource_ =  vc_dispmanx_resource_create (emu_wnd_.type_of_image_, emu_wnd_.frame_->GetFullWidth(), emu_wnd_.frame_->GetFullHeight(), &emu_wnd_.ptr_);
+   emu_wnd_.element_ = 0;
+   emu_wnd_.priority_ = 50;
+   emu_wnd_.frame_->SetDisplay(  0, 0 );
+   emu_wnd_.frame_->SetDisplaySize(  info_.width, info_.height );
+
+   emu_wnd_.alpha_ = {   flags: DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS,
+                          opacity: 0x000000FF,
+                          mask: 0
+                       };
+
+   windows_list_.push_back(&emu_wnd_);
+
+   //----------------------
+   // Menu
+   //menu_frame_.Init (info_.width, info_.height, 1);
+   menu_wnd_.frame_ = &menu_frame_;
+   menu_wnd_.type_of_image_ = VC_IMAGE_ARGB8888;
+   menu_wnd_.resource_ = vc_dispmanx_resource_create (menu_wnd_.type_of_image_, menu_wnd_.frame_->GetFullWidth(), menu_wnd_.frame_->GetFullHeight(), &menu_wnd_.ptr_);
+   menu_wnd_.element_ = 0;
+   menu_wnd_.priority_ = 20;
+   menu_wnd_.frame_->SetDisplay(  0, 0 );
+   menu_wnd_.frame_->SetDisplaySize(  info_.width, info_.height );
+
+   menu_wnd_.alpha_ = {     flags: DISPMANX_FLAGS_ALPHA_FROM_SOURCE,
+                              opacity: 0x000000FF,
+                              mask: 0
+                       };      
+   windows_list_.push_back(&menu_wnd_);
+
+   // Write background
+   int width = back_wnd_.frame_->GetFullWidth();
+   int height = back_wnd_.frame_->GetFullHeight();
+   
+   VC_RECT_T back_rect;
+   vc_dispmanx_rect_set(&(back_rect),
+                        0,
+                        0,
+                        back_wnd_.frame_->GetFullWidth(),
+                        back_wnd_.frame_->GetFullHeight()
+                        );   
+
+
+   printk( "vc_dispmanx_resource_write_data back_wnd_ : Pitch = %i.w = %i, h = %i\n",
+    back_wnd_.frame_->GetPitch(),
+    back_rect.width,
+    back_rect.height);
+
+   int result = vc_dispmanx_resource_write_data(back_wnd_.resource_,
+                                          VC_IMAGE_XRGB8888,
+                                          back_wnd_.frame_->GetPitch(),
+                                          back_wnd_.frame_->GetBuffer(),
+                                          &back_rect);
+   logger_->Write("Display", LogNotice, "background_buffer_ written");
+
+   if ( result != 0)
+   {
+      logger_->Write("Display", LogNotice, "vc_dispmanx_resource_write_data result = %i ", result);
+   }
+
+
+   // Create 
+   DISPMANX_UPDATE_HANDLE_T update = vc_dispmanx_update_start(10);
+
+   VC_DISPMANX_ALPHA_T alpha = 
+   {
+      flags: DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS,
+      opacity: 0x000000FF,
+      mask: 0
+   };
+   //---------------------------------------------------------------------
+   logger_->Write("Display", LogNotice, " ####SCREEN W : %i; H : %i ", info_.width, info_.height);
+
+   VC_RECT_T src_rect_full;
+   vc_dispmanx_rect_set(&src_rect_full, 0,0 , (width) <<16, (height)<<16);
+
+   VC_RECT_T src_rect;
+   //vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
+   vc_dispmanx_rect_set(&src_rect, 143<<16, 47<<16, (768-143) <<16, (277-47/2)<<16);
+
+   VC_RECT_T dst_rect_full;
+   vc_dispmanx_rect_set(&dst_rect_full, 0, 0, info_.width, info_.height);
+
+   logger_->Write("Display", LogNotice, " vc_dispmanx_element_add");
+   back_wnd_.element_ = vc_dispmanx_element_add(update,
+                              display_,
+                              1000,
+                              &dst_rect_full,
+                              back_wnd_.resource_,
+                              &src_rect_full,
+                              DISPMANX_PROTECTION_NONE,
+                              &alpha,
+                              NULL,
+                              DISPMANX_NO_ROTATE);
+                                          
+   logger_->Write("Display", LogNotice, " vc_dispmanx_element_add - back is done ");
+   emu_wnd_.element_ = vc_dispmanx_element_add(update,
+                              display_,
+                              2000,
+                              &dst_rect_full,
+                              emu_wnd_.resource_,
+                              &src_rect,
+                              DISPMANX_PROTECTION_NONE,
+                              &alpha,
+                              NULL,
+                              DISPMANX_NO_ROTATE);
+   logger_->Write("Display", LogNotice, " vc_dispmanx_element_add - emu is done ");                              
+
+   menu_wnd_.element_ = vc_dispmanx_element_add(update,
+                              display_,
+                              1500,
+                              &dst_rect_full,
+                              menu_wnd_.resource_,
+                              &src_rect_full,
+                              DISPMANX_PROTECTION_NONE,
+                              &menu_wnd_.alpha_,
+                              NULL,
+                              DISPMANX_NO_ROTATE);
+
+   logger_->Write("Display", LogNotice, " vc_dispmanx_element_add - menu is done ");
+
+   //vc_dispmanx_element_change_attributes (update, emu_wnd_.element_, ELEMENT_CHANGE_SRC_RECT, 0, 0, 0, &src_rect, 0, DISPMANX_NO_ROTATE);
+
+   result = vc_dispmanx_update_submit_sync(update);
+   if ( result != 0)
+   {
+      logger_->Write("Display", LogNotice, "  vc_dispmanx_update_submit_sync => result = %i ", result);
+   }
+
+   logger_->Write("Display", LogNotice, " End init.. Draw done.");
+
+   // Get mem handle:
+   get_dispmanx_resource_mem (emu_wnd_.resource_);
+
 
    return true;
 }
@@ -161,36 +315,30 @@ const char* DisplayPiImp::GetInformations()
 // Wait VBL
 void DisplayPiImp::WaitVbl()
 {
-   frame_buffer_->WaitForVerticalSync();
+   // todo
 }
 
 int DisplayPiImp::GetStride()
 {
    // TODO : stride is for int* !!!
-   return frame_buffer_->GetPitch() / sizeof(int);
+   return info_.width;
 }
 
 int DisplayPiImp::GetWidth()
 {
-   return WIDTH_VIRTUAL_SCREEN;
+   return info_.width;
 }
 
 int DisplayPiImp::GetHeight()
 {
-   return HEIGHT_VIRTUAL_SCREEN;
+   return info_.height;
 }
 
 int* DisplayPiImp::GetVideoBuffer(int y)
 {
-   if (!full_resolution_)
-   {
-      y = y * 2 + added_line_;
-   }
+   if ( y > emu_frame_.GetHeight()) y = emu_frame_.GetHeight()-1;
 
-   if ( y > HEIGHT_VIRTUAL_SCREEN) y = HEIGHT_VIRTUAL_SCREEN-1;
-   y += buffer_used_ * HEIGHT_VIRTUAL_SCREEN;
-
-   return reinterpret_cast<int*>(frame_buffer_->GetBuffer() + y * frame_buffer_->GetPitch());
+   return  (int*)(&emu_frame_.GetBuffer()[y * emu_frame_.GetPitch()]);
 }
 
 void DisplayPiImp::SyncWithFrame (bool set)
@@ -207,24 +355,91 @@ void DisplayPiImp::SyncWithFrame (bool set)
 
 void DisplayPiImp::SetFrame(int frame_index)
 {
-   //logger_->Write("Display", LogNotice, "SetFrame : 143, %i", 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
-   frame_buffer_->SetVirtualOffset(143, 47 + frame_index * HEIGHT_VIRTUAL_SCREEN);
-}
-
-void DisplayPiImp::Draw()
-{
-   //logger_->Write("Display", LogNotice, "Draw");
-   frame_buffer_->WaitForVerticalSync();
+   //logger_->Write("Draw", LogNotice, " SetFrame : %i", frame_index);
+   current_buffer_ = frame_index;
 }
 
 void DisplayPiImp::ClearBuffer(int frame_index)
 {
-   //logger_->Write("Display", LogNotice, "ClearBuffer : frame_index = %i", frame_index);
-   unsigned char* line = reinterpret_cast<unsigned char*>(frame_buffer_->GetBuffer() + frame_index * HEIGHT_VIRTUAL_SCREEN * frame_buffer_->GetPitch());
-   for (unsigned int count = 0; count < HEIGHT_VIRTUAL_SCREEN; count++)
-   {
-      memset(line, 0x0, WIDTH_VIRTUAL_SCREEN * 4);
-      line += frame_buffer_->GetPitch();
-   }
-   //logger_->Write("Display", LogNotice, "End clear");
+   // todo
 }
+
+void DisplayPiImp::CopyMemoryToRessources()
+{
+   for (auto win_it : windows_list_)
+   {
+      DispmanxWindow* it = (DispmanxWindow*)win_it;
+      it->frame_->Refresh();
+      if ( it->frame_->HasFrameChanged())
+      {
+         VC_RECT_T bmp_rect;
+
+   
+         vc_dispmanx_rect_set(&(bmp_rect),
+                              0,
+                              0,
+                              it->frame_->GetFullWidth(),
+                              it->frame_->GetFullHeight());
+         
+         vc_dispmanx_resource_write_data(it->resource_,
+                                                it->type_of_image_,
+                                                it->frame_->GetPitch(),
+                                                it->frame_->GetReadyBuffer(),
+                                                &bmp_rect);
+                                                   
+         Lock();
+         it->frame_->FrameIsDisplayed();
+         Unlock();
+
+      }
+   }
+}
+
+void DisplayPiImp::BeginDraw()
+{
+   // Copy mem to resouurces
+   CopyMemoryToRessources();
+
+   // Last frame is displayed and can be reused
+   Lock();
+   //emu_frame_.FrameIsDisplayed();
+   Unlock();
+
+   int result = current_update_ = vc_dispmanx_update_start(0);
+}
+
+void DisplayPiImp::EndDraw()
+{
+   int result = vc_dispmanx_update_submit_sync(current_update_);
+   if ( result != 0)
+   {
+      logger_->Write("Display", LogNotice, "vc_dispmanx_update_submit_sync result = %i ", result);
+   }   
+}
+
+ bool DisplayPiImp::ChangeNeeded(int change)
+ {
+   return change != 0;
+ }
+
+void DisplayPiImp::CopyMemoryToRessources(DisplayPi::Frame* frame_)
+{
+  
+}
+
+void DisplayPiImp::ChangeAttribute(Frame* it, int src_x, int src_y, int src_w, int src_h,
+   int dest_x, int dest_y, int dest_w, int dest_h)
+{
+   DispmanxWindow* disp_frame = (DispmanxWindow*)it;
+   VC_RECT_T back_src_rect, back_dst_rect;
+
+   vc_dispmanx_rect_set(&back_src_rect, src_x<<16, src_y<<16, src_w<<16, src_h<<16);
+   vc_dispmanx_rect_set(&back_dst_rect,  dest_x, dest_y, dest_w, dest_h);
+
+   vc_dispmanx_element_change_attributes (current_update_, 
+      disp_frame->element_, ELEMENT_CHANGE_SRC_RECT, 0, 0,
+         &back_dst_rect, &back_src_rect,
+         0, DISPMANX_NO_ROTATE);
+   
+}
+

@@ -124,7 +124,7 @@ ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixe
 
    // Create Main window menu 
    unsigned int i = 0;
-   main_menu_ = new MainMenuWindows (display_);
+   main_menu_ = new MainMenuWindows (display_->GetMenuFrame());
    while (base_menu[i].label_ != nullptr && i < MAX_ITEM_PER_PAGE)
    {
       // Display menu bitmap
@@ -211,7 +211,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    DIR Directory;
    FILINFO *FileInfo = new FILINFO;
    FRESULT Result = f_findfirst(&Directory, FileInfo, path, "*");
-   std::vector<FILINFO*> config_list(20);
+   std::vector<FILINFO*> config_list;
    
    int limit = 0;
    // Create menu
@@ -223,6 +223,10 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
       if ((FileInfo->fattrib & (AM_HID | AM_SYS | AM_DIR)) == 0)
       {
          config_list.push_back(FileInfo);
+      }
+      else
+      {
+         delete FileInfo;
       }
       FileInfo = new FILINFO;
       Result = f_findnext(&Directory, FileInfo);
@@ -267,7 +271,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    // Create selection menu
    Window* focus = Window::GetFocus();
 
-   MainMenuWindows* file_menu = new MainMenuWindows (display_);
+   MainMenuWindows* file_menu = new MainMenuWindows (display_->GetMenuFrame());
 
    file_menu->GetMenu()->AddMenuItem("..", new ActionMenu( this, &ScreenMenu::Back) );
 
@@ -403,7 +407,7 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
    // Create selection menu
    Window* focus = Window::GetFocus();
 
-   MainMenuWindows* file_menu = new MainMenuWindows (display_);
+   MainMenuWindows* file_menu = new MainMenuWindows (display_->GetMenuFrame());
 
    file_menu->GetMenu()->AddMenuItem("..", new ActionMenu( this, &ScreenMenu::Back) );
 
@@ -457,7 +461,7 @@ IAction::ActionReturn ScreenMenu::InsertTape()
 IAction::ActionReturn ScreenMenu::SugarSetup()
 {
    Window* focus = Window::GetFocus();
-   MainMenuWindows* setup_menu = new MainMenuWindows (display_);
+   MainMenuWindows* setup_menu = new MainMenuWindows (display_->GetMenuFrame());
 
    setup_menu->GetMenu()->AddMenuItem("..", new ActionMenu( this, &ScreenMenu::Back) );
 
@@ -502,7 +506,7 @@ IAction::ActionReturn ScreenMenu::Reset()
 IAction::ActionReturn ScreenMenu::Info()
 {
    Window* focus = Window::GetFocus();
-   MainMenuWindows* setup_menu = new MainMenuWindows(display_);
+   MainMenuWindows* setup_menu = new MainMenuWindows(display_->GetMenuFrame());
 
    setup_menu->GetMenu()->AddMenuItem("Exit", new ActionMenu(this, &ScreenMenu::Back));
 
@@ -554,13 +558,16 @@ IAction::ActionReturn ScreenMenu::Handle()
 {
    logger_->Write("Menu", LogNotice, "MENU ENTER");
 
+   // Minimize emulation
+   display_->GetEmulationFrame()->Minimize();
+
    IAction::ActionReturn action = IAction::Action_None;
    keyboard_->ClearBuffer();
    display_->SetFullResolution(true);
 
    // Wait till next vsync
    main_menu_->ClearAll();
-   display_->VSync();
+   //display_->VSync();
 
    // Reset menu
    logger_->Write("Menu", LogNotice, "Reset menu...");
@@ -571,6 +578,8 @@ IAction::ActionReturn ScreenMenu::Handle()
    main_menu_->DoScreen (this);
 
    logger_->Write("Menu", LogNotice, "MENU EXITING !");
+   display_->GetEmulationFrame()->Maximize();
+
    display_->SetFullResolution(false);
    display_->VSync();
 

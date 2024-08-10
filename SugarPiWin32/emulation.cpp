@@ -85,11 +85,14 @@ void Emulation::Run(unsigned nCore)
       sound_is_ready = true;
       sound_mutex_.unlock();
       logger_->Write("Sound", LogNotice, "SoundMixer Started");
+      sound_mixer_->PrepareBufferThread();
+
       while(sound_run_)
       {
-         sound_mixer_->PrepareBufferThread();
+         sound_mixer_->Tick();
          keyboard_->UpdatePlugnPlay();
          // scheduler call
+         display_->Loop();
          WAIT(1);
       }
       
@@ -121,7 +124,6 @@ void Emulation::Run(unsigned nCore)
    case 2:
       // Display loop
       logger_->Write("CORE", LogNotice, "Display Loop started");
-      display_->Loop();
       logger_->Write("CORE", LogNotice, "Display Loop Ended");
 
    default:

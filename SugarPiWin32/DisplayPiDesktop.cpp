@@ -12,19 +12,18 @@
 
 #define SCR_PATH "\\SCR\\"
 
-DisplayPiDesktop::DisplayPiDesktop(CLogger* logger) : DisplayPi(logger),
-   m_pFSInt(NULL)
-{
-   pRT_ = nullptr;
-   frame_buffer_ = nullptr;
+ATOM s_FrameAtom = NULL;
 
+DisplayPiDesktop::DisplayPiDesktop(CLogger* logger) : DisplayPi(logger),
+m_pFSInt(NULL)
+{
    CoInitialize(NULL);
 }
 
 DisplayPiDesktop::~DisplayPiDesktop()
 {
-   if (pRT_)pRT_->Release();
-   delete []frame_buffer_;
+   if (pRT_) pRT_->Release();
+
    CoUninitialize();
 }
 
@@ -37,33 +36,67 @@ void DisplayPiDesktop::WindowsToTexture(int& x, int& y)
 
 }
 
-int* DisplayPiDesktop::GetVideoBuffer(int y) 
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-   return (int*) & frame_buffer_[(y) * REAL_DISP_X + buffer_used_*(REAL_DISP_X * REAL_DISP_Y)];
+   switch (message)
+   {
+   case WM_CREATE:
+   {
+      CREATESTRUCT* pCreateStr = (CREATESTRUCT*)lParam;
+      SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pCreateStr->lpCreateParams);
+      break;
+   }
+   case WM_QUIT:
+      break;
+   case WM_DESTROY:
+      PostQuitMessage(0);
+      break;
+   case WM_PAINT:
+   {
+      PAINTSTRUCT ps;
+      HDC hdc = BeginPaint(hWnd, &ps);
+
+
+
+      EndPaint(hWnd, &ps);
+      break;
+   }
+   default:
+      return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
 }
 
-int DisplayPiDesktop::GetStride()
-{
-   return REAL_DISP_X;
-}
 
-void DisplayPiDesktop::Reset() 
+HWND DisplayPiDesktop::CreateWindowFrame(BasicFrame* frame, int priority)
 {
-   memset(&frame_buffer_[REAL_DISP_X * REAL_DISP_Y* FRAME_BUFFER_SIZE], 0, REAL_DISP_X * REAL_DISP_Y * FRAME_BUFFER_SIZE);
-}
-
-int DisplayPiDesktop::GetHeight()
-{
-   return REAL_DISP_Y;
-}
-
-int DisplayPiDesktop::GetWidth()
-{
-   return REAL_DISP_X;
+   return CreateWindowEx(0, "PiFrame", "PiFrame", WS_CHILD | WS_VISIBLE,
+      frame->GetDisplayX(), frame->GetDisplayY(), frame->GetDisplayWidth(), frame->GetDisplayHeight(), m_hWnd, 0, hInstance_, frame); // NULL);
 }
 
 void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface* pFSInt)
 {
+   hInstance_ = hInstance;
+   if (s_FrameAtom == NULL)
+   {
+      WNDCLASSEX wcclient;
+      wcclient.cbSize = sizeof(WNDCLASSEX);
+
+      wcclient.style = 0;
+      wcclient.lpfnWndProc = WndProc;
+      wcclient.cbClsExtra = 0;
+      wcclient.cbWndExtra = 0;
+      wcclient.hInstance = hInstance;
+      wcclient.hIcon = NULL,
+         wcclient.hCursor = LoadCursor(NULL, IDC_ARROW);
+      wcclient.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+      wcclient.lpszMenuName = NULL;
+      wcclient.lpszClassName = "PiFrame";
+      wcclient.hIconSm = 0;
+
+      s_FrameAtom = RegisterClassEx(&wcclient);
+   }
+
    ID2D1Factory* pD2DFactory = NULL;
    HRESULT hr = D2D1CreateFactory(
       D2D1_FACTORY_TYPE_SINGLE_THREADED,
@@ -71,13 +104,14 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
    );
 
    m_hWnd = hWnd;
-   
+
    // Obtain the size of the drawing area.
    RECT rc;
    GetClientRect(m_hWnd, &rc);
 
+   DisplayPi::Initialization();
+
    // Create a Direct2D render target          
-   
    hr = pD2DFactory->CreateHwndRenderTarget(
       D2D1::RenderTargetProperties(),
       D2D1::HwndRenderTargetProperties(
@@ -85,35 +119,64 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
          D2D1::SizeU(
             rc.right - rc.left,
             rc.bottom - rc.top)
-         ,D2D1_PRESENT_OPTIONS_IMMEDIATELY
+         , D2D1_PRESENT_OPTIONS_IMMEDIATELY
       ),
       &pRT_
    );
-   pD2DFactory->Release();
-
-   frame_buffer_ = (unsigned int*)malloc(
-      REAL_DISP_X * REAL_DISP_Y*4*FRAME_BUFFER_SIZE);
 
    D2D1_SIZE_U size = { 0 };
    D2D1_BITMAP_PROPERTIES props;
    pRT_->GetDpi(&props.dpiX, &props.dpiY);
    D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(
       DXGI_FORMAT_B8G8R8A8_UNORM,
-      D2D1_ALPHA_MODE_IGNORE
+      D2D1_ALPHA_MODE_PREMULTIPLIED
    );
    props.pixelFormat = pixelFormat;
    size.width = REAL_DISP_X;
    size.height = REAL_DISP_Y;
 
    hr = pRT_->CreateBitmap(size,
-      frame_buffer_,
-      size.width * 4,
+      emu_frame_.GetBuffer(),
+      emu_frame_.GetPitch(),
       props,
       &bitmap_);
 
-   m_pFSInt = pFSInt;
+   ///////////////////////////////////
+   // Background
+   Win32Frame *frame_back = new Win32Frame;
+   back_frame_.SetDisplay(0, 0);
+   back_frame_.SetDisplaySize(640, 480);
 
-   Initialization();
+   frame_back->frame_= &back_frame_;
+   hr = pRT_->CreateLayer(NULL, &frame_back->pLayer_);
+
+   windows_list_.push_back(frame_back);
+
+   ///////////////////////////////////
+   // Menu
+   Win32Frame *frame_menu = new Win32Frame;
+   menu_frame_.SetDisplay(0, 0);
+   menu_frame_.SetDisplaySize(640, 480);
+
+   frame_menu->frame_ = &menu_frame_;
+   hr = pRT_->CreateLayer(NULL, &frame_menu->pLayer_);
+
+   windows_list_.push_back(frame_menu);
+
+   ///////////////////////////////////
+   // Emulator screen
+   Win32Frame *frame_emu = new Win32Frame;;
+   emu_frame_.SetDisplay(0, 0);
+   emu_frame_.SetDisplaySize(640, 480);
+
+   frame_emu->frame_ = &emu_frame_;
+   hr = pRT_->CreateLayer(NULL, &frame_emu->pLayer_);
+
+   windows_list_.push_back(frame_emu);
+
+   m_pFSInt = pFSInt;
+   pD2DFactory->Release();
+
 
 }
 
@@ -123,32 +186,66 @@ void DisplayPiDesktop::WaitVbl()
    int dbg = 1;
 }
 
-void DisplayPiDesktop::SetFrame(int frame_index)
+void DisplayPiDesktop::CopyMemoryToRessources(DisplayPi::Frame* frame)
 {
-   HRESULT hr;
-   hr = bitmap_->CopyFromMemory(NULL,
-      &frame_buffer_[frame_index * REAL_DISP_X * REAL_DISP_Y], REAL_DISP_X * 4);
+   frame->frame_->Refresh();
 
+   CopyMemoryToRessources(bitmap_, frame->frame_);
+
+   frame->frame_->FrameIsDisplayed();
 }
 
-void DisplayPiDesktop::Draw()
+void DisplayPiDesktop::CopyMemoryToRessources(ID2D1Bitmap* bitmap, BasicFrame* frame)
 {
    HRESULT hr;
-   pRT_->BeginDraw();
 
-   D2D1_RECT_F src_rect = {123,47/2,763, 527};
-   pRT_->DrawBitmap(bitmap_, NULL, 1,
+   hr = bitmap->CopyFromMemory(NULL,
+      frame->GetReadyBuffer(), frame->GetPitch());
+}
+
+void DisplayPiDesktop::ChangeAttribute(Frame* frame, int src_x, int src_y, int src_w, int src_h,
+   int dest_x, int dest_y, int dest_w, int dest_h)
+{
+   D2D1_RECT_F src_rect = { src_x, src_y, src_x + src_w, src_y + src_h };
+   D2D1_RECT_F dest_rect = { dest_x, dest_y, dest_x + dest_w, dest_y + dest_h };
+   // Push the layer with the content bounds.
+   D2D1_LAYER_PARAMETERS1 layerParameters = { 0 };
+
+   layerParameters.contentBounds = D2D1::InfiniteRect();
+   layerParameters.geometricMask = NULL;
+   layerParameters.maskAntialiasMode = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
+   layerParameters.maskTransform = D2D1::IdentityMatrix();
+   layerParameters.opacity = 1.0;
+   layerParameters.opacityBrush = NULL;
+   layerParameters.layerOptions = D2D1_LAYER_OPTIONS1_INITIALIZE_FROM_BACKGROUND;
+
+   D2D1_LAYER_PARAMETERS* toto = (D2D1_LAYER_PARAMETERS*)&layerParameters;
+
+   Win32Frame* win_frame = (Win32Frame*)frame;
+
+   pRT_->PushLayer(
+      toto,
+      win_frame->pLayer_
+   );
+
+   pRT_->DrawBitmap(bitmap_, &dest_rect, 1,
       D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &src_rect);
-   hr = pRT_->EndDraw();
+
+   pRT_->PopLayer();
 }
 
-void DisplayPiDesktop::ClearBuffer(int frame_index)
+void DisplayPiDesktop::BeginDraw()
 {
-   unsigned char* line = reinterpret_cast<unsigned char*>(&frame_buffer_ [REAL_DISP_X * REAL_DISP_Y*frame_index]);
-   for (unsigned int count = 0; count < REAL_DISP_X; count++)
-   {
-      memset(line, 0x0, REAL_DISP_X * 4);
-      line += REAL_DISP_Y * sizeof(int);
-   }
+   pRT_->BeginDraw();
+}
 
+void DisplayPiDesktop::EndDraw()
+{
+   pRT_->EndDraw();
+}
+
+bool DisplayPiDesktop::ChangeNeeded(int change)
+{
+   // ALWAYS redraw !
+   return true;
 }
