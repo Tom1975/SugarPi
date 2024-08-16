@@ -117,7 +117,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    emu.emulation = new Emulation(emu.log);
 
    HWND _hwnd = CreateWindowEx(0, "SugarPi", "SugarPi", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_VISIBLE,
-      CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, &emu); // NULL);
+      CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, hInstance, &emu); // NULL);
 
    emu.display->Init(hInstance, _hwnd, 0);
 

@@ -74,6 +74,16 @@ HWND DisplayPiDesktop::CreateWindowFrame(BasicFrame* frame, int priority)
       frame->GetDisplayX(), frame->GetDisplayY(), frame->GetDisplayWidth(), frame->GetDisplayHeight(), m_hWnd, 0, hInstance_, frame); // NULL);
 }
 
+int DisplayPiDesktop::GetWidth()
+{
+   return rc_.right - rc_.left;
+}
+
+int DisplayPiDesktop::GetHeight()
+{
+   return rc_.bottom - rc_.top;
+}
+
 void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface* pFSInt)
 {
    hInstance_ = hInstance;
@@ -106,8 +116,7 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
    m_hWnd = hWnd;
 
    // Obtain the size of the drawing area.
-   RECT rc;
-   GetClientRect(m_hWnd, &rc);
+   GetClientRect(m_hWnd, &rc_);
 
    DisplayPi::Initialization();
 
@@ -117,8 +126,8 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
       D2D1::HwndRenderTargetProperties(
          m_hWnd,
          D2D1::SizeU(
-            rc.right - rc.left,
-            rc.bottom - rc.top)
+            rc_.right - rc_.left,
+            rc_.bottom - rc_.top)
          , D2D1_PRESENT_OPTIONS_IMMEDIATELY
       ),
       &pRT_
@@ -141,13 +150,22 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
       props,
       &bitmap_);
 
+   size.height = 1080;
+   size.width = 1920;
+   hr = pRT_->CreateBitmap(size,
+      menu_frame_.GetBuffer(),
+      menu_frame_.GetPitch(),
+      props,
+      &menu_bitmap_);
+
    ///////////////////////////////////
    // Background
    Win32Frame *frame_back = new Win32Frame;
    back_frame_.SetDisplay(0, 0);
-   back_frame_.SetDisplaySize(640, 480);
+   back_frame_.SetDisplaySize(800, 600);
 
    frame_back->frame_= &back_frame_;
+   frame_back->bitmap_ = bitmap_;
    hr = pRT_->CreateLayer(NULL, &frame_back->pLayer_);
 
    windows_list_.push_back(frame_back);
@@ -156,9 +174,10 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
    // Menu
    Win32Frame *frame_menu = new Win32Frame;
    menu_frame_.SetDisplay(0, 0);
-   menu_frame_.SetDisplaySize(640, 480);
+   menu_frame_.SetDisplaySize(800, 600);
 
    frame_menu->frame_ = &menu_frame_;
+   frame_menu->bitmap_ = menu_bitmap_;
    hr = pRT_->CreateLayer(NULL, &frame_menu->pLayer_);
 
    windows_list_.push_back(frame_menu);
@@ -167,9 +186,10 @@ void DisplayPiDesktop::Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface
    // Emulator screen
    Win32Frame *frame_emu = new Win32Frame;;
    emu_frame_.SetDisplay(0, 0);
-   emu_frame_.SetDisplaySize(640, 480);
+   emu_frame_.SetDisplaySize(800, 600);
 
    frame_emu->frame_ = &emu_frame_;
+   frame_emu->bitmap_ = bitmap_;
    hr = pRT_->CreateLayer(NULL, &frame_emu->pLayer_);
 
    windows_list_.push_back(frame_emu);
@@ -190,7 +210,7 @@ void DisplayPiDesktop::CopyMemoryToRessources(DisplayPi::Frame* frame)
 {
    frame->frame_->Refresh();
 
-   CopyMemoryToRessources(bitmap_, frame->frame_);
+   CopyMemoryToRessources(((Win32Frame*)frame)->bitmap_, frame->frame_);
 
    frame->frame_->FrameIsDisplayed();
 }
@@ -228,7 +248,7 @@ void DisplayPiDesktop::ChangeAttribute(Frame* frame, int src_x, int src_y, int s
       win_frame->pLayer_
    );
 
-   pRT_->DrawBitmap(bitmap_, &dest_rect, 1,
+   pRT_->DrawBitmap(((Win32Frame*)frame)->bitmap_, &dest_rect, 1,
       D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &src_rect);
 
    pRT_->PopLayer();

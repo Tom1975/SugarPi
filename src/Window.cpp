@@ -263,16 +263,16 @@ void Window::RemoveFocus ()
 MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action_(nullptr)
 {
    fnt_italic_.xOffset = 0;
-   fnt_italic_.xScale = 20;
+   fnt_italic_.xScale = 40;
    fnt_italic_.yOffset = 0;
-   fnt_italic_.yScale = 20;
+   fnt_italic_.yScale = 40;
    fnt_italic_.flags = SFT_DOWNWARD_Y;
    fnt_italic_.font = sft_loadfile( PATH_FONT );
 
    fnt_normal_.xOffset = 0;
-   fnt_normal_.xScale = 16;
+   fnt_normal_.xScale = 32;
    fnt_normal_.yOffset = 0;
-   fnt_normal_.yScale = 16;
+   fnt_normal_.yScale = 32;
    fnt_normal_.flags = SFT_DOWNWARD_Y;
    fnt_normal_.font = sft_loadfile(PATH_FONT);
 
@@ -472,7 +472,7 @@ void MenuWindows::AddMenuItem (const char* label, IAction* action)
 
    // Add item to menu
    MenuItemWindows* item = new MenuItemWindows (display_);
-   item->Create( label, &scroll_window_, 10, list_item_.size()*20, width_ - 10, 19);
+   item->Create( label, &scroll_window_, 10, list_item_.size()*40, width_ - 10, 38);
    item->SetAction(action);
 
    list_item_.push_back(item);
@@ -604,7 +604,7 @@ void BitmapWindows::RedrawWindow()
    for (int i = 0; i < height_; i++)
    {
       int* line = display_->GetBuffer(i + y_);
-      bmp_->DrawLogo(i, &line[x_ /* + (int)(sinf(offset) * 10)*/]);
+      bmp_->DrawLogo(i, &line[x_  /* + (int)(sinf(offset) * 10)*/]);
       offset += 0.002f;
    }
    //CLogger::Get()->Write("Window", LogNotice, "RedrawWindow end");

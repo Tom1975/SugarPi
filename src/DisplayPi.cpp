@@ -48,8 +48,23 @@ DisplayPi::~DisplayPi()
 
 bool DisplayPi::Initialization()
 {
-   back_frame_.Init(GetWidth(), GetHeight(), FRAME_BUFFER_SIZE);
-   menu_frame_.Init(GetWidth(), GetHeight(), FRAME_BUFFER_SIZE);
+   // Get display size, to have a proportional width/height for everybody
+   int h = GetHeight();
+   int w = GetWidth();
+   double ratio = (double)h / (double)w;
+
+   // Backframe : 400 x ???
+   unsigned int frame_w = 400;
+   unsigned int frame_h = 400 * ratio;
+   back_frame_.Init(frame_w, frame_h, FRAME_BUFFER_SIZE);
+
+   // Compute
+   frame_w = 1920;
+   frame_h = 1920 * ratio;
+   menu_frame_.Init(frame_w, frame_h, FRAME_BUFFER_SIZE);
+
+   // Emulation : try to keep those niiiice square pixels
+   // todo
    emu_frame_.Init(REAL_DISP_X, REAL_DISP_Y, FRAME_BUFFER_SIZE);
 
    return true;

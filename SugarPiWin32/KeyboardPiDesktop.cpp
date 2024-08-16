@@ -480,7 +480,7 @@ void KeyboardPi::CodeAction(long keycode, bool activated)
    // todo : hardcoded values
    switch (keycode)
    {
-   case VK_PAUSE: select_ = activated; action(GamePadButtonSelect);break;
+   case VK_TAB: select_ = activated; action(GamePadButtonSelect);break;
    case VK_SCROLL: gamepad_active_[0]->game_pad_button_start.UpdateMap(0, activated); action(GamePadButtonStart);break;
    case VK_UP: gamepad_active_[0]->game_pad_button_up.UpdateMap(0, activated); action(GamePadButtonUp);  break;
    case VK_DOWN: gamepad_active_[0]->game_pad_button_down.UpdateMap(0, activated); action(GamePadButtonDown);break;

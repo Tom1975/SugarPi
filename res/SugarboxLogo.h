@@ -12,8 +12,8 @@ public:
    virtual void GetSize(int& width, int& height);
 
 private:
-   static int pixel_data_[];
-   static int first_byte_per_line[];
-   static int last_byte_per_line[];
+   int *pixel_data_;
+   int *first_byte_per_line;
+   int *last_byte_per_line;
 
 };

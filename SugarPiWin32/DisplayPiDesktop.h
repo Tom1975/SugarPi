@@ -36,6 +36,9 @@ public:
    virtual bool ChangeNeeded(int change);
    //virtual void Draw();
 
+   virtual int GetWidth();
+   virtual int GetHeight();
+
    virtual void WindowsToTexture(int& x, int& y);
    virtual const char* GetInformations() { return "GDI"; };
    virtual void ReleaseAll();
@@ -54,6 +57,7 @@ protected:
    IFullScreenInterface* m_pFSInt;
 
    std::mutex mutex_;
+   RECT rc_;
 
    // DX
    HWND        m_hWnd;
@@ -65,11 +69,13 @@ protected:
    HWND wnd_;
    ID2D1HwndRenderTarget* pRT_;
    ID2D1Bitmap* bitmap_;
+   ID2D1Bitmap* menu_bitmap_;
 
    class Win32Frame : public Frame
    {
    public:
       ID2D1Layer* pLayer_;
+      ID2D1Bitmap* bitmap_;
    };
 
    //std::vector<Win32Frame> windows_list_;
