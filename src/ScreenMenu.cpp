@@ -13,13 +13,17 @@
 #define FRESULT int
 #define DIR HANDLE 
 #define FR_OK 0
+#define FF_LFN_BUF		255
+#define FF_SFN_BUF		12
 
 typedef struct {
    FSIZE_t	fsize;			/* File size */
    WORD	fdate;			/* Modified date */
    WORD	ftime;			/* Modified time */
    BYTE	fattrib;		/* File attribute */
-   char fname[12 + 1];	/* File name */
+   //char fname[12 + 1];	/* File name */
+   char	altname[FF_SFN_BUF + 1];/* Alternative file name */
+   char fname[FF_LFN_BUF + 1];	/* Primary file name */
    WIN32_FIND_DATAA data;
    HANDLE handle;
 } FILINFO;
@@ -35,7 +39,7 @@ void UpdateFILINFO(FILINFO* f)
 {
    f->fattrib = f->data.dwFileAttributes;
    memset(f->fname, 0, sizeof(f->fname));
-   strncpy(f->fname, f->data.cFileName, 12);
+   strncpy(f->fname, f->data.cFileName, sizeof(f->fname));
 }
 
 FRESULT f_findfirst(
@@ -161,7 +165,7 @@ IAction::ActionReturn ScreenMenu::Resume()
 
 IAction::ActionReturn ScreenMenu::LoadAmstradSetup( const char* path)
 {
-   CString fullpath = PATH_TAPE;
+   CString fullpath = PATH_CONFIGS;
    fullpath.Append( INTER_FILE );
    fullpath.Append( path);
    logger_->Write("Menu", LogNotice, "Load Amstrad Setup : %s", (const char*)fullpath);
@@ -207,10 +211,14 @@ void ScreenMenu::LoadConfiguration  (const char* config_name, const char* ini_fi
 
 IAction::ActionReturn ScreenMenu::SelectAmstrad()
 {
-   const char* path = PATH_CONFIGS;
+   CString search_path = PATH_CONFIGS;
+#ifndef __circle__
+   search_path.Append("\\*.*");
+#endif
+
    DIR Directory;
    FILINFO *FileInfo = new FILINFO;
-   FRESULT Result = f_findfirst(&Directory, FileInfo, path, "*");
+   FRESULT Result = f_findfirst(&Directory, FileInfo, search_path, "*.cfg");
    std::vector<FILINFO*> config_list;
    
    int limit = 0;
@@ -253,6 +261,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
       if ( place != nb_file_ordered)
       {
          //for (unsigned int i = 0; i < nb_file_ordered - place; i++)
+         // TODO : Fix this mess !
          for (unsigned int i = nb_file_ordered; i > place ; i++)
          {
             array_ordered [i] = array_ordered [i-1];

@@ -61,6 +61,7 @@ void SugarPiSetup::Load()
    
    // Hardware configuration
 
+
    // Current cartridge
    if (config_->GetConfiguration (SECTION_SETUP, KEY_CART, DEFAULT_CART, buffer, SIZE_OF_BUFFER ))
    {
