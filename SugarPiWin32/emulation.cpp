@@ -28,6 +28,73 @@ Emulation::~Emulation(void)
    delete motherboard_;
 }
 
+
+void Emulation::UpdateComputer(bool no_cart_reload)
+{
+   // todo : load current config
+   /*
+   fs::path path;
+
+   motherboard_->GetMem()->InitMemory();
+
+   // Update RAM todo
+   motherboard_->GetMem()->SetRam(current_settings_->GetRamCfg());
+
+   // Update ROM todo
+   if (directories_ != nullptr)
+   {
+      path = directories_->GetBaseDirectory();
+   }
+   path /= ROMPath;
+   fs::path rom_path = path;
+   path /= current_settings_->GetLowerRom();
+   LoadRom(-1, path.string().c_str());
+
+   GetKeyboardHandler()->LoadKeyboardMap(current_settings_->GetKeyboardConfig());
+
+   for (int i = 0; i < 256; i++)
+   {
+      const char* rom_path_str = current_settings_->GetUpperRom(i);
+      if (rom_path_str == nullptr)
+      {
+         motherboard_->GetMem()->ClearRom(i);
+      }
+      else
+      {
+         path = rom_path;
+         path /= rom_path_str;
+         LoadRom(i, path.string().c_str());
+      }
+   }
+
+   // Hardware
+   motherboard_->GetCRTC()->DefinirTypeCRTC(current_settings_->GetCRTCType());
+   motherboard_->GetVGA()->SetPAL(current_settings_->PALPlugged());
+   SetFDCPlugged(current_settings_->FDCPlugged());
+
+   // External devices
+   UpdateExternalDevices();
+
+
+   // PLUS Machine ?todo
+   unsigned int hardware_type = current_settings_->GetHardwareType();
+   SetMachineType(hardware_type);
+   if (hardware_type == MachineSettings::PLUS_6128
+      || hardware_type == MachineSettings::PLUS_464)
+   {
+      SetPlus(true);
+      if (no_cart_reload == false)
+      {
+         LoadCpr(current_settings_->GetDefaultCartridge());
+      }
+   }
+   else
+   {
+      SetPlus(false);
+   }
+   */
+}
+
 boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keyboard)
 {
    log_.SetLogger(logger_);

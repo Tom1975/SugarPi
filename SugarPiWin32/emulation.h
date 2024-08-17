@@ -21,10 +21,12 @@ public:
    void Run(unsigned nCore);
    void RunMainLoop();
 
+   void UpdateComputer(bool no_cart_reload);
    void ForceStop();
 
 protected:
-   
+   void SetFDCPlugged(bool bFDCPlugged) { motherboard_->GetSig()->fdc_present_ = bFDCPlugged; motherboard_->GetPPI()->SetExpSignal(bFDCPlugged); };
+
    CLogger*          logger_;
    SugarPiSetup*     setup_;
    Motherboard*      motherboard_;
@@ -33,6 +35,8 @@ protected:
    SoundPi*          sound_;
    SoundMixer*       sound_mixer_;
    Log               log_;
+
+   MachineSettings*  current_settings_;
 
    ScreenMenu* menu;
 
