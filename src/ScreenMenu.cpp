@@ -112,7 +112,8 @@ ScreenMenu::MenuItem base_menu[] =
    { nullptr, nullptr}
 };
 
-ScreenMenu::ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup) :
+ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup) :
+   engine_(engine),
    logger_(logger),
    display_(display),
    sound_mixer_(sound_mixer),
@@ -171,9 +172,8 @@ IAction::ActionReturn ScreenMenu::LoadAmstradSetup( const char* path)
    logger_->Write("Menu", LogNotice, "Load Amstrad Setup : %s", (const char*)fullpath);
 
    // Todo : add
-   setup_->LoadSetup (fullpath);
-   setup_->Save();
-
+   engine_->LoadConfiguration((const char*)fullpath);
+   
    logger_->Write("Amstrad Setup ", LogNotice, "file loaded. Exiting menu");
 
    return IAction::Action_QuitMenu;

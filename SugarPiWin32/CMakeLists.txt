@@ -65,6 +65,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/DisplayPi.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/EmulationFrame.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/EmulationFrame.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/Engine.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/Engine.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MainMenuWindows.cpp
@@ -179,6 +181,7 @@ install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../config_win32  DESTINATION ${CMAKE_
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../gamecontrollerdb.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/Config)
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../res/101_keyboard  DESTINATION ${CMAKE_INSTALL_PREFIX}/LAYOUT)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Facile Sans.ttf"  DESTINATION ${CMAKE_INSTALL_PREFIX}/FONTS)
+install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../res/ROMS DESTINATION ${CMAKE_INSTALL_PREFIX}/)
 
 
 

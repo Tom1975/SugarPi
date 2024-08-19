@@ -38,7 +38,7 @@ public :
    void LoadCartridge (const char* path);
    void LoadDisk (const char* path);
    void LoadTape (const char* path);
-   void LoadSetup(const char* path);
+   MachineSettings* LoadSetup(const char* path);
 
    ConfigurationManager* GetConfigurationManager(){return config_;}
 

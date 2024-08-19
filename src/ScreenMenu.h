@@ -31,12 +31,19 @@
 
 #pragma pack(push, 1)
 
+class IEngine
+{
+public: 
+   virtual void LoadConfiguration(const char* config) = 0;
+
+};
+
 class ScreenMenu : public IEvent
 {
 
 public:
 
-   ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup);
+   ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup);
    virtual ~ScreenMenu();
 
    IEvent::Event GetEvent ();
@@ -76,7 +83,7 @@ public:
    };
 
 protected:
-
+   IEngine*       engine_;
    CLogger*       logger_;
    DisplayPi*     display_;
    SoundMixer*    sound_mixer_;

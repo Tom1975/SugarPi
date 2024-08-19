@@ -124,6 +124,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    // Launch the message pump
    // emulation
    emu.emulation->Initialize(emu.display, emu.sound, emu.keyboard);	// must be initialized at last
+   emu.emulation->Reset();
 
    // 
    emu.nCore = 1;

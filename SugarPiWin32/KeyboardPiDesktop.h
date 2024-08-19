@@ -5,6 +5,9 @@
 #include "CPCCore/CPCCoreEmu/IKeyboard.h"
 #include "CPCCore/CPCCoreEmu/simple_string.h"
 #include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include "CPCCore/CPCCoreEmu/KeyboardHandler.h"
+#include "ConfigurationManager.h"
+
 #include <mutex>
 
 #define MAX_GAMEPADS	2
@@ -213,7 +216,7 @@ public:
 
     bool Initialize();
     void InitKeyboard (unsigned char key_map[10][8]);
-    void LoadKeyboard (const char* path);
+    void LoadKeyboard (const char* config);
 
     virtual unsigned char GetKeyboardMap(int index);
     void UpdatePlugnPlay();
@@ -235,7 +238,7 @@ public:
 protected:
    void CodeAction(long keycode, bool activated);
 
-
+   KeyboardHandler   handler_;
    CLogger*          logger_;
 
    TGamePadState	   gamepad_state_[MAX_GAMEPADS];
@@ -261,4 +264,7 @@ protected:
    RawToCPC raw_to_cpc_map_[0x100];
    unsigned char old_raw_keys_[6];
    unsigned char old_modifier_;
+
+   ConfigurationManager* config_;
+
 };

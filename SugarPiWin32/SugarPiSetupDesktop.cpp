@@ -101,9 +101,9 @@ SugarPiSetup::SYNC_TYPE  SugarPiSetup::GetSync ()
    return sync_;
 }
 
-void SugarPiSetup::LoadSetup(const char* path)
+MachineSettings* SugarPiSetup::LoadSetup(const char* path)
 {
-   MachineSettings* settings = MachineSettings::CreateSettings(config_, path);
+   return MachineSettings::CreateSettings(config_, path);
    // motherboard_->ChangeSettings(settings);
    // TODO : load current settings
 }

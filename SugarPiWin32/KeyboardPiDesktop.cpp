@@ -306,6 +306,7 @@ KeyboardPi::KeyboardPi(CLogger* logger) :
    action_buttons_(0),
    select_(false)
 {
+   config_ = new ConfigurationManager(logger);
    memset ( keyboard_lines_, 0xff, sizeof (keyboard_lines_));
 
    InitKeyboard (default_raw_map);
@@ -322,11 +323,13 @@ KeyboardPi::KeyboardPi(CLogger* logger) :
    GamepadDef* def = new GamepadDef(keyboard_lines_);
    gamepad_list_.push_back(def);
    gamepad_active_[0] = gamepad_list_[0];
+
+   handler_.SetConfigurationManager(config_);
 }
 
 KeyboardPi::~KeyboardPi()
 {
-   
+   delete config_;
 }
 
 #define SET_KEYBOARD(raw,line,b)\
@@ -367,6 +370,7 @@ unsigned char KeyboardPi::GetKeyboardMap(int index)
    unsigned char result = 0xFF;
    mutex_.lock();
 
+   handler_.GetKeyboardState();
    result = keyboard_lines_[index];
 
    mutex_.unlock();
@@ -404,7 +408,7 @@ void KeyboardPi::CheckActions (unsigned nDeviceIndex)
 
 void KeyboardPi::Init(bool* register_replaced)
 {
-
+   handler_.Init(register_replaced);
 }
 
 void KeyboardPi::ClearBuffer()
@@ -469,9 +473,9 @@ void KeyboardPi::ReinitSelect()
    select_ = false;
 }
 
-void KeyboardPi::LoadKeyboard(const char* path)
+void KeyboardPi::LoadKeyboard(const char* config)
 {
-
+   handler_.LoadKeyboardMap(config);
 }
 
 #define action(y) action_buttons_  = activated ? (action_buttons_ |y):(action_buttons_&=~y)
@@ -486,8 +490,13 @@ void KeyboardPi::CodeAction(long keycode, bool activated)
    case VK_DOWN: gamepad_active_[0]->game_pad_button_down.UpdateMap(0, activated); action(GamePadButtonDown);break;
    case VK_LEFT: gamepad_active_[0]->game_pad_button_left.UpdateMap(0, activated); action(GamePadButtonLeft);break;
    case VK_RIGHT: gamepad_active_[0]->game_pad_button_right.UpdateMap(0, activated); action(GamePadButtonRight);break;
-   case VK_SHIFT:gamepad_active_[0]->game_pad_button_A.UpdateMap(0, activated); action(GamePadButtonA);break;
+   //case VK_SHIFT:gamepad_active_[0]->game_pad_button_A.UpdateMap(0, activated); action(GamePadButtonA);break;
    case VK_CONTROL:gamepad_active_[0]->game_pad_button_X.UpdateMap(0, activated); action(GamePadButtonX);break;
+   default:
+      if(activated)handler_.CharPressed(keycode);
+      else handler_.CharReleased(keycode);
+      memcpy(keyboard_lines_, handler_.GetKeyboardState(), sizeof(keyboard_lines_));
+      break;
    }
 }
 
