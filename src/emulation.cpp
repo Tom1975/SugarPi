@@ -5,7 +5,7 @@
 
 
 Emulation::Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer)
-   :
+   : Engine(log),
 #ifdef ARM_ALLOW_MULTI_CORE
    CMultiCoreSupport(pMemorySystem),
 #endif
@@ -160,7 +160,7 @@ void Emulation::RunMainLoop()
       {
          logger_->Write("Kernel", LogNotice, "Select...");
          
-         ScreenMenu menu(&log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
+         ScreenMenu menu(this, &log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
          // todo : find a smart way to signal exit
          /*finished = */(menu.Handle()/* == IAction::Action_Shutdown*/);

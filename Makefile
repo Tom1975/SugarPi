@@ -14,6 +14,7 @@ OBJS	= src/main.o\
 		src/DisplayPiImp.o\
 		src/emulation.o\
 		src/EmulationFrame.o\
+		src/Engine.o\
 		src/MenuFrame.o\
 		src/KeyboardPi.o\
 		src/log.o\

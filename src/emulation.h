@@ -21,10 +21,11 @@
 #include "SoundPi.h"
 #include "SugarPiSetup.h"
 #include "log.h"
+#include "Engine.h"
 
-class Emulation
+class Emulation : public Engine
 #ifdef ARM_ALLOW_MULTI_CORE
-   : public CMultiCoreSupport
+   ,public CMultiCoreSupport
 #endif
 {
 public:
