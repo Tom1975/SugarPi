@@ -20,15 +20,6 @@ Emulation::~Emulation(void)
    delete motherboard_;
 }
 
-boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keyboard)
-{
-   Engine::Initialize(display, sound, keyboard);
-   // Setup
-   setup_->Init(display, sound_mixer_, motherboard_, keyboard_);
-   setup_->Load();
-
-   return TRUE;
-}
 
 void Emulation::Run(unsigned nCore)
 {

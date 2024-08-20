@@ -10,7 +10,6 @@ public:
    Emulation(CLogger* log);
    ~Emulation(void);
 
-   boolean Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keyboard);
    void Run(unsigned nCore);
    void RunMainLoop();
 

@@ -61,6 +61,12 @@ boolean Engine::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keybo
    menu = new ScreenMenu(this, &log_, logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
    logger_->Write("Kernel", LogNotice, "End of Emulation init.");
 
+   // Setup
+   setup_->Init(display, sound_mixer_, motherboard_, keyboard_);
+   setup_->Load();
+
+   Reset();
+
    return TRUE;
 }
 
