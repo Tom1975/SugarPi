@@ -25,7 +25,6 @@ OBJS	= src/main.o\
 		src/schrift.o \
 		src/Window.o\
 		res/SugarboxLogo.o\
-		res/coolspot.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
 		CPCCore/CPCCoreEmu/CAPSFile.o\

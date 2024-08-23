@@ -67,6 +67,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/EmulationFrame.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Engine.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Engine.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/files.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/files.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MainMenuWindows.cpp
@@ -82,8 +84,6 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScreenMenu.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/SugarboxLogo.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/SugarboxLogo.h
 
@@ -180,7 +180,8 @@ install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../CART DESTINATION ${CMAKE_INSTA
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../config_win32  DESTINATION ${CMAKE_INSTALL_PREFIX}/Config RENAME config)
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../gamecontrollerdb.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/Config)
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../res/101_keyboard  DESTINATION ${CMAKE_INSTALL_PREFIX}/LAYOUT)
-install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Facile Sans.ttf"  DESTINATION ${CMAKE_INSTALL_PREFIX}/FONTS)
+install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Facile_Sans.ttf"  DESTINATION ${CMAKE_INSTALL_PREFIX}/FONTS)
+install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/logo.bin"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
 install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../res/ROMS DESTINATION ${CMAKE_INSTALL_PREFIX}/)
 
 

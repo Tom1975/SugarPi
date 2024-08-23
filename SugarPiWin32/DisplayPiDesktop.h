@@ -14,7 +14,7 @@ using namespace Gdiplus;
 
 #include "IDirectories.h"
 #include "CLogger.h"
-#include "res/coolspot.h"
+//#include "res/coolspot.h"
 #include "DisplayPi.h"
 
 #define REAL_DISP_X  1024 //832 //1024 // 768

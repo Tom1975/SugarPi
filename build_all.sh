@@ -60,5 +60,5 @@ cp res/101_keyboard sdcard/LAYOUT
 cp config sdcard/Config
 cp CART/* sdcard/CART
 cp gamecontrollerdb.txt sdcard/Config/gamecontrollerdb.txt
-cp "res/Facile Sans.ttf" "sdcard/FONTS/Facile Sans.ttf"
-
+cp "res/Facile_Sans.ttf" "sdcard/FONTS/Facile_Sans.ttf"
+cp "res/logo.bin" "sdcard/RES/logo.bin"

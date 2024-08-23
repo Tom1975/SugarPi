@@ -267,7 +267,10 @@ MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action
    fnt_italic_.yOffset = 0;
    fnt_italic_.yScale = 40;
    fnt_italic_.flags = SFT_DOWNWARD_Y;
+
+   CLogger::Get()->Write("MenuItemWindows", LogNotice, "Loading %s", PATH_FONT);
    fnt_italic_.font = sft_loadfile( PATH_FONT );
+   CLogger::Get()->Write("MenuItemWindows", LogNotice, "Result : %X", fnt_italic_.font);
 
    fnt_normal_.xOffset = 0;
    fnt_normal_.xScale = 32;
