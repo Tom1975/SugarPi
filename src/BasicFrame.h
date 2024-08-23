@@ -42,8 +42,8 @@ public:
    virtual int GetPitch(){return back_pitch_;}
 
    /////////// Display setup
-   virtual void SetDisplay(int x, int y){display_x_ = x;display_y_ = y;}
-   virtual void SetDisplaySize(int width, int height){ display_width_full_ = display_width_ = width; display_height_full_ = display_height_ = height;}
+   virtual void SetDisplay(int x, int y){display_x_ = x;display_y_ = y;current_change_ = CHANGED_DEST_RECT|CHANGED_SRC_RECT;}
+   virtual void SetDisplaySize(int width, int height){ display_width_full_ = display_width_ = width; display_height_full_ = display_height_ = height;current_change_ = CHANGED_DEST_RECT|CHANGED_SRC_RECT;}
    virtual int GetDisplayX(){return display_x_;}
    virtual int GetDisplayY(){return display_y_;}
    virtual int GetDisplayWidth(){return display_width_;}
@@ -66,6 +66,7 @@ public:
 
    // Get changed attributes since last call
    virtual unsigned int AttributesHasChanged();
+   virtual void AttributesChanged(){current_change_ = 0;};
 
    // Get current buffer to write
    virtual unsigned char * GetBuffer();

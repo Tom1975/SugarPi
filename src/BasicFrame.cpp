@@ -206,7 +206,6 @@ void BasicFrame::Refresh()
    }
    else
    {
-      current_change_ = 0;
    }
 }
 

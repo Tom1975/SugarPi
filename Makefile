@@ -74,11 +74,11 @@ OBJS	= src/main.o\
 		CPCCore/CPCCoreEmu/YMZ294.o\
 		CPCCore/CPCCoreEmu/Z80_Full.o\
 		CPCCore/CPCCoreEmu/Z80_Opcodes_fetch.o\
-      CPCCore/CPCCoreEmu/Z80_Opcodes_ior.o\
-      CPCCore/CPCCoreEmu/Z80_Opcodes_iow.o\
-      CPCCore/CPCCoreEmu/Z80_Opcodes_memr.o\
-      CPCCore/CPCCoreEmu/Z80_Opcodes_memw.o\
-      CPCCore/CPCCoreEmu/Z80_Opcodes_z80wait.o\
+        CPCCore/CPCCoreEmu/Z80_Opcodes_ior.o\
+        CPCCore/CPCCoreEmu/Z80_Opcodes_iow.o\
+        CPCCore/CPCCoreEmu/Z80_Opcodes_memr.o\
+        CPCCore/CPCCoreEmu/Z80_Opcodes_memw.o\
+        CPCCore/CPCCoreEmu/Z80_Opcodes_z80wait.o\
 		CPCCore/CPCCoreEmu/Z84C30.o\
 		
 

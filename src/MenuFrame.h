@@ -14,7 +14,8 @@ public:
    MenuFrame();
    virtual ~MenuFrame();
 
-   void Init(int width, int height, int nb_buffers = -1);
+   virtual unsigned int AttributesHasChanged();
+   virtual void Init(int width, int height, int nb_buffers = 1);
 
    void Draw ();
    void Refresh ();

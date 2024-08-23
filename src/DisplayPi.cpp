@@ -52,7 +52,6 @@ bool DisplayPi::Initialization()
    int h = GetHeight();
    int w = GetWidth();
    double ratio = (double)h / (double)w;
-
    // Backframe : 400 x ???
    unsigned int frame_w = 400;
    unsigned int frame_h = 400 * ratio;
@@ -62,6 +61,7 @@ bool DisplayPi::Initialization()
    frame_w = 1920;
    frame_h = 1920 * ratio;
    menu_frame_.Init(frame_w, frame_h, FRAME_BUFFER_SIZE);
+   //menu_frame_.Init(w, h, FRAME_BUFFER_SIZE);
 
    // Emulation : try to keep those niiiice square pixels
    // todo
@@ -308,16 +308,18 @@ void DisplayPi::Draw()
 
    for (auto it : windows_list_)
    {
+      int changed = it->frame_->AttributesHasChanged();
+
       // Copy memory to ressource
       CopyMemoryToRessources(it);
 
       // To be use if problems occurs 
-      int changed = it->frame_->AttributesHasChanged();
       if (ChangeNeeded(changed ))
       {
          ChangeAttribute(it, it->frame_->GetOffsetX(), it->frame_->GetOffsetY(), it->frame_->GetWidth(), it->frame_->GetHeight(),
             it->frame_->GetDisplayX(), it->frame_->GetDisplayY(), it->frame_->GetDisplayWidth(), it->frame_->GetDisplayHeight() );
 
+         it->frame_->AttributesChanged();
       }
    }
    EndDraw();

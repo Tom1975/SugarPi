@@ -30,6 +30,7 @@ Morphings::Morphings(BasicFrame* frame, int x, int y, int w, int h, int nbframe)
    max_count_ = nbframe;
    count_ = 0;
 
+
 }
 
 Morphings::~Morphings()

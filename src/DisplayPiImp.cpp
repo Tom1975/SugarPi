@@ -400,11 +400,6 @@ void DisplayPiImp::BeginDraw()
    // Copy mem to resouurces
    CopyMemoryToRessources();
 
-   // Last frame is displayed and can be reused
-   Lock();
-   //emu_frame_.FrameIsDisplayed();
-   Unlock();
-
    int result = current_update_ = vc_dispmanx_update_start(0);
 }
 
