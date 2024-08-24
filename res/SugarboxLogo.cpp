@@ -8,8 +8,16 @@
 
 #ifdef  __circle__
 #include <circle/logger.h>
+#include <circle/spinlock.h>
+static CSpinLock   mutex_;
+void Lock() { mutex_.Acquire(); }
+void Unlock() { mutex_.Release(); }
 #else
 #include "CLogger.h"
+#include <mutex>
+std::mutex mutex_;
+void Lock() { mutex_.lock(); }
+void Unlock() { mutex_.unlock(); }
 #endif
 
 //#include "res/logo.c"
@@ -24,35 +32,50 @@ struct {
   753, 254, 4,
 };
 
+int* SugarboxLogo::pixel_data_ = nullptr;
+int* SugarboxLogo::first_byte_per_line = nullptr;
+int* SugarboxLogo::last_byte_per_line = nullptr;
+bool SugarboxLogo::loaded_ = false;
 
 
-SugarboxLogo::SugarboxLogo()
+SugarboxLogo::SugarboxLogo() 
 {
-   first_byte_per_line = new int[Sugarbox_logo.height];
-   last_byte_per_line = new int[Sugarbox_logo.height];
 
    // Save to data
-   FILE* f;
 
    /*if (fopen_s(&f, PATH_RES INTER_FILE "logo.bin", "w+b") == 0)
    {
       fwrite(gimp_image.pixel_data, sizeof(gimp_image.pixel_data), 1, f);
       fclose(f);
    }*/
+}
 
-   
-   if (fopen_s(&f, PATH_RES INTER_FILE "logo.bin", "r+b") == 0)
+SugarboxLogo::~SugarboxLogo()
+{
+}
+
+void SugarboxLogo::Load()
+{
+   if (pixel_data_ == nullptr)
    {
+      Lock();
       pixel_data_ = new int[Sugarbox_logo.width * Sugarbox_logo.height * Sugarbox_logo.bytes_per_pixel / sizeof(int)];
-      int size_read = fread(pixel_data_, Sugarbox_logo.width * Sugarbox_logo.height * Sugarbox_logo.bytes_per_pixel, 1, f);
-      
-      CLogger::Get()->Write("MenuItemWindows", LogNotice, "Bitmap read : %X", size_read);
-
-      fclose(f);
+      first_byte_per_line = new int[Sugarbox_logo.height];
+      last_byte_per_line = new int[Sugarbox_logo.height];
+      memset(pixel_data_, 0, Sugarbox_logo.width * Sugarbox_logo.height * Sugarbox_logo.bytes_per_pixel);
+      memset(first_byte_per_line, 0, Sugarbox_logo.height * sizeof(int));
+      memset(last_byte_per_line, 0, Sugarbox_logo.height * sizeof(int));
+      Unlock();
    }
 
+   FILE* f;
 
-
+   if (fopen_s(&f, PATH_RES INTER_FILE "logo.bin", "r+b") == 0)
+   {
+      int size_read = fread(pixel_data_, Sugarbox_logo.width * Sugarbox_logo.height * Sugarbox_logo.bytes_per_pixel, 1, f);
+      CLogger::Get()->Write("MenuItemWindows", LogNotice, "Bitmap read : %X", size_read);
+      fclose(f);
+   }
 
    // Compute first byte to display per line.
    CLogger::Get()->Write("MenuItemWindows", LogNotice, " Compute first byte to display per line.");
@@ -80,18 +103,21 @@ SugarboxLogo::SugarboxLogo()
             found = (pixel_data_[i * Sugarbox_logo.width + j] != 0);
          }
          last_byte_per_line[i] = (found) ? j : -1;
-         CLogger::Get()->Write("MenuItemWindows", LogNotice, "Line %i : pixel = %i.", i, last_byte_per_line[i]);
       }
    }
-}
-
-SugarboxLogo::~SugarboxLogo()
-{
-   delete []pixel_data_;
+   loaded_ = true;
 }
 
 void SugarboxLogo::DrawLogo(int line, int* buffer)
 {
+   Lock();
+   if (pixel_data_ == nullptr)
+   {
+      Unlock();
+      return;
+   }
+   Unlock();
+
    if (first_byte_per_line[line] == -1) return;
 
    int* begin = &pixel_data_[first_byte_per_line[line] + line * Sugarbox_logo.width];

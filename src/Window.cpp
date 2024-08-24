@@ -139,10 +139,13 @@ void Window::Invalidate ()
    // Clear from top windows
    if (parent_ != nullptr)
    {
+      CLogger::Get()->Write("Invalidate", LogNotice, "Invalidate");
       parent_->Invalidate();
+      CLogger::Get()->Write("Invalidate", LogNotice, "Invalidate - Done");
    }
    else
    {
+      CLogger::Get()->Write("Invalidate", LogNotice, "Redraw");
       Redraw(true);
    }
 }
@@ -186,6 +189,7 @@ IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
    // Redraw the window
    CLogger::Get()->Write("DoScreen", LogNotice, "First redraw");
    Redraw (true);
+   CLogger::Get()->Write("DoScreen", LogNotice, "Redraw done");
     
    // Wait for an event
    IAction::ActionReturn exit_function = IAction::Action_None;
@@ -202,7 +206,9 @@ IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
          IAction::ActionReturn retval = IAction::Action_None;
          if ( focus_ != nullptr)
          {
+            CLogger::Get()->Write("DoScreen", LogNotice, "HandleEvent focus : %X",  focus_);
             retval = focus_->HandleEvent (event);
+            CLogger::Get()->Write("DoScreen", LogNotice, "HandleEvent focus done");
          }         
          switch( retval )
          {
@@ -260,30 +266,38 @@ void Window::RemoveFocus ()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
+SFT *MenuItemWindows::fnt_italic_ = nullptr;
+SFT *MenuItemWindows::fnt_normal_ = nullptr;
+
 MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action_(nullptr)
 {
-   fnt_italic_.xOffset = 0;
-   fnt_italic_.xScale = 40;
-   fnt_italic_.yOffset = 0;
-   fnt_italic_.yScale = 40;
-   fnt_italic_.flags = SFT_DOWNWARD_Y;
+   if (fnt_italic_ == nullptr)
+   {
+      fnt_italic_ = new SFT;
+      fnt_italic_->xOffset = 0;
+      fnt_italic_->xScale = 40;
+      fnt_italic_->yOffset = 0;
+      fnt_italic_->yScale = 40;
+      fnt_italic_->flags = SFT_DOWNWARD_Y;
 
-   CLogger::Get()->Write("MenuItemWindows", LogNotice, "Loading %s", PATH_FONT);
-   fnt_italic_.font = sft_loadfile( PATH_FONT );
-   CLogger::Get()->Write("MenuItemWindows", LogNotice, "Result : %X", fnt_italic_.font);
+      CLogger::Get()->Write("MenuItemWindows", LogNotice, "Loading %s", PATH_FONT);
+      fnt_italic_->font = sft_loadfile(PATH_FONT);
+      CLogger::Get()->Write("MenuItemWindows", LogNotice, "Result : %X", fnt_italic_->font);
 
-   fnt_normal_.xOffset = 0;
-   fnt_normal_.xScale = 32;
-   fnt_normal_.yOffset = 0;
-   fnt_normal_.yScale = 32;
-   fnt_normal_.flags = SFT_DOWNWARD_Y;
-   fnt_normal_.font = sft_loadfile(PATH_FONT);
+      fnt_normal_ = new SFT;
+      fnt_normal_->xOffset = 0;
+      fnt_normal_->xScale = 32;
+      fnt_normal_->yOffset = 0;
+      fnt_normal_->yScale = 32;
+      fnt_normal_->flags = SFT_DOWNWARD_Y;
+      fnt_normal_->font = sft_loadfile(PATH_FONT);
+   }
 
 }
 MenuItemWindows::~MenuItemWindows ()
 {
-   sft_freefont(fnt_italic_.font);
-   sft_freefont(fnt_normal_.font);
+   //sft_freefont(fnt_italic_->font);
+   //sft_freefont(fnt_normal_->font);
 }
 
 void MenuItemWindows::Create (const char* label, Window* parent, int x, int y, unsigned int width, unsigned int height)
@@ -299,7 +313,6 @@ void MenuItemWindows::SetAction (IAction* action)
 
 void MenuItemWindows::RedrawWindow ( )
 {
-   CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow");
    int x = 30;
    // Set an offset for the text to be displayed
    int y = 15;
@@ -309,19 +322,17 @@ void MenuItemWindows::RedrawWindow ( )
    if (focus_==this)
    {
       // draw it 
-      display_->SelectFont(&fnt_italic_);
+      display_->SelectFont(fnt_italic_);
       display_->SelectColor(0xFF0000);
       display_->WriteText(">", x-15, y);
       display_->WriteText(label_, x, y);
    }
    else
    {
-      display_->SelectFont(&fnt_normal_);
+      display_->SelectFont(fnt_normal_);
       display_->SelectColor(0x000000);
       display_->WriteText(label_, x, y);
    }
-   
-   CLogger::Get()->Write("MenuItemWindows", LogNotice, "RedrawWindow end");
 }
 
 IAction::ActionReturn MenuItemWindows::HandleEvent( IEvent::Event event)
@@ -471,7 +482,7 @@ void MenuWindows::Create( Window* parent, int x, int y, unsigned int width, unsi
 
 void MenuWindows::AddMenuItem (const char* label, IAction* action)
 {
-   CLogger::Get ()->Write("Menu", LogNotice, "add menu : %s ", label);
+   //CLogger::Get ()->Write("Menu", LogNotice, "add menu : %s ", label);
 
    // Add item to menu
    MenuItemWindows* item = new MenuItemWindows (display_);
@@ -489,7 +500,7 @@ void MenuWindows::AddMenuItem (const char* label, IAction* action)
 void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* action)
 {
    // Add item to menu
-   CLogger::Get ()->Write("Menu", LogNotice, "add menucheck : %s ", label);
+   //CLogger::Get ()->Write("Menu", LogNotice, "add menucheck : %s ", label);
    CheckMenuItemWindows* item = new CheckMenuItemWindows (display_);
    item->Create( label, value, &scroll_window_, 10, list_item_.size()*20, width_, 19);
    item->SetAction(action);
@@ -513,7 +524,7 @@ void MenuWindows::RedrawWindow ()
 
 void MenuWindows::ComputeScroller()
 {
-   CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller");
+   //CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller");
    // check current focus, depending on windows size
    int distant_to_top = current_focus_ * 20;
    int distant_to_bottom = (static_cast<int>(list_item_.size()) - (current_focus_+1)) *20;
@@ -531,7 +542,7 @@ void MenuWindows::ComputeScroller()
       scroll_y = win_h;
    }
    scroll_window_.Scroll ( 0, scroll_y);
-   CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller Done; y = %i", scroll_y);
+   //CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller Done; y = %i", scroll_y);
 }
 
 IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
@@ -602,7 +613,7 @@ void BitmapWindows::Create(Window* parent, int x, int y, PiBitmap* bmp)
 
 void BitmapWindows::RedrawWindow()
 {
-   CLogger::Get()->Write("BitmapWindows", LogNotice, "RedrawWindow");
+   //CLogger::Get()->Write("BitmapWindows", LogNotice, "RedrawWindow");
    static float offset;
    for (int i = 0; i < height_; i++)
    {

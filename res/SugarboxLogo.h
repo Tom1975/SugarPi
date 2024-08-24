@@ -11,9 +11,12 @@ public:
    void DrawLogo(int line, int* buffer);
    virtual void GetSize(int& width, int& height);
 
-private:
-   int *pixel_data_;
-   int *first_byte_per_line;
-   int *last_byte_per_line;
+   static void Load();
 
+private:
+
+   static int *pixel_data_;
+   static int *first_byte_per_line;
+   static int *last_byte_per_line;
+   static bool loaded_;
 };

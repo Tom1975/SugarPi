@@ -49,12 +49,13 @@ bool Morphings::Refresh()
    frame_->display_width_ = base_width + (final_width - base_width) * val;
    frame_->display_height_ = base_height + (final_height - base_height) * val;
 
-   CLogger::Get ()->Write("Morphings", LogNotice, "Refresh - x:%i y:%i w:%i h:%i", 
+   /*CLogger::Get()->Write("Morphings", LogNotice, "Refresh - x:%i y:%i w:%i h:%i",
       frame_->display_x_,
       frame_->display_y_,
       frame_->display_width_,
       frame_->display_height_
       );
+   */
 
    frame_->current_change_ = CHANGED_DEST_RECT;
 

@@ -251,7 +251,7 @@ void BasicFrame::WriteText(const char* text, int x, int y)
    int x_offset_output = 0;
    int i = 0;
 
-   CLogger::Get ()->Write("WriteText", LogNotice, "text : %s; x = %i; y =%i", text, x, y);
+   //CLogger::Get ()->Write("WriteText", LogNotice, "text : %s; x = %i; y =%i", text, x, y);
    
    while (i < n && codepoints[i] != '\0' && x + x_offset_output < GetWidth())
    {
@@ -297,7 +297,6 @@ void BasicFrame::WriteText(const char* text, int x, int y)
                   {
                      line[x + x_offset_output + dx + (short)mtx.leftSideBearing] = text_color_ | ((pixels[dx + dy * img.width]) << 24);
                   }
-                  
                }
             }
          }

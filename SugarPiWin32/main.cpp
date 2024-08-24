@@ -132,8 +132,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    emu_sound.nCore = 0;
    EmualtionWin32 emu_disp = emu;
    emu_disp.nCore = 2;
+   EmualtionWin32 delayed_init = emu;
+   delayed_init.nCore = 3;
+
    std::thread sound_core(Run, &emu_sound); //Main thread
    std::thread disp_core(Run, &emu_disp); //Main thread
+   std::thread delayed_core(Run, &delayed_init); //Main thread
    std::thread main_core(Run, &emu); //Main thread
 
    // Quit.
@@ -147,6 +151,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    emu.emulation->ForceStop();
 
    main_core.join();
+   delayed_core.join();
    sound_core.join();
    disp_core.join();
 

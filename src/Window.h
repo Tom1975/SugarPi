@@ -129,8 +129,8 @@ public:
 protected:
    CString label_;
    IAction* action_;
-   SFT fnt_italic_;
-   SFT fnt_normal_;
+   static SFT *fnt_italic_;
+   static SFT *fnt_normal_;
 };
 
 class ScrollWindows : public Window
