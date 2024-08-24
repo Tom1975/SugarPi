@@ -67,6 +67,8 @@ boolean Engine::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keybo
 
    Reset();
 
+   UpdateComputer(true);
+
    return TRUE;
 }
 

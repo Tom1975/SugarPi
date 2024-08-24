@@ -39,12 +39,11 @@ public:
 
 
 protected:
-   
-   
    CTimer*           timer_;
    CSpinLock         sound_mutex_;
    CScheduler*       scheduler_;
 
+   bool pnp_need_update_;
    bool sound_is_ready;
    bool sound_run_;
 };

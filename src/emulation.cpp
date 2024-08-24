@@ -11,6 +11,7 @@ Emulation::Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer)
 #endif
    timer_(timer),
    sound_mutex_(IRQ_LEVEL),
+   pnp_need_update_(false),
    sound_is_ready(false),
    sound_run_(true)
    
@@ -62,9 +63,12 @@ void Emulation::Run(unsigned nCore)
       while(sound_run_)
       {
          sound_mixer_->PrepareBufferThread();
-         keyboard_->UpdatePlugnPlay();
-         scheduler_->Yield();
-         display_->Loop();
+         if ( pnp_need_update_)
+         {
+            keyboard_->UpdatePlugnPlay();
+            scheduler_->Yield();
+         }
+         display_->Loop();            
       }
       
       logger_->Write("Sound", LogNotice, "SoundMixer Ended");
@@ -96,6 +100,8 @@ void Emulation::Run(unsigned nCore)
       // Delayed initialisation
       logger_->Write("CORE", LogNotice, "Delayed init...");
       SugarboxLogo::Load();
+      keyboard_->LoadGameControllerDB();
+      pnp_need_update_ = true;
       logger_->Write("CORE", LogNotice, "Delayed init done !");
       break;
 

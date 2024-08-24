@@ -352,7 +352,7 @@ KeyboardPi::~KeyboardPi()
 bool KeyboardPi::Initialize()
 {
    // Load gamecontrollerdb.txt
-   LoadGameControllerDB();
+   //LoadGameControllerDB();
 
    if (dwhci_device_->Initialize() == false)
    {
@@ -360,7 +360,7 @@ bool KeyboardPi::Initialize()
    }
    logger_->Write("Keyboard", LogNotice, "Initialize done.");
 
-   UpdatePlugnPlay();
+   //UpdatePlugnPlay();
 
    return true;
 }
@@ -776,6 +776,7 @@ FILINFO file_info;
    f_close(&File);
 
    logger_->Write("KeyboardPi", LogNotice, "Loading game controller db... Done !");
+
 }
 
 void KeyboardPi::LoadKeyboard(const char* path)

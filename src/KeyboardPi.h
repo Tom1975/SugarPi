@@ -97,12 +97,13 @@ public:
    bool IsAction();
    void ReinitSelect();
 
+   void LoadGameControllerDB();
+
    static void GamePadRemovedHandler (CDevice *pDevice, void *pContext);
    static void GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState);
    static void KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6]);
    static void KeyboardRemovedHandler (CDevice *pDevice, void *pContext);
 protected:
-   void LoadGameControllerDB();
    GamepadDef* LookForDevice (const TUSBDeviceDescriptor* descriptor);
    //void UpdateKeyboardMap();
 

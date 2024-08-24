@@ -139,13 +139,10 @@ void Window::Invalidate ()
    // Clear from top windows
    if (parent_ != nullptr)
    {
-      CLogger::Get()->Write("Invalidate", LogNotice, "Invalidate");
       parent_->Invalidate();
-      CLogger::Get()->Write("Invalidate", LogNotice, "Invalidate - Done");
    }
    else
    {
-      CLogger::Get()->Write("Invalidate", LogNotice, "Redraw");
       Redraw(true);
    }
 }
@@ -187,9 +184,7 @@ void Window::ForceStop()
 IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
 {
    // Redraw the window
-   CLogger::Get()->Write("DoScreen", LogNotice, "First redraw");
    Redraw (true);
-   CLogger::Get()->Write("DoScreen", LogNotice, "Redraw done");
     
    // Wait for an event
    IAction::ActionReturn exit_function = IAction::Action_None;
@@ -206,9 +201,7 @@ IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
          IAction::ActionReturn retval = IAction::Action_None;
          if ( focus_ != nullptr)
          {
-            CLogger::Get()->Write("DoScreen", LogNotice, "HandleEvent focus : %X",  focus_);
             retval = focus_->HandleEvent (event);
-            CLogger::Get()->Write("DoScreen", LogNotice, "HandleEvent focus done");
          }         
          switch( retval )
          {
