@@ -51,6 +51,18 @@ if [ ! -d "sdcard/LAYOUT" ]; then
   mkdir sdcard/LAYOUT
 fi
 
+if [ ! -d "sdcard/ROMS" ]; then
+  mkdir sdcard/ROMS
+fi
+
+if [ ! -d "sdcard/RES" ]; then
+  mkdir sdcard/RES
+fi
+
+if [ ! -d "sdcard/AMSTRAD" ]; then
+  mkdir sdcard/AMSTRAD
+fi
+
 echo "[SETUP]" > config
 echo "sync=frame" >> config
 echo "cart=SD:/CART/crtc3_projo.cpr" >> config
@@ -62,3 +74,5 @@ cp CART/* sdcard/CART
 cp gamecontrollerdb.txt sdcard/Config/gamecontrollerdb.txt
 cp "res/Facile_Sans.ttf" "sdcard/FONTS/Facile_Sans.ttf"
 cp "res/logo.bin" "sdcard/RES/logo.bin"
+cp res/ROMS/* sdcard/ROMS
+cp res/AMSTRAD/* sdcard/AMSTRAD
