@@ -55,6 +55,14 @@ if [ ! -d "sdcard/ROMS" ]; then
   mkdir sdcard/ROMS
 fi
 
+if [ ! -d "sdcard/TAPE" ]; then
+  mkdir sdcard/TAPE
+fi
+
+if [ ! -d "sdcard/DISK" ]; then
+  mkdir sdcard/DISK
+fi
+
 if [ ! -d "sdcard/RES" ]; then
   mkdir sdcard/RES
 fi
