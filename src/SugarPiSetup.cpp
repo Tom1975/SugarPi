@@ -55,11 +55,12 @@ void SugarPiSetup::Load()
    // Keyboard layout (if any)
    if (config_->GetConfiguration (SECTION_SETUP, KEY_LAYOUT, DEFAULT_LAYOUT, buffer, SIZE_OF_BUFFER ))
    {
-      keyboard_->LoadKeyboardLayout (buffer);
+      keyboard_->LoadKeyboard(buffer);
    }
    // todo
    
    // Hardware configuration
+
 
    // Current cartridge
    if (config_->GetConfiguration (SECTION_SETUP, KEY_CART, DEFAULT_CART, buffer, SIZE_OF_BUFFER ))
@@ -101,6 +102,15 @@ SugarPiSetup::SYNC_TYPE  SugarPiSetup::GetSync ()
 {
    return sync_;
 }
+
+MachineSettings* SugarPiSetup::LoadSetup(const char* path)
+{
+   return MachineSettings::CreateSettings(config_, path);
+
+   // 
+}
+
+
 
 void SugarPiSetup::LoadCartridge (const char* path)
 {
@@ -201,3 +211,4 @@ int SugarPiSetup::LoadCprFromBuffer(unsigned char* buffer, int size)
 
    return 0;
 }
+

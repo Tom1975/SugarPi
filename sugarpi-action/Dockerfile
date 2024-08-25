@@ -1,5 +1,5 @@
 # Download base image ubuntu 20.04
-FROM ubuntu:20.04
+FROM ubuntu:23.10
 
 # LABEL about the custom image
 LABEL maintainer="thomas.guillemin@gmail.com"

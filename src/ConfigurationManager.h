@@ -1,6 +1,11 @@
 #pragma once
 
+#ifdef  __circle__
 #include <circle/logger.h>
+#else
+#include "CLogger.h"
+#endif
+
 
 #include "CPCCore/CPCCoreEmu/simple_string.h"
 #include "CPCCore/CPCCoreEmu/IConfiguration.h"
@@ -45,13 +50,15 @@ protected:
          Association() : key(), value(){
             //log_s->Write("Association", LogNotice, "default creator");
          }
-         Association(Association& assoc)
+         
+         Association(const Association<T>& assoc)
          {
             //log_s->Write("Association", LogNotice, "assoc creator");
             key = assoc.key;
             value = assoc.value;
          }
-         Association& operator=(const Association& _Right)
+
+         Association& operator=(const Association<T>& _Right)
          {
             //log_s->Write("Association", LogNotice, "operator=");
             key = _Right.key;
@@ -68,7 +75,7 @@ protected:
    class Section : public std::vector <Association<std::string>>
    {
    public:
-      bool GetKey (const char* , std::string*&);
+      bool GetKey (const char* , std::string*);
    };
 
    class ConfigFile : public std::vector <Association<Section*>>

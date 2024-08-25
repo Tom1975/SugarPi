@@ -21,10 +21,11 @@
 #include "SoundPi.h"
 #include "SugarPiSetup.h"
 #include "log.h"
+#include "Engine.h"
 
-class Emulation
+class Emulation : public Engine
 #ifdef ARM_ALLOW_MULTI_CORE
-   : public CMultiCoreSupport
+   ,public CMultiCoreSupport
 #endif
 {
 public:
@@ -32,25 +33,17 @@ public:
    ~Emulation(void);
 
    boolean Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keyboard,CScheduler	*scheduler);
+   virtual const char* GetBaseDirectory();
    void Run(unsigned nCore);
    void RunMainLoop();
 
 
 protected:
-   
-   CLogger*          logger_;
    CTimer*           timer_;
    CSpinLock         sound_mutex_;
    CScheduler*       scheduler_;
 
-   SugarPiSetup*     setup_;
-   Motherboard*      motherboard_;
-   DisplayPi*        display_;
-   KeyboardPi*       keyboard_;
-   SoundPi*          sound_;
-   SoundMixer*       sound_mixer_;
-   Log               log_;
-
+   bool pnp_need_update_;
    bool sound_is_ready;
    bool sound_run_;
 };

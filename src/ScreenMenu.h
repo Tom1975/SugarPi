@@ -1,7 +1,13 @@
 #pragma once
 
+#ifdef  __circle__
 #include <circle/logger.h>
 #include <circle/string.h>
+#else
+#include "CLogger.h"
+#include "CString.h"
+#endif
+
 
 #include "CPCCore/CPCCoreEmu/simple_vector.hpp"
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
@@ -9,29 +15,26 @@
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
 
 #include "DisplayPi.h"
+
+#ifdef  __circle__
 #include "KeyboardPi.h"
 #include "SugarPiSetup.h"
-#include "Windows.h"
+#else
+#include "KeyboardPiDesktop.h"
+#include "SugarPiSetupDesktop.h"
+#endif
+
+#include "Window.h"
+#include "MainMenuWindows.h"
 
 #define MAX_LANGUAGE 1
 
 #pragma pack(push, 1)
 
-class CoolspotFont;
-
-
-
-class MainMenuWindows : public Windows
+class IEngine
 {
-public:
-   MainMenuWindows (DisplayPi* display);
-   virtual ~MainMenuWindows ();
-   
-   void ResetMenu();
-   MenuWindows* GetMenu(){return menu_;};
-   
-protected:
-   MenuWindows* menu_;
+public: 
+   virtual void LoadConfiguration(const char* config) = 0;
 
 };
 
@@ -40,12 +43,11 @@ class ScreenMenu : public IEvent
 
 public:
 
-   ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup);
+   ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup);
    virtual ~ScreenMenu();
 
    IEvent::Event GetEvent ();
 
-   
    IAction::ActionReturn Handle();
 
    IAction::ActionReturn Back();
@@ -54,18 +56,23 @@ public:
    IAction::ActionReturn InsertDisk();
    IAction::ActionReturn InsertTape();
    IAction::ActionReturn Load();
+   IAction::ActionReturn LoadAmstradSetup( const char* path);
    IAction::ActionReturn LoadCartridge ( const char* path);
    IAction::ActionReturn LoadDisk ( const char* path);
    IAction::ActionReturn LoadTape ( const char* path);
+   IAction::ActionReturn Info();
    IAction::ActionReturn Reset();
    IAction::ActionReturn Resume();
    IAction::ActionReturn Save();
+   IAction::ActionReturn SelectAmstrad();
    IAction::ActionReturn SetSync(bool* value);
    IAction::ActionReturn ShutDown();
    IAction::ActionReturn SugarSetup();
    
    IAction::ActionReturn InsertMedia(const char* path, IAction::ActionReturn (ScreenMenu::* load_action)(const char*));
 
+   void LoadConfiguration  (const char* config_name, const char* ini_file);
+   void ForceStop();
 
    class MenuItem
    {
@@ -76,7 +83,7 @@ public:
    };
 
 protected:
-
+   IEngine*       engine_;
    CLogger*       logger_;
    DisplayPi*     display_;
    SoundMixer*    sound_mixer_;

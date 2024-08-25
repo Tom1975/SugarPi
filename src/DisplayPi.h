@@ -1,29 +1,43 @@
 #pragma once
 
-//
-#include <circle/screen.h>
+#ifdef  __circle__
 #include <circle/logger.h>
-#include <circle/bcmframebuffer.h>
+#else
+#include "CLogger.h"
+#endif
+
+#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+
+#include "BackFrame.h"
+#include "MenuFrame.h"
+#include "EmulationFrame.h"
 
 #include "CPCCore/CPCCoreEmu/Screen.h"
 
-#define FRAME_BUFFER_SIZE 2
 
-class CoolspotFont;
+#define FRAME_BUFFER_SIZE 3
+
 
 class DisplayPi : public IDisplay
 {
 public:
-   DisplayPi(CLogger* logger, CTimer* timer);
+
+   enum ScreenType
+   {
+      EmulationWindow,
+      BackWindow,
+      TitleScreen,
+      OptionMenu
+   };
+
+   DisplayPi(CLogger* logger);
    virtual ~DisplayPi();
 
-   bool ListEDID();
+   virtual bool Initialization();
+   virtual void SyncWithFrame (bool set){sync_on_frame_ = set;}
+   virtual bool IsSyncOnFrame(){return sync_on_frame_;}
    
-   bool Initialization();
-   void SyncWithFrame (bool set){sync_on_frame_ = set;}
-   bool IsSyncOnFrame(){return sync_on_frame_;}
-   
-   void SetFullResolution (bool set){full_resolution_ = set;};
+   virtual void SetFullResolution (bool set){full_resolution_ = set;};
 
    virtual void SetScanlines(int scan);
    virtual bool AFrameIsReady();
@@ -43,13 +57,11 @@ public:
    virtual void WaitVbl();
 
    // Services
-   void DisplayText(const char* txt, int x, int y, bool selected = false);
-
-   virtual int* GetVideoBuffer(int y);
    virtual void Reset();
    virtual void FullScreenToggle();
    virtual void ForceFullScreen(bool fullscreen);
    virtual void Screenshot();
+   virtual void Screenshot(const char* scr_path);
    virtual void ScreenshotEveryFrame(int on);
    virtual bool IsEveryFrameScreened();
 
@@ -73,24 +85,46 @@ public:
    virtual bool CanVSync() { return true; }
    virtual bool CanInsertBlackFrame() { return false; }
    virtual void Activate(bool on) {};
+   virtual void Loop();
+   virtual void StopLoop();
 
-   CBcmFrameBuffer* GetFrameBuffer() {
-      return frame_buffer_;   }
+   virtual void Lock() = 0;
+   virtual void Unlock() = 0;
 
-   void Lock() { mutex_.Acquire(); }
-   void Unlock() { mutex_.Release(); }
 
-   void Loop();
+   virtual int* GetVideoBuffer(int y);
+   virtual int* GetVideoBuffer(ScreenType screen, int y);
+
+
+   virtual int GetStride();
+   virtual void ClearBuffer(int frame_index);
+
+   virtual void Draw();
+   //virtual void CopyMemoryToRessources();
+
+   virtual void BeginDraw() = 0;
+   virtual void EndDraw() = 0;
+   virtual bool ChangeNeeded(int change) = 0;
+
+   BasicFrame *GetBackgroundFrame() { return &back_frame_; }
+   BasicFrame *GetMenuFrame() { return &menu_frame_; }
+   BasicFrame *GetEmulationFrame() { return &emu_frame_; }
 
 protected:
+   class Frame
+   {
+   public:
+      BasicFrame* frame_;
+   };
+
+   virtual void CopyMemoryToRessources(DisplayPi::Frame* frame_) = 0;
+   virtual void ChangeAttribute(Frame*, int src_x, int src_y, int src_w, int src_h,
+      int dest_x, int dest_y, int dest_w, int dest_h) = 0;
+
    //CScreenDevice*		screen_;
    CLogger* logger_;
-   CTimer* timer_;
-   CBcmFrameBuffer*  frame_buffer_;
    bool full_resolution_;
    bool full_resolution_cached_;
-
-   CSpinLock   mutex_;
 
    unsigned int added_line_;
    unsigned int last_tick_frame_;
@@ -102,12 +136,17 @@ protected:
       FR_USED,
       FR_READY
    } FrameState;
-   FrameState frame_used_[FRAME_BUFFER_SIZE];
-   unsigned int buffer_used_;
-
+   volatile FrameState frame_used_[FRAME_BUFFER_SIZE];
+   volatile unsigned int current_buffer_;
    unsigned int frame_queue_[FRAME_BUFFER_SIZE];
    unsigned int nb_frame_in_queue_;
 
+   BackFrame back_frame_;
+   MenuFrame menu_frame_;
+   EmulationFrame emu_frame_;
+
+
+   std::vector<DisplayPi::Frame*> windows_list_;
+
    bool sync_on_frame_;
-   CoolspotFont *font_;
 };

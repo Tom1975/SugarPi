@@ -169,7 +169,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
             logger_->Write("ConfigurationManager", LogNotice, "READ value: %s ", value.c_str());
 
             // Add this key/value to current section
-            Section* section;
+            Section* section = nullptr;
             if (config_file_.GetSection (current_section.c_str(), section) == false)
             {
                Association<Section*> new_section;
@@ -235,7 +235,7 @@ void ConfigurationManager::SetConfiguration(const char* section_key, const char*
 {
    logger_->Write("ConfigurationManager", LogNotice, "SetConfiguration : [%s] %s=%s", section_key, key ,value);
 
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section) == false)
    {
       logger_->Write("ConfigurationManager", LogNotice, "Section not found");
@@ -287,13 +287,13 @@ unsigned int ConfigurationManager::GetConfiguration(const char* section, const c
 
 unsigned int ConfigurationManager::GetConfiguration(const char* section_key, const char* key, const char* default_value, char* out_buffer, unsigned int buffer_size)
 {
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section))
    {
-      std::string * value_str;
-      if ( section->GetKey(key, value_str))
+      std::string value_str;
+      if ( section->GetKey(key, &value_str))
       {
-         strncpy ( out_buffer, value_str->c_str(), buffer_size);
+         strncpy ( out_buffer, value_str.c_str(), buffer_size);
          return strlen(out_buffer);
       }
    }
@@ -309,13 +309,13 @@ unsigned int ConfigurationManager::GetConfigurationInt(const char* section_key, 
 
 unsigned int ConfigurationManager::GetConfigurationInt(const char* section_key, const char* key, unsigned int default_value)
 {
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section))
    {
-      std::string * value_str;
-      if ( section->GetKey(key, value_str))
+      std::string value_str;
+      if ( section->GetKey(key, &value_str))
       {
-         return atoi(value_str->c_str());
+         return atoi(value_str.c_str());
       }
    }
    return default_value;
@@ -340,7 +340,7 @@ const char* ConfigurationManager::GetNextSection()
 
 const char* ConfigurationManager::GetFirstKey(const char* section_key)
 {
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section))
    {
       it_key_ = section->begin();
@@ -376,14 +376,14 @@ bool ConfigurationManager::ConfigFile::GetSection (const char* section_name, Con
 }
 
 
-bool ConfigurationManager::Section::GetKey (const char* key_name, std::string*& key)
+bool ConfigurationManager::Section::GetKey (const char* key_name, std::string* key)
 {
    // Look at section
    for (auto it:*this)
    {
       if (strcmp ( it.key.c_str(), key_name) == 0)
       {
-         key = &it.value;
+         *key = it.value;
          return true;
       }
    }

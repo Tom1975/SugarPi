@@ -1,0 +1,42 @@
+{
+   // Use IntelliSense to learn about possible attributes.
+   // Hover to view descriptions of existing attributes.
+   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+   "version": "0.2.0",
+   "configurations": [
+
+      {
+         "name": "Debug OpenOCD",
+         "type": "cppdbg",
+         "request": "launch",
+         "program": "${workspaceFolder}/build/src/kernel8-rpi4.elf",
+         "cwd": "${workspaceFolder}",
+         "MIMode": "gdb",
+         "miDebuggerServerAddress": "192.168.1.64:3333",
+         "miDebuggerPath": "/mnt/d/DEV/02-BareMetal/gcc-arm/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin/aarch64-none-elf-gdb",
+         "stopAtEntry" : true,
+         "stopAtConnect" : true,
+         "customLaunchSetupCommands": 
+         [ 
+            { 
+               "text": "target extended-remote 192.168.1.64:3333", 
+               "description": "connect to open OCD", 
+               "ignoreFailures": true 
+            },
+            { 
+               "text": "monitor reset halt", 
+               "description": "monitor reset halt", 
+               "ignoreFailures": true 
+            },
+            { 
+               "text": "load", 
+               "description": "load", 
+               "ignoreFailures": true 
+            }
+
+
+         ]
+       }]
+
+   
+}

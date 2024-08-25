@@ -1,11 +1,19 @@
 #pragma once
 
+
+#ifdef  __circle__
 #include <circle/logger.h>
+#else
+#include "CLogger.h"
+#include "CString.h"
+#endif
+
 
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
+#include "CPCCore/CPCCoreEmu/MachineSettings.h"
 #include "ConfigurationManager.h"
 
 class SugarPiSetup
@@ -30,6 +38,9 @@ public :
    void LoadCartridge (const char* path);
    void LoadDisk (const char* path);
    void LoadTape (const char* path);
+   MachineSettings* LoadSetup(const char* path);
+
+   ConfigurationManager* GetConfigurationManager(){return config_;}
 
 protected:
   
