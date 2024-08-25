@@ -1,7 +1,6 @@
 #include "ConfigurationManager.h"
 
-#include <SDCard/emmc.h>
-#include <fatfs/ff.h>
+#include "CPCCore/CPCCoreEmu/simple_stdio.h"
 
  CLogger* log_s = nullptr;
 
@@ -56,40 +55,40 @@ unsigned int ConfigurationManager::getline ( const char* buffer, int size, std::
 
 void ConfigurationManager::OpenFile(const char* config_file)
 {
-   logger_->Write("ConfigurationManager", LogNotice, "OpenFile : %s", config_file);
    if (current_config_file_.compare( config_file) == 0)
    {
       // already openend
       return;
    }
+   logger_->Write("ConfigurationManager", LogNotice, "OpenFile : %s", config_file);
    current_config_file_ = config_file;
    Clear();
    std::string s, key, value;
    std::string current_section = "";
 
-   FIL File;
-   FRESULT Result = f_open(&File, config_file, FA_READ | FA_OPEN_EXISTING);   
-   if (Result != FR_OK)
+   FILE* f;
+
+   if (fopen_s(&f, config_file, "rb") != 0)
    {
       logger_->Write("ConfigurationManager", LogNotice, "Cannot open file: %s", config_file);
       return;
    }
 
-   FILINFO file_info;
-   f_stat(config_file, &file_info);
-   unsigned char* buff = new unsigned char[file_info.fsize];
+   fseek(f, 0, SEEK_END);
+   int buffer_size = ftell(f);
+   rewind(f);
+   unsigned char* buff = new unsigned char[buffer_size];
+
    unsigned nBytesRead;
 
-   f_read(&File, buff, file_info.fsize, &nBytesRead);
-   if (file_info.fsize != nBytesRead)
+   nBytesRead = fread(buff, 1, buffer_size, f);
+   if (nBytesRead != buffer_size)
    {
       // ERROR
-      f_close(&File);
-      logger_->Write("ConfigurationManager", LogNotice, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
+      fclose(f);
+      logger_->Write("ConfigurationManager", LogNotice, "Read incorrect %i instead of ", nBytesRead, buffer_size);
       return;
    }
-
-   logger_->Write("ConfigurationManager", LogNotice, "Read Config : %s  ",buff);
 
    const char* ptr_buffer = (char*)buff;
    unsigned int offset = 0;
@@ -162,7 +161,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
             else
             {
                logger_->Write("ConfigurationManager", LogNotice, "end != std::string::npos");
-               value = s.substr(begin, end-begin);
+               value = s.substr(begin, end-begin + 1);
             }
 
             logger_->Write("ConfigurationManager", LogNotice, "READ key : %s", key.c_str());
@@ -172,6 +171,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
             Section* section = nullptr;
             if (config_file_.GetSection (current_section.c_str(), section) == false)
             {
+               logger_->Write("ConfigurationManager", LogNotice, "GetSection not found, new_section");
                Association<Section*> new_section;
                new_section.key = current_section;
                section = new_section.value = new Section();
@@ -185,14 +185,13 @@ void ConfigurationManager::OpenFile(const char* config_file)
       }
    }
    delete []buff;
-   f_close(&File);
+   fclose(f);
 }
 
 void ConfigurationManager::CloseFile()
 {
-   FIL File;
-   FRESULT Result = f_open(&File, current_config_file_.c_str(), FA_WRITE | FA_CREATE_ALWAYS );   
-   if (Result != FR_OK)
+   FILE* f;
+   if (fopen_s(&f, current_config_file_.c_str(), "rb" ) == 0)
    {
       logger_->Write("ConfigurationManager", LogNotice, "Cannot open file: %s", current_config_file_.c_str());
       return;
@@ -221,8 +220,8 @@ void ConfigurationManager::CloseFile()
    }
    logger_->Write("ConfigurationManager", LogNotice, "Output file : %s", output_file.c_str());
    unsigned nBytesRead;
-   f_write (&File, output_file.c_str(), output_file.size(), &nBytesRead);
-   f_close(&File);
+   nBytesRead = fwrite (output_file.c_str(), output_file.size(), 1, f);
+   fclose(f);
 }
 
 void ConfigurationManager::SetConfiguration(const char* section, const char* key, const char* value, const char* file)

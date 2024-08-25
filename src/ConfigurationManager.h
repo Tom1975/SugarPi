@@ -51,7 +51,7 @@ protected:
             //log_s->Write("Association", LogNotice, "default creator");
          }
          
-         Association(const Association<T>& assoc)
+         Association(const Association& assoc)
          {
             //log_s->Write("Association", LogNotice, "assoc creator");
             key = assoc.key;

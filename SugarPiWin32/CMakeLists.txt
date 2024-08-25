@@ -26,8 +26,8 @@ set(Source_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPiDesktop.h
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetupDesktop.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetupDesktop.h
-		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.h
+#		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.cpp
+#		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.h
 		
 
 #		${CMAKE_CURRENT_SOURCE_DIR}/kernel.cpp
@@ -59,6 +59,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BackFrame.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BasicFrame.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BasicFrame.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/ConfigurationManager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/ConfigurationManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CString.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CString.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/DisplayPi.cpp
