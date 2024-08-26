@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
       - name: Checkout submodules
         run: git submodule update --init --recursive     
@@ -36,7 +36,7 @@ jobs:
         uses: ./sugarpi-action
         id:  buildpi
   
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: SugarPi
           path: sdcard/*

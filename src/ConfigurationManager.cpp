@@ -79,7 +79,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
    rewind(f);
    unsigned char* buff = new unsigned char[buffer_size];
 
-   unsigned nBytesRead;
+   size_t nBytesRead;
 
    nBytesRead = fread(buff, 1, buffer_size, f);
    if (nBytesRead != buffer_size)
@@ -177,10 +177,12 @@ void ConfigurationManager::OpenFile(const char* config_file)
                section = new_section.value = new Section();
                config_file_.push_back(new_section);
             }
+            logger_->Write("ConfigurationManager", LogNotice, "new_assoc");
             Association<std::string> new_assoc;
             new_assoc.key = key;
             new_assoc.value = value;
             section->push_back(new_assoc);
+            logger_->Write("ConfigurationManager", LogNotice, "new_assoc pushed");
          }
       }
    }
@@ -219,8 +221,7 @@ void ConfigurationManager::CloseFile()
       }
    }
    logger_->Write("ConfigurationManager", LogNotice, "Output file : %s", output_file.c_str());
-   unsigned nBytesRead;
-   nBytesRead = fwrite (output_file.c_str(), output_file.size(), 1, f);
+   fwrite (output_file.c_str(), output_file.size(), 1, f);
    fclose(f);
 }
 
