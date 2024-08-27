@@ -172,7 +172,7 @@ target_compile_definitions(SugarPiWin32 PUBLIC -DNO_MULTITHREAD)
 
 target_compile_features(SugarPiWin32  PRIVATE cxx_std_17)
 target_compile_definitions(SugarPiWin32 PUBLIC -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -DLOG_MIXER -DLOGFDC -DNO_CUSTOM_OPCODES -DARM_ALLOW_MULTI_CORE)
-target_compile_definitions(SugarPiWin32 PUBLIC -DPROFILE)
+target_compile_definitions(SugarPiWin32 PUBLIC -DPROFILE -DTEST_VECTOR)
 
 
 set (CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/Install)

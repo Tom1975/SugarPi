@@ -1,4 +1,3 @@
-#include <vector>
 
 #include "DisplayPiDesktop.h"
 #include "Shlwapi.h"
