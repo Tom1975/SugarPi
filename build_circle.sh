@@ -1,14 +1,14 @@
 echo "*** Build Circle ***"
 
-cp Rules.mk circle
-cp Rules.mk  circle-stdlib/libs/circle
+#cp Rules.mk circle
+#cp Rules.mk  circle-stdlib/libs/circle
 cd circle-stdlib
 
 # configure circle-std
-make clean
+#make clean
 make mrproper
 ./configure -r 4
-make
+make all
 
 echo "*** End of Circle-std build ***"
 
