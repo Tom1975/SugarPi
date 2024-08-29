@@ -109,7 +109,7 @@ LIBS	= circle-stdlib/install/arm-none-circle/lib/libcirclenewlib.a \
 		 $(CIRCLEHOME)/addon/vc4/interface/vcos/libvcos.a 
 
 STDLIB_SUPPORT = 3 
-include circle/Rules.mk
+include circle-stdlib/libs/circle/Rules.mk
 
 CFLAGS += -I "$(NEWLIBDIR)/include" -I $(STDDEF_INCPATH) -I ../../include
 CFLAGS	+= -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE
