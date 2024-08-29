@@ -6,6 +6,7 @@ cd circle-stdlib
 
 # configure circle-std
 #make clean
+cp ../sysconfig.h  libs/circle/include/circle
 make mrproper
 ./configure -r 4
 make all
