@@ -2,7 +2,9 @@
 # Makefile
 #
 
-CIRCLEHOME = ./circle
+include Config.mk
+CIRCLEHOME = circle-stdlib/libs/circle
+NEWLIBDIR = circle-stdlib/install/$(NEWLIB_ARCH)
 
 OBJS	= src/main.o\
 		src/kernel.o\
@@ -86,7 +88,11 @@ EXTRACLEAN = $(OBJS)
 		
 OPTIMIZE = -O3
 
-LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
+LIBS	= circle-stdlib/install/arm-none-circle/lib/libcirclenewlib.a \
+		 circle-stdlib/install/arm-none-circle/lib/libc.a \
+		 circle-stdlib/install/arm-none-circle/lib/libg.a \
+		 circle-stdlib/install/arm-none-circle/lib/libm.a \
+		 $(CIRCLEHOME)/lib/libcircle.a \
          $(CIRCLEHOME)/lib/fs/fat/libfatfs.a \
          $(CIRCLEHOME)/lib/fs/libfs.a \
          $(CIRCLEHOME)/lib/usb/libusb.a \
@@ -102,9 +108,10 @@ LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
 		 $(CIRCLEHOME)/addon/vc4/interface/vmcs_host/libvmcs_host.a \
 		 $(CIRCLEHOME)/addon/vc4/interface/vcos/libvcos.a 
 
- 
+STDLIB_SUPPORT = 3 
 include circle/Rules.mk
 
+CFLAGS += -I "$(NEWLIBDIR)/include" -I $(STDDEF_INCPATH) -I ../../include
 CFLAGS	+= -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE
 CPPFLAGS += -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE -std=c++1z
 

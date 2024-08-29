@@ -5,3 +5,7 @@
 	path = circle
 	url = https://github.com/Tom1975/circle
 	branch = master
+[submodule "circle-stdlib"]
+	path = circle-stdlib
+	url = https://github.com/smuehlst/circle-stdlib
+	branch = master
