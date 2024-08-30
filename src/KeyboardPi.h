@@ -8,7 +8,7 @@
 
 #include "CPCCore/CPCCoreEmu/IKeyboard.h"
 #include "CPCCore/CPCCoreEmu/simple_string.h"
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include <vector>
 
 #define MAX_GAMEPADS	2
 

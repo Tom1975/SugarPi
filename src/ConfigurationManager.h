@@ -9,7 +9,7 @@
 
 #include "CPCCore/CPCCoreEmu/simple_string.h"
 #include "CPCCore/CPCCoreEmu/IConfiguration.h"
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include <vector>
 
 extern CLogger* log_s;
 

@@ -9,7 +9,7 @@
 #endif
 
 
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include <vector>
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/Snapshot.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"

@@ -4,7 +4,7 @@
 
 #include "CPCCore/CPCCoreEmu/IKeyboard.h"
 #include "CPCCore/CPCCoreEmu/simple_string.h"
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include <vector>
 #include "CPCCore/CPCCoreEmu/KeyboardHandler.h"
 #include "ConfigurationManager.h"
 

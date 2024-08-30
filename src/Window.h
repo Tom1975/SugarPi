@@ -15,7 +15,7 @@
 #define WAIT(x) std::this_thread::sleep_for(std::chrono::milliseconds(x));
 #endif
 
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include <vector>
 #include "BasicFrame.h"
 #include "PiBitmap.h"
 
