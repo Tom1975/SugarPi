@@ -1,4 +1,5 @@
 //
+#include <CPCCore/CPCCoreEmu/stdafx.h>
 #include "Engine.h"
 
 #ifdef  __circle__

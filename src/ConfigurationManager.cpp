@@ -1,6 +1,9 @@
+
+#include <CPCCore/CPCCoreEmu/stdafx.h>
+
 #include "ConfigurationManager.h"
 
-#include "CPCCore/CPCCoreEmu/simple_stdio.h"
+#include <stdio.h>
 
  CLogger* log_s = nullptr;
 
