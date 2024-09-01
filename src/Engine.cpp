@@ -1,4 +1,5 @@
 //
+#include <CPCCore/CPCCoreEmu/stdafx.h>
 #include "Engine.h"
 
 #ifdef  __circle__
@@ -7,8 +8,7 @@
 #include "CString.h"
 #endif
 
-#include "CPCCore/CPCCoreEmu/simple_filesystem.h"
-
+#include <filesystem>
 Engine::Engine(CLogger* log) :
    logger_(log),
    setup_(nullptr),

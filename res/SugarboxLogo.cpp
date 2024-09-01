@@ -1,13 +1,15 @@
 /* GIMP RGBA C-Source image dump (coolspot.c) */
 
-#include <memory.h>
 #include "SugarboxLogo.h"
 
-#include "CPCCore/CPCCoreEmu/simple_stdio.h"
 #include "files.h"
+#include <CPCCore/CPCCoreEmu/stdafx.h>
+#include <stdio.h>
+#include <memory.h>
+
 
 #ifdef  __circle__
-#include <circle/logger.h>
+//#include <circle/logger.h>
 #include <circle/spinlock.h>
 static CSpinLock   mutex_;
 void Lock() { mutex_.Acquire(); }
@@ -73,12 +75,12 @@ void SugarboxLogo::Load()
    if (fopen_s(&f, PATH_RES INTER_FILE "logo.bin", "r+b") == 0)
    {
       int size_read = fread(pixel_data_, Sugarbox_logo.width * Sugarbox_logo.height * Sugarbox_logo.bytes_per_pixel, 1, f);
-      CLogger::Get()->Write("MenuItemWindows", LogNotice, "Bitmap read : %X", size_read);
+      //CLogger::Get()->Write("MenuItemWindows", LogNotice, "Bitmap read : %X", size_read);
       fclose(f);
    }
 
    // Compute first byte to display per line.
-   CLogger::Get()->Write("MenuItemWindows", LogNotice, " Compute first byte to display per line.");
+   //CLogger::Get()->Write("MenuItemWindows", LogNotice, " Compute first byte to display per line.");
 
    for (int i = 0; i < Sugarbox_logo.height; i++)
    {

@@ -5,7 +5,7 @@
 #include <d2d1_1.h>
 
 #include <mutex>
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include <vector>
 
 using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")

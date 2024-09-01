@@ -6,7 +6,7 @@
 #include "CLogger.h"
 #endif
 
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include <vector>
 
 #include "BackFrame.h"
 #include "MenuFrame.h"
