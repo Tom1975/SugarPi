@@ -3,7 +3,7 @@
 #include "CLogger.h"
 
 #include "CPCCore/CPCCoreEmu/IKeyboard.h"
-#include "CPCCore/CPCCoreEmu/simple_string.h"
+#include <string.h>
 #include <vector>
 #include "CPCCore/CPCCoreEmu/KeyboardHandler.h"
 #include "ConfigurationManager.h"

@@ -7,7 +7,7 @@
 #include <circle/devicenameservice.h>
 
 #include "CPCCore/CPCCoreEmu/IKeyboard.h"
-#include "CPCCore/CPCCoreEmu/simple_string.h"
+#include <string>
 #include <vector>
 
 #define MAX_GAMEPADS	2

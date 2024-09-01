@@ -6,10 +6,9 @@
 #include "CLogger.h"
 #endif
 
-
-#include "CPCCore/CPCCoreEmu/simple_string.h"
-#include "CPCCore/CPCCoreEmu/IConfiguration.h"
 #include <vector>
+#include <string>
+#include "CPCCore/CPCCoreEmu/IConfiguration.h"
 
 extern CLogger* log_s;
 

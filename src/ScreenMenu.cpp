@@ -6,6 +6,11 @@
 
 #include "files.h"
 
+#ifdef  __circle__
+#include <strings.h>
+#define stricmp strcasecmp
+#define strnicmp strncasecmp
+#endif
 
 #include "res/button_1.h"
 //#include "res/coolspot.h"

@@ -130,11 +130,7 @@ set(CpcCore_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/PSG.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Screen.h
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Sig.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/simple_filesystem.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/simple_math.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/simple_regex.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/simple_stdio.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/simple_string.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Snapshot.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/SoundMixer.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Tape.cpp

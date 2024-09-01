@@ -3,6 +3,10 @@
 #ifdef  __circle__
 #include <circle/logger.h>
 #include <circle/string.h>
+
+#define stricmp strcasecmp
+#define strnicmp strncasecmp
+
 #else
 #include "CLogger.h"
 #include "CString.h"

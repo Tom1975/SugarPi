@@ -64,10 +64,7 @@ OBJS	= src/main.o\
 		CPCCore/CPCCoreEmu/PSG.o \
 		CPCCore/CPCCoreEmu/rand.o \
 		CPCCore/CPCCoreEmu/Sig.o \
-		CPCCore/CPCCoreEmu/simple_filesystem.o \
-		CPCCore/CPCCoreEmu/simple_math.o \
 		CPCCore/CPCCoreEmu/simple_regex.o \
-		CPCCore/CPCCoreEmu/simple_string.o \
 		CPCCore/CPCCoreEmu/Snapshot.o \
 		CPCCore/CPCCoreEmu/SoundMixer.o\
 		CPCCore/CPCCoreEmu/Tape.o\
