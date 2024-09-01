@@ -6,10 +6,9 @@
 #include "CLogger.h"
 #endif
 
-
-#include "CPCCore/CPCCoreEmu/simple_string.h"
+#include <vector>
+#include <string>
 #include "CPCCore/CPCCoreEmu/IConfiguration.h"
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
 
 extern CLogger* log_s;
 
@@ -51,7 +50,7 @@ protected:
             //log_s->Write("Association", LogNotice, "default creator");
          }
          
-         Association(const Association<T>& assoc)
+         Association(const Association& assoc)
          {
             //log_s->Write("Association", LogNotice, "assoc creator");
             key = assoc.key;

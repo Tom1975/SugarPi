@@ -5,7 +5,7 @@
 #include <circle/logger.h>
 #include <circle/bcmframebuffer.h>
 
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include <vector>
 
 #include <bcm_host.h>
 

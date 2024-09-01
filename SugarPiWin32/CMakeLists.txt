@@ -26,8 +26,8 @@ set(Source_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPiDesktop.h
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetupDesktop.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetupDesktop.h
-		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.h
+#		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.cpp
+#		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.h
 		
 
 #		${CMAKE_CURRENT_SOURCE_DIR}/kernel.cpp
@@ -59,6 +59,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BackFrame.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BasicFrame.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BasicFrame.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/ConfigurationManager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/ConfigurationManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CString.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CString.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/DisplayPi.cpp
@@ -128,11 +130,7 @@ set(CpcCore_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/PSG.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Screen.h
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Sig.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/simple_filesystem.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/simple_math.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/simple_regex.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/simple_stdio.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/simple_string.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Snapshot.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/SoundMixer.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Tape.cpp
@@ -170,7 +168,7 @@ target_compile_definitions(SugarPiWin32 PUBLIC -DNO_MULTITHREAD)
 
 target_compile_features(SugarPiWin32  PRIVATE cxx_std_17)
 target_compile_definitions(SugarPiWin32 PUBLIC -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -DLOG_MIXER -DLOGFDC -DNO_CUSTOM_OPCODES -DARM_ALLOW_MULTI_CORE)
-target_compile_definitions(SugarPiWin32 PUBLIC -DPROFILE)
+target_compile_definitions(SugarPiWin32 PUBLIC -DPROFILE -DTEST_VECTOR)
 
 
 set (CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/Install)

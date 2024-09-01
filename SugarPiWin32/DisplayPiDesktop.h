@@ -6,6 +6,7 @@
 
 #include <mutex>
 #include <vector>
+
 using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")
 

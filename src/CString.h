@@ -28,7 +28,7 @@ public:
 		return *this;
 	}
 
-	CString& operator = (CString&& rrString)
+	CString& operator = (CString&& rrString) noexcept
 	{
 		inner_string_ = rrString.inner_string_;
 		return *this;

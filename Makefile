@@ -2,7 +2,9 @@
 # Makefile
 #
 
-CIRCLEHOME = ./circle
+include Config.mk
+CIRCLEHOME = circle-stdlib/libs/circle
+NEWLIBDIR = circle-stdlib/install/$(NEWLIB_ARCH)
 
 OBJS	= src/main.o\
 		src/kernel.o\
@@ -62,11 +64,7 @@ OBJS	= src/main.o\
 		CPCCore/CPCCoreEmu/PSG.o \
 		CPCCore/CPCCoreEmu/rand.o \
 		CPCCore/CPCCoreEmu/Sig.o \
-		CPCCore/CPCCoreEmu/simple_filesystem.o \
-		CPCCore/CPCCoreEmu/simple_math.o \
 		CPCCore/CPCCoreEmu/simple_regex.o \
-		CPCCore/CPCCoreEmu/simple_stdio.o \
-		CPCCore/CPCCoreEmu/simple_string.o \
 		CPCCore/CPCCoreEmu/Snapshot.o \
 		CPCCore/CPCCoreEmu/SoundMixer.o\
 		CPCCore/CPCCoreEmu/Tape.o\
@@ -86,7 +84,11 @@ EXTRACLEAN = $(OBJS)
 		
 OPTIMIZE = -O3
 
-LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
+LIBS	= circle-stdlib/install/arm-none-circle/lib/libcirclenewlib.a \
+		 circle-stdlib/install/arm-none-circle/lib/libc.a \
+		 circle-stdlib/install/arm-none-circle/lib/libg.a \
+		 circle-stdlib/install/arm-none-circle/lib/libm.a \
+		 $(CIRCLEHOME)/lib/libcircle.a \
          $(CIRCLEHOME)/lib/fs/fat/libfatfs.a \
          $(CIRCLEHOME)/lib/fs/libfs.a \
          $(CIRCLEHOME)/lib/usb/libusb.a \
@@ -102,9 +104,10 @@ LIBS	= $(CIRCLEHOME)/lib/libcircle.a \
 		 $(CIRCLEHOME)/addon/vc4/interface/vmcs_host/libvmcs_host.a \
 		 $(CIRCLEHOME)/addon/vc4/interface/vcos/libvcos.a 
 
- 
-include circle/Rules.mk
+STDLIB_SUPPORT = 3 
+include circle-stdlib/libs/circle/Rules.mk
 
-CFLAGS	+= -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE
-CPPFLAGS += -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE -std=c++1z
+CFLAGS += -I "$(NEWLIBDIR)/include" -I "$(STDDEF_INCPATH)" -I "$(CIRCLEHOME)"
+CFLAGS	+= -D_USE_LONG_TIME_T -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE
+CPPFLAGS += -D_USE_LONG_TIME_T -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE -std=c++1z
 

@@ -3,13 +3,17 @@
 #ifdef  __circle__
 #include <circle/logger.h>
 #include <circle/string.h>
+
+#define stricmp strcasecmp
+#define strnicmp strncasecmp
+
 #else
 #include "CLogger.h"
 #include "CString.h"
 #endif
 
 
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include <vector>
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/Snapshot.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"

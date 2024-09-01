@@ -12,6 +12,18 @@ violet		ACBUS0	/TRST	22
 noir		GND		GND
 	
 - Ajouter  enable_jtag_gpio=1 dans config.txt
+- config.txt pour jtag : 
+
+[all]
+enable_jtag_gpio=1
+[pi4]
+kernel=kernel7l.img
+[pi400]
+kernel=kernel7l.img
+[cm4]
+otg_mode=1
+
+
 
 OPENCOD : 
 cd /d/DEV/02-BareMetal/OpenOCD/
