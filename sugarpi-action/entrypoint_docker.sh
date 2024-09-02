@@ -7,4 +7,5 @@
 chmod +x ./build_pi4_32bits.sh
 
 #./build_all.sh
-exit ./build_pi4_32bits.sh
+./build_pi4_32bits.sh
+exit $?
