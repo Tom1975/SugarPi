@@ -1,6 +1,9 @@
 echo "*** Build target for Raspberry Pi 4 ***"
 
 # Set arch
+AARCH=32
+echo "Architecture : $AARCH "
+
 echo ARCH = 32                        > Config.mk
 echo FLOAT_ABI = hard                 > Config.mk
 echo RASPPI = 4							          >> Config.mk
