@@ -3,8 +3,6 @@
 
 #include <memory.h>
 
-#include "res/button_1.h"
-
 #ifdef  __circle__
 #define WAIT(x) CTimer::Get ()->MsDelay(x)
 #else
