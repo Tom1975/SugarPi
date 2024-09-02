@@ -12,9 +12,7 @@
 
 #include <math.h> 
 
-#include "res/button_1.h"
-#include "res/coolspot.h"
-#include "res/SugarboxLogo.h"
+#include "SugarboxLogo.h"
 
 ///////////////////////////////////////////////////////////////////////
 // Define for memory handle

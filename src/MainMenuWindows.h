@@ -11,7 +11,7 @@
 #include "BasicFrame.h"
 #include "Window.h"
 
-#include "res/SugarboxLogo.h"
+#include "SugarboxLogo.h"
 
 
 class MainMenuWindows : public Window
