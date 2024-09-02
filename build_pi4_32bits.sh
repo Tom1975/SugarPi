@@ -17,8 +17,8 @@ echo CHECK_DEPS = 0                   >> Config.mk
 #cp Config2.mk  circle-stdlib/
 ./build_circle.sh
 retn_code=$?
-if retn_code
-then
+
+if [ $retn_code -eq 0 ];then
   echo "circle built correctly"
 else
   echo "*** ERROR BUILDING CIRCLE !!"
