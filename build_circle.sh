@@ -50,7 +50,7 @@ cd ../../../boot
 make clean
 make
 
-if [ $AARCH" -eq 64 ];then
+if [ "$AARCH" -eq 64 ];then
     make armstub64
 else
     make armstub
