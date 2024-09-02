@@ -13,6 +13,15 @@ echo CHECK_DEPS = 0                   >> Config.mk
 #cp Config2.mk circle-stdlib/libs/circle/
 #cp Config2.mk  circle-stdlib/
 ./build_circle.sh
+retn_code=$?
+if retn_code
+then
+  echo "circle built correctly"
+else
+  echo "*** ERROR BUILDING CIRCLE !!"
+  exit -1
+fi
+
 
 # check output dir
 make clean
