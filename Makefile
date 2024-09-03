@@ -26,7 +26,7 @@ OBJS	= src/main.o\
 		src/ScreenMenu.o\
 		src/schrift.o \
 		src/Window.o\
-		res/SugarboxLogo.o\
+		src/SugarboxLogo.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
 		CPCCore/CPCCoreEmu/CAPSFile.o\
@@ -86,7 +86,6 @@ OPTIMIZE = -O3
 
 LIBS	= circle-stdlib/install/arm-none-circle/lib/libcirclenewlib.a \
 		 circle-stdlib/install/arm-none-circle/lib/libc.a \
-		 circle-stdlib/install/arm-none-circle/lib/libg.a \
 		 circle-stdlib/install/arm-none-circle/lib/libm.a \
 		 $(CIRCLEHOME)/lib/libcircle.a \
          $(CIRCLEHOME)/lib/fs/fat/libfatfs.a \

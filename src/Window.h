@@ -64,7 +64,7 @@ public:
    virtual void Create(Window* parent, int x, int y, unsigned int width, unsigned int height);
    virtual void AddChild(Window* child);
 
-   void WindowsToDisplay(int& x, int& y);
+   virtual void WindowsToDisplay(int& x, int& y);
    virtual void Clear();
    virtual void ClearAll();
    virtual void Redraw (bool clear = true);

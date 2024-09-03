@@ -12,9 +12,6 @@
 #define strnicmp strncasecmp
 #endif
 
-#include "res/button_1.h"
-//#include "res/coolspot.h"
-
 #define MAX_ITEM_PER_PAGE 10
 #define MOVE_BASE 7
 
@@ -350,8 +347,6 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
    {
       // Display menu bitmap
       file_menu->GetMenu()->AddMenuItem(array_ordered[i]->fname, new ActionMenuWithParameter<const char*>(this, load_action, array_ordered[i]->fname) );
-      
-      i++;
    }
    logger_->Write("Menu", LogNotice, "Insert Media : End of Menu creation");
    file_menu->ResetMenu ();
