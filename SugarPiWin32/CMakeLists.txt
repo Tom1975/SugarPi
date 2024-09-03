@@ -88,7 +88,6 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/SugarboxLogo.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/SugarboxLogo.h
-
 )
 
 set(CpcCore_Files

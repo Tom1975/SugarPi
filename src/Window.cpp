@@ -80,7 +80,7 @@ void Window::Clear()
    // Background
    int x = 0, y = 0;
    WindowsToDisplay(x, y);
-   for (int i = y; i < display_->GetHeight() && i < y + height_; i++)
+   for (int i = std::max<int> (0, y); i < display_->GetHeight() && i < y + height_; i++)
    {
       int* line = display_->GetBuffer(i);
       int size_to_clear = width_ + x;
@@ -259,6 +259,10 @@ void Window::RemoveFocus ()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
+
+#define INTERLINE_SPACE 40
+
+
 SFT *MenuItemWindows::fnt_italic_ = nullptr;
 SFT *MenuItemWindows::fnt_normal_ = nullptr;
 
@@ -420,9 +424,9 @@ void ScrollWindows::RedrawChildren ()
    WindowsQueue** current_queue = &windows_children_;
    while ( *current_queue != nullptr)
    {  
-      if ( (*current_queue)->wnd_->GetX() + scroll_offset_x_>= 0 && (*current_queue)->wnd_->GetY() +scroll_offset_y_>= 0 
-      && (*current_queue)->wnd_->GetWidth() + (*current_queue)->wnd_->GetX() + scroll_offset_x_<= width_ 
-      && (*current_queue)->wnd_->GetHeight() + (*current_queue)->wnd_->GetY() + scroll_offset_y_<= height_ )
+      if ( (*current_queue)->wnd_->GetX() - scroll_offset_x_>= 0 && (*current_queue)->wnd_->GetY() -scroll_offset_y_>= 0 
+      && (*current_queue)->wnd_->GetWidth() + (*current_queue)->wnd_->GetX() - scroll_offset_x_<= width_ 
+      && (*current_queue)->wnd_->GetHeight() + (*current_queue)->wnd_->GetY() - scroll_offset_y_<= height_ )
       {
          (*current_queue)->wnd_->RedrawWindow();
          (*current_queue)->wnd_->RedrawChildren();
@@ -434,8 +438,8 @@ void ScrollWindows::RedrawChildren ()
 
 void ScrollWindows::WindowsToDisplay(int& x, int& y)
 {
-   x += x_ + scroll_offset_x_;
-   y += y_ + scroll_offset_y_;
+   x += x_ - scroll_offset_x_;
+   y += y_ - scroll_offset_y_;
    if ( parent_ != nullptr)
    {
       parent_->WindowsToDisplay ( x, y);
@@ -479,7 +483,7 @@ void MenuWindows::AddMenuItem (const char* label, IAction* action)
 
    // Add item to menu
    MenuItemWindows* item = new MenuItemWindows (display_);
-   item->Create( label, &scroll_window_, 10, list_item_.size()*40, width_ - 10, 38);
+   item->Create( label, &scroll_window_, 10, list_item_.size()* INTERLINE_SPACE, width_ - 10, INTERLINE_SPACE-2);
    item->SetAction(action);
 
    list_item_.push_back(item);
@@ -495,7 +499,7 @@ void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* act
    // Add item to menu
    //CLogger::Get ()->Write("Menu", LogNotice, "add menucheck : %s ", label);
    CheckMenuItemWindows* item = new CheckMenuItemWindows (display_);
-   item->Create( label, value, &scroll_window_, 10, list_item_.size()*20, width_, 19);
+   item->Create( label, value, &scroll_window_, 10, list_item_.size()* INTERLINE_SPACE, width_, INTERLINE_SPACE - 1);
    item->SetAction(action);
 
    list_item_.push_back(item);
@@ -519,14 +523,14 @@ void MenuWindows::ComputeScroller()
 {
    //CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller");
    // check current focus, depending on windows size
-   int distant_to_top = current_focus_ * 20;
-   int distant_to_bottom = (static_cast<int>(list_item_.size()) - (current_focus_+1)) *20;
+   int distant_to_top = current_focus_ * INTERLINE_SPACE;
+   int distant_to_bottom = (static_cast<int>(list_item_.size()) - (current_focus_+1)) * INTERLINE_SPACE;
    int win_h = distant_to_top - height_ / 2;
    int win_h2b = distant_to_bottom - height_ / 2;
 
    // rules : 
    int scroll_y;
-   if ( win_h < 0 || win_h2b < 0)
+   if ( win_h < 0 )
    {
       scroll_y = 0;
    } 
