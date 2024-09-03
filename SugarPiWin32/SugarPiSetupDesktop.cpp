@@ -9,6 +9,7 @@
 #define KEY_SYNC_SOUND     "sound"
 #define KEY_SYNC_FRAME     "frame"
 
+#define LANGUAUGE_ID       "language"
 
 #define DEFAULT_CART "CART/crtc3_projo.cpr"
 #define DEFAULT_LAYOUT "LAYOUT/101_keyboard"
@@ -24,8 +25,9 @@ SugarPiSetup::~SugarPiSetup()
    delete config_;  
 }
 
-void  SugarPiSetup::Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard, KeyboardPi* keyboard)
+void  SugarPiSetup::Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard, KeyboardPi* keyboard, MultiLanguage* language)
 {
+   language_ = language;
    display_ = display;
    sound_ = sound;
    motherboard_ = motherboard;
@@ -56,8 +58,11 @@ void SugarPiSetup::Load()
    {
       keyboard_->LoadKeyboard (buffer);
    }
-   // todo
+
+   // Language
+   language_->ChangeLanguage(config_->GetConfigurationInt(SECTION_SETUP, LANGUAUGE_ID, 0));
    
+
    // Hardware configuration
 
    // Current cartridge

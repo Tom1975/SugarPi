@@ -107,9 +107,9 @@ protected:
    int display_height_full_;
 
    // buffer handling   
-   int nb_buffers_;
-   int current_buffer_;
-   int display_buffer_;
+   unsigned int nb_buffers_;
+   unsigned int current_buffer_;
+   unsigned int display_buffer_;
    unsigned char** display_frame_buffer_;
    
    typedef enum

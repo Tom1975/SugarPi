@@ -19,7 +19,6 @@
 #include "BasicFrame.h"
 #include "PiBitmap.h"
 
-//#include "res/coolspot.h"
 #include "schrift.h"
 
 class IAction
@@ -85,6 +84,7 @@ public:
    int GetHeight(){return height_;}
 
    void ForceStop();
+
 protected:
 
    // Display

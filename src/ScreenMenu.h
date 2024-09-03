@@ -17,7 +17,7 @@
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/Snapshot.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
-
+#include "MultiLanguage.h"
 #include "DisplayPi.h"
 
 #ifdef  __circle__
@@ -47,7 +47,14 @@ class ScreenMenu : public IEvent
 
 public:
 
-   ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup);
+   ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, 
+         DisplayPi* display, 
+         SoundMixer* sound_mixer, 
+         KeyboardPi* keyboard, 
+         Motherboard* motherboard, 
+         SugarPiSetup* setup, 
+         MultiLanguage* language);
+
    virtual ~ScreenMenu();
 
    IEvent::Event GetEvent ();
@@ -55,6 +62,7 @@ public:
    IAction::ActionReturn Handle();
 
    IAction::ActionReturn Back();
+   IAction::ActionReturn ChangeLanguage();
    IAction::ActionReturn HardwareSetup();
    IAction::ActionReturn InsertCartridge();
    IAction::ActionReturn InsertDisk();
@@ -69,6 +77,7 @@ public:
    IAction::ActionReturn Resume();
    IAction::ActionReturn Save();
    IAction::ActionReturn SelectAmstrad();
+   IAction::ActionReturn SetLanguage(int value);
    IAction::ActionReturn SetSync(bool* value);
    IAction::ActionReturn ShutDown();
    IAction::ActionReturn SugarSetup();
@@ -77,6 +86,8 @@ public:
 
    void LoadConfiguration  (const char* config_name, const char* ini_file);
    void ForceStop();
+
+   MultiLanguage* language_;
 
    class MenuItem
    {

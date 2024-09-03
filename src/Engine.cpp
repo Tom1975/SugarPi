@@ -18,7 +18,8 @@ Engine::Engine(CLogger* log) :
    sound_(nullptr),
    sound_mixer_(nullptr),
    current_settings_(nullptr),
-   menu(nullptr)
+   menu(nullptr),
+   language_(nullptr)
 {
    sound_mixer_ = new SoundMixer();
    current_settings_ = new MachineSettings();
@@ -27,12 +28,19 @@ Engine::Engine(CLogger* log) :
 Engine::~Engine()
 {
    delete sound_mixer_;
+   delete language_;
 }
 
 boolean Engine::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keyboard)
 {
    log_.SetLogger(logger_);
    logger_->Write("Kernel", LogNotice, "Emulation::Initialize");
+
+   if (setup_ != nullptr)
+   {
+      language_ = new MultiLanguage(setup_->GetConfigurationManager());
+      language_->Init("RES/labels.ini");
+   }
 
    sound_ = sound;
    display_ = display;
@@ -58,11 +66,11 @@ boolean Engine::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keybo
    motherboard_->GetSig()->fdc_present_ = true;
    motherboard_->GetPPI()->SetExpSignal(true);
 
-   menu = new ScreenMenu(this, &log_, logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
+   menu = new ScreenMenu(this, &log_, logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_, language_);
    logger_->Write("Kernel", LogNotice, "End of Emulation init.");
 
    // Setup
-   setup_->Init(display, sound_mixer_, motherboard_, keyboard_);
+   setup_->Init(display, sound_mixer_, motherboard_, keyboard_, language_);
    setup_->Load();
 
    Reset();

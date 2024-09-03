@@ -14,6 +14,8 @@
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
 #include "CPCCore/CPCCoreEmu/MachineSettings.h"
+
+#include "MultiLanguage.h"
 #include "ConfigurationManager.h"
 
 class SugarPiSetup
@@ -22,7 +24,7 @@ public :
    SugarPiSetup ( CLogger* log);
    virtual ~SugarPiSetup();
 
-   void Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard, KeyboardPi* keyboard);
+   void Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard, KeyboardPi* keyboard, MultiLanguage* language);
 
    void Load();
    void Save();
@@ -52,6 +54,7 @@ protected:
    SoundMixer* sound_;
    Motherboard* motherboard_;
    KeyboardPi* keyboard_;
+   MultiLanguage* language_;
 
    ConfigurationManager* config_;
 

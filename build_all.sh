@@ -92,3 +92,4 @@ cp "res/Facile_Sans.ttf" "sdcard/FONTS/Facile_Sans.ttf"
 cp "res/logo.bin" "sdcard/RES/logo.bin"
 cp res/ROMS/* sdcard/ROMS
 cp res/AMSTRAD/* sdcard/AMSTRAD
+cp res/labels.ini sdcard/RES
