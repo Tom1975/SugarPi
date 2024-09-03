@@ -22,6 +22,8 @@ Emulation::Emulation(CMemorySystem* pMemorySystem, CLogger* log, CTimer* timer)
 Emulation::~Emulation(void)
 {
    delete motherboard_;
+   delete setup_;
+   delete language_;
 }
 
 const char* Emulation::GetBaseDirectory()
@@ -34,6 +36,12 @@ boolean Emulation::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* ke
    scheduler_ = scheduler;
 
    Engine::Initialize(display, sound, keyboard);
+
+   if (setup_ != nullptr)
+   {
+      language_ = new MultiLanguage(setup_->GetConfigurationManager());
+      language_->Init("RES/labels.ini");
+   }
 
 #ifdef ARM_ALLOW_MULTI_CORE
    logger_->Write("Kernel", LogNotice, "CMultiCoreSupport is going to initialize");
@@ -129,7 +137,7 @@ void Emulation::RunMainLoop()
       {
          logger_->Write("Kernel", LogNotice, "Select...");
          
-         ScreenMenu menu(this, &log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_);
+         ScreenMenu menu(this, &log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_, language_);
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
          // todo : find a smart way to signal exit
          /*finished = */(menu.Handle()/* == IAction::Action_Shutdown*/);

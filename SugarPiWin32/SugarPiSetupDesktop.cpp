@@ -15,7 +15,7 @@
 #define DEFAULT_LAYOUT "LAYOUT/101_keyboard"
 
 
-SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr), keyboard_(nullptr)
+SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr), keyboard_(nullptr), language_(nullptr)
 {
    config_ = new ConfigurationManager(log);
 }
@@ -60,7 +60,8 @@ void SugarPiSetup::Load()
    }
 
    // Language
-   language_->ChangeLanguage(config_->GetConfigurationInt(SECTION_SETUP, LANGUAUGE_ID, 0));
+   language_id_ = config_->GetConfigurationInt(SECTION_SETUP, LANGUAUGE_ID, 0);
+   language_->ChangeLanguage(language_id_);
    
 
    // Hardware configuration

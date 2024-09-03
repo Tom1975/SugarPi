@@ -54,6 +54,8 @@ protected:
    SoundMixer* sound_;
    Motherboard* motherboard_;
    KeyboardPi* keyboard_;
+
+   unsigned int language_id_;
    MultiLanguage* language_;
 
    ConfigurationManager* config_;
