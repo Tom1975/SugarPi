@@ -58,6 +58,7 @@ OBJS	= src/main.o\
 		CPCCore/CPCCoreEmu/Monitor.o \
 		CPCCore/CPCCoreEmu/Motherboard.o\
 		CPCCore/CPCCoreEmu/MultifaceII.o\
+		CPCCore/CPCCoreEmu/MultiLanguage.o\
 		CPCCore/CPCCoreEmu/PPI.o \
 		CPCCore/CPCCoreEmu/PlayCity.o \
 		CPCCore/CPCCoreEmu/PrinterDefault.o\
