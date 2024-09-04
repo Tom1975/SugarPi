@@ -156,6 +156,24 @@ void ScreenMenu::LoadConfiguration  (const char* config_name, const char* ini_fi
    
 }
 
+/// <summary>
+/// Select amstrad function:
+/// 
+/// This functions will allow an easy selection of the precise Amstrad to Emulate.
+/// First, user can choose between : 
+///   - Amstrad CPC 464
+///   - Amstrad CPC 664
+///   - Amstrad CPC 6128
+///   - Amstrad 664 PLUS
+///   - Amstrad 6128 PLUS
+///   - GX4000
+/// 
+/// Then, for each computer (464, 664, 6128), the origin language will have to be chosen.
+/// 
+/// Next, addons will be added / removed through anoter menu
+/// 
+/// </summary>
+/// <returns></returns>
 IAction::ActionReturn ScreenMenu::SelectAmstrad()
 {
    CString search_path = PATH_CONFIGS;
