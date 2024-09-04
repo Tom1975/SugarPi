@@ -352,7 +352,7 @@ KeyboardPi::~KeyboardPi()
 bool KeyboardPi::Initialize()
 {
    // Load gamecontrollerdb.txt
-   LoadGameControllerDB();
+   //LoadGameControllerDB();
 
    if (dwhci_device_->Initialize() == false)
    {
@@ -360,7 +360,7 @@ bool KeyboardPi::Initialize()
    }
    logger_->Write("Keyboard", LogNotice, "Initialize done.");
 
-   UpdatePlugnPlay();
+   //UpdatePlugnPlay();
 
    return true;
 }
@@ -475,7 +475,7 @@ bool KeyboardPi::IsSelect()
 {
    return select_;
 }
-
+/*
 bool KeyboardPi::IsDown()
 {
    if (action_buttons_ & (GamePadButtonDown))
@@ -489,15 +489,14 @@ bool KeyboardPi::IsDown()
    {
       return false;
    }
+}*/
 
-}
-
-bool KeyboardPi::IsUp()
+bool KeyboardPi::IsButton(TGamePadButton button)
 {
-   if (action_buttons_ & (GamePadButtonUp))
+   if (action_buttons_ & (button))
    {
       mutex_.Acquire();
-      action_buttons_ &= ~(GamePadButtonUp);
+      action_buttons_ &= ~(button);
       mutex_.Release();
       return true;
    }
@@ -777,9 +776,10 @@ FILINFO file_info;
    f_close(&File);
 
    logger_->Write("KeyboardPi", LogNotice, "Loading game controller db... Done !");
+
 }
 
-void KeyboardPi::LoadKeyboardLayout (const char* path)
+void KeyboardPi::LoadKeyboard(const char* path)
 {
    // Open file
    FIL File;

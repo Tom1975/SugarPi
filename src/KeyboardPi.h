@@ -7,8 +7,8 @@
 #include <circle/devicenameservice.h>
 
 #include "CPCCore/CPCCoreEmu/IKeyboard.h"
-#include "CPCCore/CPCCoreEmu/simple_string.h"
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#include <string>
+#include <vector>
 
 #define MAX_GAMEPADS	2
 
@@ -81,7 +81,7 @@ public:
 
     bool Initialize();
     void InitKeyboard (unsigned char key_map[10][8]);
-    void LoadKeyboardLayout (const char* path);
+    void LoadKeyboard(const char* path);
 
     virtual unsigned char GetKeyboardMap(int index);
     void UpdatePlugnPlay();
@@ -93,17 +93,17 @@ public:
 
    void ClearBuffer();
    bool IsSelect();
-   bool IsDown();
-   bool IsUp();
+   bool IsButton(TGamePadButton button);
    bool IsAction();
    void ReinitSelect();
+
+   void LoadGameControllerDB();
 
    static void GamePadRemovedHandler (CDevice *pDevice, void *pContext);
    static void GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState);
    static void KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6]);
    static void KeyboardRemovedHandler (CDevice *pDevice, void *pContext);
 protected:
-   void LoadGameControllerDB();
    GamepadDef* LookForDevice (const TUSBDeviceDescriptor* descriptor);
    //void UpdateKeyboardMap();
 

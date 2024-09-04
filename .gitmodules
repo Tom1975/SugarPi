@@ -1,7 +1,7 @@
 [submodule "CPCCore"]
 	path = CPCCore
 	url = https://github.com/Tom1975/CPCCore.git
-[submodule "circle"]
-	path = circle
-	url = https://github.com/Tom1975/circle
+[submodule "circle-stdlib"]
+	path = circle-stdlib
+	url = https://github.com/smuehlst/circle-stdlib
 	branch = master

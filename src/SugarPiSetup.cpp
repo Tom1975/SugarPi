@@ -12,10 +12,12 @@
 #define KEY_SYNC_SOUND     "sound"
 #define KEY_SYNC_FRAME     "frame"
 
+#define LANGUAUGE_ID       "language"
+
 #define DEFAULT_CART "SD:/CART/crtc3_projo.cpr"
 #define DEFAULT_LAYOUT "SD:/LAYOUT/101_keyboard"
 
-SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr), keyboard_(nullptr)
+SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr), keyboard_(nullptr), language_(nullptr)
 {
    config_ = new ConfigurationManager(log);
 }
@@ -25,8 +27,9 @@ SugarPiSetup::~SugarPiSetup()
    delete config_;  
 }
 
-void  SugarPiSetup::Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard, KeyboardPi* keyboard)
+void  SugarPiSetup::Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard, KeyboardPi* keyboard, MultiLanguage* language)
 {
+   language_ = language;
    display_ = display;
    sound_ = sound;
    motherboard_ = motherboard;
@@ -55,11 +58,16 @@ void SugarPiSetup::Load()
    // Keyboard layout (if any)
    if (config_->GetConfiguration (SECTION_SETUP, KEY_LAYOUT, DEFAULT_LAYOUT, buffer, SIZE_OF_BUFFER ))
    {
-      keyboard_->LoadKeyboardLayout (buffer);
+      keyboard_->LoadKeyboard(buffer);
    }
-   // todo
-   
+
+   // Language
+   language_id_ = config_->GetConfigurationInt(SECTION_SETUP, LANGUAUGE_ID, 0);
+   language_->ChangeLanguage(language_id_);
+
+
    // Hardware configuration
+
 
    // Current cartridge
    if (config_->GetConfiguration (SECTION_SETUP, KEY_CART, DEFAULT_CART, buffer, SIZE_OF_BUFFER ))
@@ -78,6 +86,10 @@ void SugarPiSetup::Save()
 
    // Current cartridge
    config_->SetConfiguration (SECTION_SETUP, KEY_CART, cart_path_.c_str());
+
+   char language[16]={0};
+   sprintf(language, "%i", language_id_);
+   config_->SetConfiguration (SECTION_SETUP, LANGUAUGE_ID, language);
 
    config_->CloseFile();
 }
@@ -101,6 +113,15 @@ SugarPiSetup::SYNC_TYPE  SugarPiSetup::GetSync ()
 {
    return sync_;
 }
+
+MachineSettings* SugarPiSetup::LoadSetup(const char* path)
+{
+   return MachineSettings::CreateSettings(config_, path);
+
+   // 
+}
+
+
 
 void SugarPiSetup::LoadCartridge (const char* path)
 {
@@ -201,3 +222,4 @@ int SugarPiSetup::LoadCprFromBuffer(unsigned char* buffer, int size)
 
    return 0;
 }
+

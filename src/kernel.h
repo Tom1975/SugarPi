@@ -44,6 +44,7 @@
 #include <CPCCore/CPCCoreEmu/SoundMixer.h>
 
 #include "DisplayPi.h"
+#include "DisplayPiImp.h"
 #include "KeyboardPi.h"
 #include "SoundPi.h"
 #include "emulation.h"
@@ -91,7 +92,7 @@ private:
    CVCHIQDevice		vchiq_;
    //SoundMixer        *sound_mixer_;
 	//Motherboard       *motherboard_emulation_;
-	DisplayPi         *display_;
+	DisplayPiImp      *display_;
    KeyboardPi        *keyboard_;
    SoundPi*          sound_;
 

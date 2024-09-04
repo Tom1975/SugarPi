@@ -17,3 +17,9 @@ pi2**
 /.vscode/**
 /build/**
 all
+
+/_build/**
+/build_/**
+/out/**
+/_sdcard/**
+**.orig
