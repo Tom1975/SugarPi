@@ -86,9 +86,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScreenMenu.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../res/SugarboxLogo.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../res/SugarboxLogo.h
-
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/SugarboxLogo.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/SugarboxLogo.h
 )
 
 set(CpcCore_Files
@@ -124,6 +123,8 @@ set(CpcCore_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Monitor.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Motherboard.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/MultifaceII.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/MultiLanguage.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/MultiLanguage.h
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/PPI.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/PlayCity.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/PrinterDefault.cpp
@@ -146,15 +147,19 @@ set(CpcCore_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z84C30.cpp
 )
 
+set (RES 
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/labels.ini
+)
+
 add_definitions()
 
-source_group("Application" FILES ${RES} )
 source_group("CPCCORE" FILES ${CpcCore_Files} )
 source_group("Sugarpi" FILES ${SugarPi_Files} )
+source_group("Resources" FILES ${RES} )
 
 set(ALL_FILES ${Source_Files} ${CpcCore_Files} ${SugarPi_Files})
 
-add_executable(SugarPiWin32 WIN32)
+add_executable(SugarPiWin32 WIN32 ${RES})
 
 target_sources(SugarPiWin32 PUBLIC ${ALL_FILES} )
 target_link_libraries(SugarPiWin32 PUBLIC Shlwapi.lib Dwmapi.lib Winmm.lib D2d1.lib)
@@ -180,6 +185,7 @@ install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../gamecontrollerdb.txt DESTINATION $
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../res/101_keyboard  DESTINATION ${CMAKE_INSTALL_PREFIX}/LAYOUT)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Facile_Sans.ttf"  DESTINATION ${CMAKE_INSTALL_PREFIX}/FONTS)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/logo.bin"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
+install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/labels.ini"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
 install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../res/ROMS DESTINATION ${CMAKE_INSTALL_PREFIX}/)
 install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../res/AMSTRAD DESTINATION ${CMAKE_INSTALL_PREFIX})
 

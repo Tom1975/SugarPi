@@ -17,6 +17,7 @@
 
 #endif
 
+#include "MultiLanguage.h"
 #include "ScreenMenu.h"
 #include "log.h"
 
@@ -39,6 +40,8 @@ public:
 protected:
    void LoadRom(int rom_number, const char* path);
 
+   ConfigurationManager language_manager_;
+   MultiLanguage* language_;
    CLogger* logger_;
    SugarPiSetup* setup_;
    Motherboard* motherboard_;

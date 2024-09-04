@@ -26,7 +26,7 @@ OBJS	= src/main.o\
 		src/ScreenMenu.o\
 		src/schrift.o \
 		src/Window.o\
-		res/SugarboxLogo.o\
+		src/SugarboxLogo.o\
 		CPCCore/CPCCoreEmu/Asic.o\
 		CPCCore/CPCCoreEmu/Bus.o\
 		CPCCore/CPCCoreEmu/CAPSFile.o\
@@ -58,6 +58,7 @@ OBJS	= src/main.o\
 		CPCCore/CPCCoreEmu/Monitor.o \
 		CPCCore/CPCCoreEmu/Motherboard.o\
 		CPCCore/CPCCoreEmu/MultifaceII.o\
+		CPCCore/CPCCoreEmu/MultiLanguage.o\
 		CPCCore/CPCCoreEmu/PPI.o \
 		CPCCore/CPCCoreEmu/PlayCity.o \
 		CPCCore/CPCCoreEmu/PrinterDefault.o\
@@ -86,7 +87,6 @@ OPTIMIZE = -O3
 
 LIBS	= circle-stdlib/install/arm-none-circle/lib/libcirclenewlib.a \
 		 circle-stdlib/install/arm-none-circle/lib/libc.a \
-		 circle-stdlib/install/arm-none-circle/lib/libg.a \
 		 circle-stdlib/install/arm-none-circle/lib/libm.a \
 		 $(CIRCLEHOME)/lib/libcircle.a \
          $(CIRCLEHOME)/lib/fs/fat/libfatfs.a \
@@ -107,7 +107,7 @@ LIBS	= circle-stdlib/install/arm-none-circle/lib/libcirclenewlib.a \
 STDLIB_SUPPORT = 3 
 include circle-stdlib/libs/circle/Rules.mk
 
-CFLAGS += -I "$(NEWLIBDIR)/include" -I "$(STDDEF_INCPATH)" -I "$(CIRCLEHOME)"
+CFLAGS += -I "$(NEWLIBDIR)/include" -I "$(STDDEF_INCPATH)" -I "$(CIRCLEHOME)" -ICPCCore/CPCCoreEmu
 CFLAGS	+= -D_USE_LONG_TIME_T -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE
-CPPFLAGS += -D_USE_LONG_TIME_T -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE -std=c++1z
+CPPFLAGS += -D_USE_LONG_TIME_T -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -ICPCCore/CPCCoreEmu -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE -std=c++1z
 

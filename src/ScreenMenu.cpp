@@ -12,9 +12,6 @@
 #define strnicmp strncasecmp
 #endif
 
-#include "res/button_1.h"
-//#include "res/coolspot.h"
-
 #define MAX_ITEM_PER_PAGE 10
 #define MOVE_BASE 7
 
@@ -23,22 +20,24 @@
 
 ScreenMenu::MenuItem base_menu[] =
 {
-   { "Resume",             &ScreenMenu::Resume},
-   { "Select Amstrad",     &ScreenMenu::SelectAmstrad},
-   { "Insert Cartridge",   &ScreenMenu::InsertCartridge},
-   { "Insert Disk",        &ScreenMenu::InsertDisk},
-   { "Insert Tape",        &ScreenMenu::InsertTape},
-   { "SugarPi Setup",      &ScreenMenu::SugarSetup},
+   { "MENU_Resume",             &ScreenMenu::Resume},
+   { "MENU_Select_Amstrad",     &ScreenMenu::SelectAmstrad},
+   { "MENU_Insert_Cartridge",   &ScreenMenu::InsertCartridge},
+   { "MENU_Insert_Disk",        &ScreenMenu::InsertDisk},
+   { "MENU_Insert_Tape",        &ScreenMenu::InsertTape},
+   { "MENU_SugarPi_Setup",      &ScreenMenu::SugarSetup},
+   { "MENU_Select_Language",      &ScreenMenu::ChangeLanguage},
 /*   { "Hardware Setup",     &ScreenMenu::HardwareSetup},
    { "Quick Save",         &ScreenMenu::Save},
    { "Quick Load",         &ScreenMenu::Load},*/
-   { "Reset",              &ScreenMenu::Reset},
-   { "Info",              &ScreenMenu::Info},
-   { "Shutdown",           &ScreenMenu::ShutDown},
+   { "MENU_Reset",              &ScreenMenu::Reset},
+   { "MENU_Info",              &ScreenMenu::Info},
+   { "MENU_Shutdown",           &ScreenMenu::ShutDown},
    { nullptr, nullptr}
 };
 
-ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup) :
+ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup, MultiLanguage* language) :
+   language_(language),
    engine_(engine),
    logger_(logger),
    display_(display),
@@ -46,7 +45,8 @@ ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* d
    keyboard_(keyboard),
    setup_(setup),
    motherboard_(motherboard),
-   snapshot_(nullptr)
+   snapshot_(nullptr),
+   main_menu_(nullptr)
 {
    snapshot_ = new CSnapshot(log);
    snapshot_->SetMachine(motherboard_);
@@ -54,16 +54,7 @@ ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* d
    // Window creation
 
    // Create Main window menu 
-   unsigned int i = 0;
-   main_menu_ = new MainMenuWindows (display_->GetMenuFrame());
-   while (base_menu[i].label_ != nullptr && i < MAX_ITEM_PER_PAGE)
-   {
-      // Display menu bitmap
-      main_menu_->GetMenu()->AddMenuItem(base_menu[i].label_, new ActionMenu(this, base_menu[i].function));
-      
-      i++;
-   }
-   
+   Reload();
 }
 
 ScreenMenu::~ScreenMenu()
@@ -71,6 +62,36 @@ ScreenMenu::~ScreenMenu()
    delete snapshot_;
    delete main_menu_;
   
+}
+
+void ScreenMenu::Reload()
+{
+   unsigned int i = 0;
+   if (main_menu_ == nullptr)
+   {
+      main_menu_ = new MainMenuWindows(display_->GetMenuFrame());
+   }
+
+   while (base_menu[i].label_ != nullptr && i < MAX_ITEM_PER_PAGE)
+   {
+      // Display menu bitmap
+      MenuItemWindows* item = main_menu_->GetMenu()->GetMenuItem(i);
+      if (item == nullptr)
+      {
+         item = main_menu_->GetMenu()->AddMenuItem(language_->GetString(base_menu[i].label_), new ActionMenu(this, base_menu[i].function));
+      }
+      else
+      {
+         item->ChangeLabel(language_->GetString(base_menu[i].label_));
+      }
+      i++;
+   }
+}
+
+IAction::ActionReturn ScreenMenu::SetLanguage(int value)
+{
+   language_->ChangeLanguage(value);
+   return IAction::Action_Update;
 }
 
 IAction::ActionReturn ScreenMenu::SetSync(bool* value)
@@ -350,8 +371,6 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
    {
       // Display menu bitmap
       file_menu->GetMenu()->AddMenuItem(array_ordered[i]->fname, new ActionMenuWithParameter<const char*>(this, load_action, array_ordered[i]->fname) );
-      
-      i++;
    }
    logger_->Write("Menu", LogNotice, "Insert Media : End of Menu creation");
    file_menu->ResetMenu ();
@@ -391,6 +410,33 @@ IAction::ActionReturn ScreenMenu::InsertTape()
    // List cartridge available
    // Show contents of root directory
    return InsertMedia (PATH_TAPE, &ScreenMenu::LoadTape);
+}
+
+IAction::ActionReturn ScreenMenu::ChangeLanguage()
+{
+   Window* focus = Window::GetFocus();
+   MainMenuWindows* setup_menu = new MainMenuWindows(display_->GetMenuFrame());
+
+   setup_menu->GetMenu()->AddMenuItem("..", new ActionMenu(this, &ScreenMenu::Back));
+
+   // Add Synchro menu
+   int nb_language = language_->GetLanguageNumber();
+
+   for (int i = 0; i < nb_language; i++)
+   {
+      auto str = language_->GetLanguage(i);
+      setup_menu->GetMenu()->AddMenuItem(str, new ActionMenuWithParameter<int>(this, &ScreenMenu::SetLanguage, i));
+   }
+
+   setup_menu->ResetMenu();
+   IAction::ActionReturn return_value = setup_menu->DoScreen(this);
+   delete setup_menu;
+
+   Reload();
+   Window::SetFocus(focus);
+   main_menu_->Invalidate();
+
+   return return_value;
 }
 
 IAction::ActionReturn ScreenMenu::SugarSetup()
@@ -443,7 +489,7 @@ IAction::ActionReturn ScreenMenu::Info()
    Window* focus = Window::GetFocus();
    MainMenuWindows* setup_menu = new MainMenuWindows(display_->GetMenuFrame());
 
-   setup_menu->GetMenu()->AddMenuItem("Exit", new ActionMenu(this, &ScreenMenu::Back));
+   setup_menu->GetMenu()->AddMenuItem(language_->GetString("MENU_Exit"), new ActionMenu(this, &ScreenMenu::Back));
 
    setup_menu->ResetMenu();
    IAction::ActionReturn return_value = setup_menu->DoScreen(this);

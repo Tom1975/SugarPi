@@ -19,7 +19,6 @@
 #include "BasicFrame.h"
 #include "PiBitmap.h"
 
-//#include "res/coolspot.h"
 #include "schrift.h"
 
 class IAction
@@ -32,6 +31,7 @@ public:
       Action_QuitMenu,
       Action_Back,
       Action_Shutdown,
+      Action_Reload,
    };
    virtual ActionReturn DoAction() = 0;
 };
@@ -64,7 +64,7 @@ public:
    virtual void Create(Window* parent, int x, int y, unsigned int width, unsigned int height);
    virtual void AddChild(Window* child);
 
-   void WindowsToDisplay(int& x, int& y);
+   virtual void WindowsToDisplay(int& x, int& y);
    virtual void Clear();
    virtual void ClearAll();
    virtual void Redraw (bool clear = true);
@@ -85,6 +85,7 @@ public:
    int GetHeight(){return height_;}
 
    void ForceStop();
+
 protected:
 
    // Display
@@ -122,6 +123,7 @@ public:
    virtual ~MenuItemWindows ();
 
    virtual void Create(const char* label, Window* parent, int x, int y, unsigned int width, unsigned int height);
+   virtual void ChangeLabel(const char* label);
    virtual void SetAction (IAction* action);
    virtual void RedrawWindow ();
    virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
@@ -156,7 +158,8 @@ public:
    virtual ~MenuWindows ();
 
    virtual void Create( Window* parent, int x, int y, unsigned int width, unsigned int height);
-   virtual void AddMenuItem (const char* label, IAction* action = nullptr);
+   virtual MenuItemWindows* GetMenuItem(unsigned int index);
+   virtual MenuItemWindows* AddMenuItem (const char* label, IAction* action = nullptr);
    virtual void AddCheckMenuItem (const char* label, bool* value, IAction* action = nullptr);
    virtual void RedrawWindow ();
    virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
