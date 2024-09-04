@@ -211,6 +211,7 @@ IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
             case IAction::Action_Back:
             case IAction::Action_QuitMenu:
             case IAction::Action_Shutdown:
+            case IAction::Action_Reload:
                exit_function = retval;
                break;
             case IAction::Action_Update:
@@ -301,6 +302,11 @@ void MenuItemWindows::Create (const char* label, Window* parent, int x, int y, u
 {
    label_ = label;
    Window::Create ( parent, x, y, width, height);
+}
+
+void MenuItemWindows::ChangeLabel(const char* label)
+{
+   label_ = label;
 }
 
 void MenuItemWindows::SetAction (IAction* action)
@@ -476,8 +482,12 @@ void MenuWindows::Create( Window* parent, int x, int y, unsigned int width, unsi
    scroll_window_.Create( this, 0, 0, width, height);
 }
 
+MenuItemWindows* MenuWindows::GetMenuItem(unsigned int index)
+{
+   return (index < list_item_.size())?list_item_[index]:nullptr;
+}
 
-void MenuWindows::AddMenuItem (const char* label, IAction* action)
+MenuItemWindows* MenuWindows::AddMenuItem (const char* label, IAction* action)
 {
    //CLogger::Get ()->Write("Menu", LogNotice, "add menu : %s ", label);
 
@@ -492,6 +502,7 @@ void MenuWindows::AddMenuItem (const char* label, IAction* action)
       current_focus_ = 0;
 
    ComputeScroller();
+   return item;
 }
 
 void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* action)

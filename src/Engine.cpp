@@ -19,6 +19,7 @@ Engine::Engine(CLogger* log) :
    sound_mixer_(nullptr),
    current_settings_(nullptr),
    menu(nullptr),
+   language_manager_(log),
    language_(nullptr)
 {
    sound_mixer_ = new SoundMixer();
@@ -38,7 +39,7 @@ boolean Engine::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keybo
 
    if (setup_ != nullptr)
    {
-      language_ = new MultiLanguage(setup_->GetConfigurationManager());
+      language_ = new MultiLanguage(&language_manager_);
       language_->Init("RES/labels.ini");
    }
 

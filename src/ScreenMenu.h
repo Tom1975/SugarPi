@@ -57,6 +57,8 @@ public:
 
    virtual ~ScreenMenu();
 
+   void Reload();
+
    IEvent::Event GetEvent ();
 
    IAction::ActionReturn Handle();

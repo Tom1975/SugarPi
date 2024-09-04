@@ -40,6 +40,7 @@ public:
 protected:
    void LoadRom(int rom_number, const char* path);
 
+   ConfigurationManager language_manager_;
    MultiLanguage* language_;
    CLogger* logger_;
    SugarPiSetup* setup_;

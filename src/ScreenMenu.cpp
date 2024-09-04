@@ -37,6 +37,7 @@ ScreenMenu::MenuItem base_menu[] =
 };
 
 ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup, MultiLanguage* language) :
+   language_(language),
    engine_(engine),
    logger_(logger),
    display_(display),
@@ -45,7 +46,7 @@ ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* d
    setup_(setup),
    motherboard_(motherboard),
    snapshot_(nullptr),
-   language_(language)
+   main_menu_(nullptr)
 {
    snapshot_ = new CSnapshot(log);
    snapshot_->SetMachine(motherboard_);
@@ -53,16 +54,7 @@ ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* d
    // Window creation
 
    // Create Main window menu 
-   unsigned int i = 0;
-   main_menu_ = new MainMenuWindows (display_->GetMenuFrame());
-   while (base_menu[i].label_ != nullptr && i < MAX_ITEM_PER_PAGE)
-   {
-      // Display menu bitmap
-      main_menu_->GetMenu()->AddMenuItem(language_->GetString(base_menu[i].label_), new ActionMenu(this, base_menu[i].function));
-      
-      i++;
-   }
-   
+   Reload();
 }
 
 ScreenMenu::~ScreenMenu()
@@ -70,6 +62,30 @@ ScreenMenu::~ScreenMenu()
    delete snapshot_;
    delete main_menu_;
   
+}
+
+void ScreenMenu::Reload()
+{
+   unsigned int i = 0;
+   if (main_menu_ == nullptr)
+   {
+      main_menu_ = new MainMenuWindows(display_->GetMenuFrame());
+   }
+
+   while (base_menu[i].label_ != nullptr && i < MAX_ITEM_PER_PAGE)
+   {
+      // Display menu bitmap
+      MenuItemWindows* item = main_menu_->GetMenu()->GetMenuItem(i);
+      if (item == nullptr)
+      {
+         item = main_menu_->GetMenu()->AddMenuItem(language_->GetString(base_menu[i].label_), new ActionMenu(this, base_menu[i].function));
+      }
+      else
+      {
+         item->ChangeLabel(language_->GetString(base_menu[i].label_));
+      }
+      i++;
+   }
 }
 
 IAction::ActionReturn ScreenMenu::SetLanguage(int value)
@@ -416,6 +432,7 @@ IAction::ActionReturn ScreenMenu::ChangeLanguage()
    IAction::ActionReturn return_value = setup_menu->DoScreen(this);
    delete setup_menu;
 
+   Reload();
    Window::SetFocus(focus);
    main_menu_->Invalidate();
 
