@@ -489,7 +489,7 @@ IAction::ActionReturn ScreenMenu::Info()
    Window* focus = Window::GetFocus();
    MainMenuWindows* setup_menu = new MainMenuWindows(display_->GetMenuFrame());
 
-   setup_menu->GetMenu()->AddMenuItem("Exit", new ActionMenu(this, &ScreenMenu::Back));
+   setup_menu->GetMenu()->AddMenuItem(language_->GetString("MENU_Exit"), new ActionMenu(this, &ScreenMenu::Back));
 
    setup_menu->ResetMenu();
    IAction::ActionReturn return_value = setup_menu->DoScreen(this);
