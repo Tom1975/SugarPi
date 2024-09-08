@@ -35,10 +35,6 @@ void Button::InitButton(unsigned int x, unsigned int y, unsigned int w, unsigned
 
 void Button::RedrawWindow()
 {
-   // Draw background of button
-   int x = x_;
-   int y = y_;
-   Window::WindowsToDisplay(x, y);
    // Draw inner bitmap
-   DrawBitmap(bitmap_, x, y);
+   DrawBitmap(bitmap_, 0, 0);
 }

@@ -119,10 +119,17 @@ void Window::WindowsToDisplay(int& x, int& y)
 
 void Window::DrawBitmap(PiBitmap* bmp, int x, int y)
 {
-   for (int i = 0; i < height_; i++)
+   // Draw background of button
+   int x2 = x_ + x;
+   int y2 = y_ + y;
+   Window::WindowsToDisplay(x2, y2);
+
+   int bmp_with, bmp_height;
+   bmp->GetSize(bmp_with, bmp_height);
+   for (int i = 0; i < bmp_height && i+y2 < display_->GetFullHeight(); i++)
    {
-      int* line = display_->GetBuffer(i + y_ + y);
-      bmp->DrawLogo(i, &line[x_ ]);
+      int* line = display_->GetBuffer(i + y2);
+      bmp->DrawLogo(i, &line[x2 ]);
    }
 }
 

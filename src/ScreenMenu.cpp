@@ -212,13 +212,13 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    {
       MenuButtonWindows* item = new MenuButtonWindows (display_->GetMenuFrame());
       item->Create(&it.associatedBmp_, file_menu->GetMenu(), 10, offset_y,
-         main_menu_->GetMenu()->GetWidth() - 10, 80);
+         main_menu_->GetMenu()->GetWidth() - 10, 130);
       item->SetAction(new ActionMenuWithParameter<ScreenMenu::AmstradConfiguration&>(this, &ScreenMenu::SelectAmstradFinal, it));
 
       file_menu->GetMenu()->AddMenuItem(item);
          
 
-      offset_y += 80+2;
+      offset_y += 130+2;
    }
 
    file_menu->ResetMenu();
