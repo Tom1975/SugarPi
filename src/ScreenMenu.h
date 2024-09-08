@@ -19,6 +19,7 @@
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
 #include "MultiLanguage.h"
 #include "DisplayPi.h"
+#include "SimpleBitmap.h"
 
 #ifdef  __circle__
 #include "KeyboardPi.h"
@@ -44,6 +45,22 @@ public:
 
 class ScreenMenu : public IEvent
 {
+private:
+   class AmstradCompleteConf
+   {
+   public:
+      std::string fullname_;
+      const char* config_path_;
+   };
+
+   class AmstradConfiguration
+   {
+   public:
+      std::string name_;
+      SimpleBitmap associatedBmp_;
+      std::vector<AmstradCompleteConf> languages_;
+   };
+
 
 public:
 
@@ -79,6 +96,8 @@ public:
    IAction::ActionReturn Resume();
    IAction::ActionReturn Save();
    IAction::ActionReturn SelectAmstrad();
+   IAction::ActionReturn SelectAmstradFinal(ScreenMenu::AmstradConfiguration& config);
+   IAction::ActionReturn SelectAmstradCustom();
    IAction::ActionReturn SetLanguage(int value);
    IAction::ActionReturn SetSync(bool* value);
    IAction::ActionReturn ShutDown();
@@ -112,6 +131,8 @@ protected:
    // Pending actions
    CSnapshot*        snapshot_;
    MainMenuWindows*  main_menu_;
+
+   static std::vector<ScreenMenu::AmstradConfiguration> config_list;
 };
 
 class ActionMenu : public IAction

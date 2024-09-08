@@ -1,6 +1,6 @@
 /* GIMP RGBA C-Source image dump (coolspot.c) */
 
-#include "Bitmap.h"
+#include "SimpleBitmap.h"
 
 #include "files.h"
 #include <CPCCore/CPCCoreEmu/stdafx.h>
@@ -17,27 +17,31 @@ void Unlock() { mutex_.Release(); }
 #else
 #include "CLogger.h"
 #include <mutex>
-std::mutex mutex_;
-void Lock() { mutex_.lock(); }
-void Unlock() { mutex_.unlock(); }
+static std::mutex mutex_;
+static void Lock() { mutex_.lock(); }
+static void Unlock() { mutex_.unlock(); }
 #endif
 
-Bitmap::Bitmap() : width_(0), height_(0), pixel_data_(nullptr), first_byte_per_line(nullptr), last_byte_per_line(nullptr), loaded(false);
+SimpleBitmap::SimpleBitmap(const char* file ) : width_(0), height_(0), pixel_data_(nullptr), first_byte_per_line(nullptr), last_byte_per_line(nullptr), loaded_(false)
+{
+   if (file != nullptr)
+   {
+      Load(file);
+   }
+}
+
+SimpleBitmap::~SimpleBitmap()
 {
 }
 
-Bitmap::~Bitmap()
-{
-}
-
-void Bitmap::Load()
+void SimpleBitmap::Load(const char* file)
 {
    FILE* f;
 
-   if (fopen_s(&f, PATH_RES INTER_FILE "logo.bin", "r+b") == 0)
+   if (fopen_s(&f, file, "r+b") == 0)
    {
       // Read width / height
-      if (fread(&width_, sizeof(unsigned it), 1, f) != 1)
+      if (fread(&width_, sizeof(unsigned int), 1, f) != 1)
       {
          // error
          width_ = 0;
@@ -45,7 +49,7 @@ void Bitmap::Load()
          return;
       }
 
-      if (fread(&height_, sizeof(unsigned it), 1, f) != 1)
+      if (fread(&height_, sizeof(unsigned int), 1, f) != 1)
       {
          // error
          width_ = 0;
@@ -96,7 +100,7 @@ void Bitmap::Load()
    loaded_ = true;
 }
 
-void Bitmap::DrawLogo(int line, int* buffer)
+void SimpleBitmap::DrawLogo(int line, int* buffer)
 {
    Lock();
    if (pixel_data_ == nullptr)
@@ -108,8 +112,8 @@ void Bitmap::DrawLogo(int line, int* buffer)
 
    if (first_byte_per_line[line] == -1) return;
 
-   int* begin = &pixel_data_[first_byte_per_line[line] + line * Sugarbox_logo.width];
-   int* end = &pixel_data_[last_byte_per_line[line] + line * Sugarbox_logo.width];
+   int* begin = &pixel_data_[first_byte_per_line[line] + line * width_];
+   int* end = &pixel_data_[last_byte_per_line[line] + line * width_];
    buffer += first_byte_per_line[line];
    for (; begin<end; ++begin)
    {
@@ -119,8 +123,8 @@ void Bitmap::DrawLogo(int line, int* buffer)
    }
 }
 
-void Bitmap::GetSize(int& width, int& height)
+void SimpleBitmap::GetSize(int& width, int& height)
 {
-   width = Sugarbox_logo.width;
-   height = Sugarbox_logo.height;
+   width = width_;
+   height = height_;
 }

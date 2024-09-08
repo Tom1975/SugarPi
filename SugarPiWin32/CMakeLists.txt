@@ -59,6 +59,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BackFrame.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BasicFrame.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BasicFrame.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/Button.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/Button.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ConfigurationManager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ConfigurationManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CString.cpp
@@ -73,10 +75,22 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/files.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/BitmapWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/BitmapWindows.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MainMenuWindows.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MainMenuWindows.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuFrame.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuFrame.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuItemWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuItemWindows.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuButtonWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuButtonWindows.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuWindows.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/CheckMenuItemWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/CheckMenuItemWindows.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScrollWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScrollWindows.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Morphing.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Morphings.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Morphings.h
@@ -86,6 +100,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScreenMenu.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/SimpleBitmap.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/SimpleBitmap.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/SugarboxLogo.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/SugarboxLogo.h
 )
@@ -113,6 +129,7 @@ set(CpcCore_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/FormatTypeEDSK.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/FormatTypeHFE.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/FormatTypeHFEv3.cpp
+
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/FormatTypeIPF.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/IDisk.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/KeyboardHandler.cpp
@@ -185,6 +202,8 @@ install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../gamecontrollerdb.txt DESTINATION $
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../res/101_keyboard  DESTINATION ${CMAKE_INSTALL_PREFIX}/LAYOUT)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Facile_Sans.ttf"  DESTINATION ${CMAKE_INSTALL_PREFIX}/FONTS)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/logo.bin"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
+install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Img464.bin"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
+install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Img664.bin"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/labels.ini"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
 install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../res/ROMS DESTINATION ${CMAKE_INSTALL_PREFIX}/)
 install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../res/AMSTRAD DESTINATION ${CMAKE_INSTALL_PREFIX})
