@@ -11,6 +11,7 @@ OBJS	= src/main.o\
 		src/BasicFrame.o \
 		src/BackFrame.o \
 		src/SugarPiSetup.o\
+		src/Button.o\
 		src/ConfigurationManager.o\
 		src/DisplayPi.o\
 		src/DisplayPiImp.o\
@@ -21,6 +22,13 @@ OBJS	= src/main.o\
 		src/KeyboardPi.o\
 		src/log.o\
 		src/MainMenuWindows.o\
+		src/BitmapWindows.o\
+		src/MenuItemWindows.o\
+		src/MenuButtonWindows.o\
+		src/MenuWindows.o\
+		src/CheckMenuItemWindows.o\
+		src/ScrollWindows.o\
+		src/SimpleBitmap.o\
 		src/Morphings.o \
 		src/SoundPi.o\
 		src/ScreenMenu.o\

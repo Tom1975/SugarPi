@@ -2,9 +2,6 @@
 
 #include "Button.h"
 
-#include "files.h"
-#include <CPCCore/CPCCoreEmu/stdafx.h>
-
 
 Button::Button(BasicFrame* display) : Window(display), bitmap_(nullptr)
 {
