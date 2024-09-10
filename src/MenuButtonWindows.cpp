@@ -28,26 +28,29 @@ void MenuButtonWindows::RedrawWindow()
    // Draw button
    int color = (focus_ == this) ? 0xFFFF0000 : 0xFF000000;
 
-   int* line = display_->GetBuffer(y_);
-   for (int x = 0; x < width_; x++)
+   int x = 0, y = 0;
+   Window::WindowsToDisplay(x, y);
+
+   int* line = display_->GetBuffer(y) + x;
+   for (int ix = 0; ix < width_; ix++)
    {
       *line++ = color;
    }
 
-   for (int y = y_ + 1; y < y_ + width_ - 2; y++)
+   for (int iy = y + 1; iy < y + width_ - 2; iy++)
    {
-      line = display_->GetBuffer(y);
+      line = display_->GetBuffer(iy) + x;
       line[0] = color;
       line[width_-1] = color;
    }
-   line = display_->GetBuffer(y_ + height_ - 1);
-   for (int x = 0; x < width_; x++)
+   line = display_->GetBuffer(y + height_ - 1) + x;
+   for (int ix = 0; ix < width_; ix++)
    {
       *line++ = color;
    }
 
 
-   button_.Redraw();
+   button_.RedrawWindow();
    
 }
 
