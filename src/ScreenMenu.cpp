@@ -239,7 +239,35 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
 
 IAction::ActionReturn ScreenMenu::SelectAmstradFinal(ScreenMenu::AmstradConfiguration& config)
 {
-   // todo
+   // Create submenu
+   // Display the current name / associated bitmap
+   // Display a menu with all the languages
+   Window* focus = Window::GetFocus();
+   MainMenuWindows* config_menu = new MainMenuWindows(display_->GetMenuFrame());
+
+   config_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
+      , new ActionMenu(this, &ScreenMenu::Back));
+
+   // Add Synchro menu
+   int i = 0;
+   for (auto&it : config.languages_)
+   {
+      // Display menu bitmap
+      config_menu->GetMenu()->AddMenuItem(it.fullname_.c_str(), 10, (i + 1) * INTERLINE_SPACE, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2,
+         new ActionMenuWithParameter<const char*>(this, &ScreenMenu::LoadAmstradSetup, it.config_path_));
+
+      i++;
+   }
+
+   config_menu->ResetMenu();
+   IAction::ActionReturn return_value = config_menu->DoScreen(this);
+   delete config_menu;
+
+   Window::SetFocus(focus);
+   main_menu_->Invalidate();
+
+   return return_value;
+
    return IAction::Action_QuitMenu;
 }
 

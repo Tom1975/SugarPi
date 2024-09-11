@@ -2,6 +2,7 @@
 #Project version minimum
 cmake_minimum_required(VERSION 3.12.1)
 
+##################################################
 #Project name - GenerateFont
 project(GenerateFont VERSION 1.2.0)
 
@@ -23,6 +24,7 @@ target_link_libraries(GenerateFont PUBLIC Shlwapi.lib Dwmapi.lib Winmm.lib D2d1.
 
 target_compile_features(GenerateFont PRIVATE cxx_std_17)
 
+##################################################
 #Project name - PNG2BIN
 project(Img2bin VERSION 1.2.0)
 
@@ -45,3 +47,6 @@ target_sources(Img2bin PUBLIC ${ALL_FILES} )
 target_compile_features(Img2bin PRIVATE cxx_std_17)
 
 
+##################################################
+#Project name - ConfigKeyboard
+add_subdirectory(ConfigKeyboard)
