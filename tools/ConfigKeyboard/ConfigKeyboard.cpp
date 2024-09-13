@@ -1,7 +1,25 @@
 
 #include <windows.h>
+#include <windowsx.h>
+#include <CommCtrl.h>
+#include <filesystem>
 
 #include "res/resource.h"
+
+/// <summary>
+/// 
+/// ConfigKeyboard:
+/// 
+/// This tool permit to construct keyboard config file. This file will associate each Amstrad key (identified by it's link to a 
+/// line / bit in the matrix) to a scan code. 
+/// What can be done : 
+/// - Choose the keyboard layout display (FR, ES, EN, DA) to ease the selection.
+/// - Load a key config. Each key connected will be displayed in a tooltip window
+/// - Assign the configuration : When you click on a key, a dialog box will offer different way to assign the scan code (by value, by pressing a key...)
+/// - Save the config
+/// 
+/// </summary>
+
 
 typedef enum {
    KEYB_FR,
@@ -10,6 +28,7 @@ typedef enum {
    KEYB_DA
 } tKeyboardType;
 
+HBITMAP hbmp = nullptr;
 HBITMAP hBitmap = nullptr;
 HBITMAP hOldBmp = nullptr;
 HBITMAP hBmpMono = nullptr;
@@ -19,15 +38,49 @@ HBITMAP hOldMask = nullptr;
 HBITMAP hBmpMasqueMonochrome = nullptr;
 HBITMAP OldMasqueMono = nullptr;
 
+HBITMAP hCurrentLayoutBmp = nullptr;
+
 HDC MemDC = nullptr;
 HDC hDCMasqueMono = nullptr;
 HDC hMaskDC = nullptr;
 HDC hDCMono = nullptr;
 HWND hWnd = nullptr;
+HWND hComboLayout = nullptr;
 
+HINSTANCE g_hInst = nullptr;
 unsigned int PixelClicked = 0;
 
-void Draw();
+void Draw(HDC dc);
+void LoadConfig(std::filesystem::path path);
+
+#define POS_KEYBOARD_X  60
+#define POS_KEYBOARD_Y  200
+
+class KeyboardLayout
+{
+public:
+   KeyboardLayout(const char* name, unsigned int resource) : _name(name), _resource (resource)
+   {
+      _hbmp = reinterpret_cast<HBITMAP>(LoadImage(
+         GetModuleHandle(NULL),
+         MAKEINTRESOURCE(_resource),
+         IMAGE_BITMAP,
+         0,
+         0,
+         0));
+
+   }
+   std::string _name;
+   HBITMAP _hbmp;
+   unsigned int _resource;
+};
+
+std::vector<KeyboardLayout> _list_layout = {
+   KeyboardLayout("English",IDB_KEYB_EN),
+   KeyboardLayout("French",IDB_KEYB_FR),
+   KeyboardLayout("Spanish",IDB_KEYB_ES),
+   KeyboardLayout("Danish",IDB_KEYB_DA),
+};
 
 ////////////////////////////////////////////////////////////
 // Windows stuff : Registration, initialisation
@@ -58,9 +111,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
    {
       CREATESTRUCT* pCreateStr = (CREATESTRUCT*)lParam;
       SetWindowLongPtr(hWnd, GWLP_USERDATA,(LONG)pCreateStr->lpCreateParams);
+      // Create child windows
+      // - Combobox with layouts
+      // - "open" "save" config files
       break;
    }
-
+   case WM_COMMAND:
+      if (HIWORD(wParam) == CBN_SELCHANGE)
+         // If the user makes a selection from the list:
+         //   Send CB_GETCURSEL message to get the index of the selected list item.
+         //   Send CB_GETLBTEXT message to get the item.
+         //   Display the item in a messagebox.
+      {
+         int ItemIndex = SendMessage((HWND)lParam, (UINT)CB_GETCURSEL,
+            (WPARAM)0, (LPARAM)0);
+         TCHAR  ListItem[256];
+         hCurrentLayoutBmp = (HBITMAP)ComboBox_GetItemData((HWND)lParam, ItemIndex);
+         InvalidateRect(hWnd, 0, TRUE);
+         UpdateWindow(hWnd);
+      }
+      break;
    case WM_LBUTTONDOWN:
       SetFocus(hWnd);
       break;
@@ -91,7 +161,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       hdc = BeginPaint(hWnd, &ps);
 
       // Display the current keyboard.
-      Draw();
+      Draw(hdc);
 
       EndPaint(hWnd, &ps);
       break;
@@ -141,15 +211,30 @@ int APIENTRY WinMain(HINSTANCE hInstance,
    UNREFERENCED_PARAMETER(hPrevInstance);
    UNREFERENCED_PARAMETER(lpCmdLine);
 
+   g_hInst = hInstance;
    MyRegisterClass(hInstance);
 
    hWnd = CreateWindowEx(0, "KeyboardConfigurator", "Keyboard Configurator", WS_VISIBLE|WS_OVERLAPPEDWINDOW /*WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU |WS_BORDER*/ | WS_CLIPCHILDREN,
-      CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, 0); // NULL);
+      CW_USEDEFAULT, CW_USEDEFAULT, 800, 480, NULL, NULL, hInstance, 0); // NULL);
    
-   HDC hDC = GetDC(hWnd);
+
+   hComboLayout = CreateWindowEx(WS_EX_STATICEDGE, "COMBOBOX", "MyCombo1",
+      CBS_DROPDOWN | WS_CHILD | WS_VISIBLE,
+      20, 20, 200, 20, hWnd, 0, hInstance, NULL); // 100 = ID of this control
+
+   int i = 0;
+   for (auto& it : _list_layout)
+   {
+      // Add to combobox
+      SendMessage(hComboLayout, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)it._name.c_str());
+      ComboBox_SetItemData(hComboLayout, i, it._hbmp);
+      i++;
+   }
+
+   HDC hDC = GetDC(NULL);
    MemDC = CreateCompatibleDC(hDC);
    // Create mask
-   hMaskDC = CreateCompatibleDC(hDC);
+   hMaskDC = CreateCompatibleDC(hDC); 
    hMaskBmp = reinterpret_cast<HBITMAP>(LoadImage(
       GetModuleHandle(NULL),
       MAKEINTRESOURCE(IDB_KEYB_MASK),
@@ -221,31 +306,46 @@ void SetKeyboardType(tKeyboardType keyboardType)
       0));
    hOldBmp = (HBITMAP)SelectObject(MemDC, hBitmap);
 
-   Draw();
-
 }
 
 
-void Draw()
+void Draw(HDC dc)
 {
-   HDC hDC = GetDC(hWnd);
+   // Display selected keyboard.
+   
+   HDC memDC = CreateCompatibleDC(dc);
+   HBITMAP oldBmp = (HBITMAP) SelectObject(memDC, hCurrentLayoutBmp);
+   BitBlt(dc, POS_KEYBOARD_X, POS_KEYBOARD_Y, 640, 178, memDC, 0, 0, SRCCOPY);
+   SelectObject(memDC, oldBmp);
+   DeleteDC(memDC);
 
-   BitBlt(hDC, 0, 0, 640, 178, MemDC, 0, 0, SRCCOPY);
+}
 
-   // Revert any key ?
-   if (PixelClicked != 0xFFFFFF)
-   {
-      PatBlt(hDCMasqueMono, 0, 0, 640, 178, BLACKNESS);
-      TransparentBlt(hDCMasqueMono, 0, 0, 640, 178, hMaskDC, 0, 0, 640, 178, PixelClicked);
+void LoadConfig(std::filesystem::path path)
+{
+   // Load config
+   // Assign evey key
+}
 
-      SetBkMode(hDCMasqueMono, OPAQUE);
-      SetBkColor(hDCMasqueMono, 0);
-      BitBlt(hDCMono, 0, 0, 640, 178, hDCMasqueMono, 0, 0, SRCCOPY);
+void AssignTooltip()
+{
+   HWND hwndTT = CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL,
+      WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
+      CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+      hWnd, NULL, g_hInst, NULL);
 
-      MaskBlt(hDC, 0, 0, 640, 178, MemDC, 0, 0, hBmpMono, 0, 0, MAKEROP4(DSTINVERT, SRCCOPY/*0x00AA0029*/));
-   }
+   SetWindowPos(hwndTT, HWND_TOPMOST, 0, 0, 0, 0,
+      SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
+   TOOLINFO ti = { 0 };
+   ti.cbSize = sizeof(TOOLINFO);
+   ti.uFlags = TTF_SUBCLASS;
+   ti.hwnd = hWnd;
+   ti.hinst = g_hInst;
+   ti.lpszText = TEXT("This is your tooltip string.");
 
-   ReleaseDC(hWnd, hDC);
+   GetClientRect(hWnd, &ti.rect);
 
+   // Associate the tooltip with the "tool" window.
+   SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
 }
