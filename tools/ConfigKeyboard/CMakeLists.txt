@@ -22,6 +22,6 @@ set(ALL_FILES ${Source_Files})
 add_executable(ConfigKeyboard WIN32 )
 
 target_sources(ConfigKeyboard PUBLIC ${ALL_FILES} )
-target_link_libraries(ConfigKeyboard PUBLIC Shlwapi.lib Dwmapi.lib Winmm.lib D2d1.lib Msimg32.lib)
+target_link_libraries(ConfigKeyboard PUBLIC Shlwapi.lib Dwmapi.lib Winmm.lib D2d1.lib Msimg32.lib Comctl32.lib)
 
 target_compile_features(ConfigKeyboard PRIVATE cxx_std_17)
