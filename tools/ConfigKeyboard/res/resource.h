@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // fichier Include Microsoft Visual C++.
-// Utilisé par Sugarbox.rc
+// Utilisé par ConfigKeyboard.rc
 //
 #define IDC_MYICON                      2
 #define IDOK2                           2
@@ -8,7 +8,10 @@
 #define IDOK3                           3
 #define ID_APPLY                        3
 #define IDR_DISK                        4
+#define IDD_SET_SCAN                    101
 #define IDD_SUGARBOX_DIALOG             102
+#define IDD_SET_SCAN1                   102
+#define IDD_PRESSAKEY                   102
 #define IDS_APP_TITLE                   103
 #define IDD_ABOUTBOX                    103
 #define IDM_ABOUT                       104
@@ -123,14 +126,19 @@
 #define IDC_SAVEAS                      1017
 #define IDC_BMP_KEYB_FR                 1018
 #define IDC_EDIT1                       1019
+#define IDC_LINE                        1019
 #define IDC_EDIT2                       1020
+#define IDC_BIT                         1020
 #define IDC_EDIT3                       1021
+#define IDC_SCAN                        1021
 #define IDC_EDIT4                       1022
 #define IDC_EDIT5                       1023
 #define IDC_EDIT6                       1024
 #define IDC_LIST1                       1027
 #define IDC_BUTTON1                     1028
+#define IDC_NEW                         1028
 #define IDC_BUTTON2                     1029
+#define IDC_CLOSE                       1029
 #define IDC_INFORMATIONS                1030
 #define IDC_BUTTON4                     1030
 #define IDC_CLEARCACHE                  1030

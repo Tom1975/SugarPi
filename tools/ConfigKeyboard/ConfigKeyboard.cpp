@@ -39,6 +39,14 @@ unsigned char default_raw_map[10][8] =
    {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, }    // Joy0up Joy0down Joy0left Joy0right Joy0F1 Joy0F2 unused Del
 };
 
+struct mapcol
+{
+   int xl, xh;
+   int yl, yh;
+};
+
+mapcol map_color[10][8];
+
 int selected_line = -1;
 int selected_bit = -1;
 
@@ -57,6 +65,7 @@ typedef enum {
    KEYB_ES,
    KEYB_DA
 } tKeyboardType;
+
 
 HBITMAP hbmp = nullptr;
 HBITMAP hBitmap = nullptr;
@@ -82,6 +91,7 @@ HWND hButtonSave = nullptr;
 HINSTANCE g_hInst = nullptr;
 unsigned int PixelClicked = 0;
 
+void InitMask();
 void ReDrawCharacter(HDC dc, int line, int bit, bool select);
 void DrawCharacter(HDC dc, int x, int y, bool select = false);
 void Draw(HDC dc);
@@ -129,8 +139,95 @@ std::vector<KeyboardLayout> _list_layout = {
    KeyboardLayout("Danish",IDB_KEYB_DA),
 };
 
+
+
 ////////////////////////////////////////////////////////////
 // Windows stuff : Registration, initialisation
+//
+HWND hwnd_set_key;
+HHOOK _k_hook;
+LRESULT __stdcall k_Callback1(int nCode, WPARAM wParam, LPARAM lParam)
+{
+   PKBDLLHOOKSTRUCT key = (PKBDLLHOOKSTRUCT)lParam;
+   //a key was pressed
+   if (wParam == WM_KEYDOWN )
+   {
+      EndDialog(hwnd_set_key, key->scanCode);
+   }
+
+   return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
+INT_PTR Dlgproc2(
+   HWND hwnd,
+   UINT unnamedParam2,
+   WPARAM wParam,
+   LPARAM lParam
+)
+{
+   switch (unnamedParam2)
+   {
+   case WM_INITDIALOG:
+      hwnd_set_key = hwnd;
+      SetFocus(hwnd_set_key);
+      EnableWindow(hwnd, TRUE);
+      _k_hook = SetWindowsHookEx(WH_KEYBOARD_LL, k_Callback1, NULL, 0);
+      break;
+   case WM_KEYDOWN:
+      // DOIT !
+      EndDialog(hwnd, (lParam >>16)&0xFF );
+      break;
+   }
+   return FALSE;
+}
+
+INT_PTR Dlgproc(
+   HWND hwnd,
+   UINT unnamedParam2,
+   WPARAM wParam,
+   LPARAM lParam
+)
+{
+   switch (unnamedParam2)
+   {
+      case WM_INITDIALOG:
+      {
+         char buffer[16];
+         sprintf(buffer, "%i", selected_line);
+         SetWindowText(GetDlgItem(hwnd, IDC_LIST1), buffer);
+         sprintf(buffer, "%i", selected_bit);
+         SetWindowText(GetDlgItem(hwnd, IDC_BIT), buffer);
+         sprintf(buffer, "%i", default_raw_map[selected_line][selected_bit]);
+         SetWindowText(GetDlgItem(hwnd, IDC_SCAN), buffer);
+         return TRUE;
+         break;
+      }
+      case WM_COMMAND:
+      {
+         if (wParam == IDC_CLOSE)
+         {
+            EndDialog(hwnd, 0);
+         }
+         else if (wParam == IDC_NEW)
+         {
+            // Display "PRESS A KEY" then wait for next keystroke
+            unsigned int result = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_PRESSAKEY), hwnd, Dlgproc2);
+            if (result != 0)
+            {
+               char buffer[16];
+               default_raw_map[selected_line][selected_bit] = result;
+               sprintf(buffer, "%i", default_raw_map[selected_line][selected_bit]);
+               SetWindowText(GetDlgItem(hwnd, IDC_SCAN), buffer);
+            }
+         }
+         break;
+      }
+
+      
+
+   }
+   return FALSE;
+}
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -142,6 +239,7 @@ std::vector<KeyboardLayout> _list_layout = {
 //  WM_DESTROY	- post a quit message and return
 //
 //
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
    //	int wmId, wmEvent;
@@ -192,8 +290,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       }
       break;
    case WM_LBUTTONDOWN:
+   {
       SetFocus(hWnd);
+      // Select the key pressed. Highlight it
+      int xPos = GET_X_LPARAM(lParam);
+      int yPos = GET_Y_LPARAM(lParam);
+      // are we over the keyboard ?
+      if (xPos >= POS_KEYBOARD_X && xPos <= POS_KEYBOARD_X + KEYBOARD_WIDTH
+         && yPos >= POS_KEYBOARD_Y && yPos <= POS_KEYBOARD_Y + KEYBOARD_HEIGHT)
+      {
+         xPos -= POS_KEYBOARD_X;
+         yPos -= POS_KEYBOARD_Y;
+         COLORREF col = GetPixel(hMaskDC, xPos, yPos);
+         int bit = GetGValue(col);
+         int line = GetRValue(col);
+      
+         if (bit < 8 && line < 10)
+         {
+            // Ok found a key !
+            // Open dialog box to edit values
+            DialogBox(g_hInst, MAKEINTRESOURCE(IDD_SET_SCAN), hWnd, Dlgproc);
+         }
+      }
       break;
+   }
+      
    case WM_LBUTTONUP:
    {
       break;
@@ -386,11 +507,13 @@ int APIENTRY WinMain(HINSTANCE hInstance,
       0,
       0));
 
+   
    hDCMono = CreateCompatibleDC(hDC);
    hBmpMono = CreateBitmap(KEYBOARD_WIDTH, KEYBOARD_HEIGHT, 1, 1, NULL);
    OldBmpMono = (HBITMAP)SelectObject(hDCMono, hBmpMono);
 
    hOldMask = (HBITMAP)SelectObject(hMaskDC, hMaskBmp);
+   InitMask();
 
    hDCMasqueMono = CreateCompatibleDC(hDC);
    hBmpMasqueMonochrome = CreateCompatibleBitmap(hDC, KEYBOARD_WIDTH, KEYBOARD_HEIGHT);
@@ -549,8 +672,6 @@ void LoadConfig()
    {
       LoadConfig(ofn.lpstrFile);
    }
-
-   // load
 }
 
 void SaveConfig()
@@ -580,8 +701,6 @@ void SaveConfig()
    {
       SaveConfig(ofn.lpstrFile);
    }
-   // 
-   // save
 }
 
 unsigned int getline(const char* buffer, int size, std::string& out)
@@ -673,29 +792,6 @@ void SaveConfig(std::filesystem::path path)
    // Assign evey key
 }
 
-void AssignTooltip()
-{
-   HWND hwndTT = CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL,
-      WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
-      CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-      hWnd, NULL, g_hInst, NULL);
-
-   SetWindowPos(hwndTT, HWND_TOPMOST, 0, 0, 0, 0,
-      SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-
-   TOOLINFO ti = { 0 };
-   ti.cbSize = sizeof(TOOLINFO);
-   ti.uFlags = TTF_SUBCLASS;
-   ti.hwnd = hWnd;
-   ti.hinst = g_hInst;
-   ti.lpszText = TEXT("This is your tooltip string.");
-
-   GetClientRect(hWnd, &ti.rect);
-
-   // Associate the tooltip with the "tool" window.
-   SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
-}
-
 void InitKeyboard(unsigned char key_map[10][8])
 {
    memset(raw_to_cpc_map_, 0, sizeof raw_to_cpc_map_);
@@ -709,8 +805,40 @@ void InitKeyboard(unsigned char key_map[10][8])
          raw_to_cpc_map_[raw_key].bit = 1 << bit;
       }
    }
+}
 
-   // Now, adjust tooltips from values of the keyboard
 
+void InitMask()
+{
+   for (int line = 0; line < 10; line++)
+   {
+      for (int bit = 0; bit < 8; bit++)
+      {
+         map_color[line][bit].xh = -1;
+         map_color[line][bit].xl = -1;
+         map_color[line][bit].yh = -1;
+         map_color[line][bit].yl = -1;
+      }
+   }
 
+   for (int y = 0; y < KEYBOARD_HEIGHT; y++ )
+   {
+      for (int x = 0; x < KEYBOARD_WIDTH; x++)
+      {
+         COLORREF col = GetPixel(hMaskDC, x, y);
+         unsigned char r = GetRValue(col);
+         unsigned char g = GetGValue(col);
+         if (r < 10 && g < 8)
+         {
+            if (map_color[r][g].xl == -1 || map_color[r][g].xl > x)
+               map_color[r][g].xl = x;
+            if (map_color[r][g].xh == -1 || map_color[r][g].xh < x)
+               map_color[r][g].xh = x;
+            if (map_color[r][g].yl == -1 || map_color[r][g].yl > y)
+               map_color[r][g].yl = y;
+            if (map_color[r][g].yh == -1 || map_color[r][g].yh < y)
+               map_color[r][g].yh = y;
+         }
+      }
+   }
 }
