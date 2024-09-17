@@ -150,7 +150,9 @@ LRESULT __stdcall k_Callback1(int nCode, WPARAM wParam, LPARAM lParam)
 {
    PKBDLLHOOKSTRUCT key = (PKBDLLHOOKSTRUCT)lParam;
    //a key was pressed
-   if (wParam == WM_KEYDOWN )
+
+   if (wParam == WM_KEYDOWN ||
+      wParam == WM_SYSKEYDOWN)
    {
       EndDialog(hwnd_set_key, key->scanCode);
    }
