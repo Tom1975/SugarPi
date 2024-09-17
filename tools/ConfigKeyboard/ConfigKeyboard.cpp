@@ -154,7 +154,9 @@ LRESULT __stdcall k_Callback1(int nCode, WPARAM wParam, LPARAM lParam)
    if (wParam == WM_KEYDOWN ||
       wParam == WM_SYSKEYDOWN)
    {
+      UnhookWindowsHookEx(_k_hook);
       EndDialog(hwnd_set_key, key->scanCode);
+      return 1;
    }
 
    return CallNextHookEx(NULL, nCode, wParam, lParam);
