@@ -661,7 +661,7 @@ void LoadConfig()
    // use the contents of szFile to initialize itself.
    ofn.lpstrFile[0] = '\0';
    ofn.nMaxFile = sizeof(szFile);
-   ofn.lpstrFilter = "Config file\0.bin\0";
+   ofn.lpstrFilter = "Config file\0*.bin;*.\0";
    ofn.nFilterIndex = 1;
    ofn.lpstrFileTitle = NULL;
    ofn.nMaxFileTitle = 0;
@@ -690,7 +690,7 @@ void SaveConfig()
    // use the contents of szFile to initialize itself.
    ofn.lpstrFile[0] = '\0';
    ofn.nMaxFile = sizeof(szFile);
-   ofn.lpstrFilter = "Config file\0.bin\0";
+   ofn.lpstrFilter = "Config file\0*.bin;*.\0";
    ofn.nFilterIndex = 1;
    ofn.lpstrFileTitle = NULL;
    ofn.nMaxFileTitle = 0;
@@ -730,7 +730,7 @@ void LoadConfig(std::filesystem::path path)
    // Open file
    FILE* f;
    f= fopen(path.string().c_str(), "r+b");
-   if (f != nullptr)
+   if (f == nullptr)
    {
       MessageBox( hWnd, "File read error !", "Error", MB_OK);
       return;
@@ -741,9 +741,8 @@ void LoadConfig(std::filesystem::path path)
    unsigned int buffer_size = ftell(f);
    rewind(f);
    unsigned char* buff = new unsigned char[buffer_size];
-   unsigned nBytesRead;
 
-   if (fread(buff, buffer_size, 1, f) != nBytesRead)
+   if (fread(buff, buffer_size, 1, f) != 1)
    {
       // ERROR
       fclose(f);
@@ -757,9 +756,9 @@ void LoadConfig(std::filesystem::path path)
    unsigned int end_line;
    std::string s;
    int line_index = 0;
-   while ((end_line = getline(&ptr_buffer[offset], nBytesRead, s)) > 0 && line_index < 8)
+   while ((end_line = getline(&ptr_buffer[offset], buffer_size, s)) > 0 && line_index < 8)
    {
-      nBytesRead -= end_line;
+      buffer_size -= end_line;
 
       // Do not use emty lines, and comment lines
       if (s.size() == 0 || s[0] == '#')
@@ -789,7 +788,40 @@ void LoadConfig(std::filesystem::path path)
 void SaveConfig(std::filesystem::path path)
 {
    // Save config 
+   FILE* f;
+   f = fopen(path.string().c_str(), "w+b");
+   if (f == nullptr)
+   {
+      MessageBox(hWnd, "File read error !", "Error", MB_OK);
+      return;
+   }
    // Assign evey key
+   fprintf(f,"#\n");
+   fprintf(f,"# 101 Enhanced Keyboard Layout.\n");
+   fprintf(f,"#\n");
+   fprintf(f,"# bit horizontal, from 0 -> 7\n");
+   fprintf(f,"# lines from top(0) to bottom(9)\n");
+   fprintf(f,"# Each value is the hexadecimal raw key code.\n");
+   fprintf(f, "#\n\n");
+
+   for (int line = 0; line < 10; line++)
+   {
+      for (int bit = 0; bit < 8; bit++)
+      {
+         unsigned char raw_key = default_raw_map[line][bit];
+         fprintf(f, "%2.2X", raw_key);
+         if (bit < 7)
+         {
+            fprintf(f, " ");
+         }
+         else
+         {
+            fprintf(f, "\n");
+         }
+      }
+   }
+   fclose(f);
+
 }
 
 void InitKeyboard(unsigned char key_map[10][8])
