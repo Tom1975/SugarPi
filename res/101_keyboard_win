@@ -5,17 +5,14 @@
 # lines from top(0) to bottom(9)
 # Each value is the hexadecimal raw key code.
 #
-# ENTER key, upper arrow, Return key and space are not correct
-#
-#
 
-52 4D 50 49 4D 51 58 53
-4B 38 47 48 4C 4F 50 52
-4C 30 38 32 4B 36 38 1D
+52 4F 51 61 5E 5B 1C 63
+50 38 5F 60 5D 59 5A 62
+0E 30 1C 32 5C 36 38 1D
 2E 2D 2F 13 34 33 2E 37
 27 26 12 0C 0F 0E 10 36
 25 24 18 1C 0B 0D 11 39
 23 22 15 17 0A 09 05 19
 21 20 08 1A 16 07 06 1B
-1E 1F 29 10 0F 04 3A 1D
-00 00 00 00 00 00 00 2A
+1E 1F 01 14 0F 04 3A 1D
+00 00 00 00 00 00 00 53
