@@ -1,7 +1,7 @@
 #include <windows.h>
 
 #include "DisplayPiDesktop.h"
-
+#include "KeyboardHardwareImplemetationWin.h"
 #include "emulation.h"
 
 ////////////////////////////////////////////////////////////
@@ -15,6 +15,7 @@ public:
    DisplayPiDesktop* display;
    SoundPi* sound;
    KeyboardPi* keyboard;
+   KeyboardHardwareImplemetationWin* keyboardImp;
    Emulation* emulation;
    int nCore;
 };
@@ -35,10 +36,10 @@ LRESULT CALLBACK WndProcFrame(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
       break;
    }
    case WM_KEYDOWN:
-      emu->keyboard->Presskey(wParam);
+      emu->keyboardImp->Presskey(wParam);
       break;
    case WM_KEYUP:
-      emu->keyboard->Unpresskey(wParam);
+      emu->keyboardImp->Unpresskey(wParam);
       break;
    case WM_QUIT:
       break;
@@ -111,7 +112,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    emu.sound = new SoundPi(emu.log);
 
    // Keyboard
-   emu.keyboard = new KeyboardPi(emu.log);
+   emu.keyboardImp = new KeyboardHardwareImplemetationWin();
+   emu.keyboard = new KeyboardPi(emu.log, emu.keyboardImp);
 
    MyRegisterClass(hInstance);
    emu.emulation = new Emulation(emu.log);

@@ -1,6 +1,11 @@
 #pragma once
 //
+#include <vector>
+
 #include "KeyboardHardwareImplemetation.h"
+#include "KeyboardDefine.h"
+
+#include "KeyboardHandler.h"
 
 //
 class KeyboardHardwareImplemetationWin : public KeyboardHardwareImplemetation
@@ -8,4 +13,23 @@ class KeyboardHardwareImplemetationWin : public KeyboardHardwareImplemetation
    public:
       KeyboardHardwareImplemetationWin();
       virtual ~KeyboardHardwareImplemetationWin();
+
+      virtual void Initialize();
+      virtual void UpdatePlugnPlay();
+
+      void Presskey(long keyCode);
+      void Unpresskey(long keyCode);
+
+   protected:
+      void CodeAction(long keycode, bool activated);
+
+      KeyboardHandler   handler_;
+      unsigned char keyboard_lines_[10];
+
+      std::vector<GamepadDef*> gamepad_list_;
+      GamepadDef* gamepad_active_[MAX_GAMEPADS];
+
+      unsigned int      action_buttons_;
+      bool              select_;
+
 };
