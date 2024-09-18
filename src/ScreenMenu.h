@@ -20,12 +20,11 @@
 #include "MultiLanguage.h"
 #include "DisplayPi.h"
 #include "SimpleBitmap.h"
+#include "KeyboardPi.h"
 
 #ifdef  __circle__
-#include "KeyboardPi.h"
 #include "SugarPiSetup.h"
 #else
-#include "KeyboardPiDesktop.h"
 #include "SugarPiSetupDesktop.h"
 #endif
 

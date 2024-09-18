@@ -3,16 +3,15 @@
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
 #include "CPCCore/CPCCoreEmu/ILog.h"
+#include "KeyboardPi.h"
 
 #ifdef _WIN32
    #include "SoundPiDesktop.h"
    #include "SugarPiSetupDesktop.h"
-   #include "KeyboardPiDesktop.h"
    #include "DisplayPiDesktop.h"
 #else
    #include "SoundPi.h"
    #include "SugarPiSetup.h"
-   #include "KeyboardPi.h"
    #include "DisplayPi.h"
 
 #endif

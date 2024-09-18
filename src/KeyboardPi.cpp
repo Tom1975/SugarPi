@@ -2,8 +2,19 @@
 #include "KeyboardPi.h"
 
 #include <memory.h>
-#include <SDCard/emmc.h>
-#include <fatfs/ff.h>
+
+
+#ifdef  __circle__
+#include <circle/spinlock.h>
+static CSpinLock   mutex_;
+void Lock() { Lock(); }
+void Unlock() { Unlock(); }
+#else
+#include <mutex>
+static std::mutex mutex_;
+static void Lock() { mutex_.lock(); }
+static void Unlock() { mutex_.unlock(); }
+#endif
 
 #define DEVICE_INDEX	1		// "upad1"
 
@@ -300,10 +311,10 @@ unsigned int getline ( const char* buffer, int size, std::string& out)
    return (offset == size)?offset:offset+1;
 }
 
-KeyboardPi::KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service) :
+//KeyboardPi::KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service) :
+KeyboardPi::KeyboardPi(CLogger* logger, KeyboardHardwareImplemetation* hard_imp) :
+   hard_imlementation_(hard_imp),
    logger_(logger),
-   device_name_service_(device_name_service),
-   dwhci_device_(dwhci_device),
    action_buttons_(0),
    select_(false)
 {
@@ -311,12 +322,6 @@ KeyboardPi::KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceName
 
    InitKeyboard (default_raw_map);
    this_ptr_ = this;
-
-	for (unsigned i = 0; i < MAX_GAMEPADS; i++)
-	{
-		gamepad_[i] = 0;
-      gamepad_active_ [i] = nullptr;
-	}
 
    memset(&gamepad_state_buffered_, 0, sizeof(gamepad_state_buffered_));
    memset(&gamepad_state_, 0, sizeof(gamepad_state_));
@@ -353,81 +358,24 @@ bool KeyboardPi::Initialize()
 {
    // Load gamecontrollerdb.txt
    //LoadGameControllerDB();
-
-   if (dwhci_device_->Initialize() == false)
-   {
-      logger_->Write("Keyboard", LogPanic, "Initialize failed !");
-   }
-   logger_->Write("Keyboard", LogNotice, "Initialize done.");
-
+   hard_imlementation_->Initialize();
    //UpdatePlugnPlay();
 
    return true;
 }
 void KeyboardPi::UpdatePlugnPlay()
 {
-   boolean bUpdated = dwhci_device_->UpdatePlugAndPlay ();
-
-   if (bUpdated)
-   {
-      // Gamepad
-      for (unsigned nDevice = 1; (nDevice <= MAX_GAMEPADS); nDevice++)
-      {
-         if (gamepad_[nDevice-1] != 0)
-         {
-            continue;
-         }
-
-         gamepad_[nDevice-1] = (CUSBGamePadDevice *)device_name_service_->GetDevice ("upad", nDevice, FALSE);
-         if (gamepad_[nDevice-1] == 0)
-         {
-            continue;
-         }
-
-         // Get gamepad names
-         CString* gamepad_name = gamepad_[nDevice-1]->GetDevice()->GetNames();
-         const TUSBDeviceDescriptor* descriptor = gamepad_[nDevice-1]->GetDevice()->GetDeviceDescriptor();
-
-         logger_->Write ("Keyboard", LogNotice, "Gamepad : %s - VID=%X; PID=%X; bcdDevice = %X", (const char*) (*gamepad_name), descriptor->idVendor, 
-            descriptor->idProduct, descriptor->bcdDevice );
-         delete gamepad_name ;
-         const TGamePadState *pState = gamepad_[nDevice-1]->GetInitialState ();
-         assert (pState != 0);
-
-         memcpy(&gamepad_state_[nDevice-1], pState, sizeof (TGamePadState));
-         logger_->Write ("Keyboard", LogNotice, "Gamepad %u: %d Button(s) %d Hat(s)",
-               nDevice, pState->nbuttons, pState->nhats);
-
-         gamepad_[nDevice-1]->RegisterRemovedHandler (GamePadRemovedHandler, this);
-         gamepad_[nDevice-1]->RegisterStatusHandler (GamePadStatusHandler);
-         gamepad_active_[nDevice-1] = LookForDevice (descriptor);
-
-         logger_->Write ("Keyboard", LogNotice, "Use your gamepad controls!");
-      }
-
-      // Keyboard
-      if (keyboard_ == 0)
-      {
-         keyboard_ = (CUSBKeyboardDevice *) device_name_service_->GetDevice ("ukbd1", FALSE);
-			if (keyboard_ != 0)
-			{
-				keyboard_->RegisterRemovedHandler (KeyboardRemovedHandler);
-				keyboard_->RegisterKeyStatusHandlerRaw (KeyStatusHandlerRaw);
-
-				logger_->Write ("Keyboard", LogNotice, "Just type something!");
-			}
-		}
-   }
+   hard_imlementation_->UpdatePlugnPlay();
 }
 
 unsigned char KeyboardPi::GetKeyboardMap(int index)
 {
    unsigned char result = 0xFF;
-   mutex_.Acquire();
+   Lock();
 
    result = keyboard_lines_[index];
 
-   mutex_.Release();
+   Unlock();
    return result;
 }
 
@@ -448,7 +396,7 @@ bool KeyboardPi::AddAction (GamepadActionHandler* action, unsigned nDeviceIndex,
 void KeyboardPi::CheckActions (unsigned nDeviceIndex)
 {
    if ( gamepad_active_[nDeviceIndex] == nullptr) return;
-   mutex_.Acquire();
+   Lock();
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_X, nDeviceIndex, true)?GamePadButtonX:0;
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_A, nDeviceIndex, true)?GamePadButtonA:0;
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_up, nDeviceIndex, true)?GamePadButtonUp:0;
@@ -457,7 +405,7 @@ void KeyboardPi::CheckActions (unsigned nDeviceIndex)
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_right, nDeviceIndex, true)?GamePadButtonRight:0;
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_start, nDeviceIndex, true)?GamePadButtonStart:0;
    action_buttons_ |= AddAction(&gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex, true)?GamePadButtonSelect:0;
-   mutex_.Release();
+   Unlock();
 }
 
 void KeyboardPi::Init(bool* register_replaced)
@@ -480,9 +428,9 @@ bool KeyboardPi::IsDown()
 {
    if (action_buttons_ & (GamePadButtonDown))
    {
-      mutex_.Acquire();
+      Lock();
       action_buttons_ &= ~(GamePadButtonDown);
-      mutex_.Release();
+      Unlock();
       return true;
    }
    else
@@ -495,9 +443,9 @@ bool KeyboardPi::IsButton(TGamePadButton button)
 {
    if (action_buttons_ & (button))
    {
-      mutex_.Acquire();
+      Lock();
       action_buttons_ &= ~(button);
-      mutex_.Release();
+      Unlock();
       return true;
    }
    else
@@ -510,9 +458,9 @@ bool KeyboardPi::IsAction()
 {
    if (action_buttons_ & (GamePadButtonA|GamePadButtonX))
    {
-      mutex_.Acquire();
+      Lock();
       action_buttons_ &= ~(GamePadButtonA | GamePadButtonX);
-      mutex_.Release();
+      Unlock();
       return true;
    }
    else
@@ -527,149 +475,36 @@ void KeyboardPi::ReinitSelect()
    select_ = false;
 }
 
-void KeyboardPi::KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6])
-{
-	assert (this_ptr_ != 0);
 
-	CString Message;
-	Message.Format ("Key status (modifiers %02X)", (unsigned) ucModifiers);
-
-   this_ptr_->mutex_.Acquire();
-
-   // Modifier
-   if (this_ptr_->old_modifier_ & shift_l_modifier_) this_ptr_->keyboard_lines_[2] |= 0x20;
-   if (this_ptr_->old_modifier_ & shift_r_modifier_) this_ptr_->keyboard_lines_[2] |= 0x20;
-   if (this_ptr_->old_modifier_ & ctrl_modifier_) this_ptr_->keyboard_lines_[2] |= 0x80;
-   if (this_ptr_->old_modifier_ & copy_modifier_) this_ptr_->keyboard_lines_[1] |= 0x02;
-
-   // Unpress the previous keys
-   for (unsigned i = 0; i < 6; i++)
-   {
-		if (this_ptr_->old_raw_keys_[i] != 0)
-		{
-         if (this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].bit != 0)
-         {
-            *this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].line_index |= (this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].bit);
-         }
-      }
-   }
-   
-   // Press the new ones
-   if (ucModifiers & shift_l_modifier_) this_ptr_->keyboard_lines_[2] &= ~0x20;
-   if (ucModifiers & shift_r_modifier_) this_ptr_->keyboard_lines_[2] &= ~0x20;
-   if (ucModifiers & ctrl_modifier_) this_ptr_->keyboard_lines_[2] &= ~0x80;
-   if (ucModifiers & copy_modifier_) this_ptr_->keyboard_lines_[1] &= ~0x02;
-
-	for (unsigned i = 0; i < 6; i++)
-	{
-		if (RawKeys[i] != 0)
-		{  
-         if (this_ptr_->raw_to_cpc_map_[RawKeys[i]].bit != 0)
-         {
-            *this_ptr_->raw_to_cpc_map_[RawKeys[i]].line_index &= ~(this_ptr_->raw_to_cpc_map_[RawKeys[i]].bit);
-         }
-
-			CString KeyCode;
-			KeyCode.Format (" %02X", (unsigned) RawKeys[i]);
-
-			Message.Append (KeyCode);
-		}
-	}
-   this_ptr_->old_modifier_ = ucModifiers;
-   memcpy( this_ptr_->old_raw_keys_, RawKeys, sizeof (this_ptr_->old_raw_keys_));
-   this_ptr_->mutex_.Release();
-
-	//CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
-}
-
-void KeyboardPi::KeyboardRemovedHandler (CDevice *pDevice, void *pContext)
-{
-	KeyboardPi *pThis = (KeyboardPi *) pContext;
-	assert (pThis != 0);
-
-	CLogger::Get ()->Write ("Keyboard", LogDebug, "Keyboard removed");
-
-	pThis->keyboard_ = 0;
-}
-
-void KeyboardPi::GamePadRemovedHandler (CDevice *pDevice, void *pContext)
-{
-	KeyboardPi *pThis = (KeyboardPi *) pContext;
-	assert (pThis != 0);
-
-	for (unsigned i = 0; i < MAX_GAMEPADS; i++)
-	{
-		if (pThis->gamepad_[i] == (CUSBGamePadDevice *) pDevice)
-		{
-			CLogger::Get ()->Write ("Keyboard", LogDebug, "Gamepad %u removed", i+1);
-
-			pThis->gamepad_[i] = 0;
-
-			break;
-		}
-	}   
-}
-
-void KeyboardPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState)
-{
-   assert(this_ptr_ != 0);
-   assert(pState != 0);
-   
-   memcpy(&this_ptr_->gamepad_state_[nDeviceIndex], pState, sizeof * pState);
-   // Set the new pushed buttons
-
-   this_ptr_->CheckActions (nDeviceIndex);
-   if (( this_ptr_->gamepad_active_[nDeviceIndex] != nullptr) && this_ptr_->AddAction(&this_ptr_->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
-   {
-      this_ptr_->select_ = true;
-   }
-
-   this_ptr_->gamepad_state_buffered_[nDeviceIndex] = this_ptr_->gamepad_state_[nDeviceIndex];
-}
-
-
- #define GAMECONTROLLERDB_FILE "SD:/Config/gamecontrollerdb.txt"
-GamepadDef* KeyboardPi::LookForDevice (const TUSBDeviceDescriptor* descriptor)
-{
-   GamepadDef* gamepad = nullptr;
-
-   for (unsigned int index = 0; index < gamepad_list_.size(); index++)
-   {
-      if ( gamepad_list_[index]->vid == descriptor->idVendor && gamepad_list_[index]->pid == descriptor->idProduct && gamepad_list_[index]->version == descriptor->bcdDevice)
-      {
-         logger_->Write("KeyboardPi", LogNotice, "Gamepad found in database !");
-         return gamepad_list_[index];
-      }
-   }
-
-   logger_->Write("KeyboardPi", LogNotice, "Unknown gamepad...");
-   return gamepad;
-}
+#define GAMECONTROLLERDB_FILE "SD:/Config/gamecontrollerdb.txt"
 
 void KeyboardPi::LoadGameControllerDB()
 {
    logger_->Write("KeyboardPi", LogNotice, "Loading game controller db...");
 
    // Open file
-   FIL File;
-   FRESULT Result = f_open(&File, GAMECONTROLLERDB_FILE, FA_READ | FA_OPEN_EXISTING);
-   if (Result != FR_OK)
+   FILE * f;
+   f = fopen(GAMECONTROLLERDB_FILE, "r");
+   //FRESULT Result = fopen(&File, GAMECONTROLLERDB_FILE, FA_READ | FA_OPEN_EXISTING);
+   if (f == NULL)
    {
       CLogger::Get ()->Write("ConfigurationManager", LogNotice, "Cannot open %s file", GAMECONTROLLERDB_FILE);
       return;
    }
 
    // Load every known gamepad to internal structure
-FILINFO file_info;
-   f_stat(GAMECONTROLLERDB_FILE, &file_info);
-   unsigned char* buff = new unsigned char[file_info.fsize];
+   fseek(f, 0, SEEK_END);
+   unsigned int buffer_size_ = ftell(f);
+   rewind(f);
+
+   unsigned char* buff = new unsigned char[buffer_size_];
    unsigned nBytesRead;
 
-   f_read(&File, buff, file_info.fsize, &nBytesRead);
-   if (file_info.fsize != nBytesRead)
+   nBytesRead = fread(buff, 1, buffer_size_, f);
+   if (buffer_size_ != nBytesRead)
    {
       // ERROR
-      f_close(&File);
+      fclose(f);
       logger_->Write("KeyboardPi", LogNotice, "Error reading gamecontrollerdb  ");
       return;
    }
@@ -773,7 +608,7 @@ FILINFO file_info;
    }
 
    delete []buff;
-   f_close(&File);
+   fclose(f);
 
    logger_->Write("KeyboardPi", LogNotice, "Loading game controller db... Done !");
 
@@ -782,25 +617,26 @@ FILINFO file_info;
 void KeyboardPi::LoadKeyboard(const char* path)
 {
    // Open file
-   FIL File;
-   FRESULT Result = f_open(&File, path, FA_READ | FA_OPEN_EXISTING);
-   if (Result != FR_OK)
+   FILE *f;
+   f = fopen(path, "r");
+   if (f == NULL)
    {
       CLogger::Get ()->Write("ConfigurationManager", LogNotice, "Cannot open %s layout file", path);
       return;
    }
 
    // Load every known gamepad to internal structure
-FILINFO file_info;
-   f_stat(path, &file_info);
-   unsigned char* buff = new unsigned char[file_info.fsize];
+   fseek(f, 0, SEEK_END);
+   unsigned int buffer_size_ = ftell(f);
+   rewind(f);
+   unsigned char* buff = new unsigned char[buffer_size_];
    unsigned nBytesRead;
 
-   f_read(&File, buff, file_info.fsize, &nBytesRead);
-   if (file_info.fsize != nBytesRead)
+   nBytesRead = fread(buff, 1, buffer_size_, f);
+   if (buffer_size_ != nBytesRead)
    {
       // ERROR
-      f_close(&File);
+      fclose(f);
       logger_->Write("KeyboardPi", LogNotice, "Error reading keyboard layout file %s ",path );
       return;
    }
@@ -834,7 +670,7 @@ FILINFO file_info;
       line_index++;
    }
    delete []buff;
-   f_close(&File);
+   fclose(f);
 
    InitKeyboard (default_raw_map);
    

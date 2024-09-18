@@ -1,17 +1,17 @@
 #pragma once
 
-//
-#include <circle/usb/usbhcidevice.h>
-#include <circle/usb/usbgamepad.h>
-#include <circle/usb/usbkeyboard.h>
-#include <circle/devicenameservice.h>
-
-#include "CPCCore/CPCCoreEmu/IKeyboard.h"
 #include <string>
 #include <vector>
 
+#include "KeyboardDefine.h"
+#include "CLogger.h"
+#include "CPCCore/CPCCoreEmu/IKeyboard.h"
+#include "KeyboardHardwareImplemetation.h"
+
+
 #define MAX_GAMEPADS	2
 
+class TGamePadState;
 
 class IGamepadPressed
 {
@@ -76,7 +76,7 @@ class GamepadDef
 class KeyboardPi : public IKeyboardHandler
 {
 public:
-   KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service);
+   KeyboardPi(CLogger* logger, KeyboardHardwareImplemetation* hard_imp);
    virtual ~KeyboardPi();
 
     bool Initialize();
@@ -99,26 +99,27 @@ public:
 
    void LoadGameControllerDB();
 
-   static void GamePadRemovedHandler (CDevice *pDevice, void *pContext);
-   static void GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState);
+   //static void GamePadRemovedHandler (CDevice *pDevice, void *pContext);
    static void KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6]);
-   static void KeyboardRemovedHandler (CDevice *pDevice, void *pContext);
+   //static void KeyboardRemovedHandler (CDevice *pDevice, void *pContext);
 protected:
-   GamepadDef* LookForDevice (const TUSBDeviceDescriptor* descriptor);
+
+   KeyboardHardwareImplemetation* hard_imlementation_;
    //void UpdateKeyboardMap();
 
    CLogger*          logger_;
-   CDeviceNameService* device_name_service_;
+   /*CDeviceNameService* device_name_service_;
    CUSBHCIDevice		*dwhci_device_;
    CUSBGamePadDevice* gamepad_[MAX_GAMEPADS];
    CUSBKeyboardDevice* keyboard_;
 
    CSpinLock         mutex_;
-
+   */
    TGamePadState	   gamepad_state_[MAX_GAMEPADS];
    TGamePadState	   gamepad_state_buffered_[MAX_GAMEPADS];
+   
    unsigned          action_buttons_;
-
+   
    // Keyboard definition
    unsigned char keyboard_lines_ [10];
 

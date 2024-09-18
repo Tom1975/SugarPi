@@ -20,16 +20,17 @@ set(Source_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/DisplayPiDesktop.h
 		${CMAKE_CURRENT_SOURCE_DIR}/emulation.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/emulation.h
-		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPiDesktop.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPiDesktop.h
+		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardHardwareImplemetationWin.h
+		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardHardwareImplemetationWin.cpp
+#		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPiDesktop.cpp
+#		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPiDesktop.h
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPiDesktop.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPiDesktop.h
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetupDesktop.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetupDesktop.h
 #		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.cpp
 #		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.h
-		
-
+	
 #		${CMAKE_CURRENT_SOURCE_DIR}/kernel.cpp
 #		${CMAKE_CURRENT_SOURCE_DIR}/kernel.h
 #		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetup.cpp
@@ -40,8 +41,6 @@ set(Source_Files
 #		${CMAKE_CURRENT_SOURCE_DIR}/DisplayPi.h
 #		${CMAKE_CURRENT_SOURCE_DIR}/emulation.cpp
 #		${CMAKE_CURRENT_SOURCE_DIR}/emulation.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPi.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPi.h
 #		${CMAKE_CURRENT_SOURCE_DIR}/log.cpp
 #		${CMAKE_CURRENT_SOURCE_DIR}/log.h
 #		${CMAKE_CURRENT_SOURCE_DIR}/SoundPi.cpp
@@ -71,6 +70,9 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/EmulationFrame.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Engine.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Engine.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/KeyboardPi.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/KeyboardPi.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/KeyboardHardwareImplemetation.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/files.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/files.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.cpp
@@ -129,7 +131,6 @@ set(CpcCore_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/FormatTypeEDSK.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/FormatTypeHFE.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/FormatTypeHFEv3.cpp
-
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/FormatTypeIPF.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/IDisk.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/KeyboardHandler.cpp
