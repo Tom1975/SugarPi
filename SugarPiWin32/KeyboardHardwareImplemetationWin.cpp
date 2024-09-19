@@ -3,7 +3,7 @@
 
 #include <Windows.h>
 
-KeyboardHardwareImplemetationWin::KeyboardHardwareImplemetationWin()
+KeyboardHardwareImplemetationWin::KeyboardHardwareImplemetationWin(KeyboardPi* keyboard) : keyboard_(keyboard)
 {
 
 }
@@ -38,9 +38,16 @@ void KeyboardHardwareImplemetationWin::CodeAction(long keycode, bool activated)
       //case VK_SHIFT:gamepad_active_[0]->game_pad_button_A.UpdateMap(0, activated); action(GamePadButtonA);break;
    case VK_CONTROL:gamepad_active_[0]->game_pad_button_X.UpdateMap(0, activated); action(GamePadButtonX); break;
    default:
-      if (activated)handler_.CharPressed(keycode);
+      if (activated)
+         keyboard_->PressKey(keycode);
+      else
+         keyboard_->UnpressKey(keycode);
+
+            
+      /*if (activated)handler_.CharPressed(keycode);
       else handler_.CharReleased(keycode);
-      memcpy(keyboard_lines_, handler_.GetKeyboardState(), sizeof(keyboard_lines_));
+      memcpy(keyboard_lines_, handler_.GetKeyboardState(), sizeof(keyboard_lines_));*/
+
       break;
    }
 }

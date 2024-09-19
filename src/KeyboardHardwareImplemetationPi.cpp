@@ -113,10 +113,8 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
    {
       if (this_ptr_->old_raw_keys_[i] != 0)
       {
-         if (this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].bit != 0)
-         {
-            *this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].line_index |= (this_ptr_->raw_to_cpc_map_[this_ptr_->old_raw_keys_[i]].bit);
-         }
+         keyboard_->UnpressKey(this_ptr_->old_raw_keys_[i]);
+
       }
    }
 
@@ -130,9 +128,10 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
    {
       if (RawKeys[i] != 0)
       {
+
          if (this_ptr_->raw_to_cpc_map_[RawKeys[i]].bit != 0)
          {
-            *this_ptr_->raw_to_cpc_map_[RawKeys[i]].line_index &= ~(this_ptr_->raw_to_cpc_map_[RawKeys[i]].bit);
+            keyboard_->PressKey(RawKeys[i]);
          }
 
          CString KeyCode;

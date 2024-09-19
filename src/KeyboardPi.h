@@ -14,9 +14,10 @@
 class KeyboardPi : public IKeyboardHandler
 {
 public:
-   KeyboardPi(CLogger* logger, KeyboardHardwareImplemetation* hard_imp);
+   KeyboardPi(CLogger* logger);
    virtual ~KeyboardPi();
 
+   void SetHard(KeyboardHardwareImplemetation* hard_imp);
     bool Initialize();
     void InitKeyboard (unsigned char key_map[10][8]);
     void LoadKeyboard(const char* path);
@@ -28,6 +29,9 @@ public:
 
    bool AddAction (GamepadActionHandler* action, unsigned nDeviceIndex, bool update_map = false);
    void CheckActions(unsigned nDeviceIndex) ;
+
+   void PressKey(unsigned int scancode);
+   void UnpressKey(unsigned int scancode);
 
    void ClearBuffer();
    bool IsSelect();

@@ -112,8 +112,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    emu.sound = new SoundPi(emu.log);
 
    // Keyboard
-   emu.keyboardImp = new KeyboardHardwareImplemetationWin();
-   emu.keyboard = new KeyboardPi(emu.log, emu.keyboardImp);
+   emu.keyboard = new KeyboardPi(emu.log);
+   emu.keyboardImp = new KeyboardHardwareImplemetationWin(emu.keyboard);
+   emu.keyboard->SetHard(emu.keyboardImp);
 
    MyRegisterClass(hInstance);
    emu.emulation = new Emulation(emu.log);

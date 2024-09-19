@@ -236,47 +236,47 @@ unsigned int GamepadDef::SetValue(const char* key, const char* value)
       game_pad_button_left.AddHandler ( CreateFunction(value) );
       supported_controls_ |= GamePadButtonLeft;
    }      
-   else if ( strcmp(key, "dpright") == 0) 
+   else if (strcmp(key, "dpright") == 0)
    {
-      game_pad_button_right.AddHandler ( CreateFunction(value) );
+      game_pad_button_right.AddHandler(CreateFunction(value));
       supported_controls_ |= GamePadButtonRight;
-   }          
-   else if ( strcmp(key, "dpup") == 0) 
+   }
+   else if (strcmp(key, "dpup") == 0)
    {
-      game_pad_button_up.AddHandler ( CreateFunction(value) );
+      game_pad_button_up.AddHandler(CreateFunction(value));
       supported_controls_ |= GamePadButtonUp;
    }
-   else if ( strcmp(key, "start") == 0) 
+   else if (strcmp(key, "start") == 0)
    {
-      game_pad_button_start.AddHandler ( CreateFunction(value) );
+      game_pad_button_start.AddHandler(CreateFunction(value));
       supported_controls_ |= GamePadButtonStart;
-   }      
-   else if ( strcmp(key, "righttrigger") == 0) 
+   }
+   else if (strcmp(key, "righttrigger") == 0)
    {
-      game_pad_button_start.AddHandler ( CreateFunction(value) );
+      game_pad_button_start.AddHandler(CreateFunction(value));
       supported_controls_ |= GamePadButtonStart;
-   }      
-   else if ( strcmp(key, "back") == 0) 
+   }
+   else if (strcmp(key, "back") == 0)
    {
-      game_pad_button_select.AddHandler ( CreateFunction(value) );
+      game_pad_button_select.AddHandler(CreateFunction(value));
       supported_controls_ |= GamePadButtonSelect;
    }
-   if ( strcmp(key, "lefttrigger") == 0) 
+   if (strcmp(key, "lefttrigger") == 0)
    {
-      game_pad_button_select.AddHandler ( CreateFunction(value) );
+      game_pad_button_select.AddHandler(CreateFunction(value));
       supported_controls_ |= GamePadButtonSelect;
    }
-   else if ( strcmp(key, "leftx") == 0) 
+   else if (strcmp(key, "leftx") == 0)
    {
-      game_pad_button_left.AddHandler ( CreateFunction(value, true) );
-      game_pad_button_right.AddHandler ( CreateFunction(value, false) );
+      game_pad_button_left.AddHandler(CreateFunction(value, true));
+      game_pad_button_right.AddHandler(CreateFunction(value, false));
       supported_controls_ |= GamePadButtonLeft;
       supported_controls_ |= GamePadButtonRight;
    }
-   else if ( strcmp(key, "lefty") == 0) 
+   else if (strcmp(key, "lefty") == 0)
    {
-      game_pad_button_down.AddHandler ( CreateFunction(value, false) );
-      game_pad_button_up.AddHandler ( CreateFunction(value, true) );
+      game_pad_button_down.AddHandler(CreateFunction(value, false));
+      game_pad_button_up.AddHandler(CreateFunction(value, true));
       supported_controls_ |= GamePadButtonUp;
       supported_controls_ |= GamePadButtonDown;
    }
@@ -289,13 +289,13 @@ typedef char t_id[9];
 KeyboardPi* KeyboardPi::this_ptr_ = 0;
 
 
-unsigned int getline ( const char* buffer, int size, std::string& out)
+unsigned int getline(const char* buffer, int size, std::string& out)
 {
-   if ( size == 0)
+   if (size == 0)
    {
       return 0;
    }
-      
+
    // looking for /n
    int offset = 0;
    while (buffer[offset] != 0x0A && buffer[offset] != 0x0D && offset < size)
@@ -303,24 +303,23 @@ unsigned int getline ( const char* buffer, int size, std::string& out)
       offset++;
    }
 
-   char* line = new char[offset+1];
-   memcpy ( line, buffer, offset);
+   char* line = new char[offset + 1];
+   memcpy(line, buffer, offset);
    line[offset] = '\0';
    out = std::string(line);
-   delete []line;
-   return (offset == size)?offset:offset+1;
+   delete[]line;
+   return (offset == size) ? offset : offset + 1;
 }
 
 //KeyboardPi::KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service) :
-KeyboardPi::KeyboardPi(CLogger* logger, KeyboardHardwareImplemetation* hard_imp) :
-   hard_imlementation_(hard_imp),
+KeyboardPi::KeyboardPi(CLogger* logger) :
    logger_(logger),
    action_buttons_(0),
    select_(false)
 {
-   memset ( keyboard_lines_, 0xff, sizeof (keyboard_lines_));
+   memset(keyboard_lines_, 0xff, sizeof(keyboard_lines_));
 
-   InitKeyboard (default_raw_map);
+   InitKeyboard(default_raw_map);
    this_ptr_ = this;
 
    memset(&gamepad_state_buffered_, 0, sizeof(gamepad_state_buffered_));
@@ -329,16 +328,21 @@ KeyboardPi::KeyboardPi(CLogger* logger, KeyboardHardwareImplemetation* hard_imp)
 
 KeyboardPi::~KeyboardPi()
 {
-   
+
 }
 
 #define SET_KEYBOARD(raw,line,b)\
    raw_to_cpc_map_[raw].line_index = &keyboard_lines_[line];\
    raw_to_cpc_map_[raw].bit = 1<<b;
 
+void KeyboardPi::SetHard(KeyboardHardwareImplemetation* hard_imp)
+{
+   hard_imlementation_ = hard_imp;
+}
 
  void KeyboardPi::InitKeyboard (unsigned char key_map[10][8])
 {
+   
    memset ( raw_to_cpc_map_, 0, sizeof raw_to_cpc_map_);
    memset ( old_raw_keys_, 0, sizeof old_raw_keys_);
 
@@ -353,6 +357,20 @@ KeyboardPi::~KeyboardPi()
    }
 
 }
+
+void KeyboardPi::PressKey(unsigned int scancode)
+{
+   if (raw_to_cpc_map_[scancode&0xFF].bit != 0)
+      *raw_to_cpc_map_[scancode].line_index |= (raw_to_cpc_map_[scancode].bit);
+}
+
+void KeyboardPi::UnpressKey(unsigned int scancode)
+{
+   if (raw_to_cpc_map_[scancode & 0xFF].bit != 0)
+      *raw_to_cpc_map_[scancode & 0xFF].line_index &= ~(raw_to_cpc_map_[scancode & 0xFF].bit);
+   
+}
+
 
 bool KeyboardPi::Initialize()
 {
