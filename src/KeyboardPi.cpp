@@ -97,7 +97,7 @@ bool GamepadActionHandler::IsPressed(TGamePadState* state)
 
 void GamepadActionHandler::UpdateMap(unsigned int nDeviceIndex, bool pressed)
 {
-   if (pressed)
+   if (pressed)  
    {
       *line_[nDeviceIndex] &= ~(1<<index_[nDeviceIndex]);
    }

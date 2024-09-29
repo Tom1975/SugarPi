@@ -5,6 +5,14 @@
 
 KeyboardHardwareImplemetationWin::KeyboardHardwareImplemetationWin(KeyboardPi* keyboard) : keyboard_(keyboard)
 {
+   for (unsigned i = 0; i < MAX_GAMEPADS; i++)
+   {
+      gamepad_active_[i] = nullptr;
+   }
+
+   GamepadDef* def = new GamepadDef(keyboard_lines_);
+   gamepad_list_.push_back(def);
+   gamepad_active_[0] = gamepad_list_[0];
 
 }
 
@@ -23,13 +31,13 @@ void KeyboardHardwareImplemetationWin::UpdatePlugnPlay()
 
 }
 
-#define action(y) action_buttons_  = activated ? (action_buttons_ |y):(action_buttons_&=~y)
+#define action(y) keyboard_->action_buttons_  = activated ? (keyboard_->action_buttons_ |y):(keyboard_->action_buttons_&=~y)
 void KeyboardHardwareImplemetationWin::CodeAction(long keycode, bool activated)
 {
    // todo : hardcoded values
    switch (keycode)
    {
-   case VK_TAB: select_ = activated; action(GamePadButtonSelect); break;
+   case VK_TAB: keyboard_->select_ = activated; action(GamePadButtonSelect); break;
    case VK_SCROLL: gamepad_active_[0]->game_pad_button_start.UpdateMap(0, activated); action(GamePadButtonStart); break;
    case VK_UP: gamepad_active_[0]->game_pad_button_up.UpdateMap(0, activated); action(GamePadButtonUp);  break;
    case VK_DOWN: gamepad_active_[0]->game_pad_button_down.UpdateMap(0, activated); action(GamePadButtonDown); break;

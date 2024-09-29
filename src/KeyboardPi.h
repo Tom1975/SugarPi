@@ -41,9 +41,14 @@ public:
 
    void LoadGameControllerDB();
 
+   unsigned int      action_buttons_;
+   bool              select_;
+
    //static void GamePadRemovedHandler (CDevice *pDevice, void *pContext);
    static void KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6]);
    //static void KeyboardRemovedHandler (CDevice *pDevice, void *pContext);
+
+
 protected:
 
    KeyboardHardwareImplemetation* hard_imlementation_;
@@ -60,7 +65,6 @@ protected:
    TGamePadState	   gamepad_state_[MAX_GAMEPADS];
    TGamePadState	   gamepad_state_buffered_[MAX_GAMEPADS];
    
-   unsigned          action_buttons_;
    
    // Keyboard definition
    unsigned char keyboard_lines_ [10];
@@ -69,7 +73,6 @@ protected:
 
    std::vector<GamepadDef*> gamepad_list_;
    GamepadDef*       gamepad_active_[MAX_GAMEPADS];
-   bool              select_;
 
    struct RawToCPC
    {
