@@ -54,10 +54,8 @@ void SugarPiSetup::Load()
    }
 
    // Keyboard layout (if any)
-   if (config_->GetConfiguration (SECTION_SETUP, KEY_LAYOUT, DEFAULT_LAYOUT, buffer, SIZE_OF_BUFFER ))
-   {
-      keyboard_->LoadKeyboard (buffer);
-   }
+   config_->GetConfiguration(SECTION_SETUP, KEY_LAYOUT, DEFAULT_LAYOUT, buffer, SIZE_OF_BUFFER);
+   keyboard_->LoadKeyboard (buffer);
 
    // Language
    language_id_ = config_->GetConfigurationInt(SECTION_SETUP, LANGUAUGE_ID, 0);

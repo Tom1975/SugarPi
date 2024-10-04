@@ -21,17 +21,16 @@ class KeyboardHardwareImplemetationWin : public KeyboardHardwareImplemetation
       void Presskey(long keyCode);
       void Unpresskey(long keyCode);
 
-      //bool              select_;
+      
 protected:
       void CodeAction(long keycode, bool activated);
 
-      KeyboardPi*    keyboard_;
+      KeyboardPi*       keyboard_;
       KeyboardHandler   handler_;
-      unsigned char keyboard_lines_[10];
 
-      std::vector<GamepadDef*> gamepad_list_;
-      GamepadDef* gamepad_active_[MAX_GAMEPADS];
+      bool*             select_;
+      unsigned int*     action_buttons_;
+      unsigned char* keyboard_lines_;
 
-      //unsigned int      action_buttons_;
-
+      GamepadDef** gamepad_active_;
 };

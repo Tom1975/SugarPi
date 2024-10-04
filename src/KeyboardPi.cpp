@@ -319,6 +319,11 @@ KeyboardPi::KeyboardPi(CLogger* logger) :
 {
    memset(keyboard_lines_, 0xff, sizeof(keyboard_lines_));
 
+   for (unsigned i = 0; i < MAX_GAMEPADS; i++)
+   {
+      gamepad_active_[i] = nullptr;
+   }
+
    InitKeyboard(default_raw_map);
    this_ptr_ = this;
 

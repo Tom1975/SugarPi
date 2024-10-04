@@ -41,13 +41,18 @@ public:
 
    void LoadGameControllerDB();
 
-   unsigned int      action_buttons_;
-   bool              select_;
-
    //static void GamePadRemovedHandler (CDevice *pDevice, void *pContext);
    static void KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6]);
    //static void KeyboardRemovedHandler (CDevice *pDevice, void *pContext);
 
+   unsigned int *GetActionButtons() {return &action_buttons_;   }
+   bool* GetSelect() { return &select_; }
+   TGamePadState* GetGamepadState() {return gamepad_state_;}
+   TGamePadState* GetGamepadStateBuffered() { return gamepad_state_buffered_; }
+   unsigned char* GetKeyboardLine() { return keyboard_lines_; }
+   GamepadDef** GetGamepadActive() {
+      return gamepad_active_;
+   }
 
 protected:
 
@@ -62,6 +67,9 @@ protected:
 
    CSpinLock         mutex_;
    */
+   unsigned int      action_buttons_;
+   bool              select_;
+
    TGamePadState	   gamepad_state_[MAX_GAMEPADS];
    TGamePadState	   gamepad_state_buffered_[MAX_GAMEPADS];
    
