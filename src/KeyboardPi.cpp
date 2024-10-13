@@ -678,7 +678,7 @@ void KeyboardPi::LoadKeyboard(const char* path)
    unsigned int end_line;
    std::string s;
    int line_index = 0;
-   while ((end_line = getline(&ptr_buffer[offset], nBytesRead, s)) > 0 && line_index < 8)
+   while ((end_line = getline(&ptr_buffer[offset], nBytesRead, s)) > 0 && line_index < 10)
    {
       nBytesRead -= end_line;
 
@@ -694,6 +694,7 @@ void KeyboardPi::LoadKeyboard(const char* path)
       while (ptr_buffer[offset] == ' ')
       {
          offset++;
+         end_line--;
       }
       for (unsigned int raw_key = 0; raw_key<8 && (2+raw_key * 3) < end_line; raw_key++)
       {

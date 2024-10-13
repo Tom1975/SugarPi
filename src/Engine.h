@@ -36,7 +36,11 @@ public:
    virtual const char* GetBaseDirectory() = 0;
    void SetFDCPlugged(bool bFDCPlugged) { motherboard_->GetSig()->fdc_present_ = bFDCPlugged; motherboard_->GetPPI()->SetExpSignal(bFDCPlugged); };
 
+   virtual bool IsInMenu() { return in_menu_; }
+
 protected:
+   bool in_menu_;
+
    void LoadRom(int rom_number, const char* path);
 
    ConfigurationManager language_manager_;

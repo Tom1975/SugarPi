@@ -42,7 +42,7 @@ void KeyboardHardwareImplemetationWin::CodeActionSpecial(long keycode, bool acti
 {
    switch (keycode)
    {
-   case VK_TAB: *select_ = activated; action(GamePadButtonSelect); break;
+   case VK_LWIN: *select_ = activated; action(GamePadButtonSelect); break;
    case VK_SCROLL: if (gamepad_active_[0] != nullptr) { gamepad_active_[0]->game_pad_button_start.UpdateMap(0, activated); action(GamePadButtonStart); } break;
    case VK_UP: if (gamepad_active_[0] != nullptr) {
       gamepad_active_[0]->game_pad_button_up.UpdateMap(0, activated); action(GamePadButtonUp);
