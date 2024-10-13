@@ -21,6 +21,29 @@ public:
 };
 
 
+HHOOK _k_hook = nullptr;
+EmualtionWin32* emu_hook = nullptr;
+LRESULT __stdcall k_Callback1(int nCode, WPARAM wParam, LPARAM lParam)
+{
+   PKBDLLHOOKSTRUCT key = (PKBDLLHOOKSTRUCT)lParam;
+   //a key was pressed
+
+   switch (wParam)
+   {
+      case WM_KEYDOWN:
+      case WM_SYSKEYDOWN:
+         emu_hook->keyboardImp->Presskey(key->scanCode);
+         break;
+      case WM_SYSKEYUP:
+      case WM_KEYUP:
+         emu_hook->keyboardImp->Unpresskey(key->scanCode);
+         break;
+   }
+
+   return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
+
 
 LRESULT CALLBACK WndProcFrame(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -33,18 +56,32 @@ LRESULT CALLBACK WndProcFrame(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
    {
       CREATESTRUCT* pCreateStr = (CREATESTRUCT*)lParam;
       SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pCreateStr->lpCreateParams);
+      emu_hook = reinterpret_cast<EmualtionWin32*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+      _k_hook = SetWindowsHookEx(WH_KEYBOARD_LL, k_Callback1, NULL, 0);
       break;
    }
    case WM_KEYDOWN:
-      emu->keyboardImp->Presskey(wParam);
+      //Check just the key for joypad
+      emu->keyboardImp->CodeActionSpecial(wParam, true);
       break;
    case WM_KEYUP:
-      emu->keyboardImp->Unpresskey(wParam);
+      emu->keyboardImp->CodeActionSpecial(wParam, false);
       break;
+   case WM_SETFOCUS:
+      if (_k_hook == nullptr)
+         _k_hook = SetWindowsHookEx(WH_KEYBOARD_LL, k_Callback1, NULL, 0);
+      return DefWindowProc(hWnd, message, wParam, lParam);
+   case WM_KILLFOCUS:
+      if (_k_hook != nullptr)
+         UnhookWindowsHookEx(_k_hook);
+      _k_hook = nullptr;
+      return DefWindowProc(hWnd, message, wParam, lParam);
    case WM_QUIT:
       break;
    case WM_DESTROY:
       end = true;
+      if (_k_hook !=nullptr)
+         UnhookWindowsHookEx(_k_hook);
       PostQuitMessage(0);
       break;
    case WM_PAINT:

@@ -84,6 +84,7 @@ protected:
 
    struct RawToCPC
    {
+      int line_number;
       unsigned char* line_index;
       unsigned char bit;
    };

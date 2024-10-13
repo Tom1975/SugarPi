@@ -38,7 +38,7 @@ unsigned char default_raw_map[10][8] =
    {0x25, 0x24, 0x18, 0x1C, 0x0B, 0x0D, 0x11, 0x2C, },   // (8 '7 U Y H J N Space
    {0x23, 0x22, 0x15, 0x17, 0x0A, 0x09, 0x05, 0x19, },   // &,6,Joy1_Up %,5,Joy1_down, R,Joy1_Left T,Joy1_Right G,Joy1Fire2 F,Joy1Fire1 B V
    {0x21, 0x20, 0x08, 0x1A, 0x16, 0x07, 0x06, 0x1B, },   // $4 #3 E W S D C X
-   {0x1E, 0x1F, 0x29, 0x14, 0x2B, 0x04, 0x39, 0x1D, },   // !1 "2 Esc Q Tab A CapsLock Z
+   {0x1E, 0x1F, 0x29, 0x14, 0x2B, 0x10, 0x39, 0x1D, },   // !1 "2 Esc Q Tab A CapsLock Z
    {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, }    // Joy0up Joy0down Joy0left Joy0right Joy0F1 Joy0F2 unused Del
 };
 
@@ -357,22 +357,30 @@ void KeyboardPi::SetHard(KeyboardHardwareImplemetation* hard_imp)
       {
          unsigned char raw_key = key_map[line][bit];
          raw_to_cpc_map_[raw_key].line_index = &keyboard_lines_[line];
+         raw_to_cpc_map_[raw_key].line_number = line;
          raw_to_cpc_map_[raw_key].bit = 1<<bit;
       }
    }
 
 }
 
-void KeyboardPi::PressKey(unsigned int scancode)
-{
-   if (raw_to_cpc_map_[scancode&0xFF].bit != 0)
-      *raw_to_cpc_map_[scancode].line_index |= (raw_to_cpc_map_[scancode].bit);
-}
-
 void KeyboardPi::UnpressKey(unsigned int scancode)
+
 {
    if (raw_to_cpc_map_[scancode & 0xFF].bit != 0)
+   {
+      logger_->Write("KeyboardPi", LogNotice, "PressKey %X - line : %i, bit : %X", scancode, raw_to_cpc_map_[scancode & 0xFF].line_number, raw_to_cpc_map_[scancode & 0xFF].bit);
+      *raw_to_cpc_map_[scancode].line_index |= (raw_to_cpc_map_[scancode].bit);
+   }
+}
+
+void KeyboardPi::PressKey(unsigned int scancode)
+{
+   if (raw_to_cpc_map_[scancode & 0xFF].bit != 0)
+   {
+      logger_->Write("KeyboardPi", LogNotice, "UnpressKey %X - line : %i, bit : %X", scancode, raw_to_cpc_map_[scancode & 0xFF].line_number, raw_to_cpc_map_[scancode & 0xFF].bit);
       *raw_to_cpc_map_[scancode & 0xFF].line_index &= ~(raw_to_cpc_map_[scancode & 0xFF].bit);
+   }
    
 }
 
@@ -677,10 +685,16 @@ void KeyboardPi::LoadKeyboard(const char* path)
       // Do not use emty lines, and comment lines
       if (s.size() == 0 ||s[0] == '#')
       {
+         offset += end_line;
          continue;
       }
 
       // Decode line to buffer
+      // Remove spaces
+      while (ptr_buffer[offset] == ' ')
+      {
+         offset++;
+      }
       for (unsigned int raw_key = 0; raw_key<8 && (2+raw_key * 3) < end_line; raw_key++)
       {
          char number [3];

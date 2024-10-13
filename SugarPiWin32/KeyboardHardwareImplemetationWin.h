@@ -21,6 +21,7 @@ class KeyboardHardwareImplemetationWin : public KeyboardHardwareImplemetation
       void Presskey(long keyCode);
       void Unpresskey(long keyCode);
 
+      void CodeActionSpecial(long keycode, bool activated);
       
 protected:
       void CodeAction(long keycode, bool activated);
