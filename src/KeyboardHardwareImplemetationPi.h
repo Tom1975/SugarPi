@@ -30,8 +30,8 @@ protected:
    CDeviceNameService* device_name_service_;
    CUSBHCIDevice* dwhci_device_;
    CUSBGamePadDevice* gamepad_[MAX_GAMEPADS];
-   CUSBKeyboardDevice* keyboard_;
+   static CUSBKeyboardDevice* keyboard_;
 
    CSpinLock         mutex_;
-   KeyboardPi*       keyboard_;
+   KeyboardPi*       keyboardPi_;
 };
