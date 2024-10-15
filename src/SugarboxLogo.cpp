@@ -12,8 +12,8 @@
 //#include <circle/logger.h>
 #include <circle/spinlock.h>
 static CSpinLock   mutex_;
-void Lock() { mutex_.Acquire(); }
-void Unlock() { mutex_.Release(); }
+static void Lock() { mutex_.Acquire(); }
+static void Unlock() { mutex_.Release(); }
 #else
 #include "CLogger.h"
 #include <mutex>

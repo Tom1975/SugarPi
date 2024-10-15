@@ -7,8 +7,8 @@
 #ifdef  __circle__
 #include <circle/spinlock.h>
 static CSpinLock   mutex_;
-void Lock() { Lock(); }
-void Unlock() { Unlock(); }
+static void Lock() { Lock(); }
+static void Unlock() { Unlock(); }
 #else
 #include <mutex>
 static std::mutex mutex_;

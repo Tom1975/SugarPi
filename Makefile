@@ -20,6 +20,7 @@ OBJS	= src/main.o\
 		src/Engine.o\
 		src/MenuFrame.o\
 		src/KeyboardPi.o\
+		src/KeyboardHardwareImplemetationPi.o \
 		src/log.o\
 		src/MainMenuWindows.o\
 		src/BitmapWindows.o\
