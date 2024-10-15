@@ -3,7 +3,12 @@
 #include <string>
 #include <vector>
 
-#include "CLogger.h"
+#ifdef  __circle__
+   #include <circle/logger.h>
+#else
+   #include "CLogger.h"
+#endif
+
 #include "CPCCore/CPCCoreEmu/IKeyboard.h"
 #include "KeyboardHardwareImplemetation.h"
 

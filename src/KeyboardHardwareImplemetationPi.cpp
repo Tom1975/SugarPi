@@ -5,10 +5,10 @@
 #include <SDCard/emmc.h>
 #include <fatfs/ff.h>
 
-KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi(CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service):
+KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi(KeyboardPi* keyboard, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service):
    device_name_service_(device_name_service),
    dwhci_device_(dwhci_device),
-
+   keyboard_(keyboard)
 {
 	for (unsigned i = 0; i < MAX_GAMEPADS; i++)
 	{

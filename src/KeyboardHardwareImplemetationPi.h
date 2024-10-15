@@ -5,13 +5,14 @@
 #include <circle/usb/usbkeyboard.h>
 #include <circle/devicenameservice.h>
 
+#include "KeyboardPi.h"
 #include "KeyboardHardwareImplemetation.h"
 
 //
 class KeyboardHardwareImplemetationPi : public KeyboardHardwareImplemetation
 {
 public:
-   KeyboardHardwareImplemetationPi(CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service);
+   KeyboardHardwareImplemetationPi(KeyboardPi* keyboard, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service);
    virtual ~KeyboardHardwareImplemetationPi();
 
    virtual bool Initialize();
@@ -32,7 +33,5 @@ protected:
    CUSBKeyboardDevice* keyboard_;
 
    CSpinLock         mutex_;
-
-   TGamePadState	   gamepad_state_[MAX_GAMEPADS];
-   TGamePadState	   gamepad_state_buffered_[MAX_GAMEPADS];
+   KeyboardPi*       keyboard_;
 };
