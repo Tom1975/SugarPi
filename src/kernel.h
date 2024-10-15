@@ -46,6 +46,7 @@
 #include "DisplayPi.h"
 #include "DisplayPiImp.h"
 #include "KeyboardPi.h"
+#include "KeyboardHardwareImplemetationPi.h"
 #include "SoundPi.h"
 #include "emulation.h"
 
@@ -94,6 +95,7 @@ private:
 	//Motherboard       *motherboard_emulation_;
 	DisplayPiImp      *display_;
    KeyboardPi        *keyboard_;
+   KeyboardHardwareImplemetationPi* keyboard_imp_;
    SoundPi*          sound_;
 
    Emulation         emulation_;
