@@ -15,7 +15,7 @@ public:
    KeyboardHardwareImplemetationPi(KeyboardPi* keyboard, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service);
    virtual ~KeyboardHardwareImplemetationPi();
 
-   virtual bool Initialize();
+   virtual void Initialize();
    virtual void UpdatePlugnPlay();
 
    static void GamePadRemovedHandler(CDevice* pDevice, void* pContext);

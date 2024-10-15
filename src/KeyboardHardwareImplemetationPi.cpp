@@ -27,7 +27,7 @@ KeyboardHardwareImplemetationPi::~KeyboardHardwareImplemetationPi()
 }
 
 
-bool KeyboardHardwareImplemetationPi::Initialize()
+void KeyboardHardwareImplemetationPi::Initialize()
 {
    if (dwhci_device_->Initialize() == false)
    {
@@ -35,7 +35,6 @@ bool KeyboardHardwareImplemetationPi::Initialize()
    }
    logger_->Write("Keyboard", LogNotice, "Initialize done.");
 
-   return true;
 }
 
 void KeyboardHardwareImplemetationPi::UpdatePlugnPlay()
