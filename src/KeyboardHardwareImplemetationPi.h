@@ -24,6 +24,12 @@ public:
 
 protected:
 
+   bool*             select_;
+   unsigned int*     action_buttons_;
+   unsigned char*    keyboard_lines_;
+   GamepadDef**      gamepad_active_;
+   TGamePadState**	gamepad_state_;
+
    static void KeyStatusHandlerRaw(unsigned char ucModifiers, const unsigned char RawKeys[6]);
    GamepadDef* LookForDevice (const TUSBDeviceDescriptor* descriptor);
 
@@ -33,5 +39,5 @@ protected:
    static CUSBKeyboardDevice* keyboard_;
 
    CSpinLock         mutex_;
-   KeyboardPi*       keyboardPi_;
+   static KeyboardPi*       keyboardPi_;
 };

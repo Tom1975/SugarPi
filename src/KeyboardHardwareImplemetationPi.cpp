@@ -9,9 +9,15 @@ KeyboardHardwareImplemetationPi::keyboardPi_ = nullptr;
 
 KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi(KeyboardPi* keyboard, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service):
    device_name_service_(device_name_service),
-   dwhci_device_(dwhci_device),
-   keyboardPi_(keyboard)
+   dwhci_device_(dwhci_device)
 {
+   keyboardPi_ = keyboard;
+   select_ = keyboardPi_->GetSelect();
+   action_buttons_ = keyboardPi_->GetActionButtons();
+   gamepad_active_ = keyboardPi_->GetGamepadActive();
+   keyboard_lines_ = keyboardPi_->GetKeyboardLine();
+   gamepad_state_ = keyboardPi_->GetGamepadState();
+
 	for (unsigned i = 0; i < MAX_GAMEPADS; i++)
 	{
 		gamepad_[i] = 0;
@@ -31,9 +37,9 @@ void KeyboardHardwareImplemetationPi::Initialize()
 {
    if (dwhci_device_->Initialize() == false)
    {
-      logger_->Write("Keyboard", LogPanic, "Initialize failed !");
+      CLogger::Get ()->Write("Keyboard", LogPanic, "Initialize failed !");
    }
-   logger_->Write("Keyboard", LogNotice, "Initialize done.");
+   CLogger::Get ()->Write("Keyboard", LogNotice, "Initialize done.");
 
 }
 
@@ -61,21 +67,21 @@ void KeyboardHardwareImplemetationPi::UpdatePlugnPlay()
          CString* gamepad_name = gamepad_[nDevice - 1]->GetDevice()->GetNames();
          const TUSBDeviceDescriptor* descriptor = gamepad_[nDevice - 1]->GetDevice()->GetDeviceDescriptor();
 
-         logger_->Write("Keyboard", LogNotice, "Gamepad : %s - VID=%X; PID=%X; bcdDevice = %X", (const char*)(*gamepad_name), descriptor->idVendor,
+         CLogger::Get ()->Write("Keyboard", LogNotice, "Gamepad : %s - VID=%X; PID=%X; bcdDevice = %X", (const char*)(*gamepad_name), descriptor->idVendor,
             descriptor->idProduct, descriptor->bcdDevice);
          delete gamepad_name;
          const TGamePadState* pState = gamepad_[nDevice - 1]->GetInitialState();
          assert(pState != 0);
 
          memcpy(&gamepad_state_[nDevice - 1], pState, sizeof(TGamePadState));
-         logger_->Write("Keyboard", LogNotice, "Gamepad %u: %d Button(s) %d Hat(s)",
+         CLogger::Get ()->Write("Keyboard", LogNotice, "Gamepad %u: %d Button(s) %d Hat(s)",
             nDevice, pState->nbuttons, pState->nhats);
 
-         gamepad_[nDevice - 1]->RegisterRemovedHandler(GamePadRemovedHandler, this);
-         gamepad_[nDevice - 1]->RegisterStatusHandler(GamePadStatusHandler);
+         gamepad_[nDevice - 1]->RegisterRemovedHandler(KeyboardHardwareImplemetationPi::GamePadRemovedHandler, this);
+         gamepad_[nDevice - 1]->RegisterStatusHandler(KeyboardHardwareImplemetationPi::GamePadStatusHandler);
          gamepad_active_[nDevice - 1] = LookForDevice(descriptor);
 
-         logger_->Write("Keyboard", LogNotice, "Use your gamepad controls!");
+         CLogger::Get ()->Write("Keyboard", LogNotice, "Use your gamepad controls!");
       }
 
       // Keyboard
@@ -87,7 +93,7 @@ void KeyboardHardwareImplemetationPi::UpdatePlugnPlay()
             keyboard_->RegisterRemovedHandler(KeyboardRemovedHandler);
             keyboard_->RegisterKeyStatusHandlerRaw(KeyStatusHandlerRaw);
 
-            logger_->Write("Keyboard", LogNotice, "Just type something!");
+            CLogger::Get ()->Write("Keyboard", LogNotice, "Just type something!");
          }
       }
    }
@@ -204,11 +210,11 @@ GamepadDef* KeyboardHardwareImplemetationPi::LookForDevice(const TUSBDeviceDescr
    {
       if (gamepad_list_[index]->vid == descriptor->idVendor && gamepad_list_[index]->pid == descriptor->idProduct && gamepad_list_[index]->version == descriptor->bcdDevice)
       {
-         logger_->Write("KeyboardPi", LogNotice, "Gamepad found in database !");
+         CLogger::Get ()->Write("KeyboardPi", LogNotice, "Gamepad found in database !");
          return gamepad_list_[index];
       }
    }
 
-   logger_->Write("KeyboardPi", LogNotice, "Unknown gamepad...");
+   CLogger::Get ()->Write("KeyboardPi", LogNotice, "Unknown gamepad...");
    return gamepad;
 }
