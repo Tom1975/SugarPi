@@ -10,7 +10,8 @@
 
 
 #include "DisplayPiDesktop.h"
-#include "KeyboardPiDesktop.h"
+//#include "KeyboardPiDesktop.h"
+#include "KeyboardPi.h"
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
 #include "CPCCore/CPCCoreEmu/MachineSettings.h"

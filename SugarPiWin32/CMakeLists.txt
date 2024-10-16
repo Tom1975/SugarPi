@@ -20,16 +20,17 @@ set(Source_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/DisplayPiDesktop.h
 		${CMAKE_CURRENT_SOURCE_DIR}/emulation.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/emulation.h
-		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPiDesktop.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPiDesktop.h
+		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardHardwareImplemetationWin.h
+		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardHardwareImplemetationWin.cpp
+#		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPiDesktop.cpp
+#		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPiDesktop.h
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPiDesktop.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPiDesktop.h
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetupDesktop.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetupDesktop.h
 #		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.cpp
 #		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.h
-		
-
+	
 #		${CMAKE_CURRENT_SOURCE_DIR}/kernel.cpp
 #		${CMAKE_CURRENT_SOURCE_DIR}/kernel.h
 #		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetup.cpp
@@ -40,8 +41,6 @@ set(Source_Files
 #		${CMAKE_CURRENT_SOURCE_DIR}/DisplayPi.h
 #		${CMAKE_CURRENT_SOURCE_DIR}/emulation.cpp
 #		${CMAKE_CURRENT_SOURCE_DIR}/emulation.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPi.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPi.h
 #		${CMAKE_CURRENT_SOURCE_DIR}/log.cpp
 #		${CMAKE_CURRENT_SOURCE_DIR}/log.h
 #		${CMAKE_CURRENT_SOURCE_DIR}/SoundPi.cpp
@@ -59,6 +58,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BackFrame.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BasicFrame.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BasicFrame.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/Button.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/Button.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ConfigurationManager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ConfigurationManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CString.cpp
@@ -69,14 +70,29 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/EmulationFrame.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Engine.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Engine.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/KeyboardPi.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/KeyboardPi.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/KeyboardHardwareImplemetation.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/files.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/files.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/log.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/BitmapWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/BitmapWindows.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MainMenuWindows.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MainMenuWindows.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuFrame.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuFrame.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuItemWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuItemWindows.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuButtonWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuButtonWindows.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuWindows.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/CheckMenuItemWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/CheckMenuItemWindows.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScrollWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScrollWindows.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Morphing.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Morphings.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Morphings.h
@@ -86,6 +102,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ScreenMenu.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/SimpleBitmap.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/SimpleBitmap.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/SugarboxLogo.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/SugarboxLogo.h
 )
@@ -173,7 +191,7 @@ target_compile_definitions(SugarPiWin32 PUBLIC -DNO_MULTITHREAD)
 
 target_compile_features(SugarPiWin32  PRIVATE cxx_std_17)
 target_compile_definitions(SugarPiWin32 PUBLIC -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -DLOG_MIXER -DLOGFDC -DNO_CUSTOM_OPCODES -DARM_ALLOW_MULTI_CORE)
-target_compile_definitions(SugarPiWin32 PUBLIC -DPROFILE -DTEST_VECTOR)
+target_compile_definitions(SugarPiWin32 PUBLIC -DPROFILE )
 
 
 set (CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/Install)
@@ -185,6 +203,8 @@ install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../gamecontrollerdb.txt DESTINATION $
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../res/101_keyboard  DESTINATION ${CMAKE_INSTALL_PREFIX}/LAYOUT)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Facile_Sans.ttf"  DESTINATION ${CMAKE_INSTALL_PREFIX}/FONTS)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/logo.bin"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
+install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Img464.bin"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
+install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Img664.bin"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/labels.ini"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
 install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../res/ROMS DESTINATION ${CMAKE_INSTALL_PREFIX}/)
 install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../res/AMSTRAD DESTINATION ${CMAKE_INSTALL_PREFIX})

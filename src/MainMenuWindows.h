@@ -1,16 +1,8 @@
 #pragma once
 
-#ifdef  __circle__
-#include <circle/logger.h>
-#include <circle/string.h>
-#else
-#include "CLogger.h"
-#include "CString.h"
-#endif
-
-#include "BasicFrame.h"
 #include "Window.h"
-
+#include "BitmapWindows.h"
+#include "MenuWindows.h"
 #include "SugarboxLogo.h"
 
 
