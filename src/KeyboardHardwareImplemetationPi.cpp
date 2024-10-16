@@ -5,6 +5,16 @@
 #include <SDCard/emmc.h>
 #include <fatfs/ff.h>
 
+
+unsigned shift_l_modifier_ = 0x02;
+unsigned shift_r_modifier_ = 0x20;
+unsigned ctrl_modifier_ = 0x01;
+unsigned copy_modifier_ = 0x04;
+
+static CSpinLock   mutex_;
+static void Lock() { mutex_.Acquire(); }
+static void Unlock() { mutex_.Release(); }
+
 KeyboardHardwareImplemetationPi::keyboardPi_ = nullptr;
 
 KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi(KeyboardPi* keyboard, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service):
@@ -14,14 +24,13 @@ KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi(KeyboardPi* key
    keyboardPi_ = keyboard;
    select_ = keyboardPi_->GetSelect();
    action_buttons_ = keyboardPi_->GetActionButtons();
-   gamepad_active_ = keyboardPi_->GetGamepadActive();
    keyboard_lines_ = keyboardPi_->GetKeyboardLine();
    gamepad_state_ = keyboardPi_->GetGamepadState();
+   gamepad_active_ = keyboardPi_->GetGamepadActive();
 
 	for (unsigned i = 0; i < MAX_GAMEPADS; i++)
 	{
 		gamepad_[i] = 0;
-		gamepad_active_[i] = nullptr;
 	}
 
 
@@ -107,38 +116,38 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
    CString Message;
    Message.Format("Key status (modifiers %02X)", (unsigned)ucModifiers);
 
-   keyboardPi_->Lock();
+   Lock();
 
    // Modifier
-   if (keyboardPi_->old_modifier_ & shift_l_modifier_) keyboardPi_->keyboard_lines_[2] |= 0x20;
-   if (keyboardPi_->old_modifier_ & shift_r_modifier_) keyboardPi_->keyboard_lines_[2] |= 0x20;
-   if (keyboardPi_->old_modifier_ & ctrl_modifier_) keyboardPi_->keyboard_lines_[2] |= 0x80;
-   if (keyboardPi_->old_modifier_ & copy_modifier_) keyboardPi_->keyboard_lines_[1] |= 0x02;
+   if (old_modifier_ & shift_l_modifier_) keyboard_lines_[2] |= 0x20;
+   if (old_modifier_ & shift_r_modifier_) keyboard_lines_[2] |= 0x20;
+   if (old_modifier_ & ctrl_modifier_) keyboard_lines_[2] |= 0x80;
+   if (old_modifier_ & copy_modifier_) keyboard_lines_[1] |= 0x02;
 
    // Unpress the previous keys
    for (unsigned i = 0; i < 6; i++)
    {
-      if (keyboardPi_->old_raw_keys_[i] != 0)
+      //if (keyboardPi_->old_raw_keys_[i] != 0)
       {
-         keyboard_->UnpressKey(keyboardPi_->old_raw_keys_[i]);
+         keyboardPi_->UnpressKey(keyboardPi_->old_raw_keys_[i]);
 
       }
    }
 
    // Press the new ones
-   if (ucModifiers & shift_l_modifier_) keyboardPi_->keyboard_lines_[2] &= ~0x20;
-   if (ucModifiers & shift_r_modifier_) keyboardPi_->keyboard_lines_[2] &= ~0x20;
-   if (ucModifiers & ctrl_modifier_) keyboardPi_->keyboard_lines_[2] &= ~0x80;
-   if (ucModifiers & copy_modifier_) keyboardPi_->keyboard_lines_[1] &= ~0x02;
+   if (ucModifiers & shift_l_modifier_) keyboard_lines_[2] &= ~0x20;
+   if (ucModifiers & shift_r_modifier_) keyboard_lines_[2] &= ~0x20;
+   if (ucModifiers & ctrl_modifier_) keyboard_lines_[2] &= ~0x80;
+   if (ucModifiers & copy_modifier_) keyboard_lines_[1] &= ~0x02;
 
    for (unsigned i = 0; i < 6; i++)
    {
       if (RawKeys[i] != 0)
       {
 
-         if (keyboardPi_->raw_to_cpc_map_[RawKeys[i]].bit != 0)
+         //if (keyboardPi_->raw_to_cpc_map_[RawKeys[i]].bit != 0)
          {
-            keyboard_->PressKey(RawKeys[i]);
+            keyboardPi_->PressKey(RawKeys[i]);
          }
 
          CString KeyCode;
@@ -147,27 +156,27 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
          Message.Append(KeyCode);
       }
    }
-   keyboardPi_->old_modifier_ = ucModifiers;
-   memcpy(keyboardPi_->old_raw_keys_, RawKeys, sizeof(keyboardPi_->old_raw_keys_));
-   keyboardPi_->Unlock();
+   old_modifier_ = ucModifiers;
+   memcpy(old_raw_keys_, RawKeys, sizeof(old_raw_keys_));
+   Unlock();
 
    //CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
 }
 
 void KeyboardHardwareImplemetationPi::KeyboardRemovedHandler(CDevice* pDevice, void* pContext)
 {
-   KeyboardPi* pThis = (KeyboardPi*)pContext;
+   KeyboardHardwareImplemetationPi* pThis = (KeyboaKeyboardHardwareImplemetationPirdPi*)pContext;
    assert(pThis != 0);
 
    CLogger::Get()->Write("Keyboard", LogDebug, "Keyboard removed");
 
-   pThis->keyboard_ = 0;
+   keyboard_ = 0;
 }
 
 
 void KeyboardHardwareImplemetationPi::GamePadRemovedHandler(CDevice* pDevice, void* pContext)
 {
-   KeyboardPi* pThis = (KeyboardPi*)pContext;
+   KeyboardHardwareImplemetationPi* pThis = (KeyboardHardwareImplemetationPi*)pContext;
    assert(pThis != 0);
 
    for (unsigned i = 0; i < MAX_GAMEPADS; i++)

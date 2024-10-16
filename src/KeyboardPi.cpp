@@ -22,12 +22,6 @@ static void Unlock() { mutex_.unlock(); }
 //   SET_KEYBOARD(0x5A, 1, 6);              // FN 2
 //   SET_KEYBOARD(0x14, 8, 5);              // A 
 
-
-unsigned shift_l_modifier_ = 0x02;
-unsigned shift_r_modifier_ = 0x20;
-unsigned ctrl_modifier_ = 0x01;
-unsigned copy_modifier_ = 0x04;
-
 unsigned char default_raw_map[10][8] = 
 {
    {0x52, 0x4F, 0x51, 0x61, 0x5E, 0x5B, 0x58, 0x63, },   // Cur_up Cur_right Cur_down F9 F6 F3 Enter F.
@@ -329,6 +323,9 @@ KeyboardPi::KeyboardPi(CLogger* logger) :
 
    memset(&gamepad_state_buffered_, 0, sizeof(gamepad_state_buffered_));
    memset(&gamepad_state_, 0, sizeof(gamepad_state_));
+
+   memset ( old_raw_keys_, 0, sizeof old_raw_keys_);
+
 }
 
 KeyboardPi::~KeyboardPi()
@@ -347,9 +344,8 @@ void KeyboardPi::SetHard(KeyboardHardwareImplemetation* hard_imp)
 
  void KeyboardPi::InitKeyboard (unsigned char key_map[10][8])
 {
-   
+   // TODO : check how old_raw_keys_ in reset on implementation
    memset ( raw_to_cpc_map_, 0, sizeof raw_to_cpc_map_);
-   memset ( old_raw_keys_, 0, sizeof old_raw_keys_);
 
    for (int line = 0; line < 10; line++)
    {
