@@ -59,6 +59,8 @@ public:
       return gamepad_active_;
    }
 
+   std::vector<GamepadDef*> gamepad_list_;
+
 protected:
 
    KeyboardHardwareImplemetation* hard_imlementation_;
@@ -84,7 +86,6 @@ protected:
 
    static KeyboardPi* this_ptr_;
 
-   std::vector<GamepadDef*> gamepad_list_;
    GamepadDef*       gamepad_active_[MAX_GAMEPADS];
 
    struct RawToCPC
@@ -94,6 +95,4 @@ protected:
       unsigned char bit;
    };
    RawToCPC raw_to_cpc_map_[0x100];
-   unsigned char old_raw_keys_[6];
-   unsigned char old_modifier_;
 };

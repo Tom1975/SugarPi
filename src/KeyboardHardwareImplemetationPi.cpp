@@ -15,7 +15,8 @@ static CSpinLock   mutex_;
 static void Lock() { mutex_.Acquire(); }
 static void Unlock() { mutex_.Release(); }
 
-KeyboardHardwareImplemetationPi::keyboardPi_ = nullptr;
+KeyboardHardwareImplemetationPi::keyboardPi_* = nullptr;
+KeyboardHardwareImplemetationPi* pThis = nullptr;
 
 KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi(KeyboardPi* keyboard, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service):
    device_name_service_(device_name_service),
@@ -27,6 +28,9 @@ KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi(KeyboardPi* key
    keyboard_lines_ = keyboardPi_->GetKeyboardLine();
    gamepad_state_ = keyboardPi_->GetGamepadState();
    gamepad_active_ = keyboardPi_->GetGamepadActive();
+   gamepad_state_buffered_ = keyboardPi_->GetGamepadStateBuffered());
+
+   pThis = this;
 
 	for (unsigned i = 0; i < MAX_GAMEPADS; i++)
 	{
@@ -119,26 +123,26 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
    Lock();
 
    // Modifier
-   if (old_modifier_ & shift_l_modifier_) keyboard_lines_[2] |= 0x20;
-   if (old_modifier_ & shift_r_modifier_) keyboard_lines_[2] |= 0x20;
-   if (old_modifier_ & ctrl_modifier_) keyboard_lines_[2] |= 0x80;
-   if (old_modifier_ & copy_modifier_) keyboard_lines_[1] |= 0x02;
+   if (pThis->old_modifier_ & shift_l_modifier_) pThis->keyboard_lines_[2] |= 0x20;
+   if (pThis->old_modifier_ & shift_r_modifier_) pThis->keyboard_lines_[2] |= 0x20;
+   if (pThis->old_modifier_ & ctrl_modifier_) pThis->keyboard_lines_[2] |= 0x80;
+   if (pThis->old_modifier_ & copy_modifier_) pThis->keyboard_lines_[1] |= 0x02;
 
    // Unpress the previous keys
    for (unsigned i = 0; i < 6; i++)
    {
       //if (keyboardPi_->old_raw_keys_[i] != 0)
       {
-         keyboardPi_->UnpressKey(keyboardPi_->old_raw_keys_[i]);
+         keyboardPi_->UnpressKey(pThis->old_raw_keys_[i]);
 
       }
    }
 
    // Press the new ones
-   if (ucModifiers & shift_l_modifier_) keyboard_lines_[2] &= ~0x20;
-   if (ucModifiers & shift_r_modifier_) keyboard_lines_[2] &= ~0x20;
-   if (ucModifiers & ctrl_modifier_) keyboard_lines_[2] &= ~0x80;
-   if (ucModifiers & copy_modifier_) keyboard_lines_[1] &= ~0x02;
+   if (ucModifiers & shift_l_modifier_) pThis->keyboard_lines_[2] &= ~0x20;
+   if (ucModifiers & shift_r_modifier_) pThis->keyboard_lines_[2] &= ~0x20;
+   if (ucModifiers & ctrl_modifier_) pThis->keyboard_lines_[2] &= ~0x80;
+   if (ucModifiers & copy_modifier_) pThis->keyboard_lines_[1] &= ~0x02;
 
    for (unsigned i = 0; i < 6; i++)
    {
@@ -156,8 +160,8 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
          Message.Append(KeyCode);
       }
    }
-   old_modifier_ = ucModifiers;
-   memcpy(old_raw_keys_, RawKeys, sizeof(old_raw_keys_));
+   pThis->old_modifier_ = ucModifiers;
+   memcpy(pThis->old_raw_keys_, RawKeys, sizeof(old_raw_keys_));
    Unlock();
 
    //CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
@@ -165,7 +169,7 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
 
 void KeyboardHardwareImplemetationPi::KeyboardRemovedHandler(CDevice* pDevice, void* pContext)
 {
-   KeyboardHardwareImplemetationPi* pThis = (KeyboaKeyboardHardwareImplemetationPirdPi*)pContext;
+   KeyboardHardwareImplemetationPi* pThis = (KeyboardHardwareImplemetationPi*)pContext;
    assert(pThis != 0);
 
    CLogger::Get()->Write("Keyboard", LogDebug, "Keyboard removed");
@@ -198,16 +202,16 @@ void KeyboardHardwareImplemetationPi::GamePadStatusHandler(unsigned nDeviceIndex
    assert(keyboardPi_ != 0);
    assert(pState != 0);
 
-   memcpy(&keyboardPi_->gamepad_state_[nDeviceIndex], pState, sizeof * pState);
+   memcpy(&pThis->gamepad_state_[nDeviceIndex], pState, sizeof * pState);
    // Set the new pushed buttons
 
    keyboardPi_->CheckActions(nDeviceIndex);
-   if ((keyboardPi_->gamepad_active_[nDeviceIndex] != nullptr) && keyboardPi_->AddAction(&keyboardPi_->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
+   if ((pThis->gamepad_active_[nDeviceIndex] != nullptr) && keyboardPi_->AddAction(&keyboardPi_->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
    {
-      keyboardPi_->select_ = true;
+      *pThis->select_ = true;
    }
 
-   keyboardPi_->gamepad_state_buffered_[nDeviceIndex] = keyboardPi_->gamepad_state_[nDeviceIndex];
+   pThis->gamepad_state_buffered_[nDeviceIndex] = pThis->gamepad_state_[nDeviceIndex];
 }
 
 
@@ -215,7 +219,7 @@ GamepadDef* KeyboardHardwareImplemetationPi::LookForDevice(const TUSBDeviceDescr
 {
    GamepadDef* gamepad = nullptr;
 
-   for (unsigned int index = 0; index < gamepad_list_.size(); index++)
+   for (unsigned int index = 0; index < keyboardPi_->gamepad_list_.size(); index++)
    {
       if (gamepad_list_[index]->vid == descriptor->idVendor && gamepad_list_[index]->pid == descriptor->idProduct && gamepad_list_[index]->version == descriptor->bcdDevice)
       {
