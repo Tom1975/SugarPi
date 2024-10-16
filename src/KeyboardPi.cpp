@@ -323,9 +323,6 @@ KeyboardPi::KeyboardPi(CLogger* logger) :
 
    memset(&gamepad_state_buffered_, 0, sizeof(gamepad_state_buffered_));
    memset(&gamepad_state_, 0, sizeof(gamepad_state_));
-
-   memset ( old_raw_keys_, 0, sizeof old_raw_keys_);
-
 }
 
 KeyboardPi::~KeyboardPi()

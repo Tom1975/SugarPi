@@ -15,7 +15,8 @@ static CSpinLock   mutex_;
 static void Lock() { mutex_.Acquire(); }
 static void Unlock() { mutex_.Release(); }
 
-KeyboardHardwareImplemetationPi::keyboardPi_* = nullptr;
+KeyboardPi* KeyboardHardwareImplemetationPi::keyboardPi_ = nullptr;
+ CUSBKeyboardDevice* KeyboardHardwareImplemetationPi::keyboard_ = nullptr;
 KeyboardHardwareImplemetationPi* pThis = nullptr;
 
 KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi(KeyboardPi* keyboard, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service):
@@ -28,7 +29,7 @@ KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi(KeyboardPi* key
    keyboard_lines_ = keyboardPi_->GetKeyboardLine();
    gamepad_state_ = keyboardPi_->GetGamepadState();
    gamepad_active_ = keyboardPi_->GetGamepadActive();
-   gamepad_state_buffered_ = keyboardPi_->GetGamepadStateBuffered());
+   gamepad_state_buffered_ = keyboardPi_->GetGamepadStateBuffered();
 
    pThis = this;
 
@@ -174,7 +175,7 @@ void KeyboardHardwareImplemetationPi::KeyboardRemovedHandler(CDevice* pDevice, v
 
    CLogger::Get()->Write("Keyboard", LogDebug, "Keyboard removed");
 
-   keyboard_ = 0;
+   pThis->keyboard_ = 0;
 }
 
 
@@ -206,7 +207,8 @@ void KeyboardHardwareImplemetationPi::GamePadStatusHandler(unsigned nDeviceIndex
    // Set the new pushed buttons
 
    keyboardPi_->CheckActions(nDeviceIndex);
-   if ((pThis->gamepad_active_[nDeviceIndex] != nullptr) && keyboardPi_->AddAction(&keyboardPi_->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
+   if (( pThis->gamepad_active_[nDeviceIndex] != nullptr) && 
+         keyboardPi_->AddAction(&pThis->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
    {
       *pThis->select_ = true;
    }
@@ -221,10 +223,10 @@ GamepadDef* KeyboardHardwareImplemetationPi::LookForDevice(const TUSBDeviceDescr
 
    for (unsigned int index = 0; index < keyboardPi_->gamepad_list_.size(); index++)
    {
-      if (gamepad_list_[index]->vid == descriptor->idVendor && gamepad_list_[index]->pid == descriptor->idProduct && gamepad_list_[index]->version == descriptor->bcdDevice)
+      if (keyboardPi_->gamepad_list_[index]->vid == descriptor->idVendor && keyboardPi_->gamepad_list_[index]->pid == descriptor->idProduct && keyboardPi_->gamepad_list_[index]->version == descriptor->bcdDevice)
       {
          CLogger::Get ()->Write("KeyboardPi", LogNotice, "Gamepad found in database !");
-         return gamepad_list_[index];
+         return keyboardPi_->gamepad_list_[index];
       }
    }
 
