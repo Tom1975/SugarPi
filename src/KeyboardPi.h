@@ -84,8 +84,6 @@ protected:
    // Keyboard definition
    unsigned char keyboard_lines_ [10];
 
-   static KeyboardPi* this_ptr_;
-
    GamepadDef*       gamepad_active_[MAX_GAMEPADS];
 
    struct RawToCPC

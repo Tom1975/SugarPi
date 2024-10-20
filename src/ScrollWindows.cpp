@@ -18,7 +18,7 @@
 #define PROF_DISPLAY sprintf(s, "Duree displays Frame: %d us\n", t);OutputDebugString (s);
 static __int64 s1, s2, freq;
 static DWORD t;
-static char s[1024];
+static char s[128];
 #endif
 
 #endif

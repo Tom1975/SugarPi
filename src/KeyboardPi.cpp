@@ -22,6 +22,10 @@ static void Unlock() { mutex_.unlock(); }
 //   SET_KEYBOARD(0x5A, 1, 6);              // FN 2
 //   SET_KEYBOARD(0x14, 8, 5);              // A 
 
+
+
+typedef char t_id[9];
+
 unsigned char default_raw_map[10][8] = 
 {
    {0x52, 0x4F, 0x51, 0x61, 0x5E, 0x5B, 0x58, 0x63, },   // Cur_up Cur_right Cur_down F9 F6 F3 Enter F.
@@ -278,10 +282,6 @@ unsigned int GamepadDef::SetValue(const char* key, const char* value)
 }
 
 
-typedef char t_id[9];
-
-KeyboardPi* KeyboardPi::this_ptr_ = 0;
-
 
 unsigned int getline(const char* buffer, int size, std::string& out)
 {
@@ -319,8 +319,7 @@ KeyboardPi::KeyboardPi(CLogger* logger) :
    }
 
    InitKeyboard(default_raw_map);
-   this_ptr_ = this;
-
+   
    memset(&gamepad_state_buffered_, 0, sizeof(gamepad_state_buffered_));
    memset(&gamepad_state_, 0, sizeof(gamepad_state_));
 }
