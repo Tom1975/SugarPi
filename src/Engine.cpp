@@ -10,6 +10,7 @@
 
 #include <filesystem>
 Engine::Engine(CLogger* log) :
+   in_menu_(false),
    logger_(log),
    setup_(nullptr),
    motherboard_(nullptr),
