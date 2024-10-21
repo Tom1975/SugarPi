@@ -22,35 +22,10 @@ set(Source_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/emulation.h
 		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardHardwareImplemetationWin.h
 		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardHardwareImplemetationWin.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPiDesktop.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/KeyboardPiDesktop.h
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPiDesktop.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/SoundPiDesktop.h
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetupDesktop.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetupDesktop.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManagerDesktop.h
-	
-#		${CMAKE_CURRENT_SOURCE_DIR}/kernel.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/kernel.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetup.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/SugarPiSetup.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManager.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/ConfigurationManager.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/DisplayPi.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/DisplayPi.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/emulation.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/emulation.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/log.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/log.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/SoundPi.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/SoundPi.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/ScreenMenu.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/ScreenMenu.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/Window.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/Window.h
-#		${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.cpp
-#		${CMAKE_CURRENT_SOURCE_DIR}/../res/coolspot.h
 )
 
 set(SugarPi_Files
@@ -157,11 +132,11 @@ set(CpcCore_Files
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/YMZ294.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Full.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Opcodes_fetch.cpp
-      ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Opcodes_ior.cpp
-      ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Opcodes_iow.cpp
-      ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Opcodes_memr.cpp
-      ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Opcodes_memw.cpp
-      ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Opcodes_z80wait.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Opcodes_ior.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Opcodes_iow.cpp
+      	${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Opcodes_memr.cpp
+      	${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Opcodes_memw.cpp
+      	${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z80_Opcodes_z80wait.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Z84C30.cpp
 )
 
