@@ -23,8 +23,8 @@ void Button::InitButton(unsigned int x, unsigned int y, unsigned int w, unsigned
 {
    x_ = x;
    y_ = y;
-   w_ = w;
-   h_ = h;
+   //w_ = w;
+   //h_ = h;
    if (bitmap_ != nullptr)
       delete bitmap_;
    bitmap_ = new SimpleBitmap(bitmap);

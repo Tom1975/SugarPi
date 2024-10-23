@@ -62,6 +62,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuItemWindows.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuButtonWindows.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuButtonWindows.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuButtonWithBitmapWindows.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuButtonWithBitmapWindows.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuWindows.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/MenuWindows.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CheckMenuItemWindows.cpp

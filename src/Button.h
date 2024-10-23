@@ -16,8 +16,8 @@ public:
 private:
    // bitmap associé
    SimpleBitmap* bitmap_;
-   int x_;
+   /*int x_;
    int y_;
    int w_;
-   int h_;
+   int h_;*/
 };

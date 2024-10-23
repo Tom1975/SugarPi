@@ -26,6 +26,7 @@ OBJS	= src/main.o\
 		src/BitmapWindows.o\
 		src/MenuItemWindows.o\
 		src/MenuButtonWindows.o\
+		src/MenuButtonWithBitmapWindows.o\
 		src/MenuWindows.o\
 		src/CheckMenuItemWindows.o\
 		src/ScrollWindows.o\
