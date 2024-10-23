@@ -90,6 +90,12 @@ cp CART/* sdcard/CART
 cp gamecontrollerdb.txt sdcard/Config/gamecontrollerdb.txt
 cp "res/Facile_Sans.ttf" "sdcard/FONTS/Facile_Sans.ttf"
 cp "res/logo.bin" "sdcard/RES/logo.bin"
-cp res/ROMS/* sdcard/ROMS
-cp res/AMSTRAD/* sdcard/AMSTRAD
-cp res/labels.ini sdcard/RES
+cp "res/Img464.bin" "sdcard/RES/Img464.bin"
+cp "res/Img664.bin" "sdcard/RES/Img664.bin"
+cp "res/Img6128.bin" "sdcard/RES/Img6128.bin"
+cp "res/ImgGx4000.bin" "sdcard/RES/ImgGx4000.bin"
+cp "res/Img464_plus.bin" "sdcard/RES/Img464_plus.bin"
+cp "res/Img6128_plus.bin" "sdcard/RES/Img6128_plus.bin"
+cp "res/ROMS/*" "sdcard/ROMS"
+cp "res/AMSTRAD/*" "sdcard/AMSTRAD"
+cp "res/labels.ini" "sdcard/RES/labels.ini"

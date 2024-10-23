@@ -49,7 +49,24 @@ std::vector<ScreenMenu::AmstradConfiguration> ScreenMenu::config_list =
       }
    },
   { "CPC 664", PATH_RES INTER_FILE "Img664.bin", {
+         {"English", "CPC664UK.cfg"},
+         }
+  },
+  { "CPC 6128", PATH_RES INTER_FILE "Img6128.bin", {
+         {"French", "CPC6128FR.cfg"},
+         {"Danish", "CPC6128DK.cfg"},
+         }
+  },
+  { "GX 4000", PATH_RES INTER_FILE "ImGx4000.bin", {
          {"French", "CPC664UK.cfg"},
+         }
+  },
+  { "464 plus", PATH_RES INTER_FILE "Img464_plus.bin", {
+         {"French", "CPC464PLUSFR.cfg"},
+         }
+  },
+  { "6128 plus", PATH_RES INTER_FILE "Img6128_plus.bin", {
+         {"French", "CPC6128PLUSFR.cfg"},
          }
   },
 
