@@ -5,6 +5,10 @@
 #include <math.h> 
 
 #include "files.h"
+#include "SimpleBitmap.h"
+
+#include "MenuButtonWindows.h"
+#include "MenuButtonWithBitmapWindows.h"
 
 #ifdef  __circle__
 #include <strings.h>
@@ -16,7 +20,7 @@
 #define MOVE_BASE 7
 
 #define MAX_SIZE_BUFFER 256
-
+#define INTERLINE_SPACE 40
 
 ScreenMenu::MenuItem base_menu[] =
 {
@@ -35,6 +39,39 @@ ScreenMenu::MenuItem base_menu[] =
    { "MENU_Shutdown",           &ScreenMenu::ShutDown},
    { nullptr, nullptr}
 };
+
+std::vector<ScreenMenu::AmstradConfiguration> ScreenMenu::config_list =
+{
+   { "CPC 464", PATH_RES INTER_FILE "Img464.bin", {
+         {"French", "CPC464FR.cfg"}, 
+         {"English", "CPC464UK.cfg"},
+         {"Spanish", "CPC464SP.cfg"},
+         {"Danish", "CPC464DK.cfg"},
+      }
+   },
+  { "CPC 664", PATH_RES INTER_FILE "Img664.bin", {
+         {"English", "CPC664UK.cfg"},
+         }
+  },
+  { "CPC 6128", PATH_RES INTER_FILE "Img6128.bin", {
+         {"French", "CPC6128FR.cfg"},
+         {"Danish", "CPC6128DK.cfg"},
+         }
+  },
+  { "GX 4000", PATH_RES INTER_FILE "ImgGx4000.bin", {
+         {"French", "CPC664UK.cfg"},
+         }
+  },
+  { "464 plus", PATH_RES INTER_FILE "Img464_plus.bin", {
+         {"French", "CPC464PLUSFR.cfg"},
+         }
+  },
+  { "6128 plus", PATH_RES INTER_FILE "Img6128_plus.bin", {
+         {"French", "CPC6128PLUSFR.cfg"},
+         }
+  },
+
+ };
 
 ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup, MultiLanguage* language) :
    language_(language),
@@ -78,7 +115,8 @@ void ScreenMenu::Reload()
       MenuItemWindows* item = main_menu_->GetMenu()->GetMenuItem(i);
       if (item == nullptr)
       {
-         item = main_menu_->GetMenu()->AddMenuItem(language_->GetString(base_menu[i].label_), new ActionMenu(this, base_menu[i].function));
+         item = main_menu_->GetMenu()->AddMenuItem(language_->GetString(base_menu[i].label_),
+            10, i* INTERLINE_SPACE, main_menu_->GetMenu()->GetWidth()-10, INTERLINE_SPACE - 2, new ActionMenu(this, base_menu[i].function));
       }
       else
       {
@@ -156,7 +194,103 @@ void ScreenMenu::LoadConfiguration  (const char* config_name, const char* ini_fi
    
 }
 
+/// <summary>
+/// Select amstrad function:
+/// 
+/// This functions will allow an easy selection of the precise Amstrad to Emulate.
+/// First, user can choose between : 
+///   - Amstrad CPC 464
+///   - Amstrad CPC 664
+///   - Amstrad CPC 6128
+///   - Amstrad 664 PLUS
+///   - Amstrad 6128 PLUS
+///   - GX4000
+/// 
+/// Then, for each computer (464, 664, 6128), the origin language will have to be chosen.
+/// We so have the following structure :
+/// 
+/// 
+/// Next, addons will be added / removed through anoter menu
+/// 
+/// </summary>
+/// <returns></returns>
 IAction::ActionReturn ScreenMenu::SelectAmstrad()
+{
+   // Create menu from config_list 
+   Window* focus = Window::GetFocus();
+
+   MainMenuWindows* file_menu = new MainMenuWindows(display_->GetMenuFrame());
+
+   file_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
+      , new ActionMenu(this, &ScreenMenu::Back));
+
+   
+   int offset_y = INTERLINE_SPACE + 2;
+   for (auto& it : config_list)
+   {
+      MenuButtonWindows* item = new MenuButtonWindows(display_->GetMenuFrame());
+      item->Create(&it.associatedBmp_, file_menu->GetMenu(), 10, offset_y,
+         main_menu_->GetMenu()->GetWidth() - 200, 120/*,
+         10 + main_menu_->GetMenu()->GetWidth() - 200, INTERLINE_SPACE + 2 , 600, 200*/);
+      item->SetAction(new ActionMenuWithParameter<ScreenMenu::AmstradConfiguration&>(this, &ScreenMenu::SelectAmstradFinal, it));
+
+      file_menu->GetMenu()->AddMenuItem(item);
+         
+
+      offset_y += 120 +2;
+   }
+
+   file_menu->ResetMenu();
+
+   IAction::ActionReturn return_value = file_menu->DoScreen(this);
+
+   logger_->Write("Menu", LogNotice, "file_menu->DoScreen : %i", return_value);
+
+   delete file_menu;
+   Window::SetFocus(focus);
+   main_menu_->Invalidate();
+
+   logger_->Write("Menu", LogNotice, "Return from SelectAmstrad : %i", return_value);
+
+   return return_value;
+
+}
+
+IAction::ActionReturn ScreenMenu::SelectAmstradFinal(ScreenMenu::AmstradConfiguration& config)
+{
+   // Create submenu
+   // Display the current name / associated bitmap
+   // Display a menu with all the languages
+   Window* focus = Window::GetFocus();
+   MainMenuWindows* config_menu = new MainMenuWindows(display_->GetMenuFrame());
+
+   config_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
+      , new ActionMenu(this, &ScreenMenu::Back));
+
+   // Add Synchro menu
+   int i = 0;
+   for (auto&it : config.languages_)
+   {
+      // Display menu bitmap
+      config_menu->GetMenu()->AddMenuItem(it.fullname_.c_str(), 10, (i + 1) * INTERLINE_SPACE, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2,
+         new ActionMenuWithParameter<const char*>(this, &ScreenMenu::LoadAmstradSetup, it.config_path_));
+
+      i++;
+   }
+
+   config_menu->ResetMenu();
+   IAction::ActionReturn return_value = config_menu->DoScreen(this);
+   delete config_menu;
+
+   Window::SetFocus(focus);
+   main_menu_->Invalidate();
+
+   return return_value;
+
+   return IAction::Action_QuitMenu;
+}
+
+IAction::ActionReturn ScreenMenu::SelectAmstradCustom()
 {
    CString search_path = PATH_CONFIGS;
 #ifndef __circle__
@@ -229,12 +363,14 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
 
    MainMenuWindows* file_menu = new MainMenuWindows (display_->GetMenuFrame());
 
-   file_menu->GetMenu()->AddMenuItem("..", new ActionMenu( this, &ScreenMenu::Back) );
+   file_menu->GetMenu()->AddMenuItem("..", 10, i * INTERLINE_SPACE, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
+      , new ActionMenu(this, &ScreenMenu::Back));
 
    for (unsigned int i = 0; i < nb_file_ordered; i++)
    {
       // Display menu bitmap
-      file_menu->GetMenu()->AddMenuItem(array_ordered[i]->fname, new ActionMenuWithParameter<const char*>(this, &ScreenMenu::LoadAmstradSetup, array_ordered[i]->fname) );
+      file_menu->GetMenu()->AddMenuItem(array_ordered[i]->fname, 10, (i + 1) * INTERLINE_SPACE, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2,
+         new ActionMenuWithParameter<const char*>(this, &ScreenMenu::LoadAmstradSetup, array_ordered[i]->fname));
       
       i++;
    }
@@ -365,12 +501,14 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
 
    MainMenuWindows* file_menu = new MainMenuWindows (display_->GetMenuFrame());
 
-   file_menu->GetMenu()->AddMenuItem("..", new ActionMenu( this, &ScreenMenu::Back) );
+   file_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
+      , new ActionMenu(this, &ScreenMenu::Back));
 
    for (unsigned int i = 0; i < nb_file_ordered; i++)
    {
       // Display menu bitmap
-      file_menu->GetMenu()->AddMenuItem(array_ordered[i]->fname, new ActionMenuWithParameter<const char*>(this, load_action, array_ordered[i]->fname) );
+      file_menu->GetMenu()->AddMenuItem(array_ordered[i]->fname, 10, (i + 1) * INTERLINE_SPACE, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
+         , new ActionMenuWithParameter<const char*>(this, load_action, array_ordered[i]->fname));
    }
    logger_->Write("Menu", LogNotice, "Insert Media : End of Menu creation");
    file_menu->ResetMenu ();
@@ -417,7 +555,7 @@ IAction::ActionReturn ScreenMenu::ChangeLanguage()
    Window* focus = Window::GetFocus();
    MainMenuWindows* setup_menu = new MainMenuWindows(display_->GetMenuFrame());
 
-   setup_menu->GetMenu()->AddMenuItem("..", new ActionMenu(this, &ScreenMenu::Back));
+   setup_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2, new ActionMenu(this, &ScreenMenu::Back));
 
    // Add Synchro menu
    int nb_language = language_->GetLanguageNumber();
@@ -425,7 +563,8 @@ IAction::ActionReturn ScreenMenu::ChangeLanguage()
    for (int i = 0; i < nb_language; i++)
    {
       auto str = language_->GetLanguage(i);
-      setup_menu->GetMenu()->AddMenuItem(str, new ActionMenuWithParameter<int>(this, &ScreenMenu::SetLanguage, i));
+      setup_menu->GetMenu()->AddMenuItem(str, 10, (i + 1) * INTERLINE_SPACE, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
+         , new ActionMenuWithParameter<int>(this, &ScreenMenu::SetLanguage, i));
    }
 
    setup_menu->ResetMenu();
@@ -444,11 +583,14 @@ IAction::ActionReturn ScreenMenu::SugarSetup()
    Window* focus = Window::GetFocus();
    MainMenuWindows* setup_menu = new MainMenuWindows (display_->GetMenuFrame());
 
-   setup_menu->GetMenu()->AddMenuItem("..", new ActionMenu( this, &ScreenMenu::Back) );
+   setup_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
+      , new ActionMenu(this, &ScreenMenu::Back));
 
    // Add Synchro menu
    bool sync = display_-> IsSyncOnFrame();   
-   setup_menu->GetMenu()->AddCheckMenuItem ( "Set synchro on Frame", &sync,  new ActionMenuWithParameter<bool*>(this, &ScreenMenu::SetSync, &sync));
+   setup_menu->GetMenu()->AddCheckMenuItem("Set synchro on Frame", &sync,
+      10, INTERLINE_SPACE, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2,
+      new ActionMenuWithParameter<bool*>(this, &ScreenMenu::SetSync, &sync));
 
    setup_menu->ResetMenu ();
    IAction::ActionReturn return_value = setup_menu->DoScreen(this);
@@ -489,7 +631,9 @@ IAction::ActionReturn ScreenMenu::Info()
    Window* focus = Window::GetFocus();
    MainMenuWindows* setup_menu = new MainMenuWindows(display_->GetMenuFrame());
 
-   setup_menu->GetMenu()->AddMenuItem(language_->GetString("MENU_Exit"), new ActionMenu(this, &ScreenMenu::Back));
+   setup_menu->GetMenu()->AddMenuItem(language_->GetString("MENU_Exit"), 
+      10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2,
+      new ActionMenu(this, &ScreenMenu::Back));
 
    setup_menu->ResetMenu();
    IAction::ActionReturn return_value = setup_menu->DoScreen(this);

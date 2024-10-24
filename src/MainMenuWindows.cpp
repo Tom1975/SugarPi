@@ -1,7 +1,6 @@
+
 #include "MainMenuWindows.h"
 
-#include <memory.h>
-#include <math.h> 
 
 MainMenuWindows::MainMenuWindows(BasicFrame* display) :
    Window(display)

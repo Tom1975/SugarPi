@@ -38,6 +38,7 @@ Window::Window(BasicFrame* display) :
    display_(display), 
    x_(0), y_(0), 
    width_(0), height_(0), 
+   visible_(true),
    parent_(nullptr), 
    windows_children_(nullptr)
    
@@ -117,6 +118,22 @@ void Window::WindowsToDisplay(int& x, int& y)
 
 }
 
+void Window::DrawBitmap(PiBitmap* bmp, int x, int y)
+{
+   // Draw background of button
+   int x2 = x_ + x;
+   int y2 = y_ + y;
+   Window::WindowsToDisplay(x2, y2);
+
+   int bmp_with, bmp_height;
+   bmp->GetSize(bmp_with, bmp_height);
+   for (int i = 0; i < bmp_height && i+y2 < display_->GetFullHeight(); i++)
+   {
+      int* line = display_->GetBuffer(i + y2);
+      bmp->DrawLogo(i, &line[x2 ]);
+   }
+}
+
 void Window::RedrawWindow ()
 {
 }
@@ -126,9 +143,12 @@ void Window::RedrawChildren ()
    WindowsQueue** current_queue = &windows_children_;
    while ( *current_queue != nullptr)
    {  
-      (*current_queue)->wnd_->Clear();
-      (*current_queue)->wnd_->RedrawWindow();
-      (*current_queue)->wnd_->RedrawChildren();
+      if ((*current_queue)->wnd_->visible_)
+      {
+         (*current_queue)->wnd_->Clear();
+         (*current_queue)->wnd_->RedrawWindow();
+         (*current_queue)->wnd_->RedrawChildren();
+      }
 
       current_queue = &((*current_queue)->next_);
    }
@@ -156,8 +176,11 @@ void Window::Redraw (bool clear)
 #endif
 
    ClearAll();
-   RedrawWindow ();
-   RedrawChildren ();
+   if (visible_)
+   {
+      RedrawWindow();
+      RedrawChildren();
+   }
    display_->FrameIsReady();
 
 #ifdef PROFILE
@@ -259,377 +282,5 @@ void Window::RemoveFocus ()
 {
 }
 
-////////////////////////////////////////////////////////////////////////////////////
-
-#define INTERLINE_SPACE 40
-
-
-SFT *MenuItemWindows::fnt_italic_ = nullptr;
-SFT *MenuItemWindows::fnt_normal_ = nullptr;
-
-MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action_(nullptr)
-{
-   if (fnt_italic_ == nullptr)
-   {
-      fnt_italic_ = new SFT;
-      fnt_italic_->xOffset = 0;
-      fnt_italic_->xScale = 40;
-      fnt_italic_->yOffset = 0;
-      fnt_italic_->yScale = 40;
-      fnt_italic_->flags = SFT_DOWNWARD_Y;
-
-      CLogger::Get()->Write("MenuItemWindows", LogNotice, "Loading %s", PATH_FONT);
-      fnt_italic_->font = sft_loadfile(PATH_FONT);
-      CLogger::Get()->Write("MenuItemWindows", LogNotice, "Result : %X", fnt_italic_->font);
-
-      fnt_normal_ = new SFT;
-      fnt_normal_->xOffset = 0;
-      fnt_normal_->xScale = 32;
-      fnt_normal_->yOffset = 0;
-      fnt_normal_->yScale = 32;
-      fnt_normal_->flags = SFT_DOWNWARD_Y;
-      fnt_normal_->font = sft_loadfile(PATH_FONT);
-   }
-
-}
-MenuItemWindows::~MenuItemWindows ()
-{
-   //sft_freefont(fnt_italic_->font);
-   //sft_freefont(fnt_normal_->font);
-}
-
-void MenuItemWindows::Create (const char* label, Window* parent, int x, int y, unsigned int width, unsigned int height)
-{
-   label_ = label;
-   Window::Create ( parent, x, y, width, height);
-}
-
-void MenuItemWindows::ChangeLabel(const char* label)
-{
-   label_ = label;
-}
-
-void MenuItemWindows::SetAction (IAction* action)
-{
-   action_ = action;
-}
-
-void MenuItemWindows::RedrawWindow ( )
-{
-   int x = 30;
-   // Set an offset for the text to be displayed
-   int y = 15;
-   WindowsToDisplay(x, y);   
-
-   // Focus ?
-   if (focus_==this)
-   {
-      // draw it 
-      display_->SelectFont(fnt_italic_);
-      display_->SelectColor(0xFF0000);
-      display_->WriteText(">", x-15, y);
-      display_->WriteText(label_, x, y);
-   }
-   else
-   {
-      display_->SelectFont(fnt_normal_);
-      display_->SelectColor(0x000000);
-      display_->WriteText(label_, x, y);
-   }
-}
-
-IAction::ActionReturn MenuItemWindows::HandleEvent( IEvent::Event event)
-{
-   //
-   switch (event)
-   {
-      case IEvent::Event::SELECT:
-         // Action !
-         if (action_ != nullptr)
-         {
-            IAction::ActionReturn ret = action_->DoAction () ;
-            return ret;
-         }
-         break;
-      default:
-         if ( parent_ != nullptr)
-            return parent_->HandleEvent(event);
-   }
-
-   return IAction::ActionReturn::Action_None;
-}
 
 ////////////////////////////////////////////////////////////////////////////////////
-CheckMenuItemWindows::CheckMenuItemWindows (BasicFrame* display) : MenuItemWindows(display), value_(nullptr)
-{
-
-}
-CheckMenuItemWindows::~CheckMenuItemWindows ()
-{
-
-}
-
-void CheckMenuItemWindows::Create(const char* label, bool* value, Window* parent, int x, int y, unsigned int width, unsigned int height)
-{
-   MenuItemWindows::Create( label, parent, x, y, width, height);
-   value_ = value;
-}
-
-void CheckMenuItemWindows::RedrawWindow ( )
-{
-   int x = 15;
-   int y = 0;
-   WindowsToDisplay(x, y);   
-
-   // Focus ?
-   if (focus_==this)
-   {
-      // draw it 
-      display_->WriteText("*", x-15, y);
-   }
-   // Draw the check box
-   display_->WriteText((*value_)?"[X]":"[ ]", x, y);
-   display_->WriteText(label_, x + 30, y);
-}
-
-IAction::ActionReturn CheckMenuItemWindows::HandleEvent( IEvent::Event event)
-{
-   //
-   switch (event)
-   {
-      case IEvent::Event::SELECT:
-         // Action !
-         (*value_) = (*value_)?false:true;
-         if (action_ != nullptr)
-         {
-            return action_->DoAction () ;
-         }
-         break;
-      default:
-         if ( parent_ != nullptr)
-            return parent_->HandleEvent(event);
-   }
-
-   return IAction::ActionReturn::Action_None;
-}
-
-////////////////////////////////////////////////////////////////////////////////////
-ScrollWindows::ScrollWindows (BasicFrame* display) : Window (display), scroll_offset_x_(0), scroll_offset_y_(0)
-{
-
-}
-
-ScrollWindows::~ScrollWindows ()
-{
-   
-}
-
-
-void ScrollWindows::RedrawChildren ()
-{
-   WindowsQueue** current_queue = &windows_children_;
-   while ( *current_queue != nullptr)
-   {  
-      if ( (*current_queue)->wnd_->GetX() - scroll_offset_x_>= 0 && (*current_queue)->wnd_->GetY() -scroll_offset_y_>= 0 
-      && (*current_queue)->wnd_->GetWidth() + (*current_queue)->wnd_->GetX() - scroll_offset_x_<= width_ 
-      && (*current_queue)->wnd_->GetHeight() + (*current_queue)->wnd_->GetY() - scroll_offset_y_<= height_ )
-      {
-         (*current_queue)->wnd_->RedrawWindow();
-         (*current_queue)->wnd_->RedrawChildren();
-      }
-
-      current_queue = &((*current_queue)->next_);
-   }
-}
-
-void ScrollWindows::WindowsToDisplay(int& x, int& y)
-{
-   x += x_ - scroll_offset_x_;
-   y += y_ - scroll_offset_y_;
-   if ( parent_ != nullptr)
-   {
-      parent_->WindowsToDisplay ( x, y);
-   }
-}
-
-void ScrollWindows::Scroll ( int offset_x, int offset_y)
-{
-   scroll_offset_x_ = offset_x;
-   scroll_offset_y_ = offset_y;
-}
-
-////////////////////////////////////////////////////////////////////////////////////
-MenuWindows::MenuWindows (BasicFrame* display) : Window (display), current_focus_(-1), scroll_window_(display)
-{
-
-}
-
-MenuWindows::~MenuWindows ()
-{
-   // Clear items
-   for (auto& it:list_item_)
-   {
-      delete it;
-   }
-   list_item_.clear();
-}
-
-void MenuWindows::Create( Window* parent, int x, int y, unsigned int width, unsigned int height)
-{
-   Window::Create( parent, x, y, width, height);
-
-   // Add a simple windows that will be used for scrolling
-   scroll_window_.Create( this, 0, 0, width, height);
-}
-
-MenuItemWindows* MenuWindows::GetMenuItem(unsigned int index)
-{
-   return (index < list_item_.size())?list_item_[index]:nullptr;
-}
-
-MenuItemWindows* MenuWindows::AddMenuItem (const char* label, IAction* action)
-{
-   //CLogger::Get ()->Write("Menu", LogNotice, "add menu : %s ", label);
-
-   // Add item to menu
-   MenuItemWindows* item = new MenuItemWindows (display_);
-   item->Create( label, &scroll_window_, 10, list_item_.size()* INTERLINE_SPACE, width_ - 10, INTERLINE_SPACE-2);
-   item->SetAction(action);
-
-   list_item_.push_back(item);
-
-   if ( current_focus_ == -1)
-      current_focus_ = 0;
-
-   ComputeScroller();
-   return item;
-}
-
-void MenuWindows::AddCheckMenuItem (const char* label, bool* value, IAction* action)
-{
-   // Add item to menu
-   //CLogger::Get ()->Write("Menu", LogNotice, "add menucheck : %s ", label);
-   CheckMenuItemWindows* item = new CheckMenuItemWindows (display_);
-   item->Create( label, value, &scroll_window_, 10, list_item_.size()* INTERLINE_SPACE, width_, INTERLINE_SPACE - 1);
-   item->SetAction(action);
-
-   list_item_.push_back(item);
-   Redraw (true);
-
-   if ( current_focus_ == -1)
-      current_focus_ = 0;
-
-   ComputeScroller();
-}
-
-
-void MenuWindows::RedrawWindow ()
-{
-   int x = 450;
-   int y = 47;
-   WindowsToDisplay(x, y);
-}
-
-void MenuWindows::ComputeScroller()
-{
-   //CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller");
-   // check current focus, depending on windows size
-   int distant_to_top = current_focus_ * INTERLINE_SPACE;
-   int distant_to_bottom = (static_cast<int>(list_item_.size()) - (current_focus_+1)) * INTERLINE_SPACE;
-   int win_h = distant_to_top - height_ / 2;
-   int win_h2b = distant_to_bottom - height_ / 2;
-
-   // rules : 
-   int scroll_y;
-   if ( win_h < 0 )
-   {
-      scroll_y = 0;
-   } 
-   else
-   {
-      scroll_y = win_h;
-   }
-   scroll_window_.Scroll ( 0, scroll_y);
-   //CLogger::Get ()->Write("Menu", LogNotice, "ComputeScroller Done; y = %i", scroll_y);
-}
-
-IAction::ActionReturn MenuWindows::HandleEvent( IEvent::Event event)
-{
-   // do something
-   switch (event)
-   {
-      case IEvent::Event::DOWN:
-         // Go down in the menu
-         if  (current_focus_ < static_cast<int>(list_item_.size())-1)
-         {
-            current_focus_++;
-            list_item_.at(current_focus_)->SetFocus ();
-            ComputeScroller();
-            //Redraw();
-            Invalidate();
-         }
-         break;
-      case IEvent::Event::UP:
-         // Go up in the menu
-         if  (current_focus_ > 0)
-         {
-            current_focus_--;
-            list_item_.at(current_focus_)->SetFocus ();
-            ComputeScroller();
-            //Redraw();
-            Invalidate();
-         }
-         break;
-      case IEvent::Event::BACK:
-         return IAction::ActionReturn::Action_Back;
-         break;         
-      default:
-         break;
-   }
-   
-   return IAction::ActionReturn::Action_None;
-}
-
-void MenuWindows::SetFocus (unsigned int index)
-{
-   // Set focus to first item
-   if ( list_item_.size() > index)
-   {
-      current_focus_ = index;
-      list_item_.at(index)->SetFocus ();
-      ComputeScroller();
-   }
-   
-}
-
-BitmapWindows::BitmapWindows(BasicFrame* display): Window(display)
-{
-
-}
-
-BitmapWindows::~BitmapWindows()
-{
-
-}
-
-void BitmapWindows::Create(Window* parent, int x, int y, PiBitmap* bmp)
-{
-   bmp_ = bmp;
-   bmp_->GetSize(width_, height_);
-   Window::Create(parent, x, y, width_, height_);  
-}
-
-void BitmapWindows::RedrawWindow()
-{
-   //CLogger::Get()->Write("BitmapWindows", LogNotice, "RedrawWindow");
-   static float offset;
-   for (int i = 0; i < height_; i++)
-   {
-      int* line = display_->GetBuffer(i + y_);
-      bmp_->DrawLogo(i, &line[x_  /* + (int)(sinf(offset) * 10)*/]);
-      offset += 0.002f;
-   }
-   //CLogger::Get()->Write("Window", LogNotice, "RedrawWindow end");
-
-}
-

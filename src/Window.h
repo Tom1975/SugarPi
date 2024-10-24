@@ -71,6 +71,10 @@ public:
    virtual void RedrawWindow ();
    virtual void RedrawChildren ();
 
+   virtual void ShowWindow(bool visible) { visible_ = visible; Invalidate(); }
+
+   virtual void DrawBitmap(PiBitmap* bmp, int x, int y);
+
    virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
 
    virtual void SetFocus ();
@@ -98,6 +102,8 @@ protected:
    int width_;
    int height_;
 
+   bool visible_;
+
    // current Focus window
    static Window* focus_;
 
@@ -115,91 +121,3 @@ protected:
    
 
 };
-
-class MenuItemWindows : public Window
-{
-public:
-   MenuItemWindows (BasicFrame* display);
-   virtual ~MenuItemWindows ();
-
-   virtual void Create(const char* label, Window* parent, int x, int y, unsigned int width, unsigned int height);
-   virtual void ChangeLabel(const char* label);
-   virtual void SetAction (IAction* action);
-   virtual void RedrawWindow ();
-   virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
-
-protected:
-   CString label_;
-   IAction* action_;
-   static SFT *fnt_italic_;
-   static SFT *fnt_normal_;
-};
-
-class ScrollWindows : public Window
-{
-public:
-   ScrollWindows (BasicFrame* display);
-   virtual ~ScrollWindows ();
-
-   virtual void RedrawChildren ();
-   virtual void WindowsToDisplay(int& x, int& y);
-   virtual void Scroll ( int offset_x, int offset_y);
-
-protected:
-   int scroll_offset_x_;
-   int scroll_offset_y_;
-
-};
-
-class MenuWindows : public Window
-{
-public:
-   MenuWindows (BasicFrame* display);
-   virtual ~MenuWindows ();
-
-   virtual void Create( Window* parent, int x, int y, unsigned int width, unsigned int height);
-   virtual MenuItemWindows* GetMenuItem(unsigned int index);
-   virtual MenuItemWindows* AddMenuItem (const char* label, IAction* action = nullptr);
-   virtual void AddCheckMenuItem (const char* label, bool* value, IAction* action = nullptr);
-   virtual void RedrawWindow ();
-   virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
-   virtual void SetFocus (unsigned int index = 0);
-
-protected:
-   void ComputeScroller();
-
-   int current_focus_;
-   ScrollWindows scroll_window_;
-   std::vector<MenuItemWindows*> list_item_;
-
-};
-
-class CheckMenuItemWindows : public MenuItemWindows
-{
-public:
-   CheckMenuItemWindows (BasicFrame* display);
-   virtual ~CheckMenuItemWindows ();
-
-   virtual void Create(const char* label, bool* value, Window* parent, int x, int y, unsigned int width, unsigned int height);
-
-   virtual void RedrawWindow ();
-   virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
-
-protected:
-   bool * value_;
-};
-
-class BitmapWindows : public Window
-{
-public:
-   BitmapWindows(BasicFrame* display);
-   virtual ~BitmapWindows();
-
-   virtual void Create(Window* parent, int x, int y, PiBitmap* bmp);
-   virtual void RedrawWindow();
-
-protected:
-   PiBitmap* bmp_;
-   int width_, height_;
-};
-
