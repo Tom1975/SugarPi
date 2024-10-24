@@ -71,6 +71,12 @@ void SimpleBitmap::Load(const char* file)
 
       fclose(f);
    }
+   else
+   {
+      // Error !
+      loaded_ = false;
+      return;
+   }
 
    for (int i = 0; i < height_; i++)
    {

@@ -71,6 +71,8 @@ public:
    virtual void RedrawWindow ();
    virtual void RedrawChildren ();
 
+   virtual void ShowWindow(bool visible) { visible_ = visible; Invalidate(); }
+
    virtual void DrawBitmap(PiBitmap* bmp, int x, int y);
 
    virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
@@ -99,6 +101,8 @@ protected:
    int y_;
    int width_;
    int height_;
+
+   bool visible_;
 
    // current Focus window
    static Window* focus_;

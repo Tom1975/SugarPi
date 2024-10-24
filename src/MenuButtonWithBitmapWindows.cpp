@@ -16,18 +16,35 @@ MenuButtonWithBitmapWindows::~MenuButtonWithBitmapWindows()
 
 }
 
+void MenuButtonWithBitmapWindows::SetFocus()
+{
+   Window::SetFocus();
+   button_.ShowWindow(true);
+}
+
+void MenuButtonWithBitmapWindows::RemoveFocus()
+{
+   Window::RemoveFocus();
+   button_.ShowWindow(false);
+}
+
+
 void MenuButtonWithBitmapWindows::Create(SimpleBitmap* bmp, Window* parent, int x, int y, unsigned int width, unsigned int height,
    int bmp_x, int bmp_y, unsigned int bmp_width, unsigned int bmp_height)
 {
    MenuItemWindows::Create("", parent, x, y, width, height);
    button_.Create(parent, bmp_x, bmp_y, bmp_width, bmp_height);
+   button_.ShowWindow(false);
    button_.InitButton(bmp, 1, 1);
 }
 
 void MenuButtonWithBitmapWindows::RedrawWindow()
 {
    // Draw button
-   int color = (focus_ == this) ? 0xFFFF0000 : 0xFF000000;
+
+   MenuItemWindows::RedrawWindow();
+
+   /*int color = (focus_ == this) ? 0xFFFF0000 : 0xFF000000;
 
    int x = 0, y = 0;
    Window::WindowsToDisplay(x, y);
@@ -50,8 +67,7 @@ void MenuButtonWithBitmapWindows::RedrawWindow()
       *line++ = color;
    }
 
-   if (focus_ == this)
-      button_.RedrawWindow();
+   */
    
 }
 

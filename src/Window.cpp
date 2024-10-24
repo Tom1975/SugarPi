@@ -38,6 +38,7 @@ Window::Window(BasicFrame* display) :
    display_(display), 
    x_(0), y_(0), 
    width_(0), height_(0), 
+   visible_(true),
    parent_(nullptr), 
    windows_children_(nullptr)
    
@@ -142,9 +143,12 @@ void Window::RedrawChildren ()
    WindowsQueue** current_queue = &windows_children_;
    while ( *current_queue != nullptr)
    {  
-      (*current_queue)->wnd_->Clear();
-      (*current_queue)->wnd_->RedrawWindow();
-      (*current_queue)->wnd_->RedrawChildren();
+      if ((*current_queue)->wnd_->visible_)
+      {
+         (*current_queue)->wnd_->Clear();
+         (*current_queue)->wnd_->RedrawWindow();
+         (*current_queue)->wnd_->RedrawChildren();
+      }
 
       current_queue = &((*current_queue)->next_);
    }
@@ -172,8 +176,11 @@ void Window::Redraw (bool clear)
 #endif
 
    ClearAll();
-   RedrawWindow ();
-   RedrawChildren ();
+   if (visible_)
+   {
+      RedrawWindow();
+      RedrawChildren();
+   }
    display_->FrameIsReady();
 
 #ifdef PROFILE

@@ -58,7 +58,7 @@ std::vector<ScreenMenu::AmstradConfiguration> ScreenMenu::config_list =
          {"Danish", "CPC6128DK.cfg"},
          }
   },
-  { "GX 4000", PATH_RES INTER_FILE "ImGx4000.bin", {
+  { "GX 4000", PATH_RES INTER_FILE "ImgGx4000.bin", {
          {"French", "CPC664UK.cfg"},
          }
   },

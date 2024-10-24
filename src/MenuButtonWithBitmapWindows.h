@@ -17,6 +17,10 @@ public:
 
    virtual void RedrawWindow();
 
+   virtual void SetFocus();
+   virtual void RemoveFocus();
+
+
 protected:
    Button button_;
 };
