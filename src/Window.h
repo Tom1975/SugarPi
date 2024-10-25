@@ -72,6 +72,7 @@ public:
    virtual void RedrawChildren ();
 
    virtual void ShowWindow(bool visible) { visible_ = visible; Invalidate(); }
+   virtual bool IsVisible() { return visible_; }
 
    virtual void DrawBitmap(PiBitmap* bmp, int x, int y);
 

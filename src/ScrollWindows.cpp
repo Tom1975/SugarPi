@@ -46,9 +46,11 @@ void ScrollWindows::RedrawChildren()
    WindowsQueue** current_queue = &windows_children_;
    while (*current_queue != nullptr)
    {
-      if ((*current_queue)->wnd_->GetX() - scroll_offset_x_ >= 0 && (*current_queue)->wnd_->GetY() - scroll_offset_y_ >= 0
+      if ( (*current_queue)->wnd_->IsVisible()
+         && (*current_queue)->wnd_->GetX() - scroll_offset_x_ >= 0 && (*current_queue)->wnd_->GetY() - scroll_offset_y_ >= 0
          && (*current_queue)->wnd_->GetWidth() + (*current_queue)->wnd_->GetX() - scroll_offset_x_ <= width_
-         && (*current_queue)->wnd_->GetHeight() + (*current_queue)->wnd_->GetY() - scroll_offset_y_ <= height_)
+         && (*current_queue)->wnd_->GetHeight() + (*current_queue)->wnd_->GetY() - scroll_offset_y_ <= height_
+         )
       {
          (*current_queue)->wnd_->RedrawWindow();
          (*current_queue)->wnd_->RedrawChildren();

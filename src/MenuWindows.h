@@ -38,6 +38,8 @@ public:
    virtual IAction::ActionReturn HandleEvent(IEvent::Event event);
    virtual void SetFocus(unsigned int index = 0);
 
+   Window* GetScrollWindow() { return &scroll_window_; };
+
 protected:
    void ComputeScroller();
 

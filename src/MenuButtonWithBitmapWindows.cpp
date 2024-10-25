@@ -29,13 +29,14 @@ void MenuButtonWithBitmapWindows::RemoveFocus()
 }
 
 
-void MenuButtonWithBitmapWindows::Create(SimpleBitmap* bmp, Window* parent, int x, int y, unsigned int width, unsigned int height,
+void MenuButtonWithBitmapWindows::Create(const char* label, SimpleBitmap* bmp, Window* parent, int x, int y, unsigned int width, unsigned int height,
    int bmp_x, int bmp_y, unsigned int bmp_width, unsigned int bmp_height)
 {
-   MenuItemWindows::Create("", parent, x, y, width, height);
+   label_ = label;
+   MenuItemWindows::Create(label_.c_str(), parent, x, y, width, height);
    button_.Create(parent, bmp_x, bmp_y, bmp_width, bmp_height);
    button_.ShowWindow(false);
-   button_.InitButton(bmp, 1, 1);
+   button_.InitButton(bmp, bmp_x, bmp_y);
 }
 
 void MenuButtonWithBitmapWindows::RedrawWindow()

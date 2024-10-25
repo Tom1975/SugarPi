@@ -84,7 +84,7 @@ void Window::Clear()
    for (int i = std::max<int> (0, y); i < display_->GetHeight() && i < y + height_; i++)
    {
       int* line = display_->GetBuffer(i);
-      int size_to_clear = width_ + x;
+      int size_to_clear = width_;
       if (size_to_clear + x > display_->GetWidth())
          size_to_clear = display_->GetWidth() - x;
 
@@ -175,9 +175,9 @@ void Window::Redraw (bool clear)
    static __int64 s3 = s1;
 #endif
 
-   ClearAll();
    if (visible_)
    {
+      ClearAll();
       RedrawWindow();
       RedrawChildren();
    }

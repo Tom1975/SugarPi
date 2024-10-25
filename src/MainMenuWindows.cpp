@@ -10,7 +10,7 @@ MainMenuWindows::MainMenuWindows(BasicFrame* display) :
    unsigned int h = display->GetHeight();
    double ratio = (double)w / (double)h;
 
-   Create(0, 0, 0, w, h);
+   Create(0, 10, 0, w-20, h);
 
    // Create Title bitmap 
    // Keep first quarter for it
@@ -25,7 +25,7 @@ MainMenuWindows::MainMenuWindows(BasicFrame* display) :
 
    // Create inner menu
    menu_ = new MenuWindows(display);
-   menu_->Create(this, w/3, h / 3, w*2/3, 3 * h / 4);
+   menu_->Create(this, 0, 20 + h / 4, w, 3 * h / 4 -40);
 
 
 }

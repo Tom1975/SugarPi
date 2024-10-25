@@ -12,7 +12,7 @@ public:
    MenuButtonWithBitmapWindows (BasicFrame* display);
    virtual ~MenuButtonWithBitmapWindows();
 
-   virtual void Create(SimpleBitmap* SimpleBitmap, Window* parent, int x, int y, unsigned int width, unsigned int height,
+   virtual void Create(const char* label, SimpleBitmap* SimpleBitmap, Window* parent, int x, int y, unsigned int width, unsigned int height,
       int bmp_x, int bmp_y, unsigned int bmp_width, unsigned int bmp_height);
 
    virtual void RedrawWindow();
@@ -23,4 +23,5 @@ public:
 
 protected:
    Button button_;
+   std::string label_;
 };

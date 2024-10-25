@@ -228,16 +228,16 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    int offset_y = INTERLINE_SPACE + 2;
    for (auto& it : config_list)
    {
-      MenuButtonWindows* item = new MenuButtonWindows(display_->GetMenuFrame());
-      item->Create(&it.associatedBmp_, file_menu->GetMenu(), 10, offset_y,
-         main_menu_->GetMenu()->GetWidth() - 200, 120/*,
-         10 + main_menu_->GetMenu()->GetWidth() - 200, INTERLINE_SPACE + 2 , 600, 200*/);
+      MenuButtonWithBitmapWindows* item = new MenuButtonWithBitmapWindows(display_->GetMenuFrame());
+      item->Create(it.name_.c_str(), &it.associatedBmp_, file_menu->GetMenu()->GetScrollWindow(), 10, offset_y,
+         main_menu_->GetMenu()->GetWidth() - 600, INTERLINE_SPACE,
+         main_menu_->GetMenu()->GetWidth() - 600, INTERLINE_SPACE + 2 , 600, 400);
       item->SetAction(new ActionMenuWithParameter<ScreenMenu::AmstradConfiguration&>(this, &ScreenMenu::SelectAmstradFinal, it));
 
       file_menu->GetMenu()->AddMenuItem(item);
          
 
-      offset_y += 120 +2;
+      offset_y += INTERLINE_SPACE +2;
    }
 
    file_menu->ResetMenu();
