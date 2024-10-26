@@ -1,6 +1,8 @@
 #pragma once
 
 //
+#include <string>
+
 #include "BasicFrame.h"
 #include "MenuItemWindows.h"
 #include "Button.h"
