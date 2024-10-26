@@ -219,9 +219,9 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    // Create menu from config_list 
    Window* focus = Window::GetFocus();
 
-   MainMenuWindows* file_menu = new MainMenuWindows(display_->GetMenuFrame());
+   MainMenuWindows* cfg_menu = new MainMenuWindows(display_->GetMenuFrame());
 
-   file_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
+   cfg_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
       , new ActionMenu(this, &ScreenMenu::Back));
 
    
@@ -229,24 +229,24 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    for (auto& it : config_list)
    {
       MenuButtonWithBitmapWindows* item = new MenuButtonWithBitmapWindows(display_->GetMenuFrame());
-      item->Create(it.name_.c_str(), &it.associatedBmp_, file_menu->GetMenu()->GetScrollWindow(), 10, offset_y,
+      item->Create(it.name_.c_str(), &it.associatedBmp_, cfg_menu->GetMenu()->GetScrollWindow(), 10, offset_y,
          main_menu_->GetMenu()->GetWidth() - 600, INTERLINE_SPACE,
          main_menu_->GetMenu()->GetWidth() - 600, INTERLINE_SPACE + 2 , 600, 400);
       item->SetAction(new ActionMenuWithParameter<ScreenMenu::AmstradConfiguration&>(this, &ScreenMenu::SelectAmstradFinal, it));
 
-      file_menu->GetMenu()->AddMenuItem(item);
+      cfg_menu->GetMenu()->AddMenuItem(item);
          
 
       offset_y += INTERLINE_SPACE +2;
    }
 
-   file_menu->ResetMenu();
+   cfg_menu->ResetMenu();
 
-   IAction::ActionReturn return_value = file_menu->DoScreen(this);
+   IAction::ActionReturn return_value = cfg_menu->DoScreen(this);
 
    logger_->Write("Menu", LogNotice, "file_menu->DoScreen : %i", return_value);
 
-   delete file_menu;
+   delete cfg_menu;
    Window::SetFocus(focus);
    main_menu_->Invalidate();
 
@@ -588,8 +588,9 @@ IAction::ActionReturn ScreenMenu::SugarSetup()
 
    // Add Synchro menu
    bool sync = display_-> IsSyncOnFrame();   
+   int offset_y = 60 + 2;
    setup_menu->GetMenu()->AddCheckMenuItem("Set synchro on Frame", &sync,
-      10, INTERLINE_SPACE, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2,
+      10, offset_y, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2,
       new ActionMenuWithParameter<bool*>(this, &ScreenMenu::SetSync, &sync));
 
    setup_menu->ResetMenu ();

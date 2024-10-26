@@ -189,7 +189,8 @@ void Window::Redraw (bool clear)
    DWORD elapsed = (DWORD)(((s2 - s3) * 1000000) / freq);
    if (elapsed > 1000000)
    {
-      sprintf(s, "FPS : %f\n", nb_frame / (elapsed /1000000.0));
+      //sprintf(s, "FPS : %f\n", nb_frame / (elapsed /1000000.0));
+      sprintf(s, "Time for a frame : %i\n", elapsed / 1000000);
       OutputDebugString(s);
       s3 = s2;
       nb_frame = 0;

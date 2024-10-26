@@ -59,11 +59,18 @@ void CheckMenuItemWindows::RedrawWindow()
    if (focus_ == this)
    {
       // draw it 
-      display_->WriteText("*", x - 15, y);
+      display_->SelectFont(fnt_italic_);
+      display_->SelectColor(0xFF0000);
    }
+   else
+   {
+      display_->SelectFont(fnt_normal_);
+      display_->SelectColor(0x000000);
+   }
+
    // Draw the check box
    display_->WriteText((*value_) ? "[X]" : "[ ]", x, y);
-   display_->WriteText(label_, x + 30, y);
+   display_->WriteText(label_, x + 60, y);
 }
 
 IAction::ActionReturn CheckMenuItemWindows::HandleEvent(IEvent::Event event)
