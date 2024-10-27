@@ -3,16 +3,15 @@
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
 #include "CPCCore/CPCCoreEmu/ILog.h"
+#include "KeyboardPi.h"
 
 #ifdef _WIN32
    #include "SoundPiDesktop.h"
    #include "SugarPiSetupDesktop.h"
-   #include "KeyboardPiDesktop.h"
    #include "DisplayPiDesktop.h"
 #else
    #include "SoundPi.h"
    #include "SugarPiSetup.h"
-   #include "KeyboardPi.h"
    #include "DisplayPi.h"
 
 #endif
@@ -37,7 +36,11 @@ public:
    virtual const char* GetBaseDirectory() = 0;
    void SetFDCPlugged(bool bFDCPlugged) { motherboard_->GetSig()->fdc_present_ = bFDCPlugged; motherboard_->GetPPI()->SetExpSignal(bFDCPlugged); };
 
+   virtual bool IsInMenu() { return in_menu_; }
+
 protected:
+   bool in_menu_;
+
    void LoadRom(int rom_number, const char* path);
 
    ConfigurationManager language_manager_;

@@ -81,7 +81,8 @@ public:
 
    virtual bool HasFrameChanged(){return buffer_has_changed_;}
 
-   virtual bool CanDrawNewFrame() {return nb_frame_in_queue_ < ((nb_buffers_ > 2 )?1:0);}
+   //virtual bool CanDrawNewFrame() {return nb_frame_in_queue_ < ((nb_buffers_ > 2 )?1:0);}
+   virtual bool CanDrawNewFrame() { return (nb_buffers_ > 2) ? (nb_frame_in_queue_ < 1) : false; }
 
    friend class Morphings;
 

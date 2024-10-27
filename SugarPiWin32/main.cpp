@@ -1,7 +1,7 @@
 #include <windows.h>
 
 #include "DisplayPiDesktop.h"
-
+#include "KeyboardHardwareImplemetationWin.h"
 #include "emulation.h"
 
 ////////////////////////////////////////////////////////////
@@ -15,9 +15,45 @@ public:
    DisplayPiDesktop* display;
    SoundPi* sound;
    KeyboardPi* keyboard;
+   KeyboardHardwareImplemetationWin* keyboardImp;
    Emulation* emulation;
    int nCore;
 };
+
+
+HHOOK _k_hook = nullptr;
+EmualtionWin32* emu_hook = nullptr;
+LRESULT __stdcall k_Callback1(int nCode, WPARAM wParam, LPARAM lParam)
+{
+   PKBDLLHOOKSTRUCT key = (PKBDLLHOOKSTRUCT)lParam;
+   //a key was pressed
+
+   switch (wParam)
+   {
+      case WM_KEYDOWN:
+      case WM_SYSKEYDOWN:
+         if (key->scanCode == VK_LWIN)
+         {
+            emu_hook->keyboardImp->CodeActionSpecial(VK_LWIN, true);
+            return 1;
+         }
+            
+         emu_hook->keyboardImp->Presskey(key->scanCode);
+
+         break;
+      case WM_SYSKEYUP:
+      case WM_KEYUP:
+         if (key->scanCode == VK_LWIN)
+         {
+            emu_hook->keyboardImp->CodeActionSpecial(VK_LWIN, false);
+            return 1;
+         }
+         emu_hook->keyboardImp->Unpresskey(key->scanCode);
+         break;
+   }
+
+   return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
 
 
 
@@ -32,18 +68,39 @@ LRESULT CALLBACK WndProcFrame(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
    {
       CREATESTRUCT* pCreateStr = (CREATESTRUCT*)lParam;
       SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pCreateStr->lpCreateParams);
+      emu_hook = reinterpret_cast<EmualtionWin32*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+      _k_hook = SetWindowsHookEx(WH_KEYBOARD_LL, k_Callback1, NULL, 0);
       break;
    }
    case WM_KEYDOWN:
-      emu->keyboard->Presskey(wParam);
+      //Check just the key for joypad
+      if (emu->emulation->IsInMenu() || (wParam == VK_LWIN))
+      {
+         emu->keyboardImp->CodeActionSpecial(wParam, true);
+      }
       break;
    case WM_KEYUP:
-      emu->keyboard->Unpresskey(wParam);
+      //Check just the key for joypad
+      if (emu->emulation->IsInMenu()|| (wParam == VK_LWIN))
+      {
+         emu->keyboardImp->CodeActionSpecial(wParam, false);
+      }
       break;
+   case WM_SETFOCUS:
+      if (_k_hook == nullptr)
+         _k_hook = SetWindowsHookEx(WH_KEYBOARD_LL, k_Callback1, NULL, 0);
+      return DefWindowProc(hWnd, message, wParam, lParam);
+   case WM_KILLFOCUS:
+      if (_k_hook != nullptr)
+         UnhookWindowsHookEx(_k_hook);
+      _k_hook = nullptr;
+      return DefWindowProc(hWnd, message, wParam, lParam);
    case WM_QUIT:
       break;
    case WM_DESTROY:
       end = true;
+      if (_k_hook !=nullptr)
+         UnhookWindowsHookEx(_k_hook);
       PostQuitMessage(0);
       break;
    case WM_PAINT:
@@ -112,6 +169,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
    // Keyboard
    emu.keyboard = new KeyboardPi(emu.log);
+   emu.keyboardImp = new KeyboardHardwareImplemetationWin(emu.keyboard);
+   emu.keyboard->SetHard(emu.keyboardImp);
 
    MyRegisterClass(hInstance);
    emu.emulation = new Emulation(emu.log);

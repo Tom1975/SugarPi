@@ -11,6 +11,7 @@ OBJS	= src/main.o\
 		src/BasicFrame.o \
 		src/BackFrame.o \
 		src/SugarPiSetup.o\
+		src/Button.o\
 		src/ConfigurationManager.o\
 		src/DisplayPi.o\
 		src/DisplayPiImp.o\
@@ -19,8 +20,17 @@ OBJS	= src/main.o\
 		src/Engine.o\
 		src/MenuFrame.o\
 		src/KeyboardPi.o\
+		src/KeyboardHardwareImplemetationPi.o \
 		src/log.o\
 		src/MainMenuWindows.o\
+		src/BitmapWindows.o\
+		src/MenuItemWindows.o\
+		src/MenuButtonWindows.o\
+		src/MenuButtonWithBitmapWindows.o\
+		src/MenuWindows.o\
+		src/CheckMenuItemWindows.o\
+		src/ScrollWindows.o\
+		src/SimpleBitmap.o\
 		src/Morphings.o \
 		src/SoundPi.o\
 		src/ScreenMenu.o\
@@ -65,7 +75,6 @@ OBJS	= src/main.o\
 		CPCCore/CPCCoreEmu/PSG.o \
 		CPCCore/CPCCoreEmu/rand.o \
 		CPCCore/CPCCoreEmu/Sig.o \
-		CPCCore/CPCCoreEmu/simple_regex.o \
 		CPCCore/CPCCoreEmu/Snapshot.o \
 		CPCCore/CPCCoreEmu/SoundMixer.o\
 		CPCCore/CPCCoreEmu/Tape.o\
@@ -107,7 +116,7 @@ LIBS	= circle-stdlib/install/arm-none-circle/lib/libcirclenewlib.a \
 STDLIB_SUPPORT = 3 
 include circle-stdlib/libs/circle/Rules.mk
 
-CFLAGS += -I "$(NEWLIBDIR)/include" -I "$(STDDEF_INCPATH)" -I "$(CIRCLEHOME)" -ICPCCore/CPCCoreEmu
-CFLAGS	+= -D_USE_LONG_TIME_T -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE
-CPPFLAGS += -D_USE_LONG_TIME_T -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -ICPCCore/CPCCoreEmu -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE -std=c++1z
+CFLAGS += -I "$(NEWLIBDIR)/include" -I "$(STDDEF_INCPATH)" -I "$(CIRCLEHOME)" -ICPCCore/CPCCoreEmu 
+CFLAGS	+= -D_USE_LONG_TIME_T -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE 
+CPPFLAGS += -D_USE_LONG_TIME_T -DMINIMUM_DEPENDENCIES -DUSE_VCHIQ_SOUND -DNO_CUSTOM_OPCODES -DNO_MULTITHREAD -I. -Isrc -ICPCCore/zlib_pi -DNOFILTER -DNOZLIB -DNO_RAW_FORMAT -ICPCCore/CPCCoreEmu -I$(CIRCLEHOME)/addon -DLOG_MIXER -DLOGFDC -DARM_ALLOW_MULTI_CORE -std=c++1z 
 

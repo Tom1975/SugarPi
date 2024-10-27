@@ -109,8 +109,10 @@ void Emulation::RunMainLoop()
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
+         in_menu_ = true;
          menu->Handle();
          keyboard_->ReinitSelect();
+         in_menu_ = false;
       }
    }
 }

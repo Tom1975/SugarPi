@@ -12,14 +12,14 @@
 //#include <circle/logger.h>
 #include <circle/spinlock.h>
 static CSpinLock   mutex_;
-void Lock() { mutex_.Acquire(); }
-void Unlock() { mutex_.Release(); }
+static void Lock() { mutex_.Acquire(); }
+static void Unlock() { mutex_.Release(); }
 #else
 #include "CLogger.h"
 #include <mutex>
-std::mutex mutex_;
-void Lock() { mutex_.lock(); }
-void Unlock() { mutex_.unlock(); }
+static std::mutex mutex_;
+static void Lock() { mutex_.lock(); }
+static void Unlock() { mutex_.unlock(); }
 #endif
 
 //#include "res/logo.c"
