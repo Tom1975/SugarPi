@@ -50,12 +50,14 @@ private:
    public:
       std::string fullname_;
       const char* config_path_;
+      std::string description_;
    };
 
    class AmstradConfiguration
    {
    public:
       std::string name_;
+      std::string description_;
       SimpleBitmap associatedBmp_;
       std::vector<AmstradCompleteConf> languages_;
    };
@@ -73,6 +75,7 @@ public:
 
    virtual ~ScreenMenu();
 
+   static void LoadDescriptions();
    void Reload();
 
    IEvent::Event GetEvent ();

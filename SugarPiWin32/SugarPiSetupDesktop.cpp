@@ -17,7 +17,7 @@
 
 SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr), keyboard_(nullptr), language_(nullptr)
 {
-   config_ = new ConfigurationManager(log);
+   config_ = new ConfigurationManager();
 }
 
 SugarPiSetup::~SugarPiSetup()

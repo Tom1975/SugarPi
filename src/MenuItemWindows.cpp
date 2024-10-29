@@ -85,7 +85,7 @@ void MenuItemWindows::RedrawWindow ( )
 {
    int x = 30;
    // Set an offset for the text to be displayed
-   int y = 15;
+   int y = 35;
    WindowsToDisplay(x, y);   
 
    // Focus ?

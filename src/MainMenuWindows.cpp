@@ -35,10 +35,10 @@ MainMenuWindows::~MainMenuWindows()
    delete menu_;
 }
 
-void MainMenuWindows::ResetMenu()
+void MainMenuWindows::ResetMenu(unsigned int index)
 {
    // Set focus to first item
-   menu_->SetFocus(0);
+   menu_->SetFocus(index);
 }
 
 void MainMenuWindows::Clear()

@@ -20,7 +20,7 @@ Engine::Engine(CLogger* log) :
    sound_mixer_(nullptr),
    current_settings_(nullptr),
    menu(nullptr),
-   language_manager_(log),
+   language_manager_(),
    language_(nullptr)
 {
    sound_mixer_ = new SoundMixer();
@@ -92,18 +92,22 @@ void Engine::Reset()
 
 void Engine::LoadConfiguration(const char* config_name_file)
 {
-   delete current_settings_;
    MachineSettings* settings = setup_->LoadSetup(config_name_file);
-   current_settings_ = settings;
-   current_settings_->Load();
 
-   // Update with init.
-   /*if (init != nullptr && !init->_cart_inserted.empty())
+   if (settings != nullptr)
    {
-      current_settings_->SetDefaultCartridge(init->_cart_inserted.string().c_str());
-   }*/
+      delete current_settings_;
+      current_settings_ = settings;
+      current_settings_->Load();
 
-   UpdateComputer(true);
+      // Update with init.
+      /*if (init != nullptr && !init->_cart_inserted.empty())
+      {
+         current_settings_->SetDefaultCartridge(init->_cart_inserted.string().c_str());
+      }*/
+
+      UpdateComputer(true);
+   }
 }
 
 void Engine::LoadRom(int rom_number, const char* path)

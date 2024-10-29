@@ -29,14 +29,25 @@ void MenuButtonWithBitmapWindows::RemoveFocus()
 }
 
 
-void MenuButtonWithBitmapWindows::Create(const char* label, SimpleBitmap* bmp, Window* parent, int x, int y, unsigned int width, unsigned int height,
+void MenuButtonWithBitmapWindows::Create(const char* label, const char* description, SimpleBitmap* bmp, Window* parent, int x, int y, unsigned int width, unsigned int height,
    int bmp_x, int bmp_y, unsigned int bmp_width, unsigned int bmp_height)
 {
    label_ = label;
+   description_ = description;
    MenuItemWindows::Create(label_.c_str(), parent, x, y, width, height);
-   button_.Create(parent, bmp_x, bmp_y, bmp_width, bmp_height);
+   button_x_ = bmp_x - x_;
+   button_y_ = bmp_y - y_;
+   button_w_ = bmp_width;
+   button_h_ = bmp_height;
+
+   // Center bitmap.
+   int bmp_w, bmp_h;
+   bmp->GetSize(bmp_w, bmp_h);
+   int x_button = ((button_w_ - 2) - bmp_w) / 2 + button_x_ + 1;
+   int y_button = (200 - bmp_h) / 2 + button_y_ + 1;
+   button_.Create(this, x_button , y_button, bmp_w, bmp_h);
    button_.ShowWindow(false);
-   button_.InitButton(bmp, bmp_x, bmp_y);
+   button_.InitButton(bmp, x_button, y_button);
 }
 
 void MenuButtonWithBitmapWindows::RedrawWindow()
@@ -45,30 +56,58 @@ void MenuButtonWithBitmapWindows::RedrawWindow()
 
    MenuItemWindows::RedrawWindow();
 
-   /*int color = (focus_ == this) ? 0xFFFF0000 : 0xFF000000;
-
-   int x = 0, y = 0;
-   Window::WindowsToDisplay(x, y);
-
-   int* line = display_->GetBuffer(y) + x;
-   for (int ix = 0; ix < width_; ix++)
+   if (GetFocus() == this)
    {
-      *line++ = color;
-   }
+      // Draw a surrounding lines 
+      DrawPoly(0xFF000000, {
+         {0, 0}, {width_, 0},                            // line at top of menu
+         {width_, button_y_},                            // go up to the top of bitmap
+         {button_x_+ button_w_, button_y_},              // Upper line
+         {button_x_ + button_w_, button_y_ + button_h_}, // right line, along the bitmap
+         {button_x_ , button_y_ + button_h_},            // bottom line, juste bellow the bitmap
+         {button_x_ , height_},                          // Left line, from bottom to bottom of line
+         {0, height_},                                   // bottom line, under the menu
+         {0, 0}                                          // Left line
+         });
 
-   for (int iy = y + 1; iy < y + width_ - 2; iy++)
-   {
-      line = display_->GetBuffer(iy) + x;
-      line[0] = color;
-      line[width_-1] = color;
-   }
-   line = display_->GetBuffer(y + height_ - 1) + x;
-   for (int ix = 0; ix < width_; ix++)
-   {
-      *line++ = color;
-   }
+      // Draw bitmap
+      button_.RedrawWindow();
 
-   */
-   
+      // Draw informations
+      int y = button_y_ + 230;
+      int x = button_x_ + 30;
+
+      Window::WindowsToDisplay(x, y);
+
+      SFT* oldfnt = display_->SelectFont(fnt_italic_);
+
+      display_->SelectColor(0xFF000000);
+      
+      std::string current = description_.c_str();
+      std::string to_display;
+      for (auto& it : current)
+      {
+         if (it == '\n')
+         {
+            display_->WriteText(to_display.c_str(), x, y);
+            y += 45;
+            to_display.clear();
+         }
+         else
+         {
+            to_display += it;
+         }
+      }
+      display_->WriteText(to_display.c_str(), x, y);
+
+      display_->SelectFont(oldfnt);
+
+      
+   }   
+}
+
+void MenuButtonWithBitmapWindows::RedrawChildren()
+{
+   // Nothing to do !
 }
 

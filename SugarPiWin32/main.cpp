@@ -76,14 +76,14 @@ LRESULT CALLBACK WndProcFrame(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
       //Check just the key for joypad
       if (emu->emulation->IsInMenu() || (wParam == VK_LWIN))
       {
-         emu->keyboardImp->CodeActionSpecial(wParam, true);
+         emu->keyboardImp->CodeActionSpecial(static_cast<long>(wParam), true);
       }
       break;
    case WM_KEYUP:
       //Check just the key for joypad
       if (emu->emulation->IsInMenu()|| (wParam == VK_LWIN))
       {
-         emu->keyboardImp->CodeActionSpecial(wParam, false);
+         emu->keyboardImp->CodeActionSpecial(static_cast<long>(wParam), false);
       }
       break;
    case WM_SETFOCUS:

@@ -121,17 +121,89 @@ void Window::WindowsToDisplay(int& x, int& y)
 void Window::DrawBitmap(PiBitmap* bmp, int x, int y)
 {
    // Draw background of button
-   int x2 = x_ + x;
-   int y2 = y_ + y;
-   Window::WindowsToDisplay(x2, y2);
+   Window::WindowsToDisplay(x, y);
 
    int bmp_with, bmp_height;
    bmp->GetSize(bmp_with, bmp_height);
-   for (int i = 0; i < bmp_height && i+y2 < display_->GetFullHeight(); i++)
+   for (int i = 0; i < bmp_height && i+y < display_->GetFullHeight(); i++)
    {
-      int* line = display_->GetBuffer(i + y2);
-      bmp->DrawLogo(i, &line[x2 ]);
+      int* line = display_->GetBuffer(i + y);
+      bmp->DrawLogo(i, &line[x ]);
    }
+}
+
+#define DrawPixel(x,y,c) \
+   int* ptr = display_->GetBuffer(y) + x;*ptr = c;
+
+// Bresenham algorithm, thanks to Wikipedia
+void Window::DrawLine(int x0, int y0, int x1, int y1, unsigned int color)
+{
+   int dx = abs(x1 - x0);
+   int sx = x0 < x1 ? 1 : -1;
+   int dy = -abs(y1 - y0);
+   int sy = y0 < y1 ? 1 : -1;
+   int error = dx + dy;
+
+   while (true)
+   {
+      DrawPixel(x0, y0, color);
+      if (x0 == x1 && y0 == y1) break;
+
+      int e2 = 2 * error;
+      if (e2 >= dy)
+      {
+         error = error + dy;
+         x0 = x0 + sx;
+      }
+      if (e2 <= dx)
+      {
+         error = error + dx;
+         y0 = y0 + sy;
+      }
+   }
+}
+
+void Window::DrawPoly(unsigned int color, std::vector<Window::Point> list_pt)
+{
+   if (list_pt.size() == 0)
+   {
+      return;
+   }
+
+   int current_x = list_pt[0].x;
+   int current_y = list_pt[0].y;
+   Window::WindowsToDisplay(current_x, current_y);
+   for (auto& it : list_pt)
+   {
+      Window::WindowsToDisplay(it.x, it.y);
+      DrawLine(current_x, current_y, it.x, it.y, color);
+      current_x = it.x;
+      current_y = it.y;
+   }
+}
+
+void Window::DrawRectangle(int x, int y, int w, int h, unsigned int color)
+{
+   Window::WindowsToDisplay(x, y);
+
+   int* line = display_->GetBuffer(y) + x;
+   for (int ix = 0; ix < w; ix++)
+   {
+      *line++ = color;
+   }
+
+   for (int iy = y + 1; iy < y + h - 2; iy++)
+   {
+      line = display_->GetBuffer(iy) + x;
+      line[0] = color;
+      line[width_ - 1] = color;
+   }
+   line = display_->GetBuffer(y + h - 1) + x;
+   for (int ix = 0; ix < w; ix++)
+   {
+      *line++ = color;
+   }
+
 }
 
 void Window::RedrawWindow ()

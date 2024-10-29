@@ -52,7 +52,7 @@ void CheckMenuItemWindows::Create(const char* label, bool* value, Window* parent
 void CheckMenuItemWindows::RedrawWindow()
 {
    int x = 15;
-   int y = 0;
+   int y = 35;
    WindowsToDisplay(x, y);
 
    // Focus ?

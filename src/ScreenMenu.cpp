@@ -7,8 +7,19 @@
 #include "files.h"
 #include "SimpleBitmap.h"
 
-#include "MenuButtonWindows.h"
 #include "MenuButtonWithBitmapWindows.h"
+
+#define PROFILE
+
+#ifdef PROFILE
+#include <profileapi.h>
+#define START_CHRONO  QueryPerformanceFrequency((LARGE_INTEGER*)&freq);;QueryPerformanceCounter ((LARGE_INTEGER*)&s1);
+#define STOP_CHRONO   QueryPerformanceCounter ((LARGE_INTEGER*)&s2);t=(DWORD)(((s2 - s1) * 1000000) / freq);
+#define PROF_DISPLAY sprintf(s, "Duree Chargement descriptions: %d us\n", t);OutputDebugString (s);
+static __int64 s1, s2, freq;
+static DWORD t;
+static char s[1024];
+#endif
 
 #ifdef  __circle__
 #include <strings.h>
@@ -22,6 +33,12 @@
 #define MAX_SIZE_BUFFER 256
 #define INTERLINE_SPACE 40
 
+#define OFFSET_SUBMENU_X 120
+#define OFFSET_SUBMENU_Y 60
+
+////////////////////////////////////////////////////////////////////////////////////
+// Menu description
+////////////////////////////////////////////////////////////////////////////////////
 ScreenMenu::MenuItem base_menu[] =
 {
    { "MENU_Resume",             &ScreenMenu::Resume},
@@ -40,39 +57,46 @@ ScreenMenu::MenuItem base_menu[] =
    { nullptr, nullptr}
 };
 
+////////////////////////////////////////////////////////////////////////////////////
+// Configuration list
+////////////////////////////////////////////////////////////////////////////////////
 std::vector<ScreenMenu::AmstradConfiguration> ScreenMenu::config_list =
 {
-   { "CPC 464", PATH_RES INTER_FILE "Img464.bin", {
-         {"French", "CPC464FR.cfg"}, 
-         {"English", "CPC464UK.cfg"},
-         {"Spanish", "CPC464SP.cfg"},
-         {"Danish", "CPC464DK.cfg"},
+   { "CPC 464", "", PATH_RES INTER_FILE "Img464.bin",
+      {
+         {"French", "CPC464FR.cfg", ""},
+         {"English", "CPC464UK.cfg", ""},
+         {"Spanish", "CPC464SP.cfg", ""},
+         {"Danish", "CPC464DK.cfg", ""},
       }
    },
-  { "CPC 664", PATH_RES INTER_FILE "Img664.bin", {
-         {"English", "CPC664UK.cfg"},
+  { "CPC 664", "", PATH_RES INTER_FILE "Img664.bin", {
+         {"English", "CPC664UK.cfg", ""},
          }
   },
-  { "CPC 6128", PATH_RES INTER_FILE "Img6128.bin", {
-         {"French", "CPC6128FR.cfg"},
-         {"Danish", "CPC6128DK.cfg"},
+  { "CPC 6128", "", PATH_RES INTER_FILE "Img6128.bin", {
+         {"French", "CPC6128FR.cfg", ""},
+         {"Danish", "CPC6128DK.cfg", ""},
          }
   },
-  { "GX 4000", PATH_RES INTER_FILE "ImgGx4000.bin", {
-         {"French", "CPC664UK.cfg"},
+  { "GX 4000", "", PATH_RES INTER_FILE "ImgGx4000.bin", {
+         {"French", "CPC664UK.cfg", ""},
          }
   },
-  { "464 plus", PATH_RES INTER_FILE "Img464_plus.bin", {
-         {"French", "CPC464PLUSFR.cfg"},
+  { "464 plus", "", PATH_RES INTER_FILE "Img464_plus.bin", {
+         {"French", "CPC464PLUSFR.cfg", ""},
          }
   },
-  { "6128 plus", PATH_RES INTER_FILE "Img6128_plus.bin", {
-         {"French", "CPC6128PLUSFR.cfg"},
+  { "6128 plus", "", PATH_RES INTER_FILE "Img6128_plus.bin", {
+         {"French", "CPC6128PLUSFR.cfg", ""},
          }
   },
 
  };
 
+////////////////////////////////////////////////////////////////////////////////////
+// ctor / dtor
+////////////////////////////////////////////////////////////////////////////////////
 ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup, MultiLanguage* language) :
    language_(language),
    engine_(engine),
@@ -101,6 +125,90 @@ ScreenMenu::~ScreenMenu()
   
 }
 
+void FillShortDescription(std::string& description, ConfigurationManager& cfg)
+{
+   // Add Full description
+   int hardware_type = cfg.GetConfigurationInt("Hardware", "Type", 0);
+   switch (hardware_type)
+   {
+   case 0: description.append("CPC 464\n"); break;
+   case 1: description.append("CPC 664\n"); break;
+   case 2: description.append("CPC 6128\n"); break;
+   case 3: description.append("Amstrad 464 PLUS\n"); break;
+   case 4: description.append("Amstrad 6128 PLUS\n"); break;
+   case 5: description.append("GX 4000\n"); break;
+   }
+   
+
+   // Add RAM size
+   int ram = cfg.GetConfigurationInt("Memory", "RAM", 0);
+   switch (ram)
+   {
+   case 0:
+      description.append("RAM : 64 Ko\n"); 
+      break;
+   case 1:
+      description.append("RAM : 128 Ko\n");
+      break;
+   case 0xFF:
+      description.append("RAM : 5128 Ko\n");
+      break;
+   }
+
+   // Add CRTC Type
+   int type_crtc = cfg.GetConfigurationInt("Hardware", "Type_CRTC", 0);
+   description.append("CRTC Type : ");
+   description.append(std::to_string(type_crtc));
+   description.append("\n");
+
+   // Add Disk reader presence
+   description.append("Disk Drive : ");
+   description.append( (cfg.GetConfigurationInt("Hardware", "FDC", 1) == 1) ? "YES" : "NO");
+   description.append("\n");
+
+}
+
+void ScreenMenu::LoadDescriptions()
+{
+   START_CHRONO
+
+   char tmp_buffer[128];
+
+   // Parse each AmstradConfiguration element, and generate a description
+   for (auto& it : config_list)
+   {
+      CString fullpath = PATH_CONFIGS;
+      fullpath.Append(INTER_FILE);
+      fullpath.Append(it.languages_[0].config_path_);
+
+      ConfigurationManager cfg;
+      cfg.OpenFile(fullpath);
+      FillShortDescription(it.description_, cfg);
+
+      for (auto& it2 : it.languages_)
+      {
+         fullpath = PATH_CONFIGS;
+         fullpath.Append(INTER_FILE);
+         fullpath.Append(it2.config_path_);
+
+         ConfigurationManager cfg;
+         cfg.OpenFile(fullpath);
+         it2.description_ = it.description_;
+
+         cfg.GetConfiguration("Keyboard", "Type", "", tmp_buffer, sizeof(tmp_buffer));
+         it2.description_.append("Keyboard type : ");
+         it2.description_.append(tmp_buffer);
+         //cfg.CloseFile();
+
+      }
+   }
+
+   STOP_CHRONO
+   PROF_DISPLAY
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 void ScreenMenu::Reload()
 {
    unsigned int i = 0;
@@ -126,12 +234,16 @@ void ScreenMenu::Reload()
    }
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::SetLanguage(int value)
 {
    language_->ChangeLanguage(value);
    return IAction::Action_Update;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::SetSync(bool* value)
 {
    setup_->SetSync (*value ? SugarPiSetup::SYNC_FRAME:SugarPiSetup::SYNC_SOUND);
@@ -139,16 +251,22 @@ IAction::ActionReturn ScreenMenu::SetSync(bool* value)
    return IAction::Action_Update;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::Back()
 {
    return IAction::Action_Back;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::Resume()
 {
    return IAction::Action_QuitMenu;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::LoadAmstradSetup( const char* path)
 {
    CString fullpath = PATH_CONFIGS;
@@ -164,6 +282,8 @@ IAction::ActionReturn ScreenMenu::LoadAmstradSetup( const char* path)
    return IAction::Action_QuitMenu;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 void ScreenMenu::LoadConfiguration  (const char* config_name, const char* ini_file)
 {
    ConfigurationManager* configuration_manager = setup_-> GetConfigurationManager ();
@@ -194,6 +314,7 @@ void ScreenMenu::LoadConfiguration  (const char* config_name, const char* ini_fi
    
 }
 
+////////////////////////////////////////////////////////////////////////////////////
 /// <summary>
 /// Select amstrad function:
 /// 
@@ -214,6 +335,7 @@ void ScreenMenu::LoadConfiguration  (const char* config_name, const char* ini_fi
 /// 
 /// </summary>
 /// <returns></returns>
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::SelectAmstrad()
 {
    // Create menu from config_list 
@@ -224,14 +346,13 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    cfg_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
       , new ActionMenu(this, &ScreenMenu::Back));
 
-   
    int offset_y = INTERLINE_SPACE + 2;
    for (auto& it : config_list)
    {
       MenuButtonWithBitmapWindows* item = new MenuButtonWithBitmapWindows(display_->GetMenuFrame());
-      item->Create(it.name_.c_str(), &it.associatedBmp_, cfg_menu->GetMenu()->GetScrollWindow(), 10, offset_y,
-         main_menu_->GetMenu()->GetWidth() - 600, INTERLINE_SPACE,
-         main_menu_->GetMenu()->GetWidth() - 600, INTERLINE_SPACE + 2 , 600, 400);
+      item->Create(it.name_.c_str(), it.description_.c_str(), & it.associatedBmp_, cfg_menu->GetMenu()->GetScrollWindow(), 10, offset_y,
+         400, INTERLINE_SPACE,
+         410, INTERLINE_SPACE + 2 , 800, 450);
       item->SetAction(new ActionMenuWithParameter<ScreenMenu::AmstradConfiguration&>(this, &ScreenMenu::SelectAmstradFinal, it));
 
       cfg_menu->GetMenu()->AddMenuItem(item);
@@ -253,9 +374,10 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    logger_->Write("Menu", LogNotice, "Return from SelectAmstrad : %i", return_value);
 
    return return_value;
-
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::SelectAmstradFinal(ScreenMenu::AmstradConfiguration& config)
 {
    // Create submenu
@@ -264,21 +386,28 @@ IAction::ActionReturn ScreenMenu::SelectAmstradFinal(ScreenMenu::AmstradConfigur
    Window* focus = Window::GetFocus();
    MainMenuWindows* config_menu = new MainMenuWindows(display_->GetMenuFrame());
 
-   config_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
+   config_menu->GetMenu()->AddMenuItem("..", OFFSET_SUBMENU_X, OFFSET_SUBMENU_Y, 280, INTERLINE_SPACE - 2
       , new ActionMenu(this, &ScreenMenu::Back));
 
    // Add Synchro menu
-   int i = 0;
-   for (auto&it : config.languages_)
-   {
-      // Display menu bitmap
-      config_menu->GetMenu()->AddMenuItem(it.fullname_.c_str(), 10, (i + 1) * INTERLINE_SPACE, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2,
-         new ActionMenuWithParameter<const char*>(this, &ScreenMenu::LoadAmstradSetup, it.config_path_));
 
-      i++;
+   int offset_y = OFFSET_SUBMENU_Y + INTERLINE_SPACE + 2;
+   int i = 0;
+   for (auto& it : config.languages_)
+   {
+      MenuButtonWithBitmapWindows* item = new MenuButtonWithBitmapWindows(display_->GetMenuFrame());
+      item->Create(it.fullname_.c_str(), it.description_.c_str(), &config.associatedBmp_, config_menu->GetMenu()->GetScrollWindow(), OFFSET_SUBMENU_X, offset_y,
+         290, INTERLINE_SPACE,
+         410, INTERLINE_SPACE + 2, 800, 450);
+      item->SetAction(new ActionMenuWithParameter<const char*>(this, &ScreenMenu::LoadAmstradSetup, it.config_path_));
+
+      config_menu->GetMenu()->AddMenuItem(item);
+
+
+      offset_y += INTERLINE_SPACE + 2;
    }
 
-   config_menu->ResetMenu();
+   config_menu->ResetMenu(1); // By default, select first item
    IAction::ActionReturn return_value = config_menu->DoScreen(this);
    delete config_menu;
 
@@ -290,6 +419,8 @@ IAction::ActionReturn ScreenMenu::SelectAmstradFinal(ScreenMenu::AmstradConfigur
    return IAction::Action_QuitMenu;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::SelectAmstradCustom()
 {
    CString search_path = PATH_CONFIGS;
@@ -395,6 +526,8 @@ IAction::ActionReturn ScreenMenu::SelectAmstradCustom()
    return return_value;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::LoadCartridge( const char* path)
 {
    CString fullpath = PATH_CARTIRDGE;
@@ -408,6 +541,9 @@ IAction::ActionReturn ScreenMenu::LoadCartridge( const char* path)
    motherboard_->OnOff();
    return IAction::Action_QuitMenu;
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::LoadDisk( const char* path)
 {
    CString fullpath = PATH_DISK;
@@ -423,6 +559,8 @@ IAction::ActionReturn ScreenMenu::LoadDisk( const char* path)
    return IAction::Action_QuitMenu;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::LoadTape( const char* path)
 {
    CString fullpath = PATH_TAPE;
@@ -436,6 +574,8 @@ IAction::ActionReturn ScreenMenu::LoadTape( const char* path)
    return IAction::Action_QuitMenu;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionReturn (ScreenMenu::* load_action)(const char*))
 {
    DIR Directory;
@@ -529,6 +669,8 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
    return return_value;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::InsertCartridge()
 {
    // List cartridge available
@@ -536,6 +678,8 @@ IAction::ActionReturn ScreenMenu::InsertCartridge()
    return InsertMedia (PATH_CARTIRDGE, &ScreenMenu::LoadCartridge);
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::InsertDisk()
 {
    // List cartridge available
@@ -543,6 +687,8 @@ IAction::ActionReturn ScreenMenu::InsertDisk()
    return InsertMedia (PATH_DISK, &ScreenMenu::LoadDisk);
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::InsertTape()
 {
    // List cartridge available
@@ -550,6 +696,8 @@ IAction::ActionReturn ScreenMenu::InsertTape()
    return InsertMedia (PATH_TAPE, &ScreenMenu::LoadTape);
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::ChangeLanguage()
 {
    Window* focus = Window::GetFocus();
@@ -578,6 +726,8 @@ IAction::ActionReturn ScreenMenu::ChangeLanguage()
    return return_value;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::SugarSetup()
 {
    Window* focus = Window::GetFocus();
@@ -603,30 +753,40 @@ IAction::ActionReturn ScreenMenu::SugarSetup()
    return return_value;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::HardwareSetup()
 {
    logger_->Write("Menu", LogNotice, "ACTION : Select setup");
    return IAction::Action_None;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::Save()
 {
    snapshot_->SaveSnapshot(PATH_QUICK_SNA);
    return IAction::Action_QuitMenu;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::Load()
 {
    snapshot_->LoadSnapshot(PATH_QUICK_SNA);
    return IAction::Action_QuitMenu;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::Reset()
 {
    motherboard_->OnOff();
    return IAction::Action_QuitMenu;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::Info()
 {
    Window* focus = Window::GetFocus();
@@ -646,12 +806,16 @@ IAction::ActionReturn ScreenMenu::Info()
    return return_value;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::ShutDown()
 {
    logger_->Write("Menu", LogNotice, "ACTION : SHUTDOWN");
    return IAction::Action_QuitMenu;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IEvent::Event ScreenMenu::GetEvent()
 {
    IEvent::Event event = IEvent::NONE;
@@ -675,11 +839,15 @@ IEvent::Event ScreenMenu::GetEvent()
    return event;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 void ScreenMenu::ForceStop()
 {
    main_menu_->ForceStop();
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::Handle()
 {
    logger_->Write("Menu", LogNotice, "MENU ENTER");

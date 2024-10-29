@@ -109,6 +109,7 @@ void Emulation::Run(unsigned nCore)
       logger_->Write("CORE", LogNotice, "Delayed init...");
       SugarboxLogo::Load();
       keyboard_->LoadGameControllerDB();
+      ScreenMenu::LoadDescriptions();
       pnp_need_update_ = true;
       logger_->Write("CORE", LogNotice, "Delayed init done !");
       break;

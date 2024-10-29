@@ -72,13 +72,15 @@ void Emulation::Run(unsigned nCore)
       // Display loop
       logger_->Write("CORE", LogNotice, "Display Loop started");
       logger_->Write("CORE", LogNotice, "Display Loop Ended");
+      break;
    case 3:
       // delayed
       logger_->Write("CORE", LogNotice, "Delayed init started");
       SugarboxLogo::Load();
+      ScreenMenu::LoadDescriptions();
 
       logger_->Write("CORE", LogNotice, "Delayed init Ended");
-
+      break;
    default:
       break;
    }
