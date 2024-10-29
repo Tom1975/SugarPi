@@ -74,7 +74,7 @@ void MenuButtonWithBitmapWindows::RedrawWindow()
       button_.RedrawWindow();
 
       // Draw informations
-      int y = button_y_ + 230;
+      int y = button_y_ + 240;
       int x = button_x_ + 30;
 
       Window::WindowsToDisplay(x, y);

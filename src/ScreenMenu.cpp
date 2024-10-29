@@ -64,8 +64,8 @@ std::vector<ScreenMenu::AmstradConfiguration> ScreenMenu::config_list =
 {
    { "CPC 464", "", PATH_RES INTER_FILE "Img464.bin",
       {
-         {"French", "CPC464FR.cfg", ""},
          {"English", "CPC464UK.cfg", ""},
+         {"French", "CPC464FR.cfg", ""},
          {"Spanish", "CPC464SP.cfg", ""},
          {"Danish", "CPC464DK.cfg", ""},
       }
@@ -75,19 +75,23 @@ std::vector<ScreenMenu::AmstradConfiguration> ScreenMenu::config_list =
          }
   },
   { "CPC 6128", "", PATH_RES INTER_FILE "Img6128.bin", {
+         {"English", "CPC6128UK.cfg", ""},
          {"French", "CPC6128FR.cfg", ""},
+         {"Spanish", "CPC6128SP.cfg", ""},
          {"Danish", "CPC6128DK.cfg", ""},
          }
   },
   { "GX 4000", "", PATH_RES INTER_FILE "ImgGx4000.bin", {
-         {"French", "CPC664UK.cfg", ""},
+         {"-", "GX4000.cfg", ""},
          }
   },
   { "464 plus", "", PATH_RES INTER_FILE "Img464_plus.bin", {
+         {"English", "CPC464PLUSEN.cfg", ""},
          {"French", "CPC464PLUSFR.cfg", ""},
          }
   },
   { "6128 plus", "", PATH_RES INTER_FILE "Img6128_plus.bin", {
+         {"English", "CPC6128PLUSEN.cfg", ""},
          {"French", "CPC6128PLUSFR.cfg", ""},
          }
   },
@@ -151,7 +155,7 @@ void FillShortDescription(std::string& description, ConfigurationManager& cfg)
       description.append("RAM : 128 Ko\n");
       break;
    case 0xFF:
-      description.append("RAM : 5128 Ko\n");
+      description.append("RAM : 512 Ko\n");
       break;
    }
 
