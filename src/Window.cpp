@@ -50,6 +50,12 @@ Window::~Window()
 {
    if ( focus_ == this)
       focus_ = nullptr;
+
+   if (parent_ != nullptr)
+   {
+      parent_->RemoveChild(this);
+   }
+
 }
 
 void Window::Create (Window* parent, int x, int y, unsigned int width, unsigned int height)
@@ -105,6 +111,28 @@ void Window::AddChild(Window* child)
    (*current_queue)->wnd_ = child;
    (*current_queue)->next_ = nullptr;
 
+}
+
+void Window::RemoveChild(Window* child)
+{
+   WindowsQueue** current_queue = &windows_children_;
+   WindowsQueue** previous = nullptr;
+   while (*current_queue != nullptr)
+   {
+      if ((*current_queue)->wnd_ == child)
+      {
+         if (previous == nullptr)
+         {
+            windows_children_ = (*current_queue)->next_;
+         }
+         else
+         {
+            (*previous)->next_ = (*current_queue)->next_;
+         }
+         return;
+      }
+      current_queue = &((*current_queue)->next_);
+   }
 }
 
 void Window::WindowsToDisplay(int& x, int& y)

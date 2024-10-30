@@ -68,6 +68,7 @@ public:
 
    virtual void Create(Window* parent, int x, int y, unsigned int width, unsigned int height);
    virtual void AddChild(Window* child);
+   virtual void RemoveChild(Window* child);
 
    virtual void WindowsToDisplay(int& x, int& y);
    virtual void Clear();

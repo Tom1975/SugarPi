@@ -433,8 +433,6 @@ IAction::ActionReturn ScreenMenu::SelectAmstradFinal(ScreenMenu::AmstradConfigur
    current_menu_->Invalidate();
 
    return return_value;
-
-   return IAction::Action_QuitMenu;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -840,14 +838,17 @@ IEvent::Event ScreenMenu::GetEvent()
 
    if (keyboard_->IsButton(TGamePadButton::GamePadButtonDown))
    {
+      logger_->Write("Menu", LogNotice, "ACTION : DOWN");
       event = IEvent::DOWN;
    }
    else if (keyboard_->IsButton(TGamePadButton::GamePadButtonUp))
    {
+      logger_->Write("Menu", LogNotice, "ACTION : UP");
       event = IEvent::UP;
    }
    else if (keyboard_->IsAction())
    {
+      logger_->Write("Menu", LogNotice, "ACTION : SELECT");
       event = IEvent::SELECT;
    }   
    else if (keyboard_->IsButton(TGamePadButton::GamePadButtonLeft))
