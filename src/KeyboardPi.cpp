@@ -361,7 +361,7 @@ void KeyboardPi::UnpressKey(unsigned int scancode)
 {
    if (raw_to_cpc_map_[scancode & 0xFF].bit != 0)
    {
-      logger_->Write("KeyboardPi", LogNotice, "PressKey %X - line : %i, bit : %X", scancode, raw_to_cpc_map_[scancode & 0xFF].line_number, raw_to_cpc_map_[scancode & 0xFF].bit);
+      //logger_->Write("KeyboardPi", LogNotice, "PressKey %X - line : %i, bit : %X", scancode, raw_to_cpc_map_[scancode & 0xFF].line_number, raw_to_cpc_map_[scancode & 0xFF].bit);
       *raw_to_cpc_map_[scancode].line_index |= (raw_to_cpc_map_[scancode].bit);
    }
 }
@@ -370,7 +370,7 @@ void KeyboardPi::PressKey(unsigned int scancode)
 {
    if (raw_to_cpc_map_[scancode & 0xFF].bit != 0)
    {
-      logger_->Write("KeyboardPi", LogNotice, "UnpressKey %X - line : %i, bit : %X", scancode, raw_to_cpc_map_[scancode & 0xFF].line_number, raw_to_cpc_map_[scancode & 0xFF].bit);
+      //logger_->Write("KeyboardPi", LogNotice, "UnpressKey %X - line : %i, bit : %X", scancode, raw_to_cpc_map_[scancode & 0xFF].line_number, raw_to_cpc_map_[scancode & 0xFF].bit);
       *raw_to_cpc_map_[scancode & 0xFF].line_index &= ~(raw_to_cpc_map_[scancode & 0xFF].bit);
    }
    

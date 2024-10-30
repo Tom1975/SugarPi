@@ -119,7 +119,7 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
    assert(keyboardPi_ != 0);
 
    CString Message;
-   Message.Format("Key status (modifiers %02X)", (unsigned)ucModifiers);
+   //Message.Format("Key status (modifiers %02X)", (unsigned)ucModifiers);
 
    Lock();
 
@@ -129,21 +129,20 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
    if (pThis->old_modifier_ & ctrl_modifier_) pThis->keyboard_lines_[2] |= 0x80;
    if (pThis->old_modifier_ & copy_modifier_) pThis->keyboard_lines_[1] |= 0x02;
 
-   // Unpress the previous keys
-   for (unsigned i = 0; i < 6; i++)
-   {
-      //if (keyboardPi_->old_raw_keys_[i] != 0)
-      {
-         keyboardPi_->UnpressKey(pThis->old_raw_keys_[i]);
-
-      }
-   }
-
    // Press the new ones
    if (ucModifiers & shift_l_modifier_) pThis->keyboard_lines_[2] &= ~0x20;
    if (ucModifiers & shift_r_modifier_) pThis->keyboard_lines_[2] &= ~0x20;
    if (ucModifiers & ctrl_modifier_) pThis->keyboard_lines_[2] &= ~0x80;
    if (ucModifiers & copy_modifier_) pThis->keyboard_lines_[1] &= ~0x02;
+
+   // Unpress the previous keys
+   for (unsigned i = 0; i < 6; i++)
+   {
+      if (pThis->old_raw_keys_[i] != 0)
+      {
+         keyboardPi_->UnpressKey(pThis->old_raw_keys_[i]);
+      }
+   }
 
    for (unsigned i = 0; i < 6; i++)
    {
