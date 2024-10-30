@@ -30,6 +30,14 @@ fi
 make clean
 make 
 
+retn_code=$?
+if [ $retn_code -eq 0 ];then
+  echo "Sugarpi built correctly"
+else
+  echo "*** ERROR BUILDING SUGARPI !!"
+  exit -1
+fi
+
 # copy to target directory
 if [ ! -d "sdcard" ]; then
   mkdir sdcard
