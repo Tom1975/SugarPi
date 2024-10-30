@@ -61,7 +61,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
       // already openend
       return;
    }
-   CLogger::Get ()->Write("ConfigurationManager", LogNotice, "OpenFile : %s", config_file);
+
    current_config_file_ = config_file;
    Clear();
    std::string s, key, value;
@@ -121,8 +121,6 @@ void ConfigurationManager::OpenFile(const char* config_file)
          {
             current_section = s.substr(begin_section+1, end_section - 1);
             s = s.substr(end_section+1);
-
-            CLogger::Get ()->Write("ConfigurationManager", LogNotice, "READ section %s", current_section.c_str());
          }
       }
 
@@ -134,7 +132,6 @@ void ConfigurationManager::OpenFile(const char* config_file)
 
          if (end == std::string::npos) continue;
 
-         CLogger::Get ()->Write("ConfigurationManager", LogNotice, "READ key/value %s", s.c_str());
          key = s.substr(begin, end - begin);
          // (No leading or trailing whitespace allowed)
          size_t last_of_space = key.find_last_not_of(" \f\t\v") ;
@@ -156,34 +153,26 @@ void ConfigurationManager::OpenFile(const char* config_file)
             end = s.find_last_not_of(" \f\n\r\t\v");
             if ( end == std::string::npos)
             {
-               CLogger::Get ()->Write("ConfigurationManager", LogNotice, "end == std::string::npos");
                value = s.substr(begin);
             }
             else
             {
-               CLogger::Get ()->Write("ConfigurationManager", LogNotice, "end != std::string::npos");
                value = s.substr(begin, end-begin + 1);
             }
-
-            CLogger::Get ()->Write("ConfigurationManager", LogNotice, "READ key : %s", key.c_str());
-            CLogger::Get ()->Write("ConfigurationManager", LogNotice, "READ value: %s ", value.c_str());
 
             // Add this key/value to current section
             Section* section = nullptr;
             if (config_file_.GetSection (current_section.c_str(), section) == false)
             {
-               CLogger::Get ()->Write("ConfigurationManager", LogNotice, "GetSection not found, new_section");
                Association<Section*> new_section;
                new_section.key = current_section;
                section = new_section.value = new Section();
                config_file_.push_back(new_section);
             }
-            CLogger::Get ()->Write("ConfigurationManager", LogNotice, "new_assoc");
             Association<std::string> new_assoc;
             new_assoc.key = key;
             new_assoc.value = value;
             section->push_back(new_assoc);
-            CLogger::Get ()->Write("ConfigurationManager", LogNotice, "new_assoc pushed");
          }
       }
    }
@@ -200,8 +189,6 @@ void ConfigurationManager::CloseFile()
       return;
    }
 
-   CLogger::Get ()->Write("ConfigurationManager", LogNotice, "File open");
-
    // Write this file
    std::string output_file;
    for (auto const& ent1 : config_file_)
@@ -209,19 +196,15 @@ void ConfigurationManager::CloseFile()
       output_file.append("[");
       output_file.append(ent1.key);
       output_file.append("]\r\n");
-      CLogger::Get ()->Write("ConfigurationManager", LogNotice, "section %s", ent1.key.c_str());
       for (auto const& ent2 : *ent1.value)
       {
          // ent2.first is the second key
          output_file.append (ent2.key);
-         CLogger::Get ()->Write("ConfigurationManager", LogNotice, "key %s", ent2.key.c_str());
          output_file.append ("=");
          output_file.append (ent2.value);
-         CLogger::Get ()->Write("ConfigurationManager", LogNotice, "value %s", ent2.value.c_str());
          output_file.append ("\r\n");
       }
    }
-   CLogger::Get ()->Write("ConfigurationManager", LogNotice, "Output file : %s", output_file.c_str());
    fwrite (output_file.c_str(), output_file.size(), 1, f);
    fclose(f);
 }
@@ -234,12 +217,9 @@ void ConfigurationManager::SetConfiguration(const char* section, const char* key
 
 void ConfigurationManager::SetConfiguration(const char* section_key, const char* key, const char* value)
 {
-   CLogger::Get ()->Write("ConfigurationManager", LogNotice, "SetConfiguration : [%s] %s=%s", section_key, key ,value);
-
    Section* section = nullptr;
    if (config_file_.GetSection (section_key, section) == false)
    {
-      CLogger::Get ()->Write("ConfigurationManager", LogNotice, "Section not found");
       Association<Section*> new_section;
       new_section.key = section_key;
       section = new_section.value = new Section();
@@ -258,7 +238,6 @@ void ConfigurationManager::SetConfiguration(const char* section_key, const char*
 
    if (!found)
    {
-      CLogger::Get ()->Write("ConfigurationManager", LogNotice, "Key not found");
       Association<std::string> new_assoc;
       new_assoc.key = key;
       new_assoc.value = value;
@@ -267,16 +246,6 @@ void ConfigurationManager::SetConfiguration(const char* section_key, const char*
 
    char output_log_buffer[255];
    GetConfiguration(section_key, key, "NOTHING", output_log_buffer, 255 );
-
-   for (auto const& ent1 : config_file_)
-   {
-      CLogger::Get ()->Write("ConfigurationManager", LogNotice, "SECTION : %s", ent1.key.c_str());
-      for (auto const& ent2 : *ent1.value)
-      {
-         CLogger::Get ()->Write("ConfigurationManager", LogNotice, "KEYS: %s = VALUE : %s", ent2.key.c_str(), ent2.value.c_str());
-      }
-   }
-   CLogger::Get ()->Write("ConfigurationManager", LogNotice, "EOF");
 }
 
 unsigned int ConfigurationManager::GetConfiguration(const char* section, const char* key, const char* default_value, char* out_buffer, unsigned int buffer_size, const char* file)
