@@ -52,7 +52,7 @@ ScreenMenu::MenuItem base_menu[] =
    { "Quick Save",         &ScreenMenu::Save},
    { "Quick Load",         &ScreenMenu::Load},*/
    { "MENU_Reset",              &ScreenMenu::Reset},
-   { "MENU_Info",              &ScreenMenu::Info},
+   //{ "MENU_Info",              &ScreenMenu::Info},
    { "MENU_Shutdown",           &ScreenMenu::ShutDown},
    { nullptr, nullptr}
 };
@@ -110,6 +110,7 @@ ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* d
    keyboard_(keyboard),
    setup_(setup),
    motherboard_(motherboard),
+   current_menu_(nullptr),
    snapshot_(nullptr),
    main_menu_(nullptr)
 {
@@ -243,7 +244,7 @@ void ScreenMenu::Reload()
 IAction::ActionReturn ScreenMenu::SetLanguage(int value)
 {
    language_->ChangeLanguage(value);
-   return IAction::Action_Update;
+   return IAction::Action_Back;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -367,6 +368,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
 
    cfg_menu->ResetMenu();
 
+   current_menu_ = cfg_menu;
    IAction::ActionReturn return_value = cfg_menu->DoScreen(this);
 
    logger_->Write("Menu", LogNotice, "file_menu->DoScreen : %i", return_value);
@@ -416,7 +418,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstradFinal(ScreenMenu::AmstradConfigur
    delete config_menu;
 
    Window::SetFocus(focus);
-   main_menu_->Invalidate();
+   current_menu_->Invalidate();
 
    return return_value;
 

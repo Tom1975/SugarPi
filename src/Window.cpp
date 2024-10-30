@@ -308,10 +308,10 @@ IAction::ActionReturn Window::DoScreen (IEvent* event_handler)
             case IAction::Action_QuitMenu:
             case IAction::Action_Shutdown:
             case IAction::Action_Reload:
+               Invalidate();
                exit_function = retval;
                break;
             case IAction::Action_Update:
-               //Redraw (true);
                Invalidate();
                break;
             default:

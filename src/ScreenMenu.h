@@ -130,6 +130,8 @@ protected:
 
    Motherboard*   motherboard_;
 
+   // Current menu
+   Window* current_menu_;
    // Pending actions
    CSnapshot*        snapshot_;
    MainMenuWindows*  main_menu_;
