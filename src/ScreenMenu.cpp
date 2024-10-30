@@ -467,6 +467,8 @@ IAction::ActionReturn ScreenMenu::SelectAmstradCustom()
       FileInfo = new FILINFO;
       Result = f_findnext(&Directory, FileInfo);
    }
+   delete FileInfo;
+
    logger_->Write("Menu", LogNotice, "Amstrad Setup : End of directory reading");
    logger_->Write("Menu", LogNotice, "Amstrad Setup : Start of alphabetical sorting...");
    // Alphabetical Order
@@ -614,10 +616,15 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
       {
          cartridge_list.push_back(FileInfo);
       }
+      else
+      {
+         delete FileInfo;
+      }
       FileInfo = new FILINFO;
 
       Result = f_findnext(&Directory, FileInfo);
    }
+   delete FileInfo;
    logger_->Write("Menu", LogNotice, "Insert Media : End of directory reading");
    logger_->Write("Menu", LogNotice, "Insert Media : Start of alphabetical sorting...");
    // Alphabetical Order

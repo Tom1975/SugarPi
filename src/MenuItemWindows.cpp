@@ -61,6 +61,7 @@ MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action
 }
 MenuItemWindows::~MenuItemWindows ()
 {
+   delete action_;
    //sft_freefont(fnt_italic_->font);
    //sft_freefont(fnt_normal_->font);
 }
