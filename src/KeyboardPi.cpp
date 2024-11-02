@@ -27,7 +27,7 @@ static void Unlock() { mutex_.unlock(); }
 typedef char t_id[9];
 
 unsigned char default_raw_map[10][8] = 
-{
+{                                                        // This is a UK keyboard.
    {0x52, 0x4F, 0x51, 0x61, 0x5E, 0x5B, 0x58, 0x63, },   // Cur_up Cur_right Cur_down F9 F6 F3 Enter F.
    {0x50, 0xE2, 0x5F, 0x60, 0x5D, 0x59, 0x5A, 0x62, },   // cur_left Copy f7 f8 f5 f1 f2 f0
    {0x4C, 0x30, 0x28, 0x32, 0x5C, 0xE5, 0x38, 0xE0, },   // Clr {[ Return }] F4 Shift `\ Ctrl
