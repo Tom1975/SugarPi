@@ -152,7 +152,7 @@ void Engine::UpdateComputer(bool no_cart_reload)
    path /= current_settings_->GetLowerRom();
    LoadRom(-1, path.string().c_str());
 
-   keyboard_->LoadKeyboard(current_settings_->GetKeyboardConfig());
+   //keyboard_->LoadKeyboard(current_settings_->GetKeyboardConfig());
 
    for (int i = 0; i < 256; i++)
    {
@@ -182,7 +182,8 @@ void Engine::UpdateComputer(bool no_cart_reload)
    unsigned int hardware_type = current_settings_->GetHardwareType();
    //SetMachineType(hardware_type);
    if (hardware_type == MachineSettings::PLUS_6128
-      || hardware_type == MachineSettings::PLUS_464)
+      || hardware_type == MachineSettings::PLUS_464
+      || hardware_type == MachineSettings::GX400)
    {
       motherboard_->SetPlus(true);
       if (no_cart_reload == false)

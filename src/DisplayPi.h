@@ -55,6 +55,7 @@ public:
    virtual void StartSync();
    // Wait VBL
    virtual void WaitVbl();
+   virtual void SyncOnFrame(bool set);
 
    // Services
    virtual void Reset();

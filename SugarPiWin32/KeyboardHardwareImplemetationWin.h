@@ -27,7 +27,7 @@ protected:
       void CodeAction(long keycode, bool activated);
 
       KeyboardPi*       keyboard_;
-      KeyboardHandler   handler_;
+      KeyboardHandler*   handler_;
 
       bool*             select_;
       unsigned int*     action_buttons_;

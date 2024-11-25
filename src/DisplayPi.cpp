@@ -228,6 +228,11 @@ void DisplayPi::Loop()
    Draw();
 }
 
+void  DisplayPi::SyncOnFrame(bool set)
+{
+   // TODO
+}
+
 void DisplayPi::VSync(bool dbg)
 {
    Lock();

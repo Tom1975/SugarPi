@@ -10,6 +10,7 @@
 #endif
 
 #include "CPCCore/CPCCoreEmu/IKeyboard.h"
+#include "CPCCore/CPCCoreEmu/KeyboardHandler.h"
 #include "KeyboardHardwareImplemetation.h"
 
 
@@ -24,8 +25,8 @@ public:
 
    void SetHard(KeyboardHardwareImplemetation* hard_imp);
     bool Initialize();
-    void InitKeyboard (unsigned char key_map[10][8]);
-    void LoadKeyboard(const char* path);
+    //void InitKeyboard (unsigned char key_map[10][8]);
+    //void LoadKeyboard(const char* path);
 
     virtual unsigned char GetKeyboardMap(int index);
     void UpdatePlugnPlay();
@@ -44,6 +45,9 @@ public:
    bool IsAction();
    void ReinitSelect();
 
+   KeyboardHandler* GetHandler() {
+      return &handler_;
+   }
    void LoadGameControllerDB();
 
    //static void GamePadRemovedHandler (CDevice *pDevice, void *pContext);
@@ -54,7 +58,7 @@ public:
    bool* GetSelect() { return &select_; }
    TGamePadState* GetGamepadState() {return gamepad_state_;}
    TGamePadState* GetGamepadStateBuffered() { return gamepad_state_buffered_; }
-   unsigned char* GetKeyboardLine() { return keyboard_lines_; }
+   //unsigned char* GetKeyboardLine() { return keyboard_lines_; }
    GamepadDef** GetGamepadActive() {
       return gamepad_active_;
    }
@@ -62,7 +66,7 @@ public:
    std::vector<GamepadDef*> gamepad_list_;
 
 protected:
-
+   KeyboardHandler   handler_;
    KeyboardHardwareImplemetation* hard_imlementation_;
    //void UpdateKeyboardMap();
 
@@ -82,15 +86,15 @@ protected:
    
    
    // Keyboard definition
-   unsigned char keyboard_lines_ [10];
+   //unsigned char keyboard_lines_ [10];
 
    GamepadDef*       gamepad_active_[MAX_GAMEPADS];
 
-   struct RawToCPC
+   /*struct RawToCPC
    {
       int line_number;
       unsigned char* line_index;
       unsigned char bit;
    };
-   RawToCPC raw_to_cpc_map_[0x100];
+   RawToCPC raw_to_cpc_map_[0x100];*/
 };

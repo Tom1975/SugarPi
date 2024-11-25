@@ -5,10 +5,11 @@
 
 KeyboardHardwareImplemetationWin::KeyboardHardwareImplemetationWin(KeyboardPi* keyboard) : keyboard_(keyboard)
 {
+   handler_ = keyboard_->GetHandler();
    select_ = keyboard_->GetSelect();
    action_buttons_ = keyboard_->GetActionButtons();
    gamepad_active_ = keyboard_->GetGamepadActive();
-   keyboard_lines_ = keyboard_->GetKeyboardLine();
+   keyboard_lines_ = handler_->GetKeyboardState();
    for (unsigned i = 0; i < MAX_GAMEPADS; i++)
    {
       gamepad_active_[i] = nullptr;
@@ -65,11 +66,11 @@ void KeyboardHardwareImplemetationWin::CodeActionSpecial(long keycode, bool acti
 
 void KeyboardHardwareImplemetationWin::CodeAction(long keycode, bool activated)
 {
-   
-   if (activated)
+   handler_->SendScanCode(keycode, activated);
+   /*if (activated)
       keyboard_->PressKey(keycode);
    else
-      keyboard_->UnpressKey(keycode);
+      keyboard_->UnpressKey(keycode);*/
 }
 
 

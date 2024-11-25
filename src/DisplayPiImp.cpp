@@ -408,6 +408,7 @@ void DisplayPiImp::BeginDraw()
 
 void DisplayPiImp::EndDraw()
 {
+   // TODO : if vsync, otherwise, better use vc_dispmanx_update_submit
    int result = vc_dispmanx_update_submit_sync(current_update_);
    if ( result != 0)
    {
