@@ -8,7 +8,7 @@ on:
 
 jobs:
   extract-version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       Sugarbox_version: '${{ steps.vars.outputs.version }}'  
     steps:
@@ -18,7 +18,7 @@ jobs:
           echo "version=${GITHUB_REF#refs/*/}" >> "$GITHUB_OUTPUT"
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: extract-version
     steps:
       - name: Checkout code
@@ -49,7 +49,7 @@ jobs:
           path: sdcard/*
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [extract-version, build]
 
     steps:
