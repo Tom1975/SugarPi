@@ -40,6 +40,7 @@ public:
    virtual void AddBufferToPlay(IWaveHDR*);
 
    virtual void SyncWithSound() {};
+   virtual void SyncOnSound(bool){};
 
    void Initialize();
 

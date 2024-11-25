@@ -24,9 +24,10 @@ KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi(KeyboardPi* key
    dwhci_device_(dwhci_device)
 {
    keyboardPi_ = keyboard;
+   handler_ = keyboardPi_->GetHandler();
    select_ = keyboardPi_->GetSelect();
    action_buttons_ = keyboardPi_->GetActionButtons();
-   keyboard_lines_ = keyboardPi_->GetKeyboardLine();
+   keyboard_lines_ = handler_->GetKeyboardState();
    gamepad_state_ = keyboardPi_->GetGamepadState();
    gamepad_active_ = keyboardPi_->GetGamepadActive();
    gamepad_state_buffered_ = keyboardPi_->GetGamepadStateBuffered();

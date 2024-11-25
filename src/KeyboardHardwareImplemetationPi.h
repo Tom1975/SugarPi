@@ -26,6 +26,7 @@ public:
 
 protected:
 
+   KeyboardHandler   *handler_;
    bool*             select_;
    unsigned int*     action_buttons_;
    unsigned char*    keyboard_lines_;
