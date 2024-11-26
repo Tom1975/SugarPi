@@ -18,28 +18,9 @@ static void Unlock() { mutex_.unlock(); }
 
 #define DEVICE_INDEX	1		// "upad1"
 
-//   SET_KEYBOARD(0x59, 1, 5);              // FN 1
-//   SET_KEYBOARD(0x5A, 1, 6);              // FN 2
-//   SET_KEYBOARD(0x14, 8, 5);              // A 
-
-
 
 typedef char t_id[9];
 
-/*unsigned char default_raw_map[10][8] =
-{                                                        // This is a UK keyboard.
-   {0x52, 0x4F, 0x51, 0x61, 0x5E, 0x5B, 0x58, 0x63, },   // Cur_up Cur_right Cur_down F9 F6 F3 Enter F.
-   {0x50, 0xE2, 0x5F, 0x60, 0x5D, 0x59, 0x5A, 0x62, },   // cur_left Copy f7 f8 f5 f1 f2 f0
-   {0x4C, 0x30, 0x28, 0x32, 0x5C, 0xE5, 0x38, 0xE0, },   // Clr {[ Return }] F4 Shift `\ Ctrl
-   {0x2E, 0x2D, 0x2F, 0x13, 0x34, 0x33, 0x2E, 0x37, },   // ^£ =- |@ P +; *: ?/ >,
-   {0x27, 0x26, 0x12, 0x0C, 0x0F, 0x0E, 0x10, 0x36, },   // _0 )9 O I L K M <.
-   {0x25, 0x24, 0x18, 0x1C, 0x0B, 0x0D, 0x11, 0x2C, },   // (8 '7 U Y H J N Space
-   {0x23, 0x22, 0x15, 0x17, 0x0A, 0x09, 0x05, 0x19, },   // &,6,Joy1_Up %,5,Joy1_down, R,Joy1_Left T,Joy1_Right G,Joy1Fire2 F,Joy1Fire1 B V
-   {0x21, 0x20, 0x08, 0x1A, 0x16, 0x07, 0x06, 0x1B, },   // $4 #3 E W S D C X
-   {0x1E, 0x1F, 0x29, 0x14, 0x2B, 0x10, 0x39, 0x1D, },   // !1 "2 Esc Q Tab A CapsLock Z
-   {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, }    // Joy0up Joy0down Joy0left Joy0right Joy0F1 Joy0F2 unused Del
-};
-*/
 GamepadActionHandler::GamepadActionHandler (unsigned char* line, unsigned int index, unsigned char* line2, unsigned int index2) : handler_(nullptr)
 {
    line_[0] = line;
@@ -305,20 +286,15 @@ unsigned int getFirstLine(const char* buffer, int size, std::string& out)
    return (offset == size) ? offset : offset + 1;
 }
 
-//KeyboardPi::KeyboardPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service) :
 KeyboardPi::KeyboardPi(CLogger* logger) :
    logger_(logger),
    action_buttons_(0),
    select_(false)
 {
-   //memset(keyboard_lines_, 0xff, sizeof(keyboard_lines_));
-
    for (unsigned i = 0; i < MAX_GAMEPADS; i++)
    {
       gamepad_active_[i] = nullptr;
    }
-
-   //InitKeyboard(default_raw_map);
    
    memset(&gamepad_state_buffered_, 0, sizeof(gamepad_state_buffered_));
    memset(&gamepad_state_, 0, sizeof(gamepad_state_));
@@ -329,37 +305,8 @@ KeyboardPi::~KeyboardPi()
 
 }
 
-/*#define SET_KEYBOARD(raw,line,b)\
-   raw_to_cpc_map_[raw].line_index = &keyboard_lines_[line];\
-   raw_to_cpc_map_[raw].bit = 1<<b;*/
-
-void KeyboardPi::SetHard(KeyboardHardwareImplemetation* hard_imp)
-{
-   hard_imlementation_ = hard_imp;
-}
-
- /*void KeyboardPi::InitKeyboard(unsigned char key_map[10][8])
-{
-   // TODO : check how old_raw_keys_ in reset on implementation
-   memset ( raw_to_cpc_map_, 0, sizeof raw_to_cpc_map_);
-
-   for (int line = 0; line < 10; line++)
-   {
-      for (int bit = 0; bit < 8; bit++)
-      {
-         unsigned char raw_key = key_map[line][bit];
-         raw_to_cpc_map_[raw_key].line_index = &keyboard_lines_[line];
-         raw_to_cpc_map_[raw_key].line_number = line;
-         raw_to_cpc_map_[raw_key].bit = 1<<bit;
-      }
-   }
-
-}*/
-
 void KeyboardPi::UnpressKey(unsigned int scancode)
-
 {
-
    if (handler_.raw_to_cpc_map_[scancode & 0xFF].bit != 0)
    {
       //logger_->Write("KeyboardPi", LogNotice, "PressKey %X - line : %i, bit : %X", scancode, raw_to_cpc_map_[scancode & 0xFF].line_number, raw_to_cpc_map_[scancode & 0xFF].bit);
@@ -373,23 +320,18 @@ void KeyboardPi::PressKey(unsigned int scancode)
    {
       //logger_->Write("KeyboardPi", LogNotice, "UnpressKey %X - line : %i, bit : %X", scancode, raw_to_cpc_map_[scancode & 0xFF].line_number, raw_to_cpc_map_[scancode & 0xFF].bit);
       *handler_.raw_to_cpc_map_[scancode & 0xFF].line_index &= ~(handler_.raw_to_cpc_map_[scancode & 0xFF].bit);
-   }
-   
+   }   
 }
-
 
 bool KeyboardPi::Initialize()
 {
    // Load gamecontrollerdb.txt
-   //LoadGameControllerDB();
-   hard_imlementation_->Initialize();
-   //UpdatePlugnPlay();
+   LoadGameControllerDB();
 
    return true;
 }
 void KeyboardPi::UpdatePlugnPlay()
 {
-   hard_imlementation_->UpdatePlugnPlay();
 }
 
 unsigned char KeyboardPi::GetKeyboardMap(int index)
@@ -447,21 +389,6 @@ bool KeyboardPi::IsSelect()
 {
    return select_;
 }
-/*
-bool KeyboardPi::IsDown()
-{
-   if (action_buttons_ & (GamePadButtonDown))
-   {
-      Lock();
-      action_buttons_ &= ~(GamePadButtonDown);
-      Unlock();
-      return true;
-   }
-   else
-   {
-      return false;
-   }
-}*/
 
 bool KeyboardPi::IsButton(TGamePadButton button)
 {
@@ -638,74 +565,3 @@ void KeyboardPi::LoadGameControllerDB()
    logger_->Write("KeyboardPi", LogNotice, "Loading game controller db... Done !");
 
 }
-/*
-void KeyboardPi::LoadKeyboard(const char* path)
-{
-   // Open file
-   FILE *f;
-   f = fopen(path, "r");
-   if (f == NULL)
-   {
-      CLogger::Get ()->Write("ConfigurationManager", LogNotice, "Cannot open %s layout file", path);
-      return;
-   }
-
-   // Load every known gamepad to internal structure
-   fseek(f, 0, SEEK_END);
-   unsigned int buffer_size_ = ftell(f);
-   rewind(f);
-   unsigned char* buff = new unsigned char[buffer_size_];
-   unsigned nBytesRead;
-
-   nBytesRead = fread(buff, 1, buffer_size_, f);
-   if (buffer_size_ != nBytesRead)
-   {
-      // ERROR
-      fclose(f);
-      logger_->Write("KeyboardPi", LogNotice, "Error reading keyboard layout file %s ",path );
-      return;
-   }
-
-   // get next line
-   const char* ptr_buffer = (char*)buff;
-   unsigned int offset = 0;
-   unsigned int end_line;
-   std::string s;
-   int line_index = 0;
-   while ((end_line = getFirstLine(&ptr_buffer[offset], nBytesRead, s)) > 0 && line_index < 10)
-   {
-      nBytesRead -= end_line;
-
-      // Do not use emty lines, and comment lines
-      if (s.size() == 0 ||s[0] == '#')
-      {
-         offset += end_line;
-         continue;
-      }
-
-      // Decode line to buffer
-      // Remove spaces
-      while (ptr_buffer[offset] == ' ')
-      {
-         offset++;
-         end_line--;
-      }
-      for (unsigned int raw_key = 0; raw_key<8 && (2+raw_key * 3) < end_line; raw_key++)
-      {
-         char number [3];
-         memcpy ( number, &ptr_buffer[offset+raw_key*3], 2);
-         number[2] = '\0';
-         unsigned char value = strtoul(number, NULL, 16);
-         default_raw_map[line_index][raw_key] = value;
-      }
-      offset += end_line;
-      line_index++;
-   }
-   delete []buff;
-   fclose(f);
-
-   InitKeyboard (default_raw_map);
-   
-   logger_->Write("KeyboardPi", LogNotice, "Loading keyboard layout... Done !");   
-}
-*/
