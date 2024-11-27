@@ -26,7 +26,6 @@ protected:
 
       bool*             select_;
       unsigned int*     action_buttons_;
-      unsigned char* keyboard_lines_;
 
       GamepadDef** gamepad_active_;
 };

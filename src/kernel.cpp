@@ -43,10 +43,7 @@ CKernel::CKernel(void)
    
 {
    display_ = new DisplayPiImp(&m_Logger, &m_Timer);
-   keyboard_ = new KeyboardPi(&m_Logger);
-   keyboard_imp_ = new KeyboardHardwareImplemetationPi(keyboard_, &dwhci_device_, &m_DeviceNameService);
-   keyboard_->SetHard(keyboard_imp_);
-
+   keyboard_ = new KeyboardHardwareImplemetationPi(&m_Logger, &dwhci_device_, &m_DeviceNameService);
    
    cpu_throttle_ = new CCPUThrottle();
    exception_handler_ = new CExceptionHandler;

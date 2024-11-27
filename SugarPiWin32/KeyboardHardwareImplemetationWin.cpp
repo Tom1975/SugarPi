@@ -8,13 +8,12 @@ KeyboardHardwareImplemetationWin::KeyboardHardwareImplemetationWin(CLogger* logg
    select_ = GetSelect();
    action_buttons_ = GetActionButtons();
    gamepad_active_ = GetGamepadActive();
-   keyboard_lines_ = handler_.GetKeyboardState();
    for (unsigned i = 0; i < MAX_GAMEPADS; i++)
    {
       gamepad_active_[i] = nullptr;
    }
 
-   GamepadDef* def = new GamepadDef(keyboard_lines_);
+   GamepadDef* def = new GamepadDef(handler_.GetKeyboardState());
    //gamepad_list_.push_back(def);
    gamepad_active_[0] = def;// gamepad_list_[0];
 

@@ -19,15 +19,14 @@ KeyboardPi* KeyboardHardwareImplemetationPi::keyboardPi_ = nullptr;
  CUSBKeyboardDevice* KeyboardHardwareImplemetationPi::keyboard_ = nullptr;
 KeyboardHardwareImplemetationPi* pThis = nullptr;
 
-KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi(KeyboardPi* keyboard, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service):
+KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi( CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service):
+   KeyboardPi(logger),
    device_name_service_(device_name_service),
    dwhci_device_(dwhci_device)
 {
-   keyboardPi_ = keyboard;
-   handler_ = keyboardPi_->GetHandler();
    select_ = keyboardPi_->GetSelect();
    action_buttons_ = keyboardPi_->GetActionButtons();
-   keyboard_lines_ = handler_->GetKeyboardState();
+   keyboard_lines_ = handler_.GetKeyboardState();
    gamepad_state_ = keyboardPi_->GetGamepadState();
    gamepad_active_ = keyboardPi_->GetGamepadActive();
    gamepad_state_buffered_ = keyboardPi_->GetGamepadStateBuffered();
@@ -48,7 +47,7 @@ KeyboardHardwareImplemetationPi::~KeyboardHardwareImplemetationPi()
 }
 
 
-void KeyboardHardwareImplemetationPi::Initialize()
+bool KeyboardHardwareImplemetationPi::Initialize()
 {
    if (dwhci_device_->Initialize() == false)
    {
@@ -56,6 +55,7 @@ void KeyboardHardwareImplemetationPi::Initialize()
    }
    CLogger::Get ()->Write("Keyboard", LogNotice, "Initialize done.");
 
+   return KeyboardPi::Initialize();
 }
 
 void KeyboardHardwareImplemetationPi::UpdatePlugnPlay()

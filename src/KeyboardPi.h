@@ -47,8 +47,6 @@ public:
    }
    void LoadGameControllerDB();
 
-   static void KeyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6]);
-
    unsigned int *GetActionButtons() {return &action_buttons_;   }
    bool* GetSelect() { return &select_; }
    TGamePadState* GetGamepadState() {return gamepad_state_;}

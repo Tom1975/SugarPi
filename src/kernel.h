@@ -94,8 +94,7 @@ private:
    //SoundMixer        *sound_mixer_;
 	//Motherboard       *motherboard_emulation_;
 	DisplayPiImp      *display_;
-   KeyboardPi        *keyboard_;
-   KeyboardHardwareImplemetationPi* keyboard_imp_;
+   KeyboardHardwareImplemetationPi        *keyboard_;
    SoundPi*          sound_;
 
    Emulation         emulation_;
