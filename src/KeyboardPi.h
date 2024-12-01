@@ -26,26 +26,26 @@ public:
     bool Initialize();
 
     virtual unsigned char GetKeyboardMap(int index);
-    void UpdatePlugnPlay();
-    void Init(bool* register_replaced);
-    void ForceKeyboardState(unsigned char key_states[10]) {};
+    virtual void UpdatePlugnPlay();
+    virtual void Init(bool* register_replaced);
+    virtual void ForceKeyboardState(unsigned char key_states[10]) {};
 
-   bool AddAction (GamepadActionHandler* action, unsigned nDeviceIndex, bool update_map = false);
-   void CheckActions(unsigned nDeviceIndex) ;
+   virtual bool AddAction (GamepadActionHandler* action, unsigned nDeviceIndex, bool update_map = false);
+   virtual void CheckActions(unsigned nDeviceIndex) ;
 
-   void PressKey(unsigned int scancode);
-   void UnpressKey(unsigned int scancode);
+   virtual void PressKey(unsigned int scancode);
+   virtual void UnpressKey(unsigned int scancode);
 
-   void ClearBuffer();
-   bool IsSelect();
-   bool IsButton(TGamePadButton button);
-   bool IsAction();
-   void ReinitSelect();
+   virtual void ClearBuffer();
+   virtual bool IsSelect();
+   virtual bool IsButton(TGamePadButton button);
+   virtual bool IsAction();
+   virtual void ReinitSelect();
 
    KeyboardHandler* GetHandler() {
       return &handler_;
    }
-   void LoadGameControllerDB();
+   virtual void LoadGameControllerDB();
 
    unsigned int *GetActionButtons() {return &action_buttons_;   }
    bool* GetSelect() { return &select_; }

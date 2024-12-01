@@ -330,6 +330,7 @@ bool KeyboardPi::Initialize()
 
    return true;
 }
+
 void KeyboardPi::UpdatePlugnPlay()
 {
 }

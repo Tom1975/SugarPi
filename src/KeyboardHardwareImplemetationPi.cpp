@@ -15,7 +15,6 @@ static CSpinLock   mutex_;
 static void Lock() { mutex_.Acquire(); }
 static void Unlock() { mutex_.Release(); }
 
-KeyboardPi* KeyboardHardwareImplemetationPi::keyboardPi_ = nullptr;
  CUSBKeyboardDevice* KeyboardHardwareImplemetationPi::keyboard_ = nullptr;
 KeyboardHardwareImplemetationPi* pThis = nullptr;
 
@@ -24,12 +23,12 @@ KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi( CLogger* logge
    device_name_service_(device_name_service),
    dwhci_device_(dwhci_device)
 {
-   select_ = keyboardPi_->GetSelect();
-   action_buttons_ = keyboardPi_->GetActionButtons();
+   select_ = GetSelect();
+   action_buttons_ = GetActionButtons();
    keyboard_lines_ = handler_.GetKeyboardState();
-   gamepad_state_ = keyboardPi_->GetGamepadState();
-   gamepad_active_ = keyboardPi_->GetGamepadActive();
-   gamepad_state_buffered_ = keyboardPi_->GetGamepadStateBuffered();
+   gamepad_state_ = GetGamepadState();
+   gamepad_active_ = GetGamepadActive();
+   gamepad_state_buffered_ = GetGamepadStateBuffered();
 
    pThis = this;
 
@@ -117,7 +116,7 @@ void KeyboardHardwareImplemetationPi::UpdatePlugnPlay()
 
 void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifiers, const unsigned char RawKeys[6])
 {
-   assert(keyboardPi_ != 0);
+   assert(pThis != 0);
 
    CString Message;
    //Message.Format("Key status (modifiers %02X)", (unsigned)ucModifiers);
@@ -141,7 +140,7 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
    {
       if (pThis->old_raw_keys_[i] != 0)
       {
-         keyboardPi_->UnpressKey(pThis->old_raw_keys_[i]);
+         pThis->UnpressKey(pThis->old_raw_keys_[i]);
       }
    }
 
@@ -150,9 +149,9 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
       if (RawKeys[i] != 0)
       {
 
-         //if (keyboardPi_->raw_to_cpc_map_[RawKeys[i]].bit != 0)
+         //if (pThis->raw_to_cpc_map_[RawKeys[i]].bit != 0)
          {
-            keyboardPi_->PressKey(RawKeys[i]);
+            pThis->PressKey(RawKeys[i]);
          }
 
          CString KeyCode;
@@ -165,7 +164,7 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
    memcpy(pThis->old_raw_keys_, RawKeys, sizeof(old_raw_keys_));
    Unlock();
 
-   //CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
+   CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
 }
 
 void KeyboardHardwareImplemetationPi::KeyboardRemovedHandler(CDevice* pDevice, void* pContext)
@@ -200,15 +199,15 @@ void KeyboardHardwareImplemetationPi::GamePadRemovedHandler(CDevice* pDevice, vo
 
 void KeyboardHardwareImplemetationPi::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState)
 {
-   assert(keyboardPi_ != 0);
+   assert(pThis != 0);
    assert(pState != 0);
 
    memcpy(&pThis->gamepad_state_[nDeviceIndex], pState, sizeof * pState);
    // Set the new pushed buttons
 
-   keyboardPi_->CheckActions(nDeviceIndex);
+   pThis->CheckActions(nDeviceIndex);
    if (( pThis->gamepad_active_[nDeviceIndex] != nullptr) && 
-         keyboardPi_->AddAction(&pThis->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
+         pThis->AddAction(&pThis->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
    {
       *pThis->select_ = true;
    }
@@ -221,12 +220,12 @@ GamepadDef* KeyboardHardwareImplemetationPi::LookForDevice(const TUSBDeviceDescr
 {
    GamepadDef* gamepad = nullptr;
 
-   for (unsigned int index = 0; index < keyboardPi_->gamepad_list_.size(); index++)
+   for (unsigned int index = 0; index < pThis->gamepad_list_.size(); index++)
    {
-      if (keyboardPi_->gamepad_list_[index]->vid == descriptor->idVendor && keyboardPi_->gamepad_list_[index]->pid == descriptor->idProduct && keyboardPi_->gamepad_list_[index]->version == descriptor->bcdDevice)
+      if (pThis->gamepad_list_[index]->vid == descriptor->idVendor && pThis->gamepad_list_[index]->pid == descriptor->idProduct && pThis->gamepad_list_[index]->version == descriptor->bcdDevice)
       {
          CLogger::Get ()->Write("KeyboardPi", LogNotice, "Gamepad found in database !");
-         return keyboardPi_->gamepad_list_[index];
+         return pThis->gamepad_list_[index];
       }
    }
 
