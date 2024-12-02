@@ -164,7 +164,10 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
    memcpy(pThis->old_raw_keys_, RawKeys, sizeof(old_raw_keys_));
    Unlock();
 
-   CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
+   if (Message.GetLength() > 0)
+   {
+      CLogger::Get ()->Write ("Keyboard", LogNotice, Message);
+   }
 }
 
 void KeyboardHardwareImplemetationPi::KeyboardRemovedHandler(CDevice* pDevice, void* pContext)

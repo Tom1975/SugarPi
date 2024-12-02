@@ -137,6 +137,7 @@ IAction::ActionReturn MenuWindows::HandleEvent(IEvent::Event event)
    {
    case IEvent::Event::DOWN:
       // Go down in the menu
+      CLogger::Get ()->Write("HandleEvent", LogNotice, "DOWN");
       if (current_focus_ < static_cast<int>(list_item_.size()) - 1)
       {
          current_focus_++;
@@ -144,10 +145,12 @@ IAction::ActionReturn MenuWindows::HandleEvent(IEvent::Event event)
          ComputeScroller();
          //Redraw();
          Invalidate();
+         CLogger::Get ()->Write("HandleEvent", LogNotice, "current_focus_ : %i", current_focus_);
       }
       break;
    case IEvent::Event::UP:
       // Go up in the menu
+      CLogger::Get ()->Write("HandleEvent", LogNotice, "UP");
       if (current_focus_ > 0)
       {
          current_focus_--;
@@ -155,6 +158,7 @@ IAction::ActionReturn MenuWindows::HandleEvent(IEvent::Event event)
          ComputeScroller();
          //Redraw();
          Invalidate();
+         CLogger::Get ()->Write("HandleEvent", LogNotice, "current_focus_ : %i", current_focus_);
       }
       break;
    case IEvent::Event::BACK:
@@ -169,12 +173,14 @@ IAction::ActionReturn MenuWindows::HandleEvent(IEvent::Event event)
 
 void MenuWindows::SetFocus(unsigned int index)
 {
+   CLogger::Get ()->Write("HandleEvent", LogNotice, "SetFocus : %i", index);
    // Set focus to first item
    if (list_item_.size() > index)
    {
       current_focus_ = index;
       list_item_.at(index)->SetFocus();
       ComputeScroller();
+      CLogger::Get ()->Write("HandleEvent", LogNotice, "Focus is set to %X.", list_item_.at(index));
    }
 
 }
