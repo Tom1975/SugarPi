@@ -2,18 +2,30 @@
 #include "KeyboardPi.h"
 
 #include <memory.h>
+#include <filesystem>
+
+#ifdef __circle__
+   #define KEYBOARD_SCANCODES_FILE "101_keyboard"
+#elif  _WIN32
+   #define KEYBOARD_SCANCODES_FILE "101_keyboard_win"
+#elif __linux__ 
+   #define KEYBOARD_SCANCODES_FILE "101_keyboard_linux"
+#else
+   #define KEYBOARD_SCANCODES_FILE "101_keyboard_linux"
+   #pragma error "TODO : Generate a keyboard map for your OS !" 
+#endif
 
 
 #ifdef  __circle__
-#include <circle/spinlock.h>
-static CSpinLock   mutex_;
-static void Lock() { mutex_.Acquire(); }
-static void Unlock() { mutex_.Release(); }
+   #include <circle/spinlock.h>
+   static CSpinLock   mutex_;
+   static void Lock() { mutex_.Acquire(); }
+   static void Unlock() { mutex_.Release(); }
 #else
-#include <mutex>
-static std::mutex mutex_;
-static void Lock() { mutex_.lock(); }
-static void Unlock() { mutex_.unlock(); }
+   #include <mutex>
+   static std::mutex mutex_;
+   static void Lock() { mutex_.lock(); }
+   static void Unlock() { mutex_.unlock(); }
 #endif
 
 #define DEVICE_INDEX	1		// "upad1"
@@ -307,7 +319,7 @@ KeyboardPi::~KeyboardPi()
 
 void KeyboardPi::UnpressKey(unsigned int scancode)
 {
-   logger_->Write("KeyboardPi", LogNotice, "PressKey %X - line : %i, bit : %X", scancode, handler_.raw_to_cpc_map_[scancode & 0xFF].line_number, handler_.raw_to_cpc_map_[scancode & 0xFF].bit);
+    logger_->Write("KeyboardPi", LogNotice, "PressKey %X - line : %i, bit : %X", scancode, handler_.raw_to_cpc_map_[scancode & 0xFF].line_number, handler_.raw_to_cpc_map_[scancode & 0xFF].bit);
    if (handler_.raw_to_cpc_map_[scancode & 0xFF].bit != 0)
    {
       *handler_.raw_to_cpc_map_[scancode].line_index |= (handler_.raw_to_cpc_map_[scancode].bit);
@@ -378,7 +390,10 @@ void KeyboardPi::CheckActions (unsigned nDeviceIndex)
 
 void KeyboardPi::Init(bool* register_replaced)
 {
-
+   std::filesystem::path exe_path("SD:");
+   exe_path /= "Keyboards";
+   exe_path /= KEYBOARD_SCANCODES_FILE;   
+   handler_.InitKeyboard (exe_path.string().c_str());
 }
 
 void KeyboardPi::ClearBuffer()
