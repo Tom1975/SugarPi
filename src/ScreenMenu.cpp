@@ -886,6 +886,7 @@ IAction::ActionReturn ScreenMenu::Handle()
    display_->SetFullResolution(true);
 
    // Wait till next vsync
+   Reload();
    main_menu_->ClearAll();
    //display_->VSync();
 
