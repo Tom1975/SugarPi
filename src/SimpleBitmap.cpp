@@ -78,10 +78,10 @@ void SimpleBitmap::Load(const char* file)
       return;
    }
 
-   for (int i = 0; i < height_; i++)
+   for (unsigned int i = 0; i < height_; i++)
    {
       bool found = false;
-      int j = 0;
+      unsigned int j = 0;
       for (j = 0; j < width_ && !found; j++)
       {
          found = (pixel_data_[i * width_ + j] != 0);

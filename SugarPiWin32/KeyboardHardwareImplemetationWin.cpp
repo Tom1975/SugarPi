@@ -5,9 +5,6 @@
 
 KeyboardHardwareImplemetationWin::KeyboardHardwareImplemetationWin(CLogger* logger) : KeyboardPi(logger)
 {
-   select_ = GetSelect();
-   action_buttons_ = GetActionButtons();
-   gamepad_active_ = GetGamepadActive();
    for (unsigned i = 0; i < MAX_GAMEPADS; i++)
    {
       gamepad_active_[i] = nullptr;
@@ -34,14 +31,14 @@ void KeyboardHardwareImplemetationWin::UpdatePlugnPlay()
 
 }
 
-#define action(y) *action_buttons_  = activated ? (*action_buttons_ |y):(*action_buttons_&=~y)
+#define action(y) action_buttons_  = activated ? (action_buttons_ |y):(action_buttons_&=~y)
 
 
 void KeyboardHardwareImplemetationWin::CodeActionSpecial(long keycode, bool activated)
 {
    switch (keycode)
    {
-   case VK_LWIN: *select_ = activated; action(GamePadButtonSelect); break;
+   case VK_LWIN: select_ = activated; action(GamePadButtonSelect); break;
    case VK_SCROLL: if (gamepad_active_[0] != nullptr) { gamepad_active_[0]->game_pad_button_start.UpdateMap(0, activated); action(GamePadButtonStart); } break;
    case VK_UP: if (gamepad_active_[0] != nullptr) {
       gamepad_active_[0]->game_pad_button_up.UpdateMap(0, activated); action(GamePadButtonUp);
@@ -62,22 +59,12 @@ void KeyboardHardwareImplemetationWin::CodeActionSpecial(long keycode, bool acti
    }
 }
 
-void KeyboardHardwareImplemetationWin::CodeAction(long keycode, bool activated)
-{
-   handler_.SendScanCode(keycode, activated);
-   /*if (activated)
-      keyboard_->PressKey(keycode);
-   else
-      keyboard_->UnpressKey(keycode);*/
-}
-
-
 void KeyboardHardwareImplemetationWin::Presskey(long keyCode)
 {
-      CodeAction(keyCode, true);
+   handler_.SendScanCode(keyCode, true);
 }
 
 void KeyboardHardwareImplemetationWin::Unpresskey(long keyCode)
 {
-   CodeAction(keyCode, false);
+   handler_.SendScanCode(keyCode, false);
 }

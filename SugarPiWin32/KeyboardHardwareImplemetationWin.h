@@ -22,10 +22,4 @@ class KeyboardHardwareImplemetationWin : public KeyboardPi
       void CodeActionSpecial(long keycode, bool activated);
       
 protected:
-      void CodeAction(long keycode, bool activated);
-
-      bool*             select_;
-      unsigned int*     action_buttons_;
-
-      GamepadDef** gamepad_active_;
 };

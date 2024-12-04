@@ -1,9 +1,9 @@
 
 #include <CPCCore/CPCCoreEmu/stdafx.h>
+#include <stdio.h>
 
 #include "ConfigurationManager.h"
 
-#include <stdio.h>
 
  
 /////////////////////////////////////////////////////////////
@@ -20,15 +20,6 @@ ConfigurationManager::~ConfigurationManager()
 
 void ConfigurationManager::Clear()
 {
-/*   for (auto const& ent1 : config_file_)
-   {
-      // ent1.first is the first key
-      for (auto const& ent2 : ent1)
-      {
-         // ent2.first is the second key
-         // ent2.second is the data
-      }
-   }*/
    config_file_.clear();
 }
 
@@ -94,7 +85,7 @@ void ConfigurationManager::OpenFile(const char* config_file)
    const char* ptr_buffer = (char*)buff;
    unsigned int offset = 0;
    unsigned int end_line;
-   while ((end_line = getline(&ptr_buffer[offset], nBytesRead, s)) > 0)
+   while ((end_line = getline(&ptr_buffer[offset], static_cast<int>(nBytesRead), s)) > 0)
    {
       offset += end_line;
       nBytesRead -= end_line;

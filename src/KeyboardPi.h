@@ -47,14 +47,6 @@ public:
    }
    virtual void LoadGameControllerDB();
 
-   unsigned int *GetActionButtons() {return &action_buttons_;   }
-   bool* GetSelect() { return &select_; }
-   TGamePadState* GetGamepadState() {return gamepad_state_;}
-   TGamePadState* GetGamepadStateBuffered() { return gamepad_state_buffered_; }
-   GamepadDef** GetGamepadActive() {
-      return gamepad_active_;
-   }
-
    std::vector<GamepadDef*> gamepad_list_;
 
 protected:
@@ -63,7 +55,7 @@ protected:
    CLogger*          logger_;
    unsigned int      action_buttons_;
    bool              select_;
-
+   unsigned char*    keyboard_lines_;
    TGamePadState	   gamepad_state_[MAX_GAMEPADS];
    TGamePadState	   gamepad_state_buffered_[MAX_GAMEPADS];
    

@@ -15,7 +15,7 @@ static CSpinLock   mutex_;
 static void Lock() { mutex_.Acquire(); }
 static void Unlock() { mutex_.Release(); }
 
- CUSBKeyboardDevice* KeyboardHardwareImplemetationPi::keyboard_ = nullptr;
+CUSBKeyboardDevice* KeyboardHardwareImplemetationPi::keyboard_ = nullptr;
 KeyboardHardwareImplemetationPi* pThis = nullptr;
 
 KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi( CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service):
@@ -23,15 +23,9 @@ KeyboardHardwareImplemetationPi::KeyboardHardwareImplemetationPi( CLogger* logge
    device_name_service_(device_name_service),
    dwhci_device_(dwhci_device)
 {
-   select_ = GetSelect();
-   action_buttons_ = GetActionButtons();
-   keyboard_lines_ = handler_.GetKeyboardState();
-   gamepad_state_ = GetGamepadState();
-   gamepad_active_ = GetGamepadActive();
-   gamepad_state_buffered_ = GetGamepadStateBuffered();
-
    pThis = this;
-
+   keyboard_lines_ = handler_.GetKeyboardState();
+   
 	for (unsigned i = 0; i < MAX_GAMEPADS; i++)
 	{
 		gamepad_[i] = 0;
@@ -212,7 +206,7 @@ void KeyboardHardwareImplemetationPi::GamePadStatusHandler(unsigned nDeviceIndex
    if (( pThis->gamepad_active_[nDeviceIndex] != nullptr) && 
          pThis->AddAction(&pThis->gamepad_active_[nDeviceIndex]->game_pad_button_select, nDeviceIndex))
    {
-      *pThis->select_ = true;
+      pThis->select_ = true;
    }
 
    pThis->gamepad_state_buffered_[nDeviceIndex] = pThis->gamepad_state_[nDeviceIndex];

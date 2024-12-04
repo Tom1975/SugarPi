@@ -130,19 +130,18 @@ void Emulation::RunMainLoop()
    while (!finished )
    {
 #define TIME_SLOT  10000
-      //logger_->Write("Kernel", LogNotice, "StartOptimizedPlus... !");
       motherboard_->StartOptimizedPlus<true, true, false>(4 * TIME_SLOT*10);
       //logger_->Write("Kernel", LogNotice, "Done !");
       // Menu launched ?
       if (keyboard_->IsSelect())
       {
-         logger_->Write("Kernel", LogNotice, "Select...");
-         
-         ScreenMenu menu(this, &log_ ,logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_, language_);
          CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
-         // todo : find a smart way to signal exit
-         /*finished = */(menu.Handle()/* == IAction::Action_Shutdown*/);
+
+         in_menu_ = true;
+         menu->Handle();
          keyboard_->ReinitSelect();
+         in_menu_ = false;
+
          CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
       }
       else

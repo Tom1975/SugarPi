@@ -22,16 +22,7 @@ public:
    static void KeyboardRemovedHandler(CDevice* pDevice, void* pContext);
    static void KeyStatusHandlerRaw(unsigned char ucModifiers, const unsigned char RawKeys[6]);
 
-   static KeyboardPi*       keyboardPi_;
-
 protected:
-
-   bool*             select_;
-   unsigned int*     action_buttons_;
-   unsigned char*    keyboard_lines_;
-   GamepadDef**      gamepad_active_;
-   TGamePadState*    gamepad_state_buffered_;
-   TGamePadState*	   gamepad_state_;
 
    unsigned char old_modifier_;
    unsigned char old_raw_keys_[6];
