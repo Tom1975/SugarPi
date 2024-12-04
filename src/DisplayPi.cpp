@@ -12,8 +12,8 @@
 #define WAIT(x) std::this_thread::sleep_for(std::chrono::milliseconds(x));
 #endif
 
-#define REAL_DISP_X  1024 //832 //1024 // 768
-#define REAL_DISP_Y  (288*2) // 624 //-16 //624 //576
+#define REAL_DISP_X  1024 /*832 //1024 // 768*/
+#define REAL_DISP_Y  624 /*(288*2) // 624 //-16 //624 //576*/
 //HEIGHT_VIRTUAL_SCREEN (288*2)
 
 DisplayPi::DisplayPi(CLogger* logger) :

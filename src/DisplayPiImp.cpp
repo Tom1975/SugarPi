@@ -208,7 +208,8 @@ bool DisplayPiImp::Initialization()
 
    VC_RECT_T src_rect;
    //vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
-   vc_dispmanx_rect_set(&src_rect, 143<<16, 47<<16, (768-143) <<16, (277-47/2)<<16);
+   //vc_dispmanx_rect_set(&src_rect, 143<<16, 47<<16, (768-143) <<16, (277-47/2)<<16);
+   vc_dispmanx_rect_set(&src_rect, 193<<16, 47<<16, (768-143) <<16, (277-47)<<16);
 
    VC_RECT_T dst_rect_full;
    vc_dispmanx_rect_set(&dst_rect_full, 0, 0, info_.width, info_.height);
