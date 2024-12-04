@@ -7,12 +7,10 @@
 MenuFrame::MenuFrame() : 
    BasicFrame()
 {
-CLogger::Get()->Write("MenuFrame", LogNotice, "Constructor : %X", this);
 }
 
 MenuFrame::~MenuFrame()
 {
-CLogger::Get()->Write("MenuFrame", LogNotice, "Destructor : %X", this);
 }
 
 void MenuFrame::Init(int width, int height, int nb_buffers)

@@ -5,8 +5,6 @@
 MainMenuWindows::MainMenuWindows(BasicFrame* display) :
    Window(display)
 {
-   CLogger::Get()->Write("MainMenuWindows", LogNotice, "Constructor : %X", this);
-
    // Compute window size : Depending on display
    unsigned int w = display->GetWidth();
    unsigned int h = display->GetHeight();
@@ -34,7 +32,6 @@ MainMenuWindows::MainMenuWindows(BasicFrame* display) :
 
 MainMenuWindows::~MainMenuWindows()
 {
-   CLogger::Get()->Write("MainMenuWindows", LogNotice, "Destructor : %X", this);
    delete menu_;
    delete logo_;
    delete bitmap_;

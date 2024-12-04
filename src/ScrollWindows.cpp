@@ -32,12 +32,10 @@ static char s[128];
 ////////////////////////////////////////////////////////////////////////////////////
 ScrollWindows::ScrollWindows(BasicFrame* display) : Window(display), scroll_offset_x_(0), scroll_offset_y_(0)
 {
-   CLogger::Get()->Write("ScrollWindows", LogNotice, "Constructor : %X", this);
 }
 
 ScrollWindows::~ScrollWindows()
 {
-   CLogger::Get()->Write("ScrollWindows", LogNotice, "Destructor : %X", this);
 }
 
 

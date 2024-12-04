@@ -126,7 +126,6 @@ ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* d
    snapshot_(nullptr),
    main_menu_(nullptr)
 {
-   logger_->Write("ScreenMenu", LogNotice, "Constructor : %X", this);
    snapshot_ = new CSnapshot(log);
    snapshot_->SetMachine(motherboard_);
    /////////////////////////////////////////////////
@@ -138,7 +137,6 @@ ScreenMenu::ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, DisplayPi* d
 
 ScreenMenu::~ScreenMenu()
 {
-   logger_->Write("ScreenMenu", LogNotice, "Destructor : %X", this);
    delete snapshot_;
    delete main_menu_;
   
