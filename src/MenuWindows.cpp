@@ -34,11 +34,12 @@ static char s[1024];
 ////////////////////////////////////////////////////////////////////////////////////
 MenuWindows::MenuWindows(BasicFrame* display) : Window(display), current_focus_(-1), scroll_window_(display)
 {
-
+   CLogger::Get()->Write("MenuWindows", LogNotice, "Constructor : %X", this);
 }
 
 MenuWindows::~MenuWindows()
 {
+   CLogger::Get()->Write("MenuWindows", LogNotice, "Destructor : %X", this);
    // Clear items
    for (auto& it : list_item_)
    {

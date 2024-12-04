@@ -8,12 +8,12 @@
 ////////////////////////////////////////////////////////////////////////////////////
 MenuButtonWithBitmapWindows::MenuButtonWithBitmapWindows(BasicFrame* display) : MenuItemWindows(display), button_(display)
 {
-
+   CLogger::Get()->Write("MenuButtonWithBitmapWindows", LogNotice, "Constructor : %X", this);
 }
 
 MenuButtonWithBitmapWindows::~MenuButtonWithBitmapWindows()
 {
-
+   CLogger::Get()->Write("MenuButtonWithBitmapWindows", LogNotice, "Destructor : %X", this);
 }
 
 void MenuButtonWithBitmapWindows::SetFocus()

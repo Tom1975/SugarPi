@@ -8,12 +8,12 @@
 ////////////////////////////////////////////////////////////////////////////////////
 MenuButtonWindows::MenuButtonWindows(BasicFrame* display) : MenuItemWindows(display), button_(display)
 {
-
+   CLogger::Get()->Write("MenuButtonWindows", LogNotice, "Constructor : %X", this);
 }
 
 MenuButtonWindows::~MenuButtonWindows()
 {
-
+   CLogger::Get()->Write("MenuButtonWindows", LogNotice, "Destructor : %X", this);
 }
 
 void MenuButtonWindows::Create(SimpleBitmap* bmp, Window* parent, int x, int y, unsigned int width, unsigned int height)
