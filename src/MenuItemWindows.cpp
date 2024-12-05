@@ -94,7 +94,7 @@ void MenuItemWindows::RedrawWindow ( )
    // Focus ?
    if (focus_== this)
    {
-      CLogger::Get()->Write("MenuItemWindows", LogNotice, "*** Draw Focus : %X - Label : %s", this, (const char*)(*label_));
+      CLogger::Get()->Write("MenuItemWindows", LogNotice, "*** Draw Focus : %X - Label : %s", this, (const char*)label_);
       // draw it 
       display_->SelectFont(fnt_italic_);
       display_->SelectColor(0xFF0000);
@@ -103,7 +103,7 @@ void MenuItemWindows::RedrawWindow ( )
    }
    else
    {
-      CLogger::Get()->Write("MenuItemWindows", LogNotice, "Draw : %X - Label : %s", this, (const char*)(*label_));
+      CLogger::Get()->Write("MenuItemWindows", LogNotice, "Draw : %X - Label : %s", this, (const char*)label_);
       display_->SelectFont(fnt_normal_);
       display_->SelectColor(0x000000);
       display_->WriteText(label_, x, y);

@@ -24,26 +24,37 @@ static void Unlock() { mutex_.unlock(); }
 
 SimpleBitmap::SimpleBitmap(const char* file ) : width_(0), height_(0), pixel_data_(nullptr), first_byte_per_line(nullptr), last_byte_per_line(nullptr), loaded_(false)
 {
-   if (file != nullptr)
+   if ( file != nullptr)
    {
-      Load(file);
+      file_ = file;
    }
 }
 
 SimpleBitmap::~SimpleBitmap()
 {
+   delete []pixel_data_;
+   delete []first_byte_per_line;
+   delete []last_byte_per_line;
+}
+
+void SimpleBitmap::Init()
+{
+    std::string str = file_.string();
+   Load (str.c_str());
 }
 
 void SimpleBitmap::Load(const char* file)
 {
    FILE* f;
 
+   CLogger::CLogger::Get ()->Write("SimpleBitmap", LogNotice, "Load : %s", file);
    if (fopen_s(&f, file, "r+b") == 0)
    {
       // Read width / height
       if (fread(&width_, sizeof(unsigned int), 1, f) != 1)
       {
          // error
+         CLogger::CLogger::Get ()->Write("SimpleBitmap", LogNotice, "fread error #1", file);
          width_ = 0;
          fclose(f);
          return;
@@ -51,6 +62,7 @@ void SimpleBitmap::Load(const char* file)
 
       if (fread(&height_, sizeof(unsigned int), 1, f) != 1)
       {
+         CLogger::CLogger::Get ()->Write("SimpleBitmap", LogNotice, "fread error #2", file);
          // error
          width_ = 0;
          height_ = 0;
@@ -73,6 +85,7 @@ void SimpleBitmap::Load(const char* file)
    }
    else
    {
+      CLogger::CLogger::Get ()->Write("SimpleBitmap", LogNotice, "Loading ERROR %s", file);
       // Error !
       loaded_ = false;
       return;

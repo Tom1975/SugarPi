@@ -194,6 +194,9 @@ void ScreenMenu::LoadDescriptions()
    // Parse each AmstradConfiguration element, and generate a description
    for (auto& it : config_list)
    {
+      // Load bitmap 
+      it.associatedBmp_.Init();
+
       CString fullpath = PATH_CONFIGS;
       fullpath.Append(INTER_FILE);
       fullpath.Append(it.languages_[0].config_path_);
