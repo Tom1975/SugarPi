@@ -43,11 +43,13 @@ boolean Engine::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keybo
       language_ = new MultiLanguage(&language_manager_);
       language_->Init("RES/labels.ini");
    }
+   logger_->Write("Kernel", LogNotice, "Setup loaded");
 
    sound_ = sound;
    display_ = display;
    keyboard_ = keyboard;
 
+   logger_->Write("Kernel", LogNotice, "Ready for init");
    sound_mixer_->Init(sound_, nullptr);
    logger_->Write("Kernel", LogNotice, "Creating Motherboard");
    motherboard_ = new Motherboard(sound_mixer_, keyboard_);
