@@ -45,7 +45,9 @@ public:
    virtual bool IsMuted() { return m_bMute; };
 
    void FreeWav();
+   virtual void SyncOnSound(bool set);
    virtual void SyncWithSound();
+
 
    static void CALLBACK CallbackSound(HWAVEOUT m_hWO, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2);
    int buffer_in_queue_;

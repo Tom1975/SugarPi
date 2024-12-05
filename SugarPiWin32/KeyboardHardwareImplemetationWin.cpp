@@ -3,18 +3,14 @@
 
 #include <Windows.h>
 
-KeyboardHardwareImplemetationWin::KeyboardHardwareImplemetationWin(KeyboardPi* keyboard) : keyboard_(keyboard)
+KeyboardHardwareImplemetationWin::KeyboardHardwareImplemetationWin(CLogger* logger) : KeyboardPi(logger)
 {
-   select_ = keyboard_->GetSelect();
-   action_buttons_ = keyboard_->GetActionButtons();
-   gamepad_active_ = keyboard_->GetGamepadActive();
-   keyboard_lines_ = keyboard_->GetKeyboardLine();
    for (unsigned i = 0; i < MAX_GAMEPADS; i++)
    {
       gamepad_active_[i] = nullptr;
    }
 
-   GamepadDef* def = new GamepadDef(keyboard_lines_);
+   GamepadDef* def = new GamepadDef(handler_.GetKeyboardState());
    //gamepad_list_.push_back(def);
    gamepad_active_[0] = def;// gamepad_list_[0];
 
@@ -35,14 +31,14 @@ void KeyboardHardwareImplemetationWin::UpdatePlugnPlay()
 
 }
 
-#define action(y) *action_buttons_  = activated ? (*action_buttons_ |y):(*action_buttons_&=~y)
+#define action(y) action_buttons_  = activated ? (action_buttons_ |y):(action_buttons_&=~y)
 
 
 void KeyboardHardwareImplemetationWin::CodeActionSpecial(long keycode, bool activated)
 {
    switch (keycode)
    {
-   case VK_LWIN: *select_ = activated; action(GamePadButtonSelect); break;
+   case VK_LWIN: select_ = activated; action(GamePadButtonSelect); break;
    case VK_SCROLL: if (gamepad_active_[0] != nullptr) { gamepad_active_[0]->game_pad_button_start.UpdateMap(0, activated); action(GamePadButtonStart); } break;
    case VK_UP: if (gamepad_active_[0] != nullptr) {
       gamepad_active_[0]->game_pad_button_up.UpdateMap(0, activated); action(GamePadButtonUp);
@@ -63,22 +59,12 @@ void KeyboardHardwareImplemetationWin::CodeActionSpecial(long keycode, bool acti
    }
 }
 
-void KeyboardHardwareImplemetationWin::CodeAction(long keycode, bool activated)
-{
-   
-   if (activated)
-      keyboard_->PressKey(keycode);
-   else
-      keyboard_->UnpressKey(keycode);
-}
-
-
 void KeyboardHardwareImplemetationWin::Presskey(long keyCode)
 {
-      CodeAction(keyCode, true);
+   handler_.SendScanCode(keyCode, true);
 }
 
 void KeyboardHardwareImplemetationWin::Unpresskey(long keyCode)
 {
-   CodeAction(keyCode, false);
+   handler_.SendScanCode(keyCode, false);
 }

@@ -2,17 +2,15 @@
 //
 #include <vector>
 
-#include "KeyboardHardwareImplemetation.h"
 #include "KeyboardDefine.h"
-
 #include "KeyboardHandler.h"
 #include "KeyboardPi.h"
 
 //
-class KeyboardHardwareImplemetationWin : public KeyboardHardwareImplemetation
+class KeyboardHardwareImplemetationWin : public KeyboardPi
 {
    public:
-      KeyboardHardwareImplemetationWin(KeyboardPi* keyboard);
+      KeyboardHardwareImplemetationWin(CLogger* logger);
       virtual ~KeyboardHardwareImplemetationWin();
 
       virtual void Initialize();
@@ -24,14 +22,4 @@ class KeyboardHardwareImplemetationWin : public KeyboardHardwareImplemetation
       void CodeActionSpecial(long keycode, bool activated);
       
 protected:
-      void CodeAction(long keycode, bool activated);
-
-      KeyboardPi*       keyboard_;
-      KeyboardHandler   handler_;
-
-      bool*             select_;
-      unsigned int*     action_buttons_;
-      unsigned char* keyboard_lines_;
-
-      GamepadDef** gamepad_active_;
 };

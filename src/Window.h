@@ -56,6 +56,11 @@ public:
 class Window
 {
 public:
+   struct Point
+   {
+      int x;
+      int y;
+   };
    Window(BasicFrame* display);
    virtual ~Window();
 
@@ -63,6 +68,7 @@ public:
 
    virtual void Create(Window* parent, int x, int y, unsigned int width, unsigned int height);
    virtual void AddChild(Window* child);
+   virtual void RemoveChild(Window* child);
 
    virtual void WindowsToDisplay(int& x, int& y);
    virtual void Clear();
@@ -75,6 +81,9 @@ public:
    virtual bool IsVisible() { return visible_; }
 
    virtual void DrawBitmap(PiBitmap* bmp, int x, int y);
+   virtual void DrawLine(int x1, int y1, int x2, int y2, unsigned int color);
+   virtual void DrawPoly(unsigned int color, std::vector<Window::Point>);
+   virtual void DrawRectangle(int x, int y, int w, int h, unsigned int color);
 
    virtual IAction::ActionReturn HandleEvent( IEvent::Event event);
 

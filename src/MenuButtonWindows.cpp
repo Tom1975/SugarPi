@@ -8,12 +8,10 @@
 ////////////////////////////////////////////////////////////////////////////////////
 MenuButtonWindows::MenuButtonWindows(BasicFrame* display) : MenuItemWindows(display), button_(display)
 {
-
 }
 
 MenuButtonWindows::~MenuButtonWindows()
 {
-
 }
 
 void MenuButtonWindows::Create(SimpleBitmap* bmp, Window* parent, int x, int y, unsigned int width, unsigned int height)

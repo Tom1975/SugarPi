@@ -14,7 +14,7 @@ MainMenuWindows::MainMenuWindows(BasicFrame* display) :
 
    // Create Title bitmap 
    // Keep first quarter for it
-   SugarboxLogo* bitmap_ = new SugarboxLogo();
+   bitmap_ = new SugarboxLogo();
    logo_ = new BitmapWindows(display);
 
    //logo_->Create(this, 240, 70, bitmap_);
@@ -33,12 +33,14 @@ MainMenuWindows::MainMenuWindows(BasicFrame* display) :
 MainMenuWindows::~MainMenuWindows()
 {
    delete menu_;
+   delete logo_;
+   delete bitmap_;
 }
 
-void MainMenuWindows::ResetMenu()
+void MainMenuWindows::ResetMenu(unsigned int index)
 {
    // Set focus to first item
-   menu_->SetFocus(0);
+   menu_->SetFocus(index);
 }
 
 void MainMenuWindows::Clear()

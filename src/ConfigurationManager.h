@@ -10,13 +10,11 @@
 #include <string>
 #include "CPCCore/CPCCoreEmu/IConfiguration.h"
 
-extern CLogger* log_s;
-
 class ConfigurationManager : public IConfiguration
 {
 public:
 
-   ConfigurationManager(CLogger* log);
+   ConfigurationManager();
    virtual ~ConfigurationManager();
 
    virtual void OpenFile(const char* config_file);
@@ -94,5 +92,5 @@ protected:
    Section* current_key_section_it_;
 
    unsigned int getline ( const char*, int size, std::string& out);
-   CLogger* logger_;
+
 };

@@ -288,7 +288,7 @@ void BasicFrame::WriteText(const char* text, int x, int y)
          // Copy to framebuffer
          for (int dy = 0; dy < img.height; dy++)
          {
-            if (y + dy + mtx.yOffset < GetHeight())
+            if (y + dy + mtx.yOffset < GetHeight() && y + dy + mtx.yOffset >= 0)
             {
                int* line = GetBuffer(y + dy + mtx.yOffset);
                for (int dx = 0; dx < img.width; dx++)

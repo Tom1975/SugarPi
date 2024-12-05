@@ -36,6 +36,7 @@ SFT *MenuItemWindows::fnt_normal_ = nullptr;
 
 MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action_(nullptr)
 {
+   CLogger::Get()->Write("MenuItemWindows", LogNotice, "Constructor : %X", this);
    if (fnt_italic_ == nullptr)
    {
       fnt_italic_ = new SFT;
@@ -61,6 +62,8 @@ MenuItemWindows::MenuItemWindows (BasicFrame* display) : Window(display), action
 }
 MenuItemWindows::~MenuItemWindows ()
 {
+   CLogger::Get()->Write("MenuItemWindows", LogNotice, "Destructor : %X", this);
+   delete action_;
    //sft_freefont(fnt_italic_->font);
    //sft_freefont(fnt_normal_->font);
 }
@@ -85,12 +88,13 @@ void MenuItemWindows::RedrawWindow ( )
 {
    int x = 30;
    // Set an offset for the text to be displayed
-   int y = 15;
+   int y = 35;
    WindowsToDisplay(x, y);   
 
    // Focus ?
-   if (focus_==this)
+   if (focus_== this)
    {
+      CLogger::Get()->Write("MenuItemWindows", LogNotice, "*** Draw Focus : %X - Label : %s", this, (const char*)label_);
       // draw it 
       display_->SelectFont(fnt_italic_);
       display_->SelectColor(0xFF0000);
@@ -99,6 +103,7 @@ void MenuItemWindows::RedrawWindow ( )
    }
    else
    {
+      CLogger::Get()->Write("MenuItemWindows", LogNotice, "Draw : %X - Label : %s", this, (const char*)label_);
       display_->SelectFont(fnt_normal_);
       display_->SelectColor(0x000000);
       display_->WriteText(label_, x, y);

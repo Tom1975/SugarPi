@@ -7,12 +7,10 @@
 MenuFrame::MenuFrame() : 
    BasicFrame()
 {
-
 }
 
 MenuFrame::~MenuFrame()
 {
-
 }
 
 void MenuFrame::Init(int width, int height, int nb_buffers)

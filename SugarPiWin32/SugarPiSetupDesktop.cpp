@@ -17,7 +17,7 @@
 
 SugarPiSetup::SugarPiSetup( CLogger* log) : log_(log), display_(nullptr), sound_(nullptr), motherboard_(nullptr), keyboard_(nullptr), language_(nullptr)
 {
-   config_ = new ConfigurationManager(log);
+   config_ = new ConfigurationManager();
 }
 
 SugarPiSetup::~SugarPiSetup()
@@ -54,8 +54,8 @@ void SugarPiSetup::Load()
    }
 
    // Keyboard layout (if any)
-   config_->GetConfiguration(SECTION_SETUP, KEY_LAYOUT, DEFAULT_LAYOUT, buffer, SIZE_OF_BUFFER);
-   keyboard_->LoadKeyboard ("res/101_keyboard_win");
+   /*config_->GetConfiguration(SECTION_SETUP, KEY_LAYOUT, DEFAULT_LAYOUT, buffer, SIZE_OF_BUFFER);
+   keyboard_->LoadKeyboard ("res/101_keyboard_win");*/
    
 
    // Language

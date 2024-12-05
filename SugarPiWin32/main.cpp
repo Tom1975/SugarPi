@@ -14,8 +14,7 @@ public:
    CLogger* log;
    DisplayPiDesktop* display;
    SoundPi* sound;
-   KeyboardPi* keyboard;
-   KeyboardHardwareImplemetationWin* keyboardImp;
+   KeyboardHardwareImplemetationWin* keyboard;
    Emulation* emulation;
    int nCore;
 };
@@ -34,21 +33,21 @@ LRESULT __stdcall k_Callback1(int nCode, WPARAM wParam, LPARAM lParam)
       case WM_SYSKEYDOWN:
          if (key->scanCode == VK_LWIN)
          {
-            emu_hook->keyboardImp->CodeActionSpecial(VK_LWIN, true);
+            emu_hook->keyboard->CodeActionSpecial(VK_LWIN, true);
             return 1;
          }
             
-         emu_hook->keyboardImp->Presskey(key->scanCode);
+         emu_hook->keyboard->Presskey(key->scanCode);
 
          break;
       case WM_SYSKEYUP:
       case WM_KEYUP:
          if (key->scanCode == VK_LWIN)
          {
-            emu_hook->keyboardImp->CodeActionSpecial(VK_LWIN, false);
+            emu_hook->keyboard->CodeActionSpecial(VK_LWIN, false);
             return 1;
          }
-         emu_hook->keyboardImp->Unpresskey(key->scanCode);
+         emu_hook->keyboard->Unpresskey(key->scanCode);
          break;
    }
 
@@ -76,14 +75,14 @@ LRESULT CALLBACK WndProcFrame(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
       //Check just the key for joypad
       if (emu->emulation->IsInMenu() || (wParam == VK_LWIN))
       {
-         emu->keyboardImp->CodeActionSpecial(wParam, true);
+         emu->keyboard->CodeActionSpecial(static_cast<long>(wParam), true);
       }
       break;
    case WM_KEYUP:
       //Check just the key for joypad
       if (emu->emulation->IsInMenu()|| (wParam == VK_LWIN))
       {
-         emu->keyboardImp->CodeActionSpecial(wParam, false);
+         emu->keyboard->CodeActionSpecial(static_cast<long>(wParam), false);
       }
       break;
    case WM_SETFOCUS:
@@ -168,9 +167,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
    emu.sound = new SoundPi(emu.log);
 
    // Keyboard
-   emu.keyboard = new KeyboardPi(emu.log);
-   emu.keyboardImp = new KeyboardHardwareImplemetationWin(emu.keyboard);
-   emu.keyboard->SetHard(emu.keyboardImp);
+   emu.keyboard = new KeyboardHardwareImplemetationWin(emu.log);
 
    MyRegisterClass(hInstance);
    emu.emulation = new Emulation(emu.log);

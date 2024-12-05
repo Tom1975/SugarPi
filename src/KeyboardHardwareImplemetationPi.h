@@ -6,37 +6,27 @@
 #include <circle/devicenameservice.h>
 
 #include "KeyboardPi.h"
-#include "KeyboardHardwareImplemetation.h"
 
 //
-class KeyboardHardwareImplemetationPi : public KeyboardHardwareImplemetation
+class KeyboardHardwareImplemetationPi : public KeyboardPi
 {
 public:
-   KeyboardHardwareImplemetationPi(KeyboardPi* keyboard, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service);
+   KeyboardHardwareImplemetationPi(CLogger* logger, CUSBHCIDevice* dwhci_device, CDeviceNameService* device_name_service);
    virtual ~KeyboardHardwareImplemetationPi();
 
-   virtual void Initialize();
+   virtual bool Initialize();
    virtual void UpdatePlugnPlay();
 
    static void GamePadRemovedHandler(CDevice* pDevice, void* pContext);
    static void GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState);
    static void KeyboardRemovedHandler(CDevice* pDevice, void* pContext);
-
-   static KeyboardPi*       keyboardPi_;
+   static void KeyStatusHandlerRaw(unsigned char ucModifiers, const unsigned char RawKeys[6]);
 
 protected:
-
-   bool*             select_;
-   unsigned int*     action_buttons_;
-   unsigned char*    keyboard_lines_;
-   GamepadDef**      gamepad_active_;
-   TGamePadState*    gamepad_state_buffered_;
-   TGamePadState*	   gamepad_state_;
 
    unsigned char old_modifier_;
    unsigned char old_raw_keys_[6];
 
-   static void KeyStatusHandlerRaw(unsigned char ucModifiers, const unsigned char RawKeys[6]);
    GamepadDef* LookForDevice (const TUSBDeviceDescriptor* descriptor);
 
    CDeviceNameService* device_name_service_;

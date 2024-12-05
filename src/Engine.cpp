@@ -20,7 +20,7 @@ Engine::Engine(CLogger* log) :
    sound_mixer_(nullptr),
    current_settings_(nullptr),
    menu(nullptr),
-   language_manager_(log),
+   language_manager_(),
    language_(nullptr)
 {
    sound_mixer_ = new SoundMixer();
@@ -43,11 +43,13 @@ boolean Engine::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keybo
       language_ = new MultiLanguage(&language_manager_);
       language_->Init("RES/labels.ini");
    }
+   logger_->Write("Kernel", LogNotice, "Setup loaded");
 
    sound_ = sound;
    display_ = display;
    keyboard_ = keyboard;
 
+   logger_->Write("Kernel", LogNotice, "Ready for init");
    sound_mixer_->Init(sound_, nullptr);
    logger_->Write("Kernel", LogNotice, "Creating Motherboard");
    motherboard_ = new Motherboard(sound_mixer_, keyboard_);
@@ -92,18 +94,22 @@ void Engine::Reset()
 
 void Engine::LoadConfiguration(const char* config_name_file)
 {
-   delete current_settings_;
    MachineSettings* settings = setup_->LoadSetup(config_name_file);
-   current_settings_ = settings;
-   current_settings_->Load();
 
-   // Update with init.
-   /*if (init != nullptr && !init->_cart_inserted.empty())
+   if (settings != nullptr)
    {
-      current_settings_->SetDefaultCartridge(init->_cart_inserted.string().c_str());
-   }*/
+      delete current_settings_;
+      current_settings_ = settings;
+      current_settings_->Load();
 
-   UpdateComputer(true);
+      // Update with init.
+      /*if (init != nullptr && !init->_cart_inserted.empty())
+      {
+         current_settings_->SetDefaultCartridge(init->_cart_inserted.string().c_str());
+      }*/
+
+      UpdateComputer(true);
+   }
 }
 
 void Engine::LoadRom(int rom_number, const char* path)
@@ -148,7 +154,7 @@ void Engine::UpdateComputer(bool no_cart_reload)
    path /= current_settings_->GetLowerRom();
    LoadRom(-1, path.string().c_str());
 
-   keyboard_->LoadKeyboard(current_settings_->GetKeyboardConfig());
+   //keyboard_->LoadKeyboard(current_settings_->GetKeyboardConfig());
 
    for (int i = 0; i < 256; i++)
    {
@@ -178,7 +184,8 @@ void Engine::UpdateComputer(bool no_cart_reload)
    unsigned int hardware_type = current_settings_->GetHardwareType();
    //SetMachineType(hardware_type);
    if (hardware_type == MachineSettings::PLUS_6128
-      || hardware_type == MachineSettings::PLUS_464)
+      || hardware_type == MachineSettings::PLUS_464
+      || hardware_type == MachineSettings::GX400)
    {
       motherboard_->SetPlus(true);
       if (no_cart_reload == false)

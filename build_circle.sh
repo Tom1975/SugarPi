@@ -11,6 +11,14 @@ make mrproper
 ./configure -r 4
 make all
 
+retn_code=$?
+if [ $retn_code -eq 0 ];then
+  echo "circle-stdlib built correctly"
+else
+  echo "*** ERROR BUILDING circle-stdlib !!"
+  exit -1
+fi
+
 echo "*** End of Circle-std build ***"
 
 cd libs/circle

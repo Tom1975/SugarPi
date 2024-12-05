@@ -224,6 +224,11 @@ IWaveHDR* SoundPi::GetFreeBuffer()
    return pWave;
 }
 
+void SoundPi::SyncOnSound(bool set)
+{
+
+}
+
 void SoundPi::SyncWithSound()
 {
    // Wait until onyl one buffer is left

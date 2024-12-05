@@ -19,8 +19,8 @@ void EmulationFrame::Init(int width, int height, int nb_buffers)
 
    x_ = 143;
    y_ = 47/2;
-   width_ = (768-143);
-   height_ = (277-47/2);
+   width_ = 768;//(768-143);
+   height_ = 288;//(277-47/2);
 }
 
 void EmulationFrame::Draw ()

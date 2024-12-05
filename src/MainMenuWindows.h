@@ -12,7 +12,7 @@ public:
    MainMenuWindows(BasicFrame* display);
    virtual ~MainMenuWindows();
 
-   void ResetMenu();
+   void ResetMenu(unsigned int index = 0);
    MenuWindows* GetMenu() { return menu_; };
    virtual void Clear();
 
