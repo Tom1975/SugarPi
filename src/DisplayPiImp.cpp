@@ -140,9 +140,9 @@ bool DisplayPiImp::Initialization()
                           opacity: 0x000000FF,
                           mask: 0
                        };
-   printk( "vc_dispmanx_resource_write_data emu_wnd_ : Pitch = %i.w = %i, h = %i\n",
+   printk( "vc_dispmanx_resource_write_data emu_wnd_ : Pitch = %i.w = %i, h = %i - FullWidth = %i; FullHeight = %i\n",
        emu_wnd_.frame_->GetPitch(),
-      info_.width, info_.height);
+      info_.width, info_.height, emu_wnd_.frame_->GetFullWidth(), emu_wnd_.frame_->GetFullHeight());
 
    windows_list_.push_back(&emu_wnd_);
 
