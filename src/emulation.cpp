@@ -150,7 +150,7 @@ void Emulation::RunMainLoop()
          {
             // Temperature
             unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
-            if (nCelsiusOldTmp != nCelsius && nCelsius > 40)
+            if (nCelsiusOldTmp != nCelsius && nCelsius > 48)
             {
                logger_->Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
                nCelsiusOldTmp = nCelsius;
