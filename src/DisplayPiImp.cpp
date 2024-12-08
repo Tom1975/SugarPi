@@ -28,24 +28,6 @@ PACKED;
 
 unsigned get_dispmanx_resource_mem(unsigned handle)
 {
-   /*
-	int i = 0;
-	unsigned p[32];
-	p[i++] = 0;			 // buffer size in bytes (including header values, end tag and padding)
-	p[i++] = 0x00000000; // process request
-	p[i++] = 0x30014;	 // (the tag id = get dispmanx resource mem handle)
-	p[i++] = 4;			 // (size of the value buffer)
-	p[i++] = 4; // (size of the data)
-	p[i++] = handle;
-
-	p[i++] = 0x00000000; // end tag
-	p[0] = i * sizeof *p; // actual size
-
-
-	mbox_property(file_desc, p);
-	return p[6];*/
-   
-   
    CBcmPropertyTags Tags;
    TPropertyTagMemoryHandle tag;
    tag.handle = handle;
@@ -131,6 +113,7 @@ bool DisplayPiImp::Initialization()
    emu_wnd_.frame_ = &emu_frame_;
    emu_wnd_.type_of_image_ = VC_IMAGE_XRGB8888;
    emu_wnd_.resource_ =  vc_dispmanx_resource_create (emu_wnd_.type_of_image_, emu_wnd_.frame_->GetFullWidth(), emu_wnd_.frame_->GetFullHeight(), &emu_wnd_.ptr_);
+   //emu_wnd_.resource_ =  vc_dispmanx_resource_create (emu_wnd_.type_of_image_, info_.width, info_.height, &emu_wnd_.ptr_);
    emu_wnd_.element_ = 0;
    emu_wnd_.priority_ = 50;
    emu_wnd_.frame_->SetDisplay(  0, 0 );
@@ -140,9 +123,9 @@ bool DisplayPiImp::Initialization()
                           opacity: 0x000000FF,
                           mask: 0
                        };
-   printk( "vc_dispmanx_resource_write_data emu_wnd_ : Pitch = %i.w = %i, h = %i\n",
+   printk( "vc_dispmanx_resource_write_data emu_wnd_ : Pitch = %i. w = %i, h = %i - FullWidth = %i; FullHeight = %i\n",
        emu_wnd_.frame_->GetPitch(),
-      info_.width, info_.height);
+      info_.width, info_.height, emu_wnd_.frame_->GetFullWidth(), emu_wnd_.frame_->GetFullHeight());
 
    windows_list_.push_back(&emu_wnd_);
 
@@ -212,7 +195,9 @@ bool DisplayPiImp::Initialization()
    VC_RECT_T src_rect;
    //vc_dispmanx_rect_set(&src_rect, 147<<16, 47<<16, (768-147) <<16, (277-47)<<16);
    //vc_dispmanx_rect_set(&src_rect, 143<<16, 47<<16, (768-143) <<16, (277-47/2)<<16);
-   vc_dispmanx_rect_set(&src_rect, 193<<16, 47<<16, (768-143) <<16, (277-47)<<16);
+   
+   //vc_dispmanx_rect_set(&src_rect, 193<<16, 47<<16, (768-143) <<16, (277-47)<<16);
+   //vc_dispmanx_rect_set(&src_rect, 143<<16, (47/2)<<16, (768) <<16, (288)<<16);
 
    VC_RECT_T dst_rect_full;
    vc_dispmanx_rect_set(&dst_rect_full, 0, 0, info_.width, info_.height);
@@ -240,7 +225,7 @@ bool DisplayPiImp::Initialization()
                               &alpha,
                               NULL,
                               DISPMANX_NO_ROTATE);
-   logger_->Write("Display", LogNotice, " vc_dispmanx_element_add - emu is done ");                              
+   logger_->Write("Display", LogNotice, " vc_dispmanx_element_add - emu is done.  ");                              
 
    menu_wnd_.element_ = vc_dispmanx_element_add(update,
                               display_,
@@ -338,7 +323,11 @@ int DisplayPiImp::GetHeight()
 
 int* DisplayPiImp::GetVideoBuffer(int y)
 {
-   if ( y > emu_frame_.GetHeight()) y = emu_frame_.GetHeight()-1;
+   /*if ( y > emu_frame_.GetHeight())
+   {
+      y = emu_frame_.GetHeight()-1;
+
+   }*/
 
    return  (int*)(&emu_frame_.GetBuffer()[y * emu_frame_.GetPitch()]);
 }
@@ -375,7 +364,6 @@ void DisplayPiImp::CopyMemoryToRessources()
       if ( it->frame_->HasFrameChanged())
       {
          VC_RECT_T bmp_rect;
-
    
          vc_dispmanx_rect_set(&(bmp_rect),
                               0,
@@ -388,7 +376,7 @@ void DisplayPiImp::CopyMemoryToRessources()
                                                 it->frame_->GetPitch(),
                                                 it->frame_->GetReadyBuffer(),
                                                 &bmp_rect);
-                                                   
+
          Lock();
          it->frame_->FrameIsDisplayed();
          Unlock();
