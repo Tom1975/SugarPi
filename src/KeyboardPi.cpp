@@ -327,6 +327,7 @@ void KeyboardPi::UnpressKey(unsigned int scancode)
 
 void KeyboardPi::PressKey(unsigned int scancode)
 {
+   logger_->Write("KeyboardPi", LogNotice, "PressKey %X - line : %i, bit : %X", scancode, handler_.raw_to_cpc_map_[scancode & 0xFF].line_number, handler_.raw_to_cpc_map_[scancode & 0xFF].bit);
    if (handler_.raw_to_cpc_map_[scancode & 0xFF].bit != 0)
    {
       
