@@ -50,8 +50,18 @@ bool Morphings::Refresh()
    frame_->display_height_ = base_height + (final_height - base_height) * val;
 
    frame_->current_change_ = CHANGED_DEST_RECT;
-
-   return (count_ == max_count_);
+   if (count_ == max_count_)
+   {
+      frame_->display_x_ = final_x;
+      frame_->display_y_ = final_y;
+      frame_->display_width_ = final_width;
+      frame_->display_height_ = final_height;
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 

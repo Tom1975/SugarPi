@@ -36,6 +36,9 @@ public:
    virtual void PressKey(unsigned int scancode);
    virtual void UnpressKey(unsigned int scancode);
 
+      virtual void ValidateKeyboardMap() {
+         handler_.ValidateKeyboardMap();
+      }
    virtual void ClearBuffer();
    virtual bool IsSelect();
    virtual bool IsButton(TGamePadButton button);
