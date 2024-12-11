@@ -1,2 +1,5 @@
-- Bitmap button by Freepik.com
-#- Font by Joiro Hatagaya (JOIRO@HOTMAIL.COM / http://www.typesource.com/Presents/Hatagaya/Fonts.html
+- Logo by Barjack 
+- Font by Joiro Hatagaya (JOIRO@HOTMAIL.COM / http://www.typesource.com/Presents/Hatagaya/Fonts.html
+- Circle++ library for bare-metal projects on Raspberry Pi : https://github.com/rsta2/circle
+- Gamecontrollerdb.txt for gamepad mapping support : https://github.com/mdqinc/SDL_GameControllerDB
+- Sugarbox Core library for Amstrad CPC core emulation : https://github.com/Tom1975/CPCCore
