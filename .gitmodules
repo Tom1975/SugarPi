@@ -5,3 +5,6 @@
 	path = circle-stdlib
 	url = https://github.com/smuehlst/circle-stdlib
 	branch = master
+[submodule "SDL_GameControllerDB"]
+	path = SDL_GameControllerDB
+	url = https://github.com/mdqinc/SDL_GameControllerDB
