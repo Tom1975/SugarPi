@@ -1,0 +1,16 @@
+SugarPi Changelog
+
+# NEXT - 
+- Update CPCCore
+- Rewrote menu engine with Dispmanx
+- Add simple configuration selection
+- Keyboard handling enhancement
+- Add loading of Tape, Disk
+- Add French and English menu (easily expandable to other language)
+
+# 1.2.0 
+Old versions
+
+
+
+

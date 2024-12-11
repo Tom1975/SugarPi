@@ -142,6 +142,17 @@ set(CpcCore_Files
 
 set (RES 
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/labels.ini
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/101_keyboard
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/101_keyboard_win
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/Credits.txt
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/Img464.png
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/Img664.png
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/Img6128.png
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/Img6128_plus.png
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/Img464_plus.png
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/ImgGx4000.png
+	${CMAKE_CURRENT_SOURCE_DIR}/../changelog.txt
+	${CMAKE_CURRENT_SOURCE_DIR}/../gamecontrollerdb.txt
 )
 
 add_definitions()
