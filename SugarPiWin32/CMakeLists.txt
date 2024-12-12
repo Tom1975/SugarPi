@@ -142,6 +142,7 @@ set(CpcCore_Files
 
 set (RES 
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/labels.ini
+	${CMAKE_CURRENT_SOURCE_DIR}/../SDL_GameControllerDB/gamecontrollerdb.txt
 )
 
 add_definitions()
@@ -174,7 +175,7 @@ install (TARGETS SugarPiWin32 RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../CART DESTINATION ${CMAKE_INSTALL_PREFIX})
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../config_win32  DESTINATION ${CMAKE_INSTALL_PREFIX}/Config RENAME config)
-install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../gamecontrollerdb.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/Config)
+install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../SDL_GameControllerDB/gamecontrollerdb.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/Config)
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../res/101_keyboard  DESTINATION ${CMAKE_INSTALL_PREFIX}/Keyboards)
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../res/101_keyboard_win  DESTINATION ${CMAKE_INSTALL_PREFIX}/Keyboards)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Facile_Sans.ttf"  DESTINATION ${CMAKE_INSTALL_PREFIX}/FONTS)
