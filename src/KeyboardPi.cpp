@@ -301,7 +301,8 @@ unsigned int getFirstLine(const char* buffer, int size, std::string& out)
 KeyboardPi::KeyboardPi(CLogger* logger) :
    logger_(logger),
    action_buttons_(0),
-   select_(false)
+   select_(false),
+   function_keys_(0)
 {
    for (unsigned i = 0; i < MAX_GAMEPADS; i++)
    {
@@ -310,6 +311,9 @@ KeyboardPi::KeyboardPi(CLogger* logger) :
    
    memset(&gamepad_state_buffered_, 0, sizeof(gamepad_state_buffered_));
    memset(&gamepad_state_, 0, sizeof(gamepad_state_));
+
+   memset(&raw_to_functions_, 0, sizeof(raw_to_functions_));
+   
 }
 
 KeyboardPi::~KeyboardPi()
@@ -319,6 +323,12 @@ KeyboardPi::~KeyboardPi()
 
 void KeyboardPi::UnpressKey(unsigned int scancode)
 {
+   // Function key ?
+   if ( (raw_to_functions_[scancode & 0xFF].function_number & 0x1F) !=  0 )
+   {
+      function_keys_ &= ~(1<<(raw_to_functions_[scancode & 0xFF].function_number));
+   }
+
    if (handler_.raw_to_cpc_map_[scancode & 0xFF].bit != 0)
    {
       *handler_.raw_to_cpc_map_[scancode].line_index |= (handler_.raw_to_cpc_map_[scancode].bit);
@@ -327,10 +337,15 @@ void KeyboardPi::UnpressKey(unsigned int scancode)
 
 void KeyboardPi::PressKey(unsigned int scancode)
 {
+   // Function key ?
+   if ( raw_to_functions_[scancode & 0xFF].function_number != 0 )
+   {
+      function_keys_ |= (1<<(raw_to_functions_[scancode & 0xFF].function_number));
+   }
+
    logger_->Write("KeyboardPi", LogNotice, "PressKey %X - line : %i, bit : %X", scancode, handler_.raw_to_cpc_map_[scancode & 0xFF].line_number, handler_.raw_to_cpc_map_[scancode & 0xFF].bit);
    if (handler_.raw_to_cpc_map_[scancode & 0xFF].bit != 0)
    {
-      
       *handler_.raw_to_cpc_map_[scancode & 0xFF].line_index &= ~(handler_.raw_to_cpc_map_[scancode & 0xFF].bit);
    }   
 }
@@ -405,6 +420,13 @@ bool KeyboardPi::IsSelect()
 {
    return select_;
 }
+
+bool KeyboardPi::IsFunctionKey(unsigned int function_number)
+{
+   if ( function_number == 0) return false;
+   return ( function_keys_ & (1<<(function_number-1)));
+}
+
 
 bool KeyboardPi::IsButton(TGamePadButton button)
 {
