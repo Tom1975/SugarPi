@@ -64,9 +64,6 @@ protected:
    TGamePadState	   gamepad_state_[MAX_GAMEPADS];
    TGamePadState	   gamepad_state_buffered_[MAX_GAMEPADS];
 
-   unsigned char raw_to_functions_[SCANCODE_MAP_SIZE];
- 
-   
    // Keyboard definition
    GamepadDef*       gamepad_active_[MAX_GAMEPADS];
 

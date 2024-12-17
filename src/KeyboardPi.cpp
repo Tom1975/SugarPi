@@ -311,9 +311,6 @@ KeyboardPi::KeyboardPi(CLogger* logger) :
    
    memset(&gamepad_state_buffered_, 0, sizeof(gamepad_state_buffered_));
    memset(&gamepad_state_, 0, sizeof(gamepad_state_));
-
-   memset(&raw_to_functions_, 0, sizeof(raw_to_functions_));
-   
 }
 
 KeyboardPi::~KeyboardPi()
@@ -324,9 +321,9 @@ KeyboardPi::~KeyboardPi()
 void KeyboardPi::UnpressKey(unsigned int scancode)
 {
    // Function key ?
-   if ( (raw_to_functions_[scancode & 0xFF].function_number & 0x1F) !=  0 )
+   if ( (handler_.raw_to_functions_[scancode & 0xFF] & 0x1F) !=  0 )
    {
-      function_keys_ &= ~(1<<(raw_to_functions_[scancode & 0xFF].function_number));
+      function_keys_ &= ~(handler_.raw_to_functions_[scancode & 0xFF]);
    }
 
    if (handler_.raw_to_cpc_map_[scancode & 0xFF].bit != 0)
@@ -338,9 +335,9 @@ void KeyboardPi::UnpressKey(unsigned int scancode)
 void KeyboardPi::PressKey(unsigned int scancode)
 {
    // Function key ?
-   if ( raw_to_functions_[scancode & 0xFF].function_number != 0 )
+   if (handler_.raw_to_functions_[scancode & 0xFF] != 0 )
    {
-      function_keys_ |= (1<<(raw_to_functions_[scancode & 0xFF].function_number));
+      function_keys_ |= handler_.raw_to_functions_[scancode & 0xFF];
    }
 
    logger_->Write("KeyboardPi", LogNotice, "PressKey %X - line : %i, bit : %X", scancode, handler_.raw_to_cpc_map_[scancode & 0xFF].line_number, handler_.raw_to_cpc_map_[scancode & 0xFF].bit);
