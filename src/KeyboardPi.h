@@ -44,6 +44,9 @@ public:
    virtual bool IsButton(TGamePadButton button);
    virtual bool IsAction();
    virtual bool IsFunctionKey(unsigned int function_number);
+   virtual unsigned int GetFunctionKey() {
+      return function_keys_;
+   }
    virtual void ReinitSelect();
 
    KeyboardHandler* GetHandler() {

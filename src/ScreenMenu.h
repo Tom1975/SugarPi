@@ -80,6 +80,8 @@ public:
 
    IEvent::Event GetEvent ();
 
+   void LauchMenu(unsigned int function);
+
    IAction::ActionReturn Handle();
 
    IAction::ActionReturn Back();

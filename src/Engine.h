@@ -38,6 +38,9 @@ public:
 
    virtual bool IsInMenu() { return in_menu_; }
 
+   // Special key functions
+   virtual bool HandleSpecialKeys();
+
 protected:
    bool in_menu_;
 
@@ -56,6 +59,6 @@ protected:
 
    MachineSettings* current_settings_;
 
-   ScreenMenu* menu;
+   ScreenMenu* menu_;
 
 };

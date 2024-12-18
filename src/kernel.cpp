@@ -161,46 +161,6 @@ TShutdownMode CKernel::Run (void)
    }
 
 
-
-   /*unsigned nCelsiusOldTmp = 0;
-	while (1)
-	{
-      
-      // 200ms 
-      motherboard_emulation_->StartOptimizedPlus(4000*50*20);
-
-      // Temperature
-      unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
-      if (nCelsiusOldTmp != nCelsius)
-      {
-         m_Logger.Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
-         nCelsiusOldTmp = nCelsius;
-      }
-     
-      // Menu launched ?
-      if (keyboard_->IsSelect())
-      {
-         // do it !
-         CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
-
-         ScreenMenu menu(&m_Logger, display_, keyboard_, motherboard_emulation_);
-         menu.Handle();
-
-         keyboard_->ReinitSelect();
-         CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
-      }
-      else
-      {
-         // Timing computation 
-         static unsigned old = 0;
-         unsigned elapsed = m_Timer.GetTicks();
-
-         m_Logger.Write("Kernel", LogNotice, "Time for 1s emulation : %i ticks -> %i ms", elapsed - old, (elapsed - old));
-         old = elapsed;
-
-      }
-   }
-   */
   CTimer::Get ()->MsDelay (2000);
   m_Logger.Write("Kernel", LogNotice, "Exiting : Halt");
 	return ShutdownHalt;
