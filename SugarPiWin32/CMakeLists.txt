@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.12.1)
 #Project name
 
 add_subdirectory(../tools ${CMAKE_CURRENT_BINARY_DIR}/tools)
-
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore ${CMAKE_CURRENT_BINARY_DIR}/CPCCore)
 
 project(SugarPiWin32 VERSION 1.2.0)
 

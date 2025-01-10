@@ -63,7 +63,6 @@ protected:
    unsigned int      action_buttons_;
    bool              select_;
    unsigned int      function_keys_;
-   unsigned char*    keyboard_lines_;
    TGamePadState	   gamepad_state_[MAX_GAMEPADS];
    TGamePadState	   gamepad_state_buffered_[MAX_GAMEPADS];
 
