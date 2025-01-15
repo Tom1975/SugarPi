@@ -34,7 +34,7 @@ From here, you can :
 
 ## Supported hardware
 SugarPi was developped on the Raspberry Pi3B+. It has been adapted to Raspeberry Pi4.
-I didn't test it on Raspberry Pi400, but as Circle++ doesn't support it, it may not work on it.
+It works on the PI400 hardware. Keyboard, here, is usable. Keypad can be used with the *fn* key
 
 ## Gamepad
 Gamepads are supported through gamecontrollerdb.txt.
@@ -49,3 +49,5 @@ In the future, I'll try to stick to the gamecontrollerdb.txt repository.
 - [Circle++ library](https://github.com/rsta2/circle) for bare-metal projects on Raspberry Pi 
 - [Gamecontrollerdb.txt](https://github.com/gabomdq/SDL_GameControllerDB) for gamepad mapping support
 - [Sugarbox Core library](https://github.com/Tom1975/CPCCore) for Amstrad CPC core emulation
+- [libschrift](https://github.com/tomolt/libschrift) for True Type font display
+- [Twicolabs Typefoundry] (https://www.en.netfontes.com.br/view/facile_sans/) Facile sans font 

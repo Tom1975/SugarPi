@@ -1,15 +1,15 @@
+
+#include <CPCCore/CPCCoreEmu/stdafx.h>
+#include <stdio.h>
+
 #include "ConfigurationManager.h"
 
-#include <SDCard/emmc.h>
-#include <fatfs/ff.h>
 
- CLogger* log_s = nullptr;
-
+ 
 /////////////////////////////////////////////////////////////
 /// Helper functions
-ConfigurationManager::ConfigurationManager(CLogger* log) : logger_(log)
+ConfigurationManager::ConfigurationManager()
 {
-   log_s = log;
 }
 
 ConfigurationManager::~ConfigurationManager()
@@ -20,15 +20,6 @@ ConfigurationManager::~ConfigurationManager()
 
 void ConfigurationManager::Clear()
 {
-/*   for (auto const& ent1 : config_file_)
-   {
-      // ent1.first is the first key
-      for (auto const& ent2 : ent1)
-      {
-         // ent2.first is the second key
-         // ent2.second is the data
-      }
-   }*/
    config_file_.clear();
 }
 
@@ -56,45 +47,45 @@ unsigned int ConfigurationManager::getline ( const char* buffer, int size, std::
 
 void ConfigurationManager::OpenFile(const char* config_file)
 {
-   logger_->Write("ConfigurationManager", LogNotice, "OpenFile : %s", config_file);
    if (current_config_file_.compare( config_file) == 0)
    {
       // already openend
       return;
    }
+
    current_config_file_ = config_file;
    Clear();
    std::string s, key, value;
    std::string current_section = "";
 
-   FIL File;
-   FRESULT Result = f_open(&File, config_file, FA_READ | FA_OPEN_EXISTING);   
-   if (Result != FR_OK)
+   FILE* f;
+
+   if (fopen_s(&f, config_file, "rb") != 0)
    {
-      logger_->Write("ConfigurationManager", LogNotice, "Cannot open file: %s", config_file);
+      CLogger::Get ()->Write("ConfigurationManager", LogNotice, "Cannot open file: %s", config_file);
       return;
    }
 
-   FILINFO file_info;
-   f_stat(config_file, &file_info);
-   unsigned char* buff = new unsigned char[file_info.fsize];
-   unsigned nBytesRead;
+   fseek(f, 0, SEEK_END);
+   int buffer_size = ftell(f);
+   rewind(f);
+   unsigned char* buff = new unsigned char[buffer_size];
 
-   f_read(&File, buff, file_info.fsize, &nBytesRead);
-   if (file_info.fsize != nBytesRead)
+   size_t nBytesRead;
+
+   nBytesRead = fread(buff, 1, buffer_size, f);
+   if (nBytesRead != buffer_size)
    {
       // ERROR
-      f_close(&File);
-      logger_->Write("ConfigurationManager", LogNotice, "Read incorrect %i instead of ", nBytesRead, file_info.fsize);
+      fclose(f);
+      CLogger::Get ()->Write("ConfigurationManager", LogNotice, "Read incorrect %i instead of ", nBytesRead, buffer_size);
       return;
    }
-
-   logger_->Write("ConfigurationManager", LogNotice, "Read Config : %s  ",buff);
 
    const char* ptr_buffer = (char*)buff;
    unsigned int offset = 0;
    unsigned int end_line;
-   while ((end_line = getline(&ptr_buffer[offset], nBytesRead, s)) > 0)
+   while ((end_line = getline(&ptr_buffer[offset], static_cast<int>(nBytesRead), s)) > 0)
    {
       offset += end_line;
       nBytesRead -= end_line;
@@ -121,8 +112,6 @@ void ConfigurationManager::OpenFile(const char* config_file)
          {
             current_section = s.substr(begin_section+1, end_section - 1);
             s = s.substr(end_section+1);
-
-            logger_->Write("ConfigurationManager", LogNotice, "READ section %s", current_section.c_str());
          }
       }
 
@@ -134,7 +123,6 @@ void ConfigurationManager::OpenFile(const char* config_file)
 
          if (end == std::string::npos) continue;
 
-         logger_->Write("ConfigurationManager", LogNotice, "READ key/value %s", s.c_str());
          key = s.substr(begin, end - begin);
          // (No leading or trailing whitespace allowed)
          size_t last_of_space = key.find_last_not_of(" \f\t\v") ;
@@ -156,20 +144,15 @@ void ConfigurationManager::OpenFile(const char* config_file)
             end = s.find_last_not_of(" \f\n\r\t\v");
             if ( end == std::string::npos)
             {
-               logger_->Write("ConfigurationManager", LogNotice, "end == std::string::npos");
                value = s.substr(begin);
             }
             else
             {
-               logger_->Write("ConfigurationManager", LogNotice, "end != std::string::npos");
-               value = s.substr(begin, end-begin);
+               value = s.substr(begin, end-begin + 1);
             }
 
-            logger_->Write("ConfigurationManager", LogNotice, "READ key : %s", key.c_str());
-            logger_->Write("ConfigurationManager", LogNotice, "READ value: %s ", value.c_str());
-
             // Add this key/value to current section
-            Section* section;
+            Section* section = nullptr;
             if (config_file_.GetSection (current_section.c_str(), section) == false)
             {
                Association<Section*> new_section;
@@ -185,20 +168,17 @@ void ConfigurationManager::OpenFile(const char* config_file)
       }
    }
    delete []buff;
-   f_close(&File);
+   fclose(f);
 }
 
 void ConfigurationManager::CloseFile()
 {
-   FIL File;
-   FRESULT Result = f_open(&File, current_config_file_.c_str(), FA_WRITE | FA_CREATE_ALWAYS );   
-   if (Result != FR_OK)
+   FILE* f;
+   if (fopen_s(&f, current_config_file_.c_str(), "rb" ) == 0)
    {
-      logger_->Write("ConfigurationManager", LogNotice, "Cannot open file: %s", current_config_file_.c_str());
+      CLogger::Get ()->Write("ConfigurationManager", LogNotice, "Cannot open file: %s", current_config_file_.c_str());
       return;
    }
-
-   logger_->Write("ConfigurationManager", LogNotice, "File open");
 
    // Write this file
    std::string output_file;
@@ -207,22 +187,17 @@ void ConfigurationManager::CloseFile()
       output_file.append("[");
       output_file.append(ent1.key);
       output_file.append("]\r\n");
-      logger_->Write("ConfigurationManager", LogNotice, "section %s", ent1.key.c_str());
       for (auto const& ent2 : *ent1.value)
       {
          // ent2.first is the second key
          output_file.append (ent2.key);
-         logger_->Write("ConfigurationManager", LogNotice, "key %s", ent2.key.c_str());
          output_file.append ("=");
          output_file.append (ent2.value);
-         logger_->Write("ConfigurationManager", LogNotice, "value %s", ent2.value.c_str());
          output_file.append ("\r\n");
       }
    }
-   logger_->Write("ConfigurationManager", LogNotice, "Output file : %s", output_file.c_str());
-   unsigned nBytesRead;
-   f_write (&File, output_file.c_str(), output_file.size(), &nBytesRead);
-   f_close(&File);
+   fwrite (output_file.c_str(), output_file.size(), 1, f);
+   fclose(f);
 }
 
 void ConfigurationManager::SetConfiguration(const char* section, const char* key, const char* value, const char* file)
@@ -233,12 +208,9 @@ void ConfigurationManager::SetConfiguration(const char* section, const char* key
 
 void ConfigurationManager::SetConfiguration(const char* section_key, const char* key, const char* value)
 {
-   logger_->Write("ConfigurationManager", LogNotice, "SetConfiguration : [%s] %s=%s", section_key, key ,value);
-
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section) == false)
    {
-      logger_->Write("ConfigurationManager", LogNotice, "Section not found");
       Association<Section*> new_section;
       new_section.key = section_key;
       section = new_section.value = new Section();
@@ -257,7 +229,6 @@ void ConfigurationManager::SetConfiguration(const char* section_key, const char*
 
    if (!found)
    {
-      logger_->Write("ConfigurationManager", LogNotice, "Key not found");
       Association<std::string> new_assoc;
       new_assoc.key = key;
       new_assoc.value = value;
@@ -266,16 +237,6 @@ void ConfigurationManager::SetConfiguration(const char* section_key, const char*
 
    char output_log_buffer[255];
    GetConfiguration(section_key, key, "NOTHING", output_log_buffer, 255 );
-
-   for (auto const& ent1 : config_file_)
-   {
-      logger_->Write("ConfigurationManager", LogNotice, "SECTION : %s", ent1.key.c_str());
-      for (auto const& ent2 : *ent1.value)
-      {
-         logger_->Write("ConfigurationManager", LogNotice, "KEYS: %s = VALUE : %s", ent2.key.c_str(), ent2.value.c_str());
-      }
-   }
-   logger_->Write("ConfigurationManager", LogNotice, "EOF");
 }
 
 unsigned int ConfigurationManager::GetConfiguration(const char* section, const char* key, const char* default_value, char* out_buffer, unsigned int buffer_size, const char* file)
@@ -287,13 +248,13 @@ unsigned int ConfigurationManager::GetConfiguration(const char* section, const c
 
 unsigned int ConfigurationManager::GetConfiguration(const char* section_key, const char* key, const char* default_value, char* out_buffer, unsigned int buffer_size)
 {
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section))
    {
-      std::string * value_str;
-      if ( section->GetKey(key, value_str))
+      std::string value_str;
+      if ( section->GetKey(key, &value_str))
       {
-         strncpy ( out_buffer, value_str->c_str(), buffer_size);
+         strncpy ( out_buffer, value_str.c_str(), buffer_size);
          return strlen(out_buffer);
       }
    }
@@ -309,13 +270,13 @@ unsigned int ConfigurationManager::GetConfigurationInt(const char* section_key, 
 
 unsigned int ConfigurationManager::GetConfigurationInt(const char* section_key, const char* key, unsigned int default_value)
 {
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section))
    {
-      std::string * value_str;
-      if ( section->GetKey(key, value_str))
+      std::string value_str;
+      if ( section->GetKey(key, &value_str))
       {
-         return atoi(value_str->c_str());
+         return atoi(value_str.c_str());
       }
    }
    return default_value;
@@ -340,7 +301,7 @@ const char* ConfigurationManager::GetNextSection()
 
 const char* ConfigurationManager::GetFirstKey(const char* section_key)
 {
-   Section* section;
+   Section* section = nullptr;
    if (config_file_.GetSection (section_key, section))
    {
       it_key_ = section->begin();
@@ -376,14 +337,14 @@ bool ConfigurationManager::ConfigFile::GetSection (const char* section_name, Con
 }
 
 
-bool ConfigurationManager::Section::GetKey (const char* key_name, std::string*& key)
+bool ConfigurationManager::Section::GetKey (const char* key_name, std::string* key)
 {
    // Look at section
    for (auto it:*this)
    {
       if (strcmp ( it.key.c_str(), key_name) == 0)
       {
-         key = &it.value;
+         *key = it.value;
          return true;
       }
    }

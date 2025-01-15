@@ -1,18 +1,20 @@
 #pragma once
 
+#ifdef  __circle__
 #include <circle/logger.h>
+#else
+#include "CLogger.h"
+#endif
 
-#include "CPCCore/CPCCoreEmu/simple_string.h"
+#include <vector>
+#include <string>
 #include "CPCCore/CPCCoreEmu/IConfiguration.h"
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
-
-extern CLogger* log_s;
 
 class ConfigurationManager : public IConfiguration
 {
 public:
 
-   ConfigurationManager(CLogger* log);
+   ConfigurationManager();
    virtual ~ConfigurationManager();
 
    virtual void OpenFile(const char* config_file);
@@ -45,13 +47,15 @@ protected:
          Association() : key(), value(){
             //log_s->Write("Association", LogNotice, "default creator");
          }
-         Association(Association& assoc)
+         
+         Association(const Association& assoc)
          {
             //log_s->Write("Association", LogNotice, "assoc creator");
             key = assoc.key;
             value = assoc.value;
          }
-         Association& operator=(const Association& _Right)
+
+         Association& operator=(const Association<T>& _Right)
          {
             //log_s->Write("Association", LogNotice, "operator=");
             key = _Right.key;
@@ -68,7 +72,7 @@ protected:
    class Section : public std::vector <Association<std::string>>
    {
    public:
-      bool GetKey (const char* , std::string*&);
+      bool GetKey (const char* , std::string*);
    };
 
    class ConfigFile : public std::vector <Association<Section*>>
@@ -88,5 +92,5 @@ protected:
    Section* current_key_section_it_;
 
    unsigned int getline ( const char*, int size, std::string& out);
-   CLogger* logger_;
+
 };

@@ -42,8 +42,9 @@ CKernel::CKernel(void)
    emulation_(&m_Memory, &m_Logger, &m_Timer)
    
 {
-   display_ = new DisplayPi(&m_Logger, &m_Timer);
-   keyboard_ = new KeyboardPi(&m_Logger, &dwhci_device_, &m_DeviceNameService);
+   display_ = new DisplayPiImp(&m_Logger, &m_Timer);
+   keyboard_ = new KeyboardHardwareImplemetationPi(&m_Logger, &dwhci_device_, &m_DeviceNameService);
+   
    cpu_throttle_ = new CCPUThrottle();
    exception_handler_ = new CExceptionHandler;
 }
@@ -62,10 +63,6 @@ boolean CKernel::Initialize (void)
 
    boolean bOK = TRUE;
 
-   if (bOK)
-   {
-      bOK = display_->Initialization();
-   }
    if (bOK)
    {
       bOK = m_Serial.Initialize(115200);
@@ -122,6 +119,12 @@ boolean CKernel::Initialize (void)
    sound_ = new SoundPi(&m_Logger, &m_Interrupt, &scheduler_);
 #endif
 
+   if (bOK)
+   {
+      bOK = display_->Initialization();
+      m_Logger.Write("Kernel", LogNotice, "display initialization done : %i", bOK);
+   }
+
    m_Logger.Write("Kernel", LogNotice, "Creating SoundPI");
    sound_->Initialize();
    m_Logger.Write("Kernel", LogNotice, "SoundPI Initialized !");
@@ -130,6 +133,7 @@ boolean CKernel::Initialize (void)
    {
       bOK = keyboard_->Initialize();
    }
+
 #endif
    if (bOK)
    {
@@ -137,16 +141,10 @@ boolean CKernel::Initialize (void)
       bOK = emulation_.Initialize(display_, sound_, keyboard_, &scheduler_);	// must be initialized at last
       m_Logger.Write("Kernel", LogNotice, "Initialisation done done !");
    }
-
-   m_Logger.Write("Kernel", LogNotice, "EDID...");
-   display_->ListEDID();
-   m_Logger.Write("Kernel", LogNotice, "EDID Done !");
-
    m_Logger.Write("Kernel", LogNotice, "Initialisation done. Waiting for CPUThrottle %i", bOK ? 1 : 0);
 
    CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
 
-   
    m_Logger.Write("Kernel", LogNotice, "Initialisation done. Result = %i - CPU Speed max value : %i", bOK?1:0, CCPUThrottle::Get()->GetMaxClockRate());
    return bOK;
 }
@@ -163,46 +161,6 @@ TShutdownMode CKernel::Run (void)
    }
 
 
-
-   /*unsigned nCelsiusOldTmp = 0;
-	while (1)
-	{
-      
-      // 200ms 
-      motherboard_emulation_->StartOptimizedPlus(4000*50*20);
-
-      // Temperature
-      unsigned nCelsius = CCPUThrottle::Get()->GetTemperature();
-      if (nCelsiusOldTmp != nCelsius)
-      {
-         m_Logger.Write("Kernel", LogNotice, "Temperature = %i", nCelsius);
-         nCelsiusOldTmp = nCelsius;
-      }
-     
-      // Menu launched ?
-      if (keyboard_->IsSelect())
-      {
-         // do it !
-         CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
-
-         ScreenMenu menu(&m_Logger, display_, keyboard_, motherboard_emulation_);
-         menu.Handle();
-
-         keyboard_->ReinitSelect();
-         CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
-      }
-      else
-      {
-         // Timing computation 
-         static unsigned old = 0;
-         unsigned elapsed = m_Timer.GetTicks();
-
-         m_Logger.Write("Kernel", LogNotice, "Time for 1s emulation : %i ticks -> %i ms", elapsed - old, (elapsed - old));
-         old = elapsed;
-
-      }
-   }
-   */
   CTimer::Get ()->MsDelay (2000);
   m_Logger.Write("Kernel", LogNotice, "Exiting : Halt");
 	return ShutdownHalt;

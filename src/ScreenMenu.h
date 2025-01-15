@@ -1,71 +1,118 @@
 #pragma once
 
+#ifdef  __circle__
 #include <circle/logger.h>
 #include <circle/string.h>
 
-#include "CPCCore/CPCCoreEmu/simple_vector.hpp"
+#define stricmp strcasecmp
+#define strnicmp strncasecmp
+
+#else
+#include "CLogger.h"
+#include "CString.h"
+#endif
+
+
+#include <vector>
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/Snapshot.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
-
+#include "MultiLanguage.h"
 #include "DisplayPi.h"
+#include "SimpleBitmap.h"
 #include "KeyboardPi.h"
+
+#ifdef  __circle__
 #include "SugarPiSetup.h"
-#include "Windows.h"
+#else
+#include "SugarPiSetupDesktop.h"
+#endif
+
+#include "Window.h"
+#include "MainMenuWindows.h"
 
 #define MAX_LANGUAGE 1
 
 #pragma pack(push, 1)
 
-class CoolspotFont;
-
-
-
-class MainMenuWindows : public Windows
+class IEngine
 {
-public:
-   MainMenuWindows (DisplayPi* display);
-   virtual ~MainMenuWindows ();
-   
-   void ResetMenu();
-   MenuWindows* GetMenu(){return menu_;};
-   
-protected:
-   MenuWindows* menu_;
+public: 
+   virtual void LoadConfiguration(const char* config) = 0;
 
 };
 
 class ScreenMenu : public IEvent
 {
+private:
+   class AmstradCompleteConf
+   {
+   public:
+      std::string fullname_;
+      const char* config_path_;
+      std::string description_;
+   };
+
+   class AmstradConfiguration
+   {
+   public:
+      std::string name_;
+      std::string description_;
+      SimpleBitmap associatedBmp_;
+      std::vector<AmstradCompleteConf> languages_;
+   };
+
 
 public:
 
-   ScreenMenu(ILog* log, CLogger* logger, DisplayPi* display, SoundMixer* sound_mixer, KeyboardPi* keyboard, Motherboard* motherboard, SugarPiSetup* setup);
+   ScreenMenu(IEngine* engine, ILog* log, CLogger* logger, 
+         DisplayPi* display, 
+         SoundMixer* sound_mixer, 
+         KeyboardPi* keyboard, 
+         Motherboard* motherboard, 
+         SugarPiSetup* setup, 
+         MultiLanguage* language);
+
    virtual ~ScreenMenu();
+
+   static void LoadDescriptions();
+   void Reload();
 
    IEvent::Event GetEvent ();
 
-   
+   void LauchMenu(unsigned int function);
+
    IAction::ActionReturn Handle();
 
    IAction::ActionReturn Back();
+   IAction::ActionReturn ChangeLanguage();
    IAction::ActionReturn HardwareSetup();
    IAction::ActionReturn InsertCartridge();
    IAction::ActionReturn InsertDisk();
    IAction::ActionReturn InsertTape();
    IAction::ActionReturn Load();
+   IAction::ActionReturn LoadAmstradSetup( const char* path);
    IAction::ActionReturn LoadCartridge ( const char* path);
    IAction::ActionReturn LoadDisk ( const char* path);
    IAction::ActionReturn LoadTape ( const char* path);
+   IAction::ActionReturn Info();
    IAction::ActionReturn Reset();
    IAction::ActionReturn Resume();
    IAction::ActionReturn Save();
+   IAction::ActionReturn SelectAmstrad();
+   IAction::ActionReturn SelectAmstradFinal(ScreenMenu::AmstradConfiguration& config);
+   IAction::ActionReturn SelectAmstradCustom();
+   IAction::ActionReturn SetLanguage(int value);
    IAction::ActionReturn SetSync(bool* value);
    IAction::ActionReturn ShutDown();
    IAction::ActionReturn SugarSetup();
    
    IAction::ActionReturn InsertMedia(const char* path, IAction::ActionReturn (ScreenMenu::* load_action)(const char*));
 
+   void LoadConfiguration  (const char* config_name, const char* ini_file);
+   void ForceStop();
+
+   MultiLanguage* language_;
 
    class MenuItem
    {
@@ -76,7 +123,7 @@ public:
    };
 
 protected:
-
+   IEngine*       engine_;
    CLogger*       logger_;
    DisplayPi*     display_;
    SoundMixer*    sound_mixer_;
@@ -85,9 +132,13 @@ protected:
 
    Motherboard*   motherboard_;
 
+   // Current menu
+   Window* current_menu_;
    // Pending actions
    CSnapshot*        snapshot_;
    MainMenuWindows*  main_menu_;
+
+   static std::vector<ScreenMenu::AmstradConfiguration> config_list;
 };
 
 class ActionMenu : public IAction

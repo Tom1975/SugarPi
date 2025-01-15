@@ -1,0 +1,70 @@
+//
+#include "KeyboardHardwareImplemetationWin.h"
+
+#include <Windows.h>
+
+KeyboardHardwareImplemetationWin::KeyboardHardwareImplemetationWin(CLogger* logger) : KeyboardPi(logger)
+{
+   for (unsigned i = 0; i < MAX_GAMEPADS; i++)
+   {
+      gamepad_active_[i] = nullptr;
+   }
+
+   GamepadDef* def = new GamepadDef(handler_.GetKeyboardState());
+   //gamepad_list_.push_back(def);
+   gamepad_active_[0] = def;// gamepad_list_[0];
+
+}
+
+KeyboardHardwareImplemetationWin::~KeyboardHardwareImplemetationWin()
+{
+
+}
+
+void KeyboardHardwareImplemetationWin::Initialize()
+{
+
+}
+
+void KeyboardHardwareImplemetationWin::UpdatePlugnPlay()
+{
+
+}
+
+#define action(y) action_buttons_  = activated ? (action_buttons_ |y):(action_buttons_&=~y)
+
+
+void KeyboardHardwareImplemetationWin::CodeActionSpecial(long keycode, bool activated)
+{
+   switch (keycode)
+   {
+   case VK_LWIN: select_ = activated; action(GamePadButtonSelect); break;
+   case VK_SCROLL: if (gamepad_active_[0] != nullptr) { gamepad_active_[0]->game_pad_button_start.UpdateMap(0, activated); action(GamePadButtonStart); } break;
+   case VK_UP: if (gamepad_active_[0] != nullptr) {
+      gamepad_active_[0]->game_pad_button_up.UpdateMap(0, activated); action(GamePadButtonUp);
+   }  break;
+   case VK_DOWN: if (gamepad_active_[0] != nullptr) {
+      gamepad_active_[0]->game_pad_button_down.UpdateMap(0, activated); action(GamePadButtonDown);
+   } break;
+   case VK_LEFT: if (gamepad_active_[0] != nullptr) {
+      gamepad_active_[0]->game_pad_button_left.UpdateMap(0, activated); action(GamePadButtonLeft);
+   } break;
+   case VK_RIGHT: if (gamepad_active_[0] != nullptr) {
+      gamepad_active_[0]->game_pad_button_right.UpdateMap(0, activated); action(GamePadButtonRight);
+   } break;
+                //case VK_SHIFT:gamepad_active_[0]->game_pad_button_A.UpdateMap(0, activated); action(GamePadButtonA);break;
+   case VK_CONTROL:if (gamepad_active_[0] != nullptr) {
+      gamepad_active_[0]->game_pad_button_X.UpdateMap(0, activated); action(GamePadButtonX);
+   } break;
+   }
+}
+
+/*void KeyboardHardwareImplemetationWin::Presskey(long keyCode)
+{
+   handler_.SendScanCode(keyCode, true);
+}
+
+void KeyboardHardwareImplemetationWin::Unpresskey(long keyCode)
+{
+   handler_.SendScanCode(keyCode, false);
+}*/

@@ -1,11 +1,20 @@
 #pragma once
 
+
+#ifdef  __circle__
 #include <circle/logger.h>
+#else
+#include "CLogger.h"
+#include "CString.h"
+#endif
+
 
 #include "DisplayPi.h"
 #include "KeyboardPi.h"
 #include "CPCCore/CPCCoreEmu/Motherboard.h"
 #include "CPCCore/CPCCoreEmu/SoundMixer.h"
+#include "CPCCore/CPCCoreEmu/MachineSettings.h"
+#include "MultiLanguage.h"
 #include "ConfigurationManager.h"
 
 class SugarPiSetup
@@ -14,7 +23,7 @@ public :
    SugarPiSetup ( CLogger* log);
    virtual ~SugarPiSetup();
 
-   void Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard, KeyboardPi* keyboard);
+   void Init(DisplayPi* display, SoundMixer* sound, Motherboard *motherboard, KeyboardPi* keyboard, MultiLanguage* language);
 
    void Load();
    void Save();
@@ -30,6 +39,9 @@ public :
    void LoadCartridge (const char* path);
    void LoadDisk (const char* path);
    void LoadTape (const char* path);
+   MachineSettings* LoadSetup(const char* path);
+
+   ConfigurationManager* GetConfigurationManager(){return config_;}
 
 protected:
   
@@ -41,6 +53,8 @@ protected:
    SoundMixer* sound_;
    Motherboard* motherboard_;
    KeyboardPi* keyboard_;
+   unsigned int language_id_;
+   MultiLanguage* language_;
 
    ConfigurationManager* config_;
 

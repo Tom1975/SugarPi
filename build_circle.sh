@@ -1,11 +1,27 @@
 echo "*** Build Circle ***"
 
-cp Rules.mk circle
-cd circle
+#cp Rules.mk circle
+#cp Rules.mk  circle-stdlib/libs/circle
+cd circle-stdlib
 
-./makeall clean
-./makeall --nosample
+# configure circle-std
+#make clean
+cp ../sysconfig.h  libs/circle/include/circle
+make mrproper
+./configure -r 4
+make all
 
+retn_code=$?
+if [ $retn_code -eq 0 ];then
+  echo "circle-stdlib built correctly"
+else
+  echo "*** ERROR BUILDING circle-stdlib !!"
+  exit -1
+fi
+
+echo "*** End of Circle-std build ***"
+
+cd libs/circle
 cd addon/linux
 make clean
 make
@@ -22,12 +38,30 @@ cd ../vc4/sound
 make clean
 make
 
-cd ../vchiq
+cd ../../vc4/interface/bcm_host
 make clean
 make
 
-cd ../../boot
+cd ../../../vc4/interface/vmcs_host
 make clean
 make
+
+cd ../../../vc4/interface/vcos
+make clean
+make
+
+cd ../../../vc4/vchiq
+make clean
+make
+
+cd ../../../boot
+make clean
+make
+
+#if [ "$AARCH" -eq 64 ];then
+#   make armstub64
+#else
+    make armstub
+#fi
 
 echo "*** End of Circle build ***"

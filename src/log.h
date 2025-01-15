@@ -1,6 +1,12 @@
 #pragma once
 
+#ifdef  __circle__
 #include <circle/logger.h>
+#else
+#include "CLogger.h"
+#endif
+
+
 
 #include "CPCCore/CPCCoreEmu/ILog.h"
 

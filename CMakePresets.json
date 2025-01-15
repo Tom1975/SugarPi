@@ -1,0 +1,28 @@
+﻿{
+    "version": 3,
+   "configurePresets": [
+
+      {
+         "name": "RPI",
+         "displayName": "RPi4",
+         "generator": "Unix Makefiles",
+         "binaryDir": "${sourceDir}/out/build/${presetName}",
+         "installDir": "${sourceDir}/out/install/${presetName}",
+         "cacheVariables": {
+         },
+         "condition": {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Linux"
+         },
+         "environment": {
+         },
+         "vendor": {
+            "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+               "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}",
+               "forceWSL1Toolset": true
+            }
+         }
+      }
+   ]
+}
