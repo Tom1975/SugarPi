@@ -27,6 +27,8 @@ protected:
    unsigned char old_modifier_;
    unsigned char old_raw_keys_[6];
 
+   unsigned char* keyboard_lines_;
+
    GamepadDef* LookForDevice (const TUSBDeviceDescriptor* descriptor);
 
    CDeviceNameService* device_name_service_;
