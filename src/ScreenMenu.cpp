@@ -6,6 +6,7 @@
 
 #include "files.h"
 #include "SimpleBitmap.h"
+#include "CarrouselWindow.h"
 
 #include "MenuButtonWithBitmapWindows.h"
 
@@ -53,6 +54,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 std::vector<IAction::ActionReturn(ScreenMenu::*)()> function_menu =
 {
+  &ScreenMenu::Carrousel,
   &ScreenMenu::Handle,
   &ScreenMenu::SelectAmstrad,
   &ScreenMenu::InsertCartridge,
@@ -912,6 +914,22 @@ IEvent::Event ScreenMenu::GetEvent()
 void ScreenMenu::ForceStop()
 {
    main_menu_->ForceStop();
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+IAction::ActionReturn ScreenMenu::Carrousel()
+{
+   Window* focus = Window::GetFocus();
+   CarrouselWindow* carrousel_menu = new CarrouselWindow(display_->GetMenuFrame());
+
+   IAction::ActionReturn return_value = carrousel_menu->DoScreen(this);
+   delete carrousel_menu;
+
+   Window::SetFocus(focus);
+   main_menu_->Invalidate();
+
+   return return_value;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

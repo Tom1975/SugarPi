@@ -35,6 +35,8 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/BasicFrame.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Button.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Button.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/CarrouselWindow.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/CarrouselWindow.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ConfigurationManager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/ConfigurationManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/CString.cpp
