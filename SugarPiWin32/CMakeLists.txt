@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.12.1)
 #Project name
 
 add_subdirectory(../tools ${CMAKE_CURRENT_BINARY_DIR}/tools)
-
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore ${CMAKE_CURRENT_BINARY_DIR}/CPCCore)
 
 project(SugarPiWin32 VERSION 1.2.0)
 
@@ -142,6 +142,10 @@ set(CpcCore_Files
 
 set (RES 
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/labels.ini
+	${CMAKE_CURRENT_SOURCE_DIR}/../SDL_GameControllerDB/gamecontrollerdb.txt
+	${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Keyboards/101_keyboard  
+	${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Keyboards/101_keyboard_win
+
 )
 
 add_definitions()
@@ -174,9 +178,9 @@ install (TARGETS SugarPiWin32 RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../CART DESTINATION ${CMAKE_INSTALL_PREFIX})
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../config_win32  DESTINATION ${CMAKE_INSTALL_PREFIX}/Config RENAME config)
-install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../gamecontrollerdb.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/Config)
-install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../res/101_keyboard  DESTINATION ${CMAKE_INSTALL_PREFIX}/Keyboards)
-install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../res/101_keyboard_win  DESTINATION ${CMAKE_INSTALL_PREFIX}/Keyboards)
+install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../SDL_GameControllerDB/gamecontrollerdb.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/Config)
+install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Keyboards/101_keyboard DESTINATION ${CMAKE_INSTALL_PREFIX}/Keyboards)
+install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/../CPCCore/CPCCoreEmu/Keyboards/101_keyboard_win DESTINATION ${CMAKE_INSTALL_PREFIX}/Keyboards)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Facile_Sans.ttf"  DESTINATION ${CMAKE_INSTALL_PREFIX}/FONTS)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/logo.bin"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Img464.bin"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)

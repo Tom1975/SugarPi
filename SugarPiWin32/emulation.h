@@ -15,6 +15,7 @@ public:
 
    void ForceStop();
    virtual const char* GetBaseDirectory();
+
 protected:
    bool sound_is_ready;
    bool sound_run_;

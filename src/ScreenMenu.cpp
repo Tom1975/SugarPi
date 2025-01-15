@@ -51,6 +51,18 @@
 ////////////////////////////////////////////////////////////////////////////////////
 // Menu description
 ////////////////////////////////////////////////////////////////////////////////////
+std::vector<IAction::ActionReturn(ScreenMenu::*)()> function_menu =
+{
+  &ScreenMenu::Handle,
+  &ScreenMenu::SelectAmstrad,
+  &ScreenMenu::InsertCartridge,
+  &ScreenMenu::InsertDisk,
+  &ScreenMenu::InsertTape,
+  &ScreenMenu::SugarSetup,
+  &ScreenMenu::ChangeLanguage,
+  &ScreenMenu::Reset,
+};
+
 ScreenMenu::MenuItem base_menu[] =
 {
    { "MENU_Resume",             &ScreenMenu::Resume},
@@ -225,6 +237,33 @@ void ScreenMenu::LoadDescriptions()
 
    STOP_CHRONO
    PROF_DISPLAY
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+void ScreenMenu::LauchMenu(unsigned int function)
+{
+   if (function > 0 && function <= function_menu.size())
+   {
+      // Get proper menu
+      IAction::ActionReturn(ScreenMenu:: * menu)() = function_menu[function];
+
+      logger_->Write("Menu", LogNotice, "MENU ENTER");
+
+      // Minimize emulation
+      display_->GetEmulationFrame()->Minimize();
+
+      IAction::ActionReturn action = IAction::Action_None;
+      keyboard_->ClearBuffer();
+
+      // Wait till next vsync
+      (this->*menu)();
+
+      logger_->Write("Menu", LogNotice, "MENU EXITING !");
+      display_->GetEmulationFrame()->Maximize();
+
+      display_->VSync();
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -879,15 +918,14 @@ void ScreenMenu::ForceStop()
 ////////////////////////////////////////////////////////////////////////////////////
 IAction::ActionReturn ScreenMenu::Handle()
 {
-   logger_->Write("Menu", LogNotice, "MENU ENTER");
+   /*logger_->Write("Menu", LogNotice, "MENU ENTER");
 
    // Minimize emulation
    display_->GetEmulationFrame()->Minimize();
 
    IAction::ActionReturn action = IAction::Action_None;
    keyboard_->ClearBuffer();
-   display_->SetFullResolution(true);
-
+   */
    // Wait till next vsync
    Reload();
    main_menu_->ClearAll();
@@ -899,13 +937,12 @@ IAction::ActionReturn ScreenMenu::Handle()
 
    // Display menu
    logger_->Write("Menu", LogNotice, "Do screen...");
-   main_menu_->DoScreen (this);
-
+   IAction::ActionReturn action = main_menu_->DoScreen (this);
+   /*
    logger_->Write("Menu", LogNotice, "MENU EXITING !");
    display_->GetEmulationFrame()->Maximize();
 
-   display_->SetFullResolution(false);
    display_->VSync();
-
+   */
    return action;
 }

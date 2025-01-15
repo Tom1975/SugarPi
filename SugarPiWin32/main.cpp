@@ -37,7 +37,7 @@ LRESULT __stdcall k_Callback1(int nCode, WPARAM wParam, LPARAM lParam)
             return 1;
          }
             
-         emu_hook->keyboard->Presskey(key->scanCode);
+         emu_hook->keyboard->PressKey(key->scanCode);
 
          break;
       case WM_SYSKEYUP:
@@ -47,7 +47,7 @@ LRESULT __stdcall k_Callback1(int nCode, WPARAM wParam, LPARAM lParam)
             emu_hook->keyboard->CodeActionSpecial(VK_LWIN, false);
             return 1;
          }
-         emu_hook->keyboard->Unpresskey(key->scanCode);
+         emu_hook->keyboard->UnpressKey(key->scanCode);
          break;
    }
 

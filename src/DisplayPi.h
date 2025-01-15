@@ -37,8 +37,6 @@ public:
    virtual void SyncWithFrame (bool set){sync_on_frame_ = set;}
    virtual bool IsSyncOnFrame(){return sync_on_frame_;}
    
-   virtual void SetFullResolution (bool set){full_resolution_ = set;};
-
    virtual void SetScanlines(int scan);
    virtual bool AFrameIsReady();
    virtual void Display();
@@ -124,8 +122,6 @@ protected:
 
    //CScreenDevice*		screen_;
    CLogger* logger_;
-   bool full_resolution_;
-   bool full_resolution_cached_;
 
    unsigned int added_line_;
    unsigned int last_tick_frame_;

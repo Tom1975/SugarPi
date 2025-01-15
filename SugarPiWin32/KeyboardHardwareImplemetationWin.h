@@ -16,9 +16,9 @@ class KeyboardHardwareImplemetationWin : public KeyboardPi
       virtual void Initialize();
       virtual void UpdatePlugnPlay();
 
-      void Presskey(long keyCode);
+/*      void Presskey(long keyCode);
       void Unpresskey(long keyCode);
-
+      */
       void CodeActionSpecial(long keycode, bool activated);
       
 protected:

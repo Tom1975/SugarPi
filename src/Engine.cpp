@@ -19,7 +19,7 @@ Engine::Engine(CLogger* log) :
    sound_(nullptr),
    sound_mixer_(nullptr),
    current_settings_(nullptr),
-   menu(nullptr),
+   menu_(nullptr),
    language_manager_(),
    language_(nullptr)
 {
@@ -70,7 +70,7 @@ boolean Engine::Initialize(DisplayPi* display, SoundPi* sound, KeyboardPi* keybo
    motherboard_->GetSig()->fdc_present_ = true;
    motherboard_->GetPPI()->SetExpSignal(true);
 
-   menu = new ScreenMenu(this, &log_, logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_, language_);
+   menu_ = new ScreenMenu(this, &log_, logger_, display_, sound_mixer_, keyboard_, motherboard_, setup_, language_);
    logger_->Write("Kernel", LogNotice, "End of Emulation init.");
 
    // Setup
@@ -199,4 +199,21 @@ void Engine::UpdateComputer(bool no_cart_reload)
    }
    // reset
    motherboard_->OnOff();
+}
+
+bool Engine::HandleSpecialKeys()
+{
+   unsigned int fn = keyboard_->IsSelect() ? 1 : keyboard_->GetFunctionKey();
+   if (fn != 0)
+   {
+      in_menu_ = true;
+      // Main menu
+      menu_->LauchMenu(fn);
+      keyboard_->ReinitSelect();
+      in_menu_ = false;
+
+      return true;
+   }
+
+   return false;
 }
