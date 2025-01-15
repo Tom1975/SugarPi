@@ -23,8 +23,6 @@ public:
    void SyncWithFrame (bool set);
    bool IsSyncOnFrame(){return sync_on_frame_;}
    
-   void SetFullResolution (bool set){full_resolution_ = set;};
-
    virtual void SetScanlines(int scan);
 
    virtual const char* GetInformations();

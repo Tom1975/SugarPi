@@ -43,6 +43,10 @@ public:
    virtual bool IsSelect();
    virtual bool IsButton(TGamePadButton button);
    virtual bool IsAction();
+   virtual bool IsFunctionKey(unsigned int function_number);
+   virtual unsigned int GetFunctionKey() {
+      return function_keys_;
+   }
    virtual void ReinitSelect();
 
    KeyboardHandler* GetHandler() {
@@ -58,11 +62,10 @@ protected:
    CLogger*          logger_;
    unsigned int      action_buttons_;
    bool              select_;
-   unsigned char*    keyboard_lines_;
+   unsigned int      function_keys_;
    TGamePadState	   gamepad_state_[MAX_GAMEPADS];
    TGamePadState	   gamepad_state_buffered_[MAX_GAMEPADS];
-   
-   
+
    // Keyboard definition
    GamepadDef*       gamepad_active_[MAX_GAMEPADS];
 

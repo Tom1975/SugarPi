@@ -133,16 +133,8 @@ void Emulation::RunMainLoop()
       motherboard_->StartOptimizedPlus<true, true, false>(4 * TIME_SLOT*10);
       //logger_->Write("Kernel", LogNotice, "Done !");
       // Menu launched ?
-      if (keyboard_->IsSelect())
+      if (HandleSpecialKeys())
       {
-         CCPUThrottle::Get()->SetSpeed(CPUSpeedLow);
-
-         in_menu_ = true;
-         menu->Handle();
-         keyboard_->ReinitSelect();
-         in_menu_ = false;
-
-         CCPUThrottle::Get()->SetSpeed(CPUSpeedMaximum);
       }
       else
       {

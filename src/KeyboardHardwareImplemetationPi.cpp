@@ -117,6 +117,11 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
 
    Lock();
 
+   /////////////////////////////////////
+   /// Key handling : Each frame will have a change in the key status : 
+   /// If key was down (previous frame), and we detect an up, then it will be up
+   /// If key wad up (previous frame), and we detect a down, then it will be down
+
    // Modifier
    if (pThis->old_modifier_ & shift_l_modifier_) pThis->keyboard_lines_[2] |= 0x20;
    if (pThis->old_modifier_ & shift_r_modifier_) pThis->keyboard_lines_[2] |= 0x20;
@@ -129,7 +134,6 @@ void KeyboardHardwareImplemetationPi::KeyStatusHandlerRaw(unsigned char ucModifi
    if (ucModifiers & ctrl_modifier_) pThis->keyboard_lines_[2] &= ~0x80;
    if (ucModifiers & copy_modifier_) pThis->keyboard_lines_[1] &= ~0x02;
 
-   // Unpress the previous keys
    for (unsigned i = 0; i < 6; i++)
    {
       if (pThis->old_raw_keys_[i] != 0)

@@ -84,7 +84,7 @@ echo "sync=frame" >> config
 echo "cart=SD:/CART/crtc3_projo.cpr" >> config
 
 
-cp res/101_keyboard sdcard/Keyboards
+cp CPCCore/CPCCoreEmu/Keyboards/101_keyboard sdcard/Keyboards
 cp config sdcard/Config
 cp CART/* sdcard/CART
 cp SDL_GameControllerDB/gamecontrollerdb.txt sdcard/Config/gamecontrollerdb.txt

@@ -16,7 +16,7 @@ Emulation::Emulation( CLogger* log)
 
 Emulation::~Emulation(void)
 {
-   delete menu;
+   delete menu_;
    delete motherboard_;
 }
 
@@ -95,7 +95,7 @@ const char* Emulation::GetBaseDirectory()
 void Emulation::ForceStop()
 {
    run_ = false;
-   if (menu)menu->ForceStop();
+   if (menu_)menu_->ForceStop();
 }
 
 void Emulation::RunMainLoop()
@@ -109,12 +109,6 @@ void Emulation::RunMainLoop()
       motherboard_->StartOptimizedPlus<true, true, false>(4 * TIME_SLOT*10);
             
       // Menu launched ?
-      if (keyboard_->IsSelect())
-      {
-         in_menu_ = true;
-         menu->Handle();
-         keyboard_->ReinitSelect();
-         in_menu_ = false;
-      }
+      HandleSpecialKeys();
    }
 }

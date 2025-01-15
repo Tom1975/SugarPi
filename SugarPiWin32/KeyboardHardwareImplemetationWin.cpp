@@ -59,7 +59,7 @@ void KeyboardHardwareImplemetationWin::CodeActionSpecial(long keycode, bool acti
    }
 }
 
-void KeyboardHardwareImplemetationWin::Presskey(long keyCode)
+/*void KeyboardHardwareImplemetationWin::Presskey(long keyCode)
 {
    handler_.SendScanCode(keyCode, true);
 }
@@ -67,4 +67,4 @@ void KeyboardHardwareImplemetationWin::Presskey(long keyCode)
 void KeyboardHardwareImplemetationWin::Unpresskey(long keyCode)
 {
    handler_.SendScanCode(keyCode, false);
-}
+}*/
