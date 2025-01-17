@@ -22,13 +22,25 @@ CarrouselWindow::CarrouselWindow(BasicFrame* display) :
    bitmap_->GetSize(lw, lh);
    logo_->Create(this, (w - lw) / 2,
                                (h/4 - lh) / 2, bitmap_);
-
 }
 
 CarrouselWindow::~CarrouselWindow()
 {
    delete logo_;
    delete bitmap_;
+}
+
+void CarrouselWindow::Create(Window* parent, int x, int y, unsigned int width, unsigned int height)
+{
+   Window::Create(parent, x, y, width, height);
+
+   // Add internal windows : 
+   // Screenshot window
+   // Description window
+   // Game selection stripe
+
+   // Fill inner game structure with "Carrousel" folder.
+
 }
 
 void CarrouselWindow::Clear()

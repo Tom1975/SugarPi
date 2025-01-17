@@ -12,11 +12,21 @@ public:
    CarrouselWindow(BasicFrame* display);
    virtual ~CarrouselWindow();
 
+   virtual void Create(Window* parent, int x, int y, unsigned int width, unsigned int height);
+
    virtual void Clear();
 
 protected:
+   class GameDescription
+   {
+   public:
+      std::string name_;
+      std::string description_;
+
+      std::string sna_path_;
+   };
+
    BitmapWindows* logo_;
-   MenuWindows* menu_;
    SugarboxLogo* bitmap_;
 
 };

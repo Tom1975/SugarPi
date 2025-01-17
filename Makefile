@@ -10,6 +10,7 @@ OBJS	= src/main.o\
 		src/kernel.o\
 		src/BasicFrame.o \
 		src/BackFrame.o \
+		src/CarrouselWindow.o \
 		src/SugarPiSetup.o\
 		src/Button.o\
 		src/ConfigurationManager.o\
