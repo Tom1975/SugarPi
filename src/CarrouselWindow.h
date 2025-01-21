@@ -5,7 +5,6 @@
 #include "MenuWindows.h"
 #include "SugarboxLogo.h"
 
-
 class CarrouselWindow : public Window
 {
 public:
@@ -15,6 +14,8 @@ public:
    virtual void Create(Window* parent, int x, int y, unsigned int width, unsigned int height);
 
    virtual void Clear();
+
+   static void LoadCarrousel();
 
 protected:
    class GameDescription

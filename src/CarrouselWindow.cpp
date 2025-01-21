@@ -1,6 +1,16 @@
 
 #include "CarrouselWindow.h"
 
+#include "files.h"
+
+#include <filesystem>
+#include <fstream>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+namespace fs = std::filesystem;
+
+
 
 CarrouselWindow::CarrouselWindow(BasicFrame* display) :
    Window(display)
@@ -38,8 +48,28 @@ void CarrouselWindow::Create(Window* parent, int x, int y, unsigned int width, u
    // Screenshot window
    // Description window
    // Game selection stripe
+}
 
-   // Fill inner game structure with "Carrousel" folder.
+void CarrouselWindow::LoadCarrousel()
+{
+   // Fill inner game structure with "Carrousel" folder :
+   std::string path = PATH_GAMES;
+
+   // For each game in folder : 
+   for (const auto& p : fs::directory_iterator(path))
+   {
+      if (p.path().extension() == ".car")
+      {
+         // Read the JSON file
+         std::ifstream f("example.json");
+         json data = json::parse(f);
+
+         // Load each values available.
+         // If everything is ok, add it to game carrousel.
+         // otherwise, free resources
+
+      }
+   }
 
 }
 
@@ -47,3 +77,4 @@ void CarrouselWindow::Clear()
 {
    Window::Clear();
 }
+

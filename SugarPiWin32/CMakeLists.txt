@@ -150,15 +150,22 @@ set (RES
 
 )
 
+file(GLOB CARROUSEL_Files
+     ${CMAKE_CURRENT_SOURCE_DIR}/../res/GAMES/*
+)
+
 add_definitions()
 
 source_group("CPCCORE" FILES ${CpcCore_Files} )
 source_group("Sugarpi" FILES ${SugarPi_Files} )
 source_group("Resources" FILES ${RES} )
 
+source_group("Carrousel" FILES ${CARROUSEL_Files} )
+
+
 set(ALL_FILES ${Source_Files} ${CpcCore_Files} ${SugarPi_Files})
 
-add_executable(SugarPiWin32 WIN32 ${RES})
+add_executable(SugarPiWin32 WIN32 ${RES} ${CARROUSEL_Files})
 
 target_sources(SugarPiWin32 PUBLIC ${ALL_FILES} )
 target_link_libraries(SugarPiWin32 PUBLIC Shlwapi.lib Dwmapi.lib Winmm.lib D2d1.lib)
@@ -194,6 +201,7 @@ install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/Img6128_plus.bin"  DESTINATIO
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/../res/labels.ini"  DESTINATION ${CMAKE_INSTALL_PREFIX}/RES)
 install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../res/ROMS DESTINATION ${CMAKE_INSTALL_PREFIX}/)
 install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../res/AMSTRAD DESTINATION ${CMAKE_INSTALL_PREFIX})
+install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../res/GAMES DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 
 
