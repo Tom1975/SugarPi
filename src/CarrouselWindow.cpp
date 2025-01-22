@@ -61,10 +61,22 @@ void CarrouselWindow::LoadCarrousel()
       if (p.path().extension() == ".car")
       {
          // Read the JSON file
-         std::ifstream f("example.json");
-         json data = json::parse(f);
+         std::ifstream f(p.path());
+         json j = json::parse(f, nullptr, false);
+         if (j.is_discarded())
+         {
+            // Parse error, log and do nothing
+            CLogger::Get()->Write("CARROUSEL", LogNotice, "Parse error on file %s", p.path().u8string().c_str());
+            continue;
+         }
+         CLogger::Get()->Write("CARROUSEL", LogNotice, "Parse file %s ok", p.path().u8string().c_str());
 
          // Load each values available.
+         GameDescription description;
+         description.name_ = j["Game_name"];
+         description.description_ = j["Description"];
+         description.screen_path_ = j["Screenshot"];
+
          // If everything is ok, add it to game carrousel.
          // otherwise, free resources
 

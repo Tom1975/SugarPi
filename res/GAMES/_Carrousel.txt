@@ -11,9 +11,11 @@ Mandatory : If one of this is missing, it will not be displayed
 - "Game_name" : The game name
 - "Screenshot" : A path to the screenshotto be displayed as screen
 - "Media" : The dump file to be loaded (CPR, Tape, Disk, anything). One is mandatory.
+- "HardwareConfiguration" : The hardware configuration to be used (CPC, CPC+, etc)
 
 Optionnal :
 
+- "Startup_command" : Command to launch the game (if necessary)
 - "Description"
 - "Author"
 - "Year

@@ -162,7 +162,6 @@ source_group("Resources" FILES ${RES} )
 
 source_group("Carrousel" FILES ${CARROUSEL_Files} )
 
-
 set(ALL_FILES ${Source_Files} ${CpcCore_Files} ${SugarPi_Files})
 
 add_executable(SugarPiWin32 WIN32 ${RES} ${CARROUSEL_Files})

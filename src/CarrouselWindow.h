@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+#include <vector>
+#include <filesystem>
+
 #include "Window.h"
 #include "BitmapWindows.h"
 #include "MenuWindows.h"
@@ -21,10 +25,26 @@ protected:
    class GameDescription
    {
    public:
+      /////////////////////////
+      // Mandatory
+      // 
+      // Game name
       std::string name_;
+
+      // screenshot
+      std::string screen_path_;
+
+      // Media path
+      std::vector<std::filesystem::path> media_list_;
+
+      /////////////////////////
+      // Optionnal
+      // Game description
       std::string description_;
 
-      std::string sna_path_;
+      // Startup command
+      std::string startup_command_;
+
    };
 
    BitmapWindows* logo_;
