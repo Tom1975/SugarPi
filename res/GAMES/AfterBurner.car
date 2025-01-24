@@ -2,7 +2,9 @@
    "Game_name": "After Burner",
    "Description": "The game blablablabla",
    "Screenshot": "AfterBurner.png",
-   "Media": { "AfterBurner.cpr" },
+   "Media": [
+      "AfterBurner.cpr"
+   ],
    "HardwareConfiguration": "CPC",
-   "Startup_command": "run \"disc",
+   "Startup_command": "run \"disc"
 }
