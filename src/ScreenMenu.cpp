@@ -68,6 +68,7 @@ std::vector<IAction::ActionReturn(ScreenMenu::*)()> function_menu =
 ScreenMenu::MenuItem base_menu[] =
 {
    { "MENU_Resume",             &ScreenMenu::Resume},
+   { "MENU_Carousel",           &ScreenMenu::Carrousel},
    { "MENU_Select_Amstrad",     &ScreenMenu::SelectAmstrad},
    { "MENU_Insert_Cartridge",   &ScreenMenu::InsertCartridge},
    { "MENU_Insert_Disk",        &ScreenMenu::InsertDisk},

@@ -10,7 +10,8 @@
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
-
+bool CarrouselWindow::is_loaded_ = false;
+std::vector<CarrouselWindow::GameDescription> CarrouselWindow::game_list_;
 
 CarrouselWindow::CarrouselWindow(BasicFrame* display) :
    Window(display)
@@ -30,8 +31,10 @@ CarrouselWindow::CarrouselWindow(BasicFrame* display) :
    //logo_->Create(this, 240, 70, bitmap_);
    int lw, lh;
    bitmap_->GetSize(lw, lh);
-   logo_->Create(this, (w - lw) / 2,
-                               (h/4 - lh) / 2, bitmap_);
+   logo_->Create(this, (w - lw) / 2,!
+                               0, bitmap_);
+
+   current_game_ = nullptr;
 }
 
 CarrouselWindow::~CarrouselWindow()
@@ -45,10 +48,53 @@ void CarrouselWindow::Create(Window* parent, int x, int y, unsigned int width, u
    Window::Create(parent, x, y, width, height);
 
    // Add internal windows : 
-   // Screenshot window
    // Description window
    // Game selection stripe
 }
+
+void CarrouselWindow::Clear()
+{
+   Window::Clear();
+}
+
+void CarrouselWindow::RedrawWindow()
+{
+   Window::RedrawWindow();
+
+   // wait for game list to be loaded
+   while (!is_loaded_)
+   {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+   }
+
+   // Check that we have a game to display
+   if (current_game_ == nullptr)
+   {
+      ChangeGame();
+   }
+
+   // Draw screenshot
+   DrawBitmap(&screenshot_bitmap_, 10, 255);
+
+   // Write description
+   display_->SelectColor(0xFF0000);
+   display_->WriteText(current_game_->description_.c_str(), 255, 255);
+
+}
+
+void CarrouselWindow::ChangeGame(unsigned int index )
+{
+   // Set current data
+   current_game_ = &game_list_[index];
+
+   // Force redraw
+   std::filesystem::path scr_path = PATH_GAMES;
+   scr_path /= current_game_->screen_path_;
+
+   screenshot_bitmap_.Load(scr_path.string().c_str());
+
+}
+
 
 void CarrouselWindow::LoadCarrousel()
 {
@@ -79,14 +125,9 @@ void CarrouselWindow::LoadCarrousel()
 
          // If everything is ok, add it to game carrousel.
          // otherwise, free resources
+         game_list_.push_back(description);
 
       }
    }
-
+   is_loaded_ = true;
 }
-
-void CarrouselWindow::Clear()
-{
-   Window::Clear();
-}
-
