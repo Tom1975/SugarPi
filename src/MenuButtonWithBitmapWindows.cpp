@@ -6,7 +6,7 @@
 #include "MenuButtonWithBitmapWindows.h"
 
 ////////////////////////////////////////////////////////////////////////////////////
-MenuButtonWithBitmapWindows::MenuButtonWithBitmapWindows(BasicFrame* display) : MenuItemWindows(display), button_(display)
+MenuButtonWithBitmapWindows::MenuButtonWithBitmapWindows(DisplayPi* display) : MenuItemWindows(display), button_(display)
 {
 }
 
@@ -77,9 +77,9 @@ void MenuButtonWithBitmapWindows::RedrawWindow()
 
       Window::WindowsToDisplay(x, y);
 
-      SFT* oldfnt = display_->SelectFont(fnt_italic_);
+      SFT* oldfnt = SelectFont(fnt_italic_);
 
-      display_->SelectColor(0xFF000000);
+      SelectColor(0xFF000000);
       
       std::string current = description_.c_str();
       std::string to_display;
@@ -87,7 +87,7 @@ void MenuButtonWithBitmapWindows::RedrawWindow()
       {
          if (it == '\n')
          {
-            display_->WriteText(to_display.c_str(), x, y);
+            WriteText(to_display.c_str(), x, y);
             y += 45;
             to_display.clear();
          }
@@ -96,9 +96,9 @@ void MenuButtonWithBitmapWindows::RedrawWindow()
             to_display += it;
          }
       }
-      display_->WriteText(to_display.c_str(), x, y);
+      WriteText(to_display.c_str(), x, y);
 
-      display_->SelectFont(oldfnt);
+      SelectFont(oldfnt);
 
       
    }   

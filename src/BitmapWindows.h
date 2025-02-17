@@ -22,7 +22,7 @@
 class BitmapWindows : public Window
 {
 public:
-   BitmapWindows(BasicFrame* display);
+   BitmapWindows(DisplayPi* display);
    virtual ~BitmapWindows();
 
    virtual void Create(Window* parent, int x, int y, PiBitmap* bmp);

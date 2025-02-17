@@ -32,7 +32,7 @@ static char s[1024];
 #define INTERLINE_SPACE 40
 
 ////////////////////////////////////////////////////////////////////////////////////
-MenuWindows::MenuWindows(BasicFrame* display) : Window(display), current_focus_(-1), scroll_window_(display)
+MenuWindows::MenuWindows(DisplayPi* display) : Window(display), current_focus_(-1), scroll_window_(display)
 {
 }
 

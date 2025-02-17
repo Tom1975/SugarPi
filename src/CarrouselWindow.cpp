@@ -13,8 +13,8 @@ namespace fs = std::filesystem;
 bool CarrouselWindow::is_loaded_ = false;
 std::vector<CarrouselWindow::GameDescription> CarrouselWindow::game_list_;
 
-CarrouselWindow::CarrouselWindow(BasicFrame* display) :
-   Window(display)
+CarrouselWindow::CarrouselWindow(DisplayPi* display) :
+   Window(display), stripe_(display)
 {
    // Compute window size : Depending on display
    unsigned int w = display->GetWidth();
@@ -50,6 +50,7 @@ void CarrouselWindow::Create(Window* parent, int x, int y, unsigned int width, u
    // Add internal windows : 
    // Description window
    // Game selection stripe
+   stripe_.Create(this, 0, width-200, width, 200);
 }
 
 void CarrouselWindow::Clear()
@@ -59,13 +60,13 @@ void CarrouselWindow::Clear()
 
 void CarrouselWindow::RedrawWindow()
 {
-   Window::RedrawWindow();
-
    // wait for game list to be loaded
    while (!is_loaded_)
    {
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
    }
+
+   Window::RedrawWindow();
 
    // Check that we have a game to display
    if (current_game_ == nullptr)
@@ -77,8 +78,8 @@ void CarrouselWindow::RedrawWindow()
    DrawBitmap(&screenshot_bitmap_, 10, 255);
 
    // Write description
-   display_->SelectColor(0xFF0000);
-   display_->WriteText(current_game_->description_.c_str(), 255, 255);
+   SelectColor(0xFF0000);
+   WriteText(current_game_->description_.c_str(), 255, 255);
 
 }
 

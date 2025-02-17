@@ -9,11 +9,12 @@
 #include "SimpleBitmap.h"
 #include "MenuWindows.h"
 #include "SugarboxLogo.h"
+#include "Stripe.h"
 
 class CarrouselWindow : public Window
 {
 public:
-   CarrouselWindow(BasicFrame* display);
+   CarrouselWindow(DisplayPi* display);
    virtual ~CarrouselWindow();
 
    virtual void Create(Window* parent, int x, int y, unsigned int width, unsigned int height);
@@ -61,6 +62,7 @@ protected:
    SugarboxLogo* bitmap_;
 
    SimpleBitmap screenshot_bitmap_;
+   Stripe stripe_;
 
    // Current game 
    GameDescription* current_game_;

@@ -81,8 +81,12 @@ set(SugarPi_Files
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/Window.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/SimpleBitmap.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/SimpleBitmap.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/Stripe.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/Stripe.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/SugarboxLogo.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../src/SugarboxLogo.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/WindowFrame.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../src/WindowFrame.h
 )
 
 set(CpcCore_Files

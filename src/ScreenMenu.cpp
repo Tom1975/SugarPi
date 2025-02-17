@@ -276,7 +276,7 @@ void ScreenMenu::Reload()
    unsigned int i = 0;
    if (main_menu_ == nullptr)
    {
-      main_menu_ = new MainMenuWindows(display_->GetMenuFrame());
+      main_menu_ = new MainMenuWindows(display_);
    }
 
    while (base_menu[i].label_ != nullptr && i < MAX_ITEM_PER_PAGE)
@@ -403,7 +403,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    // Create menu from config_list 
    Window* focus = Window::GetFocus();
 
-   MainMenuWindows* cfg_menu = new MainMenuWindows(display_->GetMenuFrame());
+   MainMenuWindows* cfg_menu = new MainMenuWindows(display_);
 
    cfg_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
       , new ActionMenu(this, &ScreenMenu::Back));
@@ -411,7 +411,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstrad()
    int offset_y = INTERLINE_SPACE + 2;
    for (auto& it : config_list)
    {
-      MenuButtonWithBitmapWindows* item = new MenuButtonWithBitmapWindows(display_->GetMenuFrame());
+      MenuButtonWithBitmapWindows* item = new MenuButtonWithBitmapWindows(display_);
       item->Create(it.name_.c_str(), it.description_.c_str(), & it.associatedBmp_, cfg_menu->GetMenu()->GetScrollWindow(), 10, offset_y,
          400, INTERLINE_SPACE,
          410, INTERLINE_SPACE + 2 , 800, 450);
@@ -447,7 +447,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstradFinal(ScreenMenu::AmstradConfigur
    // Display the current name / associated bitmap
    // Display a menu with all the languages
    Window* focus = Window::GetFocus();
-   MainMenuWindows* config_menu = new MainMenuWindows(display_->GetMenuFrame());
+   MainMenuWindows* config_menu = new MainMenuWindows(display_);
 
    config_menu->GetMenu()->AddMenuItem("..", OFFSET_SUBMENU_X, OFFSET_SUBMENU_Y, 280, INTERLINE_SPACE - 2
       , new ActionMenu(this, &ScreenMenu::Back));
@@ -458,7 +458,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstradFinal(ScreenMenu::AmstradConfigur
    int i = 0;
    for (auto& it : config.languages_)
    {
-      MenuButtonWithBitmapWindows* item = new MenuButtonWithBitmapWindows(display_->GetMenuFrame());
+      MenuButtonWithBitmapWindows* item = new MenuButtonWithBitmapWindows(display_);
       item->Create(it.fullname_.c_str(), it.description_.c_str(), &config.associatedBmp_, config_menu->GetMenu()->GetScrollWindow(), OFFSET_SUBMENU_X, offset_y,
          290, INTERLINE_SPACE,
          410, INTERLINE_SPACE + 2, 800, 450);
@@ -555,7 +555,7 @@ IAction::ActionReturn ScreenMenu::SelectAmstradCustom()
    // Create selection menu
    Window* focus = Window::GetFocus();
 
-   MainMenuWindows* file_menu = new MainMenuWindows (display_->GetMenuFrame());
+   MainMenuWindows* file_menu = new MainMenuWindows (display_);
 
    file_menu->GetMenu()->AddMenuItem("..", 10, i * INTERLINE_SPACE, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
       , new ActionMenu(this, &ScreenMenu::Back));
@@ -707,7 +707,7 @@ IAction::ActionReturn ScreenMenu::InsertMedia(const char* path, IAction::ActionR
    // Create selection menu
    Window* focus = Window::GetFocus();
 
-   MainMenuWindows* file_menu = new MainMenuWindows (display_->GetMenuFrame());
+   MainMenuWindows* file_menu = new MainMenuWindows (display_);
 
    file_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
       , new ActionMenu(this, &ScreenMenu::Back));
@@ -769,7 +769,7 @@ IAction::ActionReturn ScreenMenu::InsertTape()
 IAction::ActionReturn ScreenMenu::ChangeLanguage()
 {
    Window* focus = Window::GetFocus();
-   MainMenuWindows* setup_menu = new MainMenuWindows(display_->GetMenuFrame());
+   MainMenuWindows* setup_menu = new MainMenuWindows(display_);
 
    setup_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2, new ActionMenu(this, &ScreenMenu::Back));
 
@@ -799,7 +799,7 @@ IAction::ActionReturn ScreenMenu::ChangeLanguage()
 IAction::ActionReturn ScreenMenu::SugarSetup()
 {
    Window* focus = Window::GetFocus();
-   MainMenuWindows* setup_menu = new MainMenuWindows (display_->GetMenuFrame());
+   MainMenuWindows* setup_menu = new MainMenuWindows (display_);
 
    setup_menu->GetMenu()->AddMenuItem("..", 10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2
       , new ActionMenu(this, &ScreenMenu::Back));
@@ -858,7 +858,7 @@ IAction::ActionReturn ScreenMenu::Reset()
 IAction::ActionReturn ScreenMenu::Info()
 {
    Window* focus = Window::GetFocus();
-   MainMenuWindows* setup_menu = new MainMenuWindows(display_->GetMenuFrame());
+   MainMenuWindows* setup_menu = new MainMenuWindows(display_);
 
    setup_menu->GetMenu()->AddMenuItem(language_->GetString("MENU_Exit"), 
       10, 0, main_menu_->GetMenu()->GetWidth() - 10, INTERLINE_SPACE - 2,
@@ -922,7 +922,7 @@ void ScreenMenu::ForceStop()
 IAction::ActionReturn ScreenMenu::Carrousel()
 {
    Window* focus = Window::GetFocus();
-   CarrouselWindow* carrousel_menu = new CarrouselWindow(display_->GetMenuFrame());
+   CarrouselWindow* carrousel_menu = new CarrouselWindow(display_);
 
    IAction::ActionReturn return_value = carrousel_menu->DoScreen(this);
    delete carrousel_menu;

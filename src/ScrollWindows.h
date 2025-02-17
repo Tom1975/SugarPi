@@ -23,7 +23,7 @@
 class ScrollWindows : public Window
 {
 public:
-   ScrollWindows(BasicFrame* display);
+   ScrollWindows(DisplayPi* display);
    virtual ~ScrollWindows();
 
    virtual void RedrawChildren();

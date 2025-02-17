@@ -67,6 +67,15 @@ bool DisplayPi::Initialization()
    return true;
 }
 
+void DisplayPi::AddFrame(Frame* frame)
+{
+   window_list_protector_.lock();
+   // 
+   windows_list_.push_back(frame);
+
+   window_list_protector_.unlock();
+}
+
 void DisplayPi::SetScanlines(int scan)
 {
    
@@ -308,6 +317,7 @@ void DisplayPi::Draw()
    // Start Drawing
    BeginDraw();
 
+   window_list_protector_.lock();
    for (auto it : windows_list_)
    {
       int changed = it->frame_->AttributesHasChanged();
@@ -324,6 +334,7 @@ void DisplayPi::Draw()
          it->frame_->AttributesChanged();
       }
    }
+   window_list_protector_.unlock();
    EndDraw();
 }
 

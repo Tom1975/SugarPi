@@ -2,7 +2,7 @@
 #include "MainMenuWindows.h"
 
 
-MainMenuWindows::MainMenuWindows(BasicFrame* display) :
+MainMenuWindows::MainMenuWindows(DisplayPi* display) :
    Window(display)
 {
    // Compute window size : Depending on display

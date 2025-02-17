@@ -7,7 +7,7 @@
 class MenuItemWindows : public Window
 {
 public:
-   MenuItemWindows (BasicFrame* display);
+   MenuItemWindows (DisplayPi* display);
    virtual ~MenuItemWindows ();
 
    virtual void Create(const char* label, Window* parent, int x, int y, unsigned int width, unsigned int height);

@@ -16,7 +16,7 @@
 #endif
 
 #include <vector>
-#include "BasicFrame.h"
+#include "DisplayPi.h"
 #include "PiBitmap.h"
 
 #include "schrift.h"
@@ -61,8 +61,15 @@ public:
       int x;
       int y;
    };
-   Window(BasicFrame* display);
+   Window(DisplayPi* display);
    virtual ~Window();
+
+   void WriteText(const char* text, int x, int y);
+   SFT* SelectFont(SFT* fnt);
+   int SelectColor(int color);
+   void FrameIsReady();
+   int* GetBuffer(int y);
+   int GetFullHeight();
 
    virtual IAction::ActionReturn DoScreen (IEvent* event_handler);
 
@@ -103,7 +110,8 @@ public:
 protected:
 
    // Display
-   BasicFrame* display_;
+   DisplayPi* display_;
+   DisplayPi::Frame* frame_;
    static bool stop_;
 
    // Coordinate

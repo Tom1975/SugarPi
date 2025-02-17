@@ -13,6 +13,7 @@
 #include "EmulationFrame.h"
 
 #include "CPCCore/CPCCoreEmu/Screen.h"
+#include <mutex>
 
 
 #define FRAME_BUFFER_SIZE 3
@@ -21,6 +22,12 @@
 class DisplayPi : public IDisplay
 {
 public:
+   class Frame
+   {
+   public:
+      BasicFrame* frame_;
+   };
+
 
    enum ScreenType
    {
@@ -48,6 +55,9 @@ public:
    virtual void SetSize(SizeEnum size);
    virtual SizeEnum  GetSize();
    virtual void VSync(bool dbg = false);
+
+   // Add Frame
+   virtual void AddFrame(Frame* frame);
 
    // Start of sync
    virtual void StartSync();
@@ -110,12 +120,6 @@ public:
    BasicFrame *GetEmulationFrame() { return &emu_frame_; }
 
 protected:
-   class Frame
-   {
-   public:
-      BasicFrame* frame_;
-   };
-
    virtual void CopyMemoryToRessources(DisplayPi::Frame* frame_) = 0;
    virtual void ChangeAttribute(Frame*, int src_x, int src_y, int src_w, int src_h,
       int dest_x, int dest_y, int dest_w, int dest_h) = 0;
@@ -142,7 +146,7 @@ protected:
    MenuFrame menu_frame_;
    EmulationFrame emu_frame_;
 
-
+   std::mutex window_list_protector_;
    std::vector<DisplayPi::Frame*> windows_list_;
 
    bool sync_on_frame_;
