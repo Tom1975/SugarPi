@@ -54,9 +54,12 @@ void BitmapWindows::RedrawWindow()
    static float offset;
    for (int i = 0; i < height_; i++)
    {
-      int* line = GetBuffer(i + y_);
-      bmp_->DrawLogo(i, &line[x_  /* + (int)(sinf(offset) * 10)*/]);
-      offset += 0.002f;
+      if (y_ + i >= 0)
+      {
+         int* line = GetBuffer(i + y_);
+         bmp_->DrawLogo(i, &line[x_  /* + (int)(sinf(offset) * 10)*/]);
+         offset += 0.002f;
+      }
    }
    //CLogger::Get()->Write("Window", LogNotice, "RedrawWindow end");
 

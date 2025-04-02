@@ -317,10 +317,18 @@ void DisplayPi::Draw()
    // Start Drawing
    BeginDraw();
 
+   logger_->Write("Display", LogNotice, "*** BeginDraw");
    window_list_protector_.lock();
    for (auto it : windows_list_)
    {
       int changed = it->frame_->AttributesHasChanged();
+
+      logger_->Write("Display", LogNotice, "    Windows : x:%i, y:%i, w:%i; h:%i", 
+         it->frame_->GetDisplayX(),
+         it->frame_->GetDisplayY(),
+         it->frame_->GetDisplayWidth(),
+         it->frame_->GetDisplayHeight()
+         );
 
       // Copy memory to ressource
       CopyMemoryToRessources(it);
@@ -336,5 +344,6 @@ void DisplayPi::Draw()
    }
    window_list_protector_.unlock();
    EndDraw();
+   logger_->Write("Display", LogNotice, "*** EndDraw");
 }
 

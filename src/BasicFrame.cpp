@@ -78,6 +78,13 @@ void BasicFrame::Init(int width, int height, int nb_buffers)
    Draw();
 }
 
+void BasicFrame::Move(int x, int y)
+{
+   display_x_ = x;
+   display_y_ = y;
+   current_change_ |= CHANGED_DEST_RECT;
+}
+
 void BasicFrame::Reset(int buffer)
 {
    if ( buffer == -1)
@@ -229,6 +236,12 @@ int BasicFrame::SelectColor(int color)
    return old_color;
 }
 
+void BasicFrame::Draw()
+{
+   // 
+   CLogger::Get()->Write("DIS", LogNotice, "Draw BasicFrame");
+}
+
 void BasicFrame::WriteText(const char* text, int x, int y)
 {
 
@@ -281,6 +294,7 @@ void BasicFrame::WriteText(const char* text, int x, int y)
 
       SFT_Image img;
       img.width = (mtx.minWidth + 3) & ~3;
+
       img.height = mtx.minHeight;
 
       char* pixels = new char[img.width * img.height];
@@ -316,3 +330,4 @@ void BasicFrame::WriteText(const char* text, int x, int y)
    }
    delete[]codepoints;
 }
+

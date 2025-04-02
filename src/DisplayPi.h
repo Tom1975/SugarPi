@@ -57,6 +57,7 @@ public:
    virtual void VSync(bool dbg = false);
 
    // Add Frame
+   virtual Frame * CreateFrame(BasicFrame* frame, int w, int h) = 0;
    virtual void AddFrame(Frame* frame);
 
    // Start of sync
@@ -118,6 +119,10 @@ public:
    BasicFrame *GetBackgroundFrame() { return &back_frame_; }
    BasicFrame *GetMenuFrame() { return &menu_frame_; }
    BasicFrame *GetEmulationFrame() { return &emu_frame_; }
+
+   virtual int GetDisplayWidth() = 0;
+   virtual int GetDisplayHeight() = 0;
+
 
 protected:
    virtual void CopyMemoryToRessources(DisplayPi::Frame* frame_) = 0;

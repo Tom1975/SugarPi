@@ -6,8 +6,8 @@ MainMenuWindows::MainMenuWindows(DisplayPi* display) :
    Window(display)
 {
    // Compute window size : Depending on display
-   unsigned int w = display->GetWidth();
-   unsigned int h = display->GetHeight();
+   int w = display->GetWidth();
+   int h = display->GetHeight();
    double ratio = (double)w / (double)h;
 
    Create(0, 10, 0, w-20, h);

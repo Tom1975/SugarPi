@@ -62,15 +62,22 @@ Window::~Window()
 void Window::Create (Window* parent, int x, int y, unsigned int width, unsigned int height)
 {
    // Ask for a new frame
-   frame_ = new DisplayPi::Frame;
-   frame_->frame_ = new WindowFrame();
-
+   BasicFrame* frame = new BasicFrame();
+   frame->Init(width, height, 1);
+   frame->SetDisplaySize(width, height);
 
    parent_ = parent;
    x_ = x;
    y_ = y;
    width_ = width;
    height_ = height;
+
+   WindowsToDisplay(x, y);
+   frame->Move(x, y);
+
+   frame_ = display_->CreateFrame(frame, width, height);
+   display_->AddFrame(frame_);
+
 
    if ( parent_ != nullptr)
    {

@@ -31,6 +31,7 @@ public:
 
    /////////// Display
    // Internal bitmap : offset of the top/left corner to display, in pixel
+   virtual void Move(int x, int y);
    virtual int GetOffsetX(){return x_;};
    virtual int GetOffsetY(){return y_;};
 
@@ -55,9 +56,7 @@ public:
    int SelectColor(int color);
    void WriteText(const char* text, int x, int y);
 
-
-
-   virtual void Draw () = 0;
+   virtual void Draw ();
    virtual void Refresh ();
 
    // Change window size
@@ -100,12 +99,13 @@ protected:
    int height_;
 
    // display size
-   int display_x_;
-   int display_y_;
-   int display_width_;
-   int display_height_;
-   int display_width_full_;
-   int display_height_full_;
+
+   int display_x_;               // Place on the screen (x)
+   int display_y_;               // Placement on the screen (y)
+   int display_width_;           // Width of the windows to be displayed on the screen
+   int display_height_;          // Height of the windows to be displayed on the screen   
+   int display_width_full_;      // Full width of the screen
+   int display_height_full_;     // Full height of the screen
 
    // buffer handling   
    unsigned int nb_buffers_;
