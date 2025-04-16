@@ -22,7 +22,7 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-CheckMenuItemWindows::CheckMenuItemWindows(BasicFrame* display) : MenuItemWindows(display), value_(nullptr)
+CheckMenuItemWindows::CheckMenuItemWindows(DisplayPi* display) : MenuItemWindows(display), value_(nullptr)
 {
 
 }
@@ -47,18 +47,18 @@ void CheckMenuItemWindows::RedrawWindow()
    if (focus_ == this)
    {
       // draw it 
-      display_->SelectFont(fnt_italic_);
-      display_->SelectColor(0xFF0000);
+      SelectFont(fnt_italic_);
+      SelectColor(0xFF0000);
    }
    else
    {
-      display_->SelectFont(fnt_normal_);
-      display_->SelectColor(0x000000);
+      SelectFont(fnt_normal_);
+      SelectColor(0x000000);
    }
 
    // Draw the check box
-   display_->WriteText((*value_) ? "[X]" : "[ ]", x, y);
-   display_->WriteText(label_, x + 60, y);
+   WriteText((*value_) ? "[X]" : "[ ]", x, y);
+   WriteText(label_, x + 60, y);
 }
 
 IAction::ActionReturn CheckMenuItemWindows::HandleEvent(IEvent::Event event)

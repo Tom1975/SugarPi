@@ -9,7 +9,7 @@
 class MainMenuWindows : public Window
 {
 public:
-   MainMenuWindows(BasicFrame* display);
+   MainMenuWindows(DisplayPi* display);
    virtual ~MainMenuWindows();
 
    void ResetMenu(unsigned int index = 0);

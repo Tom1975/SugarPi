@@ -24,7 +24,7 @@
 class MenuWindows : public Window
 {
 public:
-   MenuWindows(BasicFrame* display);
+   MenuWindows(DisplayPi* display);
    virtual ~MenuWindows();
 
    virtual void Create(Window* parent, int x, int y, unsigned int width, unsigned int height);

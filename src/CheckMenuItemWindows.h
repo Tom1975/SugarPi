@@ -23,7 +23,7 @@
 class CheckMenuItemWindows : public MenuItemWindows
 {
 public:
-   CheckMenuItemWindows(BasicFrame* display);
+   CheckMenuItemWindows(DisplayPi* display);
    virtual ~CheckMenuItemWindows();
 
    virtual void Create(const char* label, bool* value, Window* parent, int x, int y, unsigned int width, unsigned int height);

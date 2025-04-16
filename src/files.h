@@ -10,6 +10,7 @@
 #define PATH_TAPE "SD:/TAPE"
 #define PATH_CONFIGS "SD:/AMSTRAD"
 #define PATH_RES "SD:/RES"
+#define PATH_GAMES "SD:/GAMES"
 
 #define PATH_QUICK_SNA "SD:/quick.sna"
 #define INTER_FILE "/"
@@ -23,6 +24,7 @@
 #define PATH_TAPE ".\\TAPE"
 #define PATH_CONFIGS ".\\AMSTRAD"
 #define PATH_RES ".\\RES"
+#define PATH_GAMES ".\\GAMES"
 
 #define PATH_QUICK_SNA ".\\quick.sna"
 #define INTER_FILE "\\"

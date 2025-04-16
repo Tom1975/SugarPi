@@ -3,7 +3,7 @@
 #include "Button.h"
 
 
-Button::Button(BasicFrame* display) : Window(display), bitmap_(nullptr)
+Button::Button(DisplayPi* display) : Window(display), bitmap_(nullptr)
 {
 
 }

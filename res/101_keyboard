@@ -1,0 +1,18 @@
+#
+# 101 Enhanced Keyboard Layout.
+#
+# bit horizontal, from 0 -> 7
+# lines from top (0) to bottom (9)
+# Each value is the hexadecimal raw key code.
+#
+
+52 4F 51 61 5E 5B 58 63
+50 E2 5F 60 5D 59 5A 62
+4C 30 28 32 5C E5 38 E0
+2E 2D 2F 13 34 33 2E 37
+27 26 12 0C 0F 0E 10 36
+25 24 18 1C 0B 0D 11 2C
+23 22 15 17 0A 09 05 19
+21 20 08 1A 16 07 06 1B
+1E 1F 29 14 2B 04 39 1D
+00 00 00 00 00 00 00 2A

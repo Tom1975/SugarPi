@@ -11,7 +11,7 @@
 class MenuButtonWithBitmapWindows : public MenuItemWindows
 {
 public:
-   MenuButtonWithBitmapWindows (BasicFrame* display);
+   MenuButtonWithBitmapWindows (DisplayPi* display);
    virtual ~MenuButtonWithBitmapWindows();
 
    virtual void Create(const char* label, const char* description, SimpleBitmap* SimpleBitmap, Window* parent, int x, int y, unsigned int width, unsigned int height,

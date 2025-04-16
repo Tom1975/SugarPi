@@ -3,6 +3,7 @@
 #include <memory.h>
 #include <stdlib.h>
 #include <string.h>
+#include <algorithm>
 
 #include "BasicFrame.h"
 
@@ -75,22 +76,38 @@ void BasicFrame::Init(int width, int height, int nb_buffers)
    nb_frame_in_queue_ = 0;
    frame_used_[current_buffer_] = FR_USED;
    
+   static unsigned int color = 0x80808080;
+   Reset(color);
+   color += 0x000500000;
+
    Draw();
 }
 
-void BasicFrame::Reset(int buffer)
+void BasicFrame::Move(int x, int y)
 {
-   if ( buffer == -1)
+   display_x_ = x;
+   display_y_ = y;
+   current_change_ |= CHANGED_DEST_RECT;
+}
+
+void BasicFrame::Reset(unsigned int color, int buffer)
+{
+   if (back_pitch_ != 0 && internal_height_ != 0)
    {
-      for (int i = 0; i < nb_buffers_; i++)
+      if (buffer == -1)
       {
-         memset( display_frame_buffer_[i], 0, back_pitch_ * internal_height_ * 4);
+         for (int i = 0; i < nb_buffers_; i++)
+         {
+            std::fill(&display_frame_buffer_[i][0], &display_frame_buffer_[i][back_pitch_ * internal_height_ - 1], color);
+            //memset( display_frame_buffer_[i], 0, back_pitch_ * internal_height_ * 4);
+         }
       }
-   }
-   else
-   {
-      if ( buffer < nb_buffers_)
-         memset( display_frame_buffer_[buffer], 0, back_pitch_ * internal_height_ * 4);
+      else
+      {
+         if (buffer < nb_buffers_)
+            std::fill(&display_frame_buffer_[buffer][0], &display_frame_buffer_[buffer][back_pitch_ * internal_height_ - 1], color);
+         //memset( display_frame_buffer_[buffer], 0, back_pitch_ * internal_height_ * 4);
+      }
    }
 }
 
@@ -229,6 +246,12 @@ int BasicFrame::SelectColor(int color)
    return old_color;
 }
 
+void BasicFrame::Draw()
+{
+   // 
+   CLogger::Get()->Write("DIS", LogNotice, "Draw BasicFrame");
+}
+
 void BasicFrame::WriteText(const char* text, int x, int y)
 {
 
@@ -281,6 +304,7 @@ void BasicFrame::WriteText(const char* text, int x, int y)
 
       SFT_Image img;
       img.width = (mtx.minWidth + 3) & ~3;
+
       img.height = mtx.minHeight;
 
       char* pixels = new char[img.width * img.height];
@@ -316,3 +340,4 @@ void BasicFrame::WriteText(const char* text, int x, int y)
    }
    delete[]codepoints;
 }
+

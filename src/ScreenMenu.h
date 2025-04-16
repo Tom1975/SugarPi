@@ -82,6 +82,7 @@ public:
 
    void LauchMenu(unsigned int function);
 
+   IAction::ActionReturn Carrousel();
    IAction::ActionReturn Handle();
 
    IAction::ActionReturn Back();

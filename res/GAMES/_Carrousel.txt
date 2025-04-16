@@ -1,0 +1,23 @@
+This directory received the various game description / snapshots / screenshots / dumps, to be able to be 
+added to the game carrousel.
+
+Here is the format for each game :
+
+XXX.car:
+This file will be the main descriptor of the game. It's in a json file
+it will containes the following keys :
+
+Mandatory : If one of this is missing, it will not be displayed
+- "Game_name" : The game name
+- "Screenshot" : A path to the screenshotto be displayed as screen
+- "Media" : The dump file to be loaded (CPR, Tape, Disk, anything). One is mandatory.
+- "HardwareConfiguration" : The hardware configuration to be used (CPC, CPC+, etc)
+
+Optionnal :
+
+- "Startup_command" : Command to launch the game (if necessary)
+- "Description"
+- "Author"
+- "Year
+
+

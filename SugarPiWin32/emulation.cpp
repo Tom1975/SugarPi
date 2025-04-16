@@ -1,6 +1,6 @@
 #include "emulation.h"
 #include "ScreenMenu.h"
-
+#include "CarrouselWindow.h"
 
 
 
@@ -78,6 +78,7 @@ void Emulation::Run(unsigned nCore)
       logger_->Write("CORE", LogNotice, "Delayed init started");
       SugarboxLogo::Load();
       ScreenMenu::LoadDescriptions();
+      CarrouselWindow::LoadCarrousel();
 
       logger_->Write("CORE", LogNotice, "Delayed init Ended");
       break;

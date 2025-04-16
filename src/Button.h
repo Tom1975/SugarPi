@@ -6,7 +6,7 @@
 class Button : public Window
 {
 public:
-   Button(BasicFrame* display);
+   Button(DisplayPi* display);
    virtual ~Button();
 
    virtual void InitButton(SimpleBitmap* bmp, unsigned int x, unsigned int y);

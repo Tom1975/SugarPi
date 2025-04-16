@@ -105,7 +105,7 @@ bool DisplayPiImp::Initialization()
                            };
    back_wnd_.frame_->SetDisplay(  0, 0 );
    back_wnd_.frame_->SetDisplaySize(  info_.width, info_.height );   
-   windows_list_.push_back(&back_wnd_);
+   AddFrame(&back_wnd_);
 
    //----------------------
    // Main display for emulation
@@ -127,7 +127,7 @@ bool DisplayPiImp::Initialization()
        emu_wnd_.frame_->GetPitch(),
       info_.width, info_.height, emu_wnd_.frame_->GetFullWidth(), emu_wnd_.frame_->GetFullHeight());
 
-   windows_list_.push_back(&emu_wnd_);
+   AddFrame(&emu_wnd_);
 
    //----------------------
    // Menu
@@ -144,7 +144,7 @@ bool DisplayPiImp::Initialization()
                               opacity: 0x000000FF,
                               mask: 0
                        };      
-   windows_list_.push_back(&menu_wnd_);
+   AddFrame(&menu_wnd_);
 
    // Write background
    int width = back_wnd_.frame_->GetFullWidth();
@@ -357,6 +357,7 @@ void DisplayPiImp::ClearBuffer(int frame_index)
 
 void DisplayPiImp::CopyMemoryToRessources()
 {
+   window_list_protector_.lock();
    for (auto win_it : windows_list_)
    {
       DispmanxWindow* it = (DispmanxWindow*)win_it;
@@ -383,6 +384,7 @@ void DisplayPiImp::CopyMemoryToRessources()
 
       }
    }
+   window_list_protector_.unlock();
 }
 
 void DisplayPiImp::BeginDraw()

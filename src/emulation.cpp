@@ -1,5 +1,6 @@
 #include "emulation.h"
 #include "ScreenMenu.h"
+#include "CarrouselWindow.h"
 
 
 #define DRIVE		"SD:"
@@ -110,6 +111,7 @@ void Emulation::Run(unsigned nCore)
       SugarboxLogo::Load();
       keyboard_->LoadGameControllerDB();
       ScreenMenu::LoadDescriptions();
+      CarrouselWindow::LoadCarrousel();
       pnp_need_update_ = true;
       logger_->Write("CORE", LogNotice, "Delayed init done !");
       break;

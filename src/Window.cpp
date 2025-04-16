@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "Window.h"
+#include "WindowFrame.h"
 
 #ifdef RASPPI
 #include "BasicFrame.h"
@@ -34,8 +35,9 @@ Window* Window::focus_ = nullptr;
 bool Window::stop_ = false;
 
 ////////////////////////////////////////////////////////////////////////////////////
-Window::Window(BasicFrame* display) :
+Window::Window(DisplayPi* display) :
    display_(display), 
+   frame_(nullptr),
    x_(0), y_(0), 
    width_(0), height_(0), 
    visible_(true),
@@ -43,7 +45,6 @@ Window::Window(BasicFrame* display) :
    windows_children_(nullptr)
    
 {
-   //font_ = new CoolspotFont(display_->GetPitch());
 }
 
 Window::~Window()
@@ -60,11 +61,23 @@ Window::~Window()
 
 void Window::Create (Window* parent, int x, int y, unsigned int width, unsigned int height)
 {
+   // Ask for a new frame
+   BasicFrame* frame = new BasicFrame();
+   frame->Init(width, height, 1);
+   frame->SetDisplaySize(width, height);
+
    parent_ = parent;
    x_ = x;
    y_ = y;
    width_ = width;
    height_ = height;
+
+   WindowsToDisplay(x, y);
+   frame->Move(x, y);
+
+   frame_ = display_->CreateFrame(frame, width, height);
+   display_->AddFrame(frame_);
+
 
    if ( parent_ != nullptr)
    {
@@ -77,7 +90,7 @@ void Window::ClearAll()
    // Background
    for (int i = 0; i < display_->GetHeight() ; i++)
    {
-      int* line = display_->GetBuffer(i);
+      int* line = GetBuffer(i);
       memset(line, 0x0, sizeof(int) * display_->GetWidth());
    }
 }
@@ -89,7 +102,7 @@ void Window::Clear()
    WindowsToDisplay(x, y);
    for (int i = std::max<int> (0, y); i < display_->GetHeight() && i < y + height_; i++)
    {
-      int* line = display_->GetBuffer(i);
+      int* line = GetBuffer(i);
       int size_to_clear = width_;
       if (size_to_clear + x > display_->GetWidth())
          size_to_clear = display_->GetWidth() - x;
@@ -153,15 +166,12 @@ void Window::DrawBitmap(PiBitmap* bmp, int x, int y)
 
    int bmp_with, bmp_height;
    bmp->GetSize(bmp_with, bmp_height);
-   for (int i = 0; i < bmp_height && i+y < display_->GetFullHeight(); i++)
+   for (int i = 0; i < bmp_height && i+y < GetFullHeight(); i++)
    {
-      int* line = display_->GetBuffer(i + y);
+      int* line = GetBuffer(i + y);
       bmp->DrawLogo(i, &line[x ]);
    }
 }
-
-#define DrawPixel(x,y,c) \
-   int* ptr = display_->GetBuffer(y) + x;*ptr = c;
 
 // Bresenham algorithm, thanks to Wikipedia
 void Window::DrawLine(int x0, int y0, int x1, int y1, unsigned int color)
@@ -174,7 +184,9 @@ void Window::DrawLine(int x0, int y0, int x1, int y1, unsigned int color)
 
    while (true)
    {
-      DrawPixel(x0, y0, color);
+      int* ptr = GetBuffer(y0);
+      if (ptr != nullptr && x0 < GetWidth())
+         *&ptr[x0] = color;
       if (x0 == x1 && y0 == y1) break;
 
       int e2 = 2 * error;
@@ -214,7 +226,7 @@ void Window::DrawRectangle(int x, int y, int w, int h, unsigned int color)
 {
    Window::WindowsToDisplay(x, y);
 
-   int* line = display_->GetBuffer(y) + x;
+   int* line = GetBuffer(y) + x;
    for (int ix = 0; ix < w; ix++)
    {
       *line++ = color;
@@ -222,11 +234,11 @@ void Window::DrawRectangle(int x, int y, int w, int h, unsigned int color)
 
    for (int iy = y + 1; iy < y + h - 2; iy++)
    {
-      line = display_->GetBuffer(iy) + x;
+      line = GetBuffer(iy) + x;
       line[0] = color;
       line[width_ - 1] = color;
    }
-   line = display_->GetBuffer(y + h - 1) + x;
+   line = GetBuffer(y + h - 1) + x;
    for (int ix = 0; ix < w; ix++)
    {
       *line++ = color;
@@ -281,7 +293,7 @@ void Window::Redraw (bool clear)
       RedrawWindow();
       RedrawChildren();
    }
-   display_->FrameIsReady();
+   FrameIsReady();
 
 #ifdef PROFILE
    STOP_CHRONO
@@ -383,5 +395,57 @@ void Window::RemoveFocus ()
 {
 }
 
+void Window::WriteText(const char* text, int x, int y)
+{
+   if (frame_)
+   {
+      frame_->frame_->WriteText(text, x, y);
+   }
+}
+
+SFT* Window::SelectFont(SFT* fnt)
+{
+   if (frame_)
+   {
+      return frame_->frame_->SelectFont(fnt);
+   }
+   return nullptr;
+}
+
+int Window::SelectColor(int color)
+{
+   if (frame_)
+   {
+      return frame_->frame_->SelectColor(color);
+   }
+   return 0;
+}
+
+void Window::FrameIsReady()
+{
+   if (frame_)
+   {
+      frame_->frame_->FrameIsReady();
+   }
+}
+
+int* Window::GetBuffer(int y)
+{
+   if (frame_)
+   {
+      return frame_->frame_->GetBuffer(y);
+   }
+   return nullptr;
+}
+
+int Window::GetFullHeight()
+{
+   if (frame_)
+   {
+      return frame_->frame_->GetFullHeight();
+   }
+   return 0;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
+

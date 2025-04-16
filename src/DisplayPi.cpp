@@ -67,6 +67,15 @@ bool DisplayPi::Initialization()
    return true;
 }
 
+void DisplayPi::AddFrame(Frame* frame)
+{
+   window_list_protector_.lock();
+   // 
+   windows_list_.push_back(frame);
+
+   window_list_protector_.unlock();
+}
+
 void DisplayPi::SetScanlines(int scan)
 {
    
@@ -281,7 +290,7 @@ int DisplayPi::GetStride()
 
 void DisplayPi::Reset()
 {
-   emu_frame_.Reset();
+   emu_frame_.Reset(0x00, -1);
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
       frame_used_[i] = FR_FREE;
@@ -300,7 +309,7 @@ int DisplayPi::GetWidth()
 
 void DisplayPi::ClearBuffer(int frame_index)
 {
-   emu_frame_.Reset(frame_index);   
+   emu_frame_.Reset(0x00, frame_index);   
 }
 
 void DisplayPi::Draw()
@@ -308,9 +317,18 @@ void DisplayPi::Draw()
    // Start Drawing
    BeginDraw();
 
+   logger_->Write("Display", LogNotice, "*** BeginDraw");
+   window_list_protector_.lock();
    for (auto it : windows_list_)
    {
       int changed = it->frame_->AttributesHasChanged();
+
+      logger_->Write("Display", LogNotice, "    Windows : x:%i, y:%i, w:%i; h:%i", 
+         it->frame_->GetDisplayX(),
+         it->frame_->GetDisplayY(),
+         it->frame_->GetDisplayWidth(),
+         it->frame_->GetDisplayHeight()
+         );
 
       // Copy memory to ressource
       CopyMemoryToRessources(it);
@@ -324,6 +342,8 @@ void DisplayPi::Draw()
          it->frame_->AttributesChanged();
       }
    }
+   window_list_protector_.unlock();
    EndDraw();
+   logger_->Write("Display", LogNotice, "*** EndDraw");
 }
 

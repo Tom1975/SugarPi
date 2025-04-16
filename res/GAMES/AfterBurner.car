@@ -1,0 +1,10 @@
+{
+   "Game_name": "After Burner",
+   "Description": "The game blablablabla",
+   "Screenshot": "AfterBurner.bmp",
+   "Media": [
+      "AfterBurner.cpr"
+   ],
+   "HardwareConfiguration": "CPC",
+   "Startup_command": "run \"disc"
+}

@@ -46,6 +46,12 @@ public:
    virtual void Init(HINSTANCE hInstance, HWND hWnd, IFullScreenInterface* pFSInt);
    virtual void WaitVbl();
 
+   virtual Frame* CreateFrame(BasicFrame* frame, int w, int h);
+   virtual void AddFrame(Frame* frame);
+
+   virtual int GetDisplayWidth();
+   virtual int GetDisplayHeight();
+
 protected:
    virtual void CopyMemoryToRessources(DisplayPi::Frame* frame_);
    virtual void ChangeAttribute(Frame*, int src_x, int src_y, int src_w, int src_h,
