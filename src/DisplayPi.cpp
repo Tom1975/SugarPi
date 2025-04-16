@@ -290,7 +290,7 @@ int DisplayPi::GetStride()
 
 void DisplayPi::Reset()
 {
-   emu_frame_.Reset();
+   emu_frame_.Reset(0x00, -1);
    for (int i = 0; i < FRAME_BUFFER_SIZE; i++)
    {
       frame_used_[i] = FR_FREE;
@@ -309,7 +309,7 @@ int DisplayPi::GetWidth()
 
 void DisplayPi::ClearBuffer(int frame_index)
 {
-   emu_frame_.Reset(frame_index);   
+   emu_frame_.Reset(0x00, frame_index);   
 }
 
 void DisplayPi::Draw()

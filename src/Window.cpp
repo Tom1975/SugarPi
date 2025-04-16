@@ -173,9 +173,6 @@ void Window::DrawBitmap(PiBitmap* bmp, int x, int y)
    }
 }
 
-#define DrawPixel(x,y,c) \
-   int* ptr = GetBuffer(y) + x;*ptr = c;
-
 // Bresenham algorithm, thanks to Wikipedia
 void Window::DrawLine(int x0, int y0, int x1, int y1, unsigned int color)
 {
@@ -187,7 +184,9 @@ void Window::DrawLine(int x0, int y0, int x1, int y1, unsigned int color)
 
    while (true)
    {
-      DrawPixel(x0, y0, color);
+      int* ptr = GetBuffer(y0);
+      if (ptr != nullptr && x0 < GetWidth())
+         *&ptr[x0] = color;
       if (x0 == x1 && y0 == y1) break;
 
       int e2 = 2 * error;

@@ -23,7 +23,7 @@ public:
 
    /////////// Internal setup
    virtual void Init(int width, int height, int nb_buffers = 1);
-   virtual void Reset(int buffer = -1);
+   virtual void Reset(unsigned int color, int buffer = -1);
 
    /////////// Internal size
    virtual int GetFullWidth(){return internal_width_;}

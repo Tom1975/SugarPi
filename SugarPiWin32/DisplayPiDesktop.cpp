@@ -271,39 +271,43 @@ void DisplayPiDesktop::CopyMemoryToRessources(ID2D1Bitmap* bitmap, BasicFrame* f
 {
    HRESULT hr;
 
-   hr = bitmap->CopyFromMemory(NULL,
-      frame->GetReadyBuffer(), frame->GetPitch());
+   if (bitmap != nullptr)
+      hr = bitmap->CopyFromMemory(NULL,
+       frame->GetReadyBuffer(), frame->GetPitch());
 }
 
 void DisplayPiDesktop::ChangeAttribute(Frame* frame, int src_x, int src_y, int src_w, int src_h,
    int dest_x, int dest_y, int dest_w, int dest_h)
 {
-   D2D1_RECT_F src_rect = { src_x, src_y, src_x + src_w, src_y + src_h };
-   D2D1_RECT_F dest_rect = { dest_x, dest_y, dest_x + dest_w, dest_y + dest_h };
-   // Push the layer with the content bounds.
-   D2D1_LAYER_PARAMETERS1 layerParameters = { 0 };
+   if (((Win32Frame*)frame)->bitmap_ != nullptr)
+   {
+      D2D1_RECT_F src_rect = { src_x, src_y, src_x + src_w, src_y + src_h };
+      D2D1_RECT_F dest_rect = { dest_x, dest_y, dest_x + dest_w, dest_y + dest_h };
+      // Push the layer with the content bounds.
+      D2D1_LAYER_PARAMETERS1 layerParameters = { 0 };
 
-   layerParameters.contentBounds = D2D1::InfiniteRect();
-   layerParameters.geometricMask = NULL;
-   layerParameters.maskAntialiasMode = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
-   layerParameters.maskTransform = D2D1::IdentityMatrix();
-   layerParameters.opacity = 1.0;
-   layerParameters.opacityBrush = NULL;
-   layerParameters.layerOptions = D2D1_LAYER_OPTIONS1_INITIALIZE_FROM_BACKGROUND;
+      layerParameters.contentBounds = D2D1::InfiniteRect();
+      layerParameters.geometricMask = NULL;
+      layerParameters.maskAntialiasMode = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
+      layerParameters.maskTransform = D2D1::IdentityMatrix();
+      layerParameters.opacity = 1.0;
+      layerParameters.opacityBrush = NULL;
+      layerParameters.layerOptions = D2D1_LAYER_OPTIONS1_INITIALIZE_FROM_BACKGROUND;
 
-   D2D1_LAYER_PARAMETERS* toto = (D2D1_LAYER_PARAMETERS*)&layerParameters;
+      D2D1_LAYER_PARAMETERS* toto = (D2D1_LAYER_PARAMETERS*)&layerParameters;
 
-   Win32Frame* win_frame = (Win32Frame*)frame;
+      Win32Frame* win_frame = (Win32Frame*)frame;
 
-   pRT_->PushLayer(
-      toto,
-      win_frame->pLayer_
-   );
+      pRT_->PushLayer(
+         toto,
+         win_frame->pLayer_
+      );
 
-   pRT_->DrawBitmap(((Win32Frame*)frame)->bitmap_, &dest_rect, 1,
-      D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &src_rect);
+      pRT_->DrawBitmap(((Win32Frame*)frame)->bitmap_, &dest_rect, 1,
+         D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &src_rect);
 
-   pRT_->PopLayer();
+      pRT_->PopLayer();
+   }
 }
 
 void DisplayPiDesktop::BeginDraw()
